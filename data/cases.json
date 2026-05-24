@@ -1,0 +1,403 @@
+{
+  "_meta": {
+    "project": "sousnosyeux",
+    "version": "mvp-paris-v1",
+    "generated_at": "2026-05-24",
+    "seuil_publication": 8,
+    "total_cases": 17,
+    "note": "Affaires score >= 8/10. Les fiches à 7/10 (PARIS-002, PARIS-003, PARIS-005) sont exclues du MVP, à renforcer ultérieurement."
+  },
+  "cases": [
+    {
+      "case_id": "POC-02",
+      "etablissement": "École maternelle Charlie-Chaplin",
+      "commune": "La Courneuve",
+      "departement": "Seine-Saint-Denis",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source presse fiable. Condamnation pour agressions sexuelles sur trois fillettes. À vérifier : appel / caractère définitif.",
+      "sources": [
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
+          "media": "Ouest-France",
+          "publication_date": null,
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-03",
+      "etablissement": "École élémentaire Jules-Vallès",
+      "commune": "Plaisir",
+      "departement": "Yvelines",
+      "type_structure": "élémentaire",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source nationale fiable. Condamnation pour attouchements sur deux élèves. À vérifier : appel.",
+      "sources": [
+        {
+          "url": "https://www.lemonde.fr/societe/article/2024/12/06/un-enseignant-d-ecole-elementaire-des-yvelines-condamne-a-de-la-prison-ferme-pour-des-attouchements-sur-deux-eleves_6432690_3224.html",
+          "media": "Le Monde",
+          "publication_date": "2024-12-06",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-04",
+      "etablissement": "École Émeriau",
+      "commune": "Paris 15e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "intervenant extérieur",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Article dédié. Mise en examen, instruction en cours, plusieurs plaintes.",
+      "sources": [
+        {
+          "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+          "media": "20 Minutes",
+          "publication_date": "2026-02-23",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-05",
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source fiable centrée sur le dossier. À vérifier : décision finale.",
+      "sources": [
+        {
+          "url": "https://www.liberation.fr/societe/education/une-chaine-de-dysfonctionnements-et-des-enfants-sans-protection-un-animateur-du-periscolaire-parisien-juge-pour-agressions-sexuelles-20251125_KYKFOAXRE5B3XM7TNWYMO6FPEI/",
+          "media": "Libération",
+          "publication_date": "2025-11-25",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-06",
+      "etablissement": "École maternelle Bullourde",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source fiable. Mise en examen rapportée. Wording prudent obligatoire.",
+      "sources": [
+        {
+          "url": "https://www.lefigaro.fr/faits-divers/un-animateur-scolaire-mis-en-examen-pour-agressions-sexuelles-sur-des-enfants-de-maternelle-20260206",
+          "media": "Le Figaro",
+          "publication_date": "2026-02-06",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-07",
+      "etablissement": "École maternelle Servan",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 9,
+      "commentaire_validation": "Source nationale fiable, récente, établissement nommé, statut clair. Mise en examen + détention provisoire.",
+      "sources": [
+        {
+          "url": "https://www.lemonde.fr/societe/article/2026/05/12/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-ecroue_6688265_3224.html",
+          "media": "Le Monde",
+          "publication_date": "2026-05-12",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-08",
+      "etablissement": "École maternelle Voltaire",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "viol",
+      "statut_judiciaire": "plainte",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Article dédié. Établissement nommé, signalement et plainte rapportés. Réserve forte : faits allégués.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-03-27",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-09",
+      "etablissement": "École Titon",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source service public. Cinq procès programmés. À suivre : décision finale.",
+      "sources": [
+        {
+          "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html",
+          "media": "France 3",
+          "publication_date": null,
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "POC-10",
+      "etablissement": "École Volontaires",
+      "commune": "Paris 15e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source de synthèse utile. Idéalement compléter par un article dédié.",
+      "sources": [
+        {
+          "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
+          "media": "ELLE",
+          "publication_date": null,
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-001",
+      "etablissement": "École maternelle Saint-Dominique",
+      "commune": "Paris 7e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "tiers",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Information corroborée par TF1 Info, Le Parisien, RTL : 16 personnes placées en garde à vue. Wording extrêmement prudent.",
+      "sources": [
+        {
+          "url": "https://www.msn.com/fr-fr/actualite/france/violences-dans-le-p%C3%A9riscolaire-16-personnes-de-l-%C3%A9cole-saint-dominique-interpell%C3%A9es-et-plac%C3%A9es-en-garde/ar-AA23DX3R",
+          "media": "MSN / reprise presse",
+          "publication_date": "2026-05-20",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-004",
+      "etablissement": "École maternelle Paul-Dubois",
+      "commune": "Paris 3e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Article dédié très documenté. Instruction ouverte en 2019, pas de mise en examen à la date de l'article.",
+      "sources": [
+        {
+          "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+          "media": "20 Minutes",
+          "publication_date": "2026-02-20",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-006",
+      "etablissement": "École maternelle Parmentier",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "viol",
+      "statut_judiciaire": "plainte",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Information corroborée par Le Parisien : deuxième plainte pour viol aggravé. Réserve forte : plainte / faits allégués.",
+      "sources": [
+        {
+          "url": "https://www.lefigaro.fr/faits-divers/paris-une-nouvelle-plainte-pour-viol-aggrave-deposee-contre-un-animateur-de-maternelle-20251119",
+          "media": "Le Figaro",
+          "publication_date": "2025-11-19",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-007",
+      "etablissement": "École maternelle Reuilly",
+      "commune": "Paris 12e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Article dédié. Enquête administrative ouverte, suspension, signalement au parquet.",
+      "sources": [
+        {
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle",
+          "media": "20 Minutes",
+          "publication_date": "2025-09-19",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-008",
+      "etablissement": "École maternelle Boulard",
+      "commune": "Paris 14e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Article dédié. Trois agents périscolaires suspendus après signalements. Réserve forte : pas de culpabilité établie.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-03-11",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-009",
+      "etablissement": "École maternelle Faidherbe",
+      "commune": "Paris 11e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "non précisé",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source primaire Le Parisien. Suspension animateur après signalement, puis deuxième suspension pour violences éducatives.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/paris-une-deuxieme-animatrice-suspendue-a-lecole-faidherbe-a-la-suite-de-violences-20-11-2025-DDEF6ZI34NEQTCU3JO2HN7ZTNE.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-11-20",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-010",
+      "etablissement": "École maternelle Grands-Champs",
+      "commune": "Paris 20e",
+      "departement": "Paris",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "tiers",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source primaire Le Parisien/AFP. Compagnon d'une institutrice mis en cause. Réserve forte.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-03-20",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    },
+    {
+      "case_id": "PARIS-011",
+      "etablissement": "École Léon Schwartzenberg",
+      "commune": "Paris 10e",
+      "departement": "Paris",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "plainte",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "non précisé",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Source primaire Le Parisien. Signalement parents, suspension animateur, plainte déposée.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-un-animateur-suspendu-dans-une-ecole-du-xe-arrondissement-parisien-19-02-2026-BZNN3S43QZEBBAEVMJ6VXFFMP4.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-02-19",
+          "source_type": "presse",
+          "is_primary": true
+        }
+      ]
+    }
+  ]
+}
