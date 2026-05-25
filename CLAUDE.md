@@ -12,13 +12,15 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : MVP Paris — infrastructure posée, début Phase 3 (front)
+- **Phase** : MVP Paris — Phase 3 en cours (front), itération 1 livrée
 - **Volume MVP** : 17 affaires, score ≥ 8/10
 - **Repo GitHub** : https://github.com/06adretn11/sousnosyeux (public)
 - **Branche par défaut** : `main`
 - **Supabase** : projet `sousnosyeux` (AWS eu-west-1, plan NANO)
 - **Schéma SQL appliqué** ✅
 - **Seed appliqué** ✅ (17 cases + 17 sources, toutes en `candidate` — basculées en `publiée` pour tests)
+- **Front Astro initialisé** ✅ (`web/`, Astro 5 + MapLibre 4, tuiles OSM)
+- **Carte Paris fonctionnelle** ✅ (1 pin démo École Émeriau, popup avec wording standardisé par statut judiciaire, responsive mobile-first validé sur plusieurs devices)
 
 ## 3. Décisions verrouillées (NE PAS remettre en cause sans validation explicite)
 
@@ -82,11 +84,16 @@ sousnosyeux/
 ## 8. Prochaines étapes prévues
 
 1. **Phase 3 — Front Astro + MapLibre** (en cours)
-   - Init projet Astro dans un sous-dossier `web/`
-   - Page d'accueil avec carte Paris (MapLibre + tuiles OSM)
-   - Pins par établissement, popup avec wording standardisé selon statut
-   - Page méthodologie
-   - Page mentions légales + formulaire de droit de réponse
+   - ✅ Init projet Astro dans `web/` (Astro 5 + MapLibre 4)
+   - ✅ Page d'accueil avec carte Paris (MapLibre + tuiles OSM), 1 pin démo
+   - ✅ Popup avec wording standardisé par statut judiciaire
+   - ✅ Responsive mobile-first (100dvh, safe-areas iOS, tap targets 44px, popup adaptative)
+   - ⏭️ **Itération 2** : géocodage des 17 fiches (BAN, gratuit) + ajout `lat`/`lng` au schéma + affichage des 17 pins
+   - ⏭️ Pins colorés selon `statut_des_faits` (allégué vs condamnation déf.) + légende
+   - ⏭️ Clustering quand on aura les 17 pins (chevauchements probables 9e–18e)
+   - ⏭️ Page méthodologie (expliquer le score de fiabilité, le wording, la présomption d'innocence)
+   - ⏭️ Page mentions légales + formulaire de droit de réponse
+   - ⏭️ Déploiement Cloudflare Pages
 2. **Phase 4 — Revue juridique + procédures**
 3. **Phase 5 — Mise en ligne POC publique**
 

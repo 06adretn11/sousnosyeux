@@ -1,0 +1,248 @@
+---
+const demoCase = {
+  case_id: 'POC-04',
+  etablissement: 'École Émeriau',
+  commune: 'Paris 15e',
+  type_structure: 'périscolaire',
+  role_mis_en_cause: 'intervenant extérieur',
+  type_affaire: 'agression sexuelle',
+  statut_judiciaire: 'mise en examen',
+  statut_des_faits: 'allégué',
+  enfants_concernes_public: 'plusieurs enfants',
+  fiabilite_info_10: 8,
+  // Coordonnées approximatives (rue Émeriau, Paris 15e). À remplacer par géocodage propre en itération 2.
+  lng: 2.2876,
+  lat: 48.8485,
+  source: {
+    media: '20 Minutes',
+    url: 'https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau',
+    publication_date: '2026-02-23',
+  },
+};
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>sousnosyeux — Carte des affaires signalées</title>
+    <meta name="description" content="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources publiques, présomption d'innocence respectée." />
+  </head>
+  <body>
+    <header class="site-header">
+      <h1>sousnosyeux</h1>
+      <p class="tagline">Carte publique des affaires signalées — sources presse, présomption d'innocence respectée.</p>
+    </header>
+
+    <main>
+      <div id="map" aria-label="Carte de Paris"></div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        MVP Paris · 17 affaires (score ≥ 8/10) · Données sous
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC-BY-SA-4.0</a>
+        · Code sous
+        <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license">AGPL-3.0</a>
+      </p>
+    </footer>
+
+    <script type="application/json" id="cases-data" set:html={JSON.stringify([demoCase])} />
+
+    <script>
+      import maplibregl from 'maplibre-gl';
+      import 'maplibre-gl/dist/maplibre-gl.css';
+
+      type CaseRow = {
+        case_id: string;
+        etablissement: string;
+        commune: string;
+        type_structure: string;
+        role_mis_en_cause: string;
+        type_affaire: string;
+        statut_judiciaire: string;
+        statut_des_faits: string;
+        enfants_concernes_public: string;
+        fiabilite_info_10: number;
+        lng: number;
+        lat: number;
+        source: { media: string; url: string; publication_date: string | null };
+      };
+
+      const dataEl = document.getElementById('cases-data');
+      if (!dataEl?.textContent) throw new Error('cases-data missing');
+      const cases: CaseRow[] = JSON.parse(dataEl.textContent);
+
+      const map = new maplibregl.Map({
+        container: 'map',
+        style: {
+          version: 8,
+          sources: {
+            'osm-tiles': {
+              type: 'raster',
+              tiles: [
+                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              ],
+              tileSize: 256,
+              attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            },
+          },
+          layers: [{ id: 'osm', type: 'raster', source: 'osm-tiles' }],
+        },
+        center: [2.3522, 48.8566],
+        zoom: 11,
+        // Carte 2D — désactive les gestes pitch/rotate qui surprennent sur mobile
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
+        attributionControl: false,
+      });
+      map.touchZoomRotate.disableRotation();
+
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new maplibregl.AttributionControl({ compact: true }));
+
+      // Popup adaptative : limite la largeur sur les petits écrans pour éviter le débordement.
+      const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
+
+      // Wording standardisé selon le statut (cf. brief §9 + CLAUDE.md §4)
+      const wordingByStatut: Record<string, string> = {
+        'allégué': 'Une source publique rapporte des faits allégués',
+        'plainte déposée': 'Une plainte a été déposée selon une source publique',
+        'enquête en cours': 'Une enquête est en cours selon une source publique',
+        'mise en examen': 'Une mise en examen a été prononcée selon une source publique',
+        'procès en cours': 'Un procès est en cours selon une source publique',
+        'condamnation non définitive': 'Une condamnation non définitive a été prononcée selon une source publique',
+        'condamnation définitive': 'Une condamnation définitive a été prononcée selon une source publique',
+        'relaxe': 'Une relaxe a été prononcée selon une source publique',
+      };
+
+      const escapeHtml = (s: string) =>
+        s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+
+      for (const c of cases) {
+        const phrase = wordingByStatut[c.statut_judiciaire] ?? 'Source publique disponible';
+        const dateSuffix = c.source.publication_date ? ' (' + escapeHtml(c.source.publication_date) + ')' : '';
+        const popupHtml = `
+          <div class="popup">
+            <h3>${escapeHtml(c.etablissement)}</h3>
+            <p class="meta">${escapeHtml(c.commune)} · ${escapeHtml(c.type_structure)}</p>
+            <p class="statement">${escapeHtml(phrase)}.</p>
+            <ul class="facts">
+              <li><strong>Type d'affaire :</strong> ${escapeHtml(c.type_affaire)}</li>
+              <li><strong>Rôle mis en cause :</strong> ${escapeHtml(c.role_mis_en_cause)}</li>
+              <li><strong>Enfants concernés :</strong> ${escapeHtml(c.enfants_concernes_public)}</li>
+              <li><strong>Fiabilité :</strong> ${c.fiabilite_info_10}/10</li>
+            </ul>
+            <p class="source"><a href="${encodeURI(c.source.url)}" target="_blank" rel="noopener noreferrer">Source : ${escapeHtml(c.source.media)}${dateSuffix}</a></p>
+            <p class="disclaimer">Présomption d'innocence — informations issues de la presse publique.</p>
+          </div>
+        `;
+
+        new maplibregl.Marker({ color: '#c0392b' })
+          .setLngLat([c.lng, c.lat])
+          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: popupMaxWidth() }).setHTML(popupHtml))
+          .addTo(map);
+      }
+    </script>
+
+    <style is:global>
+      :root {
+        --fg: #1a1a1a;
+        --muted: #555;
+        --bg: #fafafa;
+        --accent: #c0392b;
+        --safe-l: env(safe-area-inset-left, 0px);
+        --safe-r: env(safe-area-inset-right, 0px);
+        --safe-t: env(safe-area-inset-top, 0px);
+        --safe-b: env(safe-area-inset-bottom, 0px);
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-size: 16px; /* lisibilité tactile */
+        color: var(--fg);
+        background: var(--bg);
+        -webkit-text-size-adjust: 100%;
+        overscroll-behavior: none; /* évite le pull-to-refresh quand on pan la carte */
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        /* 100dvh = hauteur dynamique du viewport mobile (gère la barre d'URL qui se rétracte) */
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+
+      /* Header — compact sur mobile, un peu plus aéré sur desktop */
+      .site-header {
+        padding: 0.6rem calc(0.9rem + var(--safe-r)) 0.6rem calc(0.9rem + var(--safe-l));
+        padding-top: calc(0.6rem + var(--safe-t));
+        border-bottom: 1px solid #e0e0e0;
+        background: #fff;
+      }
+      .site-header h1 {
+        margin: 0;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+      }
+      .site-header .tagline {
+        margin: 0.15rem 0 0;
+        color: var(--muted);
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
+      /* Map — prend toute la hauteur restante */
+      main { flex: 1; display: flex; min-height: 0; }
+      #map { flex: 1; width: 100%; height: 100%; }
+
+      /* Footer — discret, sécurité iOS */
+      .site-footer {
+        padding: 0.5rem calc(0.9rem + var(--safe-r)) calc(0.5rem + var(--safe-b)) calc(0.9rem + var(--safe-l));
+        border-top: 1px solid #e0e0e0;
+        background: #fff;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .site-footer p { margin: 0; }
+      .site-footer a { color: var(--muted); }
+
+      /* Cibles tactiles : marker un peu plus grand pour faciliter le tap */
+      .maplibregl-marker { cursor: pointer; }
+      .maplibregl-marker svg { width: 32px; height: 32px; }
+
+      /* Boutons zoom : taille tactile confortable (Apple ≥ 44px) */
+      .maplibregl-ctrl-group button { width: 36px; height: 36px; }
+      @media (pointer: coarse) {
+        .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+      }
+
+      /* Popup — wording éditorial, lisible sur petit écran */
+      .popup h3 { margin: 0 0 0.2rem; font-size: 0.95rem; line-height: 1.25; }
+      .popup .meta { margin: 0 0 0.45rem; color: var(--muted); font-size: 0.8rem; }
+      .popup .statement { margin: 0 0 0.45rem; font-weight: 600; font-size: 0.88rem; line-height: 1.35; }
+      .popup .facts { margin: 0 0 0.45rem; padding-left: 1rem; font-size: 0.82rem; line-height: 1.4; }
+      .popup .facts li { margin-bottom: 0.1rem; }
+      .popup .source { margin: 0 0 0.45rem; font-size: 0.82rem; word-break: break-word; }
+      .popup .source a { color: #1a4f9c; }
+      .popup .disclaimer { margin: 0; font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.35; }
+
+      /* Tablette / desktop : on peut respirer un peu */
+      @media (min-width: 720px) {
+        .site-header { padding: 1rem 1.5rem; }
+        .site-header h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+        .site-header .tagline { font-size: 0.9rem; }
+        .site-footer { padding: 0.75rem 1.5rem; font-size: 0.8rem; }
+      }
+    </style>
+  </body>
+</html>
