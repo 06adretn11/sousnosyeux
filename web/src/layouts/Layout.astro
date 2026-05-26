@@ -1,0 +1,187 @@
+---
+// Layout partagé entre toutes les pages.
+// La carte (index) demande une mise en page "full-height" sans scroll global :
+// les autres pages (méthodologie, mentions légales) sont en flux normal.
+// Le paramètre `variant` contrôle cette différence.
+
+interface Props {
+  title: string;
+  description: string;
+  variant?: 'map' | 'page';
+}
+
+const { title, description, variant = 'page' } = Astro.props;
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+
+const nav = [
+  { href: '/', label: 'Carte' },
+  { href: '/methodologie', label: 'Méthodologie' },
+  { href: '/mentions-legales', label: 'Mentions légales' },
+];
+
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href);
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body data-variant={variant}>
+    <header class="site-header">
+      <div class="brand">
+        <a href="/"><strong>sousnosyeux</strong></a>
+        <span class="tagline">Carte publique des affaires signalées — sources presse, présomption d'innocence respectée.</span>
+      </div>
+      <nav aria-label="Navigation principale">
+        <ul>
+          {nav.map((n) => (
+            <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+
+    <main><slot /></main>
+
+    <footer class="site-footer">
+      <p>
+        Données sous <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC-BY-SA-4.0</a>
+        · Code sous <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license">AGPL-3.0</a>
+        · <a href="/methodologie">Méthodologie</a>
+        · <a href="/mentions-legales">Mentions légales</a>
+      </p>
+    </footer>
+
+    <style is:global>
+      :root {
+        --fg: #1a1a1a;
+        --muted: #555;
+        --bg: #fafafa;
+        --accent: #c0392b;
+        --link: #1a4f9c;
+        --safe-l: env(safe-area-inset-left, 0px);
+        --safe-r: env(safe-area-inset-right, 0px);
+        --safe-t: env(safe-area-inset-top, 0px);
+        --safe-b: env(safe-area-inset-bottom, 0px);
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        font-size: 16px;
+        color: var(--fg);
+        background: var(--bg);
+        -webkit-text-size-adjust: 100%;
+      }
+      a { color: var(--link); }
+
+      /* Layout général — page en flux normal */
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        min-height: 100dvh;
+      }
+      main { flex: 1; }
+
+      /* Variant carte : pas de scroll global, la carte occupe tout l'espace.
+         main passe en flex COLUMN pour que les enfants puissent utiliser flex:1
+         sans avoir besoin que la hauteur CSS de main soit explicite (height:%
+         ne résoudrait pas, car la hauteur calculée par flex n'est pas "définie"
+         au sens CSS pour la résolution des pourcentages). */
+      body[data-variant="map"] { overscroll-behavior: none; }
+      body[data-variant="map"] main {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+        position: relative;
+      }
+
+      /* Header — compact mobile, aéré desktop */
+      .site-header {
+        padding: 0.55rem calc(0.9rem + var(--safe-r)) 0.55rem calc(0.9rem + var(--safe-l));
+        padding-top: calc(0.55rem + var(--safe-t));
+        border-bottom: 1px solid #e0e0e0;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+      }
+      .brand a { text-decoration: none; color: var(--fg); }
+      .brand strong { font-size: 1.05rem; letter-spacing: -0.01em; }
+      .brand .tagline { display: block; margin-top: 0.1rem; color: var(--muted); font-size: 0.74rem; line-height: 1.35; }
+
+      .site-header nav ul {
+        display: flex; flex-wrap: wrap; gap: 0.15rem 0.4rem;
+        list-style: none; margin: 0; padding: 0;
+      }
+      .site-header nav a {
+        display: inline-block;
+        padding: 0.35rem 0.55rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+        text-decoration: none;
+        border-radius: 4px;
+      }
+      .site-header nav a[aria-current="page"] { background: #eef3fb; color: var(--link); font-weight: 600; }
+      .site-header nav a:hover { background: #f0f0f0; }
+
+      /* Footer */
+      .site-footer {
+        padding: 0.5rem calc(0.9rem + var(--safe-r)) calc(0.5rem + var(--safe-b)) calc(0.9rem + var(--safe-l));
+        border-top: 1px solid #e0e0e0;
+        background: #fff;
+        font-size: 0.72rem;
+        line-height: 1.4;
+        color: var(--muted);
+      }
+      .site-footer p { margin: 0; }
+      .site-footer a { color: var(--muted); }
+
+      /* Contenu rédactionnel (méthodologie, mentions légales) */
+      .prose {
+        max-width: 70ch;
+        margin: 0 auto;
+        padding: 1.2rem calc(1rem + var(--safe-r)) 2rem calc(1rem + var(--safe-l));
+        line-height: 1.55;
+      }
+      .prose h1 { font-size: 1.5rem; margin: 0 0 0.4rem; letter-spacing: -0.01em; }
+      .prose .lede { color: var(--muted); font-size: 0.95rem; margin: 0 0 1.5rem; }
+      .prose h2 { font-size: 1.15rem; margin: 1.6rem 0 0.5rem; border-bottom: 1px solid #e5e5e5; padding-bottom: 0.2rem; }
+      .prose h3 { font-size: 1rem; margin: 1rem 0 0.3rem; }
+      .prose p, .prose li { font-size: 0.92rem; }
+      .prose ul, .prose ol { padding-left: 1.3rem; }
+      .prose li { margin-bottom: 0.25rem; }
+      .prose code { background: #eef0f3; padding: 0 0.25rem; border-radius: 3px; font-size: 0.85em; }
+      .prose .callout {
+        margin: 1rem 0; padding: 0.7rem 0.9rem;
+        background: #fff8e1; border-left: 3px solid #e6a700;
+        font-size: 0.88rem; border-radius: 0 4px 4px 0;
+      }
+      .prose .callout-info { background: #eef3fb; border-left-color: var(--link); }
+      .prose .callout-danger { background: #fdecea; border-left-color: var(--accent); }
+
+      @media (min-width: 720px) {
+        .site-header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.8rem 1.5rem;
+          gap: 1rem;
+        }
+        .brand strong { font-size: 1.25rem; }
+        .brand .tagline { font-size: 0.85rem; }
+        .site-footer { padding: 0.75rem 1.5rem; font-size: 0.8rem; }
+        .prose { padding: 2rem 1rem; }
+        .prose h1 { font-size: 1.9rem; }
+        .prose h2 { font-size: 1.3rem; }
+      }
+    </style>
+  </body>
+</html>

@@ -38,3 +38,7 @@ venv/
 .supabase/
 supabase/.branches/
 supabase/.temp/
+
+# --- Claude Code (config locale Preview MCP) ---
+.claude/
+web/.claude/

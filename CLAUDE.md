@@ -12,15 +12,28 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : MVP Paris — Phase 3 en cours (front), itération 1 livrée
-- **Volume MVP** : 17 affaires, score ≥ 8/10
+- **Phase** : MVP Paris — Phase 3 (front) itérations 1+2 livrées, pages méthodologie + mentions légales livrées
+- **Volume MVP** : 17 affaires, score ≥ 8/10 — **toutes géocodées**
 - **Repo GitHub** : https://github.com/06adretn11/sousnosyeux (public)
 - **Branche par défaut** : `main`
 - **Supabase** : projet `sousnosyeux` (AWS eu-west-1, plan NANO)
-- **Schéma SQL appliqué** ✅
-- **Seed appliqué** ✅ (17 cases + 17 sources, toutes en `candidate` — basculées en `publiée` pour tests)
-- **Front Astro initialisé** ✅ (`web/`, Astro 5 + MapLibre 4, tuiles OSM)
-- **Carte Paris fonctionnelle** ✅ (1 pin démo École Émeriau, popup avec wording standardisé par statut judiciaire, responsive mobile-first validé sur plusieurs devices)
+  - Schéma SQL appliqué ✅
+  - Migration 001 (lat/lng + vue) appliquée ✅
+  - Migration 002 (UPDATE coords) appliquée ✅
+  - Seed appliqué ✅ (17 cases + 17 sources, basculées en `publiée` pour tests)
+- **Domaine** : `sousnosyeux.org` réservé chez OVH ✅
+- **DNS** : nameservers migrés vers Cloudflare ✅ (zone gérée côté Cloudflare)
+- **Email** : `contact@sousnosyeux.org` via Cloudflare Email Routing → redirige vers email perso utilisateur ✅
+- **Front Astro** : `web/` (Astro 5 + MapLibre 4, tuiles OSM)
+  - Layout partagé avec nav Carte / Méthodologie / Mentions légales ✅
+  - Carte fonctionnelle avec **17 pins géocodés** (annuaire-éducation, BAN, centroïde commune en fallback) ✅
+  - Clustering MapLibre actif (clusterRadius 35, clusterMaxZoom 13) ✅
+  - Pins colorés par `statut_des_faits` + légende ✅
+  - Popup avec wording standardisé par statut judiciaire + avertissement quand coord approximative ✅
+  - `fitBounds` initial sur les 17 affaires ✅
+  - Page `/methodologie` (sources, score, wording, principes éditoriaux, géolocalisation) ✅
+  - Page `/mentions-legales` (LCEN conforme : éditeur, hébergeur Cloudflare, licences, droit de réponse mailto, signalement art. 6.I.5) ✅
+- **Géocodage** : script `scripts/geocode.mjs` en cascade annuaire-éducation → BAN → centroïde commune. Bilan : 14 BAN précision rue, 2 annuaire-éducation précision école, 1 centroïde commune (La Courneuve)
 
 ## 3. Décisions verrouillées (NE PAS remettre en cause sans validation explicite)
 
@@ -34,6 +47,14 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Licence données | **CC-BY-SA-4.0** | Préserve traçabilité, oblige citation source |
 | Visibilité repo | Public | Cohérent avec principe de transparence |
 | Directeur de publication | Adrien Etienne (utilisateur) | Relai d'articles uniquement, pas d'écriture en nom propre |
+| Domaine | `sousnosyeux.org` (OVH) | `.org` aligné avec nature non-commerciale citoyenne |
+| DNS | Cloudflare (NS migrés depuis OVH) | Préparation Cloudflare Pages + Email Routing |
+| Email contact | `contact@sousnosyeux.org` via Cloudflare Email Routing | Gratuit, sans serveur SMTP à maintenir, redirige vers email perso |
+| Adresse postale (mentions légales) | « communiquée sur demande écrite à contact@... » | Évite d'exposer le domicile, tolérance courante projets citoyens — à revalider en revue juridique phase 4 |
+| Droit de réponse | Mailto avec template pré-rempli | Pas de backend, RGPD-friendly, suffisant pour MVP |
+| Source de vérité front | `data/cases.json` importé en frontmatter Astro | Statique, pas de fetch runtime, pas de clés Supabase côté client. Bascule sur vue `cases_public` reportée |
+| Glyphes MapLibre | `demotiles.maplibre.org` avec `Noto Sans Regular` | Service maintenu par MapLibre, gratuit. ⚠ Si glyphes 404 : ne PAS utiliser `Open Sans Semibold` (non servi) |
+| Properties GeoJSON | **Aplaties** (pas d'objet imbriqué) | Supercluster éjecte silencieusement les features avec nested objects → cause de bug de clustering avéré |
 
 ## 4. Principes éditoriaux NON-NÉGOCIABLES
 
@@ -66,9 +87,23 @@ sousnosyeux/
 ├── TUTO_IMPORT.md           # tuto import seed
 ├── supabase/
 │   ├── schema.sql           # tables + enums + RLS + vue publique
-│   └── seed.sql             # INSERT idempotent des 17 fiches
+│   ├── seed.sql             # INSERT idempotent des 17 fiches
+│   └── migrations/
+│       ├── 001_add_geocoords.sql   # ajoute lat/lng à cases + recrée cases_public
+│       └── 002_geocode_data.sql    # UPDATE coords (généré par scripts/geocode.mjs)
 ├── data/
-│   └── cases.json           # 17 fiches normalisées (source de vérité éditoriale)
+│   └── cases.json           # 17 fiches normalisées + lat/lng/geocode_source (source de vérité éditoriale)
+├── scripts/
+│   └── geocode.mjs          # géocodage en cascade annuaire-éducation → BAN → centroïde
+├── web/                     # front Astro (Astro 5 + MapLibre 4)
+│   ├── src/
+│   │   ├── layouts/
+│   │   │   └── Layout.astro          # header + nav + footer partagés (variant map | page)
+│   │   └── pages/
+│   │       ├── index.astro           # carte + clustering + légende
+│   │       ├── methodologie.astro    # page éditoriale
+│   │       └── mentions-legales.astro # page LCEN
+│   └── package.json
 └── docs/
     ├── brief_projet.md      # cahier des charges (référence éditoriale)
     └── mvp_paris_score8plus.md # source des fiches MVP
@@ -83,19 +118,23 @@ sousnosyeux/
 
 ## 8. Prochaines étapes prévues
 
-1. **Phase 3 — Front Astro + MapLibre** (en cours)
+1. **Phase 3 — Front Astro + MapLibre** (quasi terminée)
    - ✅ Init projet Astro dans `web/` (Astro 5 + MapLibre 4)
-   - ✅ Page d'accueil avec carte Paris (MapLibre + tuiles OSM), 1 pin démo
-   - ✅ Popup avec wording standardisé par statut judiciaire
-   - ✅ Responsive mobile-first (100dvh, safe-areas iOS, tap targets 44px, popup adaptative)
-   - ⏭️ **Itération 2** : géocodage des 17 fiches (BAN, gratuit) + ajout `lat`/`lng` au schéma + affichage des 17 pins
-   - ⏭️ Pins colorés selon `statut_des_faits` (allégué vs condamnation déf.) + légende
-   - ⏭️ Clustering quand on aura les 17 pins (chevauchements probables 9e–18e)
-   - ⏭️ Page méthodologie (expliquer le score de fiabilité, le wording, la présomption d'innocence)
-   - ⏭️ Page mentions légales + formulaire de droit de réponse
-   - ⏭️ Déploiement Cloudflare Pages
-2. **Phase 4 — Revue juridique + procédures**
-3. **Phase 5 — Mise en ligne POC publique**
+   - ✅ Itération 1 : carte Paris fonctionnelle, popup, responsive mobile-first
+   - ✅ Itération 2 : géocodage 17 fiches (annuaire-éducation + BAN + centroïde commune), pins colorés par statut, clustering, légende
+   - ✅ Layout partagé avec navigation Carte / Méthodologie / Mentions légales
+   - ✅ Page méthodologie
+   - ✅ Page mentions légales (LCEN, droit de réponse mailto)
+   - ⏭️ **Améliorer la fiche La Courneuve** (POC-02) — actuellement sur centroïde commune, chercher adresse précise de l'École Charlie-Chaplin
+   - ⏭️ Restaurer un dégradé de couleur sur les clusters (actuellement bleu uni)
+2. **Phase 3b — Déploiement public**
+   - ⏭️ Déployer sur Cloudflare Pages depuis le repo GitHub
+   - ⏭️ Brancher le domaine `sousnosyeux.org` sur Cloudflare Pages
+   - ⏭️ Bascule éventuelle `cases.json` → vue `cases_public` Supabase (si on veut un refresh sans rebuild)
+3. **Phase 4 — Revue juridique + procédures**
+   - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
+   - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
+4. **Phase 5 — Mise en ligne POC publique**
 
 ## 9. Fiches exclues du MVP (à renforcer plus tard)
 

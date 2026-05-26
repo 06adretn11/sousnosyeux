@@ -1,133 +1,247 @@
 ---
-const demoCase = {
-  case_id: 'POC-04',
-  etablissement: 'École Émeriau',
-  commune: 'Paris 15e',
-  type_structure: 'périscolaire',
-  role_mis_en_cause: 'intervenant extérieur',
-  type_affaire: 'agression sexuelle',
-  statut_judiciaire: 'mise en examen',
-  statut_des_faits: 'allégué',
-  enfants_concernes_public: 'plusieurs enfants',
-  fiabilite_info_10: 8,
-  // Coordonnées approximatives (rue Émeriau, Paris 15e). À remplacer par géocodage propre en itération 2.
-  lng: 2.2876,
-  lat: 48.8485,
-  source: {
-    media: '20 Minutes',
-    url: 'https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau',
-    publication_date: '2026-02-23',
-  },
-};
+import Layout from '../layouts/Layout.astro';
+import casesDoc from '../../../data/cases.json';
+
+const allCases = (casesDoc.cases as any[])
+  .filter((c) => typeof c.lat === 'number' && typeof c.lng === 'number')
+  .map((c) => ({
+    case_id: c.case_id,
+    etablissement: c.etablissement,
+    commune: c.commune,
+    type_structure: c.type_structure,
+    role_mis_en_cause: c.role_mis_en_cause,
+    type_affaire: c.type_affaire,
+    statut_judiciaire: c.statut_judiciaire,
+    statut_des_faits: c.statut_des_faits,
+    enfants_concernes_public: c.enfants_concernes_public,
+    fiabilite_info_10: c.fiabilite_info_10,
+    lat: c.lat,
+    lng: c.lng,
+    geocode_source: c.geocode_source ?? null,
+    source: {
+      media: c.sources?.[0]?.media ?? '',
+      url: c.sources?.[0]?.url ?? '',
+      publication_date: c.sources?.[0]?.publication_date ?? null,
+    },
+  }));
+
+const totalCount = casesDoc.cases.length;
+const geocodedCount = allCases.length;
 ---
 
-<!doctype html>
-<html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>sousnosyeux — Carte des affaires signalées</title>
-    <meta name="description" content="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources publiques, présomption d'innocence respectée." />
-  </head>
-  <body>
-    <header class="site-header">
-      <h1>sousnosyeux</h1>
-      <p class="tagline">Carte publique des affaires signalées — sources presse, présomption d'innocence respectée.</p>
-    </header>
+<Layout
+  title="sousnosyeux — Carte des affaires signalées"
+  description="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources publiques, présomption d'innocence respectée."
+  variant="map"
+>
+  <div id="map" aria-label={`Carte des ${geocodedCount} affaires`}></div>
 
-    <main>
-      <div id="map" aria-label="Carte de Paris"></div>
-    </main>
+  <aside class="legend" aria-label="Légende">
+    <p class="legend-title">Statut des faits</p>
+    <ul>
+      <li><span class="dot" style="background:#c0392b"></span>Allégué</li>
+      <li><span class="dot" style="background:#e67e22"></span>Retenu (jugement non déf.)</li>
+      <li><span class="dot" style="background:#7d3c98"></span>Établi judiciairement</li>
+      <li><span class="dot" style="background:#7f8c8d"></span>Autre / non précisé</li>
+    </ul>
+    <p class="legend-count">{geocodedCount}/{totalCount} affaires · score ≥ 8/10</p>
+  </aside>
 
-    <footer class="site-footer">
-      <p>
-        MVP Paris · 17 affaires (score ≥ 8/10) · Données sous
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC-BY-SA-4.0</a>
-        · Code sous
-        <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license">AGPL-3.0</a>
-      </p>
-    </footer>
+  <script type="application/json" id="cases-data" set:html={JSON.stringify(allCases)} />
 
-    <script type="application/json" id="cases-data" set:html={JSON.stringify([demoCase])} />
+  <script>
+    import maplibregl from 'maplibre-gl';
+    import 'maplibre-gl/dist/maplibre-gl.css';
 
-    <script>
-      import maplibregl from 'maplibre-gl';
-      import 'maplibre-gl/dist/maplibre-gl.css';
+    type CaseRow = {
+      case_id: string;
+      etablissement: string;
+      commune: string;
+      type_structure: string;
+      role_mis_en_cause: string;
+      type_affaire: string;
+      statut_judiciaire: string;
+      statut_des_faits: string;
+      enfants_concernes_public: string;
+      fiabilite_info_10: number;
+      lat: number;
+      lng: number;
+      geocode_source: string | null;
+      source: { media: string; url: string; publication_date: string | null };
+    };
 
-      type CaseRow = {
-        case_id: string;
-        etablissement: string;
-        commune: string;
-        type_structure: string;
-        role_mis_en_cause: string;
-        type_affaire: string;
-        statut_judiciaire: string;
-        statut_des_faits: string;
-        enfants_concernes_public: string;
-        fiabilite_info_10: number;
-        lng: number;
-        lat: number;
-        source: { media: string; url: string; publication_date: string | null };
-      };
+    const dataEl = document.getElementById('cases-data');
+    if (!dataEl?.textContent) throw new Error('cases-data missing');
+    const cases: CaseRow[] = JSON.parse(dataEl.textContent);
 
-      const dataEl = document.getElementById('cases-data');
-      if (!dataEl?.textContent) throw new Error('cases-data missing');
-      const cases: CaseRow[] = JSON.parse(dataEl.textContent);
-
-      const map = new maplibregl.Map({
-        container: 'map',
-        style: {
-          version: 8,
-          sources: {
-            'osm-tiles': {
-              type: 'raster',
-              tiles: [
-                'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
-              ],
-              tileSize: 256,
-              attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            },
-          },
-          layers: [{ id: 'osm', type: 'raster', source: 'osm-tiles' }],
+    // GeoJSON FeatureCollection — propriétés APLATIES (pas d'objet imbriqué).
+    // Supercluster (moteur de clustering de MapLibre) ne gère pas bien les
+    // nested objects et peut silencieusement éjecter des features sinon.
+    const geojson = {
+      type: 'FeatureCollection' as const,
+      features: cases.map((c) => ({
+        type: 'Feature' as const,
+        geometry: { type: 'Point' as const, coordinates: [c.lng, c.lat] },
+        properties: {
+          case_id: c.case_id,
+          etablissement: c.etablissement,
+          commune: c.commune,
+          type_structure: c.type_structure,
+          role_mis_en_cause: c.role_mis_en_cause,
+          type_affaire: c.type_affaire,
+          statut_judiciaire: c.statut_judiciaire,
+          statut_des_faits: c.statut_des_faits,
+          enfants_concernes_public: c.enfants_concernes_public,
+          fiabilite_info_10: c.fiabilite_info_10,
+          geocode_source: c.geocode_source,
+          source_media: c.source.media,
+          source_url: c.source.url,
+          source_date: c.source.publication_date,
         },
-        center: [2.3522, 48.8566],
-        zoom: 11,
-        // Carte 2D — désactive les gestes pitch/rotate qui surprennent sur mobile
-        dragRotate: false,
-        pitchWithRotate: false,
-        touchPitch: false,
-        attributionControl: false,
+      })),
+    };
+
+
+    const wordingByStatut: Record<string, string> = {
+      'plainte': 'Une plainte a été déposée selon une source publique',
+      'enquête': 'Une enquête est en cours selon une source publique',
+      'mise en examen': 'Une mise en examen a été prononcée selon une source publique',
+      'procès': 'Un procès est en cours selon une source publique',
+      'condamnation non définitive': 'Une condamnation non définitive a été prononcée selon une source publique',
+      'condamnation définitive': 'Une condamnation définitive a été prononcée selon une source publique',
+      'relaxe / non-lieu / classement': 'Une relaxe / un non-lieu / un classement a été prononcé selon une source publique',
+      'à qualifier': 'Une source publique rapporte les faits, qualification à préciser',
+    };
+
+    const escapeHtml = (s: string) =>
+      s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: {
+        version: 8,
+        // Service de glyphes de MapLibre — n'expose que "Noto Sans Regular" et "Metropolis".
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+        sources: {
+          'osm-tiles': {
+            type: 'raster',
+            tiles: [
+              'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png',
+              'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            ],
+            tileSize: 256,
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+          },
+        },
+        layers: [{ id: 'osm', type: 'raster', source: 'osm-tiles' }],
+      },
+      center: [2.3522, 48.8566],
+      zoom: 11,
+      dragRotate: false,
+      pitchWithRotate: false,
+      touchPitch: false,
+      attributionControl: false,
+    });
+    map.touchZoomRotate.disableRotation();
+    // Debug : exposer la map en dev pour pouvoir l'inspecter depuis la console.
+    if (import.meta.env.DEV) (window as any)._map = map;
+
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new maplibregl.AttributionControl({ compact: true }));
+
+    const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
+
+    const colorByFaits: maplibregl.ExpressionSpecification = [
+      'match',
+      ['get', 'statut_des_faits'],
+      'allégué', '#c0392b',
+      'retenu par jugement non définitif', '#e67e22',
+      'établi judiciairement', '#7d3c98',
+      '#7f8c8d',
+    ];
+
+    map.on('load', () => {
+      map.addSource('cases', {
+        type: 'geojson',
+        data: geojson as any,
+        cluster: true,
+        clusterRadius: 35,   // un peu plus serré : moins de regroupement à zoom moyen
+        clusterMaxZoom: 13,  // au-delà de zoom 13, chaque pin est individuel
       });
-      map.touchZoomRotate.disableRotation();
 
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-      map.addControl(new maplibregl.AttributionControl({ compact: true }));
+      // Cadrer sur l'ensemble des affaires au démarrage : utile pour que l'utilisateur
+      // comprenne d'emblée la zone couverte (Paris + proche périphérie).
+      if (cases.length > 0) {
+        const bounds = new maplibregl.LngLatBounds();
+        for (const c of cases) bounds.extend([c.lng, c.lat]);
+        map.fitBounds(bounds, { padding: { top: 60, bottom: 80, left: 40, right: 40 }, animate: false });
+      }
 
-      // Popup adaptative : limite la largeur sur les petits écrans pour éviter le débordement.
-      const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
+      map.addLayer({
+        id: 'clusters',
+        type: 'circle',
+        source: 'cases',
+        filter: ['has', 'point_count'],
+        paint: {
+          // Couleur unique pour démarrer simple — on remettra un dégradé une fois le rendu confirmé.
+          'circle-color': '#1a4f9c',
+          'circle-radius': ['step', ['get', 'point_count'], 22, 5, 30, 10, 38],
+          'circle-stroke-width': 3,
+          'circle-stroke-color': '#ffffff',
+          'circle-opacity': 0.95,
+        },
+      });
 
-      // Wording standardisé selon le statut (cf. brief §9 + CLAUDE.md §4)
-      const wordingByStatut: Record<string, string> = {
-        'allégué': 'Une source publique rapporte des faits allégués',
-        'plainte déposée': 'Une plainte a été déposée selon une source publique',
-        'enquête en cours': 'Une enquête est en cours selon une source publique',
-        'mise en examen': 'Une mise en examen a été prononcée selon une source publique',
-        'procès en cours': 'Un procès est en cours selon une source publique',
-        'condamnation non définitive': 'Une condamnation non définitive a été prononcée selon une source publique',
-        'condamnation définitive': 'Une condamnation définitive a été prononcée selon une source publique',
-        'relaxe': 'Une relaxe a été prononcée selon une source publique',
-      };
+      map.addLayer({
+        id: 'cluster-count',
+        type: 'symbol',
+        source: 'cases',
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          // Police garantie sur le service glyphs MapLibre (Open Sans Semibold n'y est pas).
+          'text-font': ['Noto Sans Regular'],
+          'text-size': 14,
+          'text-allow-overlap': true,
+        },
+        paint: { 'text-color': '#ffffff' },
+      });
 
-      const escapeHtml = (s: string) =>
-        s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+      map.addLayer({
+        id: 'unclustered',
+        type: 'circle',
+        source: 'cases',
+        filter: ['!', ['has', 'point_count']],
+        paint: {
+          'circle-color': colorByFaits,
+          'circle-radius': 9,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff',
+        },
+      });
 
-      for (const c of cases) {
+      map.on('click', 'clusters', (e) => {
+        const f = e.features?.[0];
+        if (!f || f.geometry.type !== 'Point') return;
+        const clusterId = (f.properties as any).cluster_id;
+        const src = map.getSource('cases') as maplibregl.GeoJSONSource;
+        src.getClusterExpansionZoom(clusterId).then((zoom) => {
+          map.easeTo({ center: f.geometry.coordinates as [number, number], zoom });
+        });
+      });
+
+      map.on('click', 'unclustered', (e) => {
+        const f = e.features?.[0];
+        if (!f || f.geometry.type !== 'Point') return;
+        const c = f.properties as any;
         const phrase = wordingByStatut[c.statut_judiciaire] ?? 'Source publique disponible';
-        const dateSuffix = c.source.publication_date ? ' (' + escapeHtml(c.source.publication_date) + ')' : '';
-        const popupHtml = `
+        const dateSuffix = c.source_date ? ' (' + escapeHtml(c.source_date) + ')' : '';
+        const approx = c.geocode_source === 'centroid-arr' || c.geocode_source === 'ban-commune'
+          ? '<p class="approx">📍 Localisation approximative (centre de l\'arrondissement/commune).</p>'
+          : '';
+
+        const html = `
           <div class="popup">
             <h3>${escapeHtml(c.etablissement)}</h3>
             <p class="meta">${escapeHtml(c.commune)} · ${escapeHtml(c.type_structure)}</p>
@@ -138,111 +252,72 @@ const demoCase = {
               <li><strong>Enfants concernés :</strong> ${escapeHtml(c.enfants_concernes_public)}</li>
               <li><strong>Fiabilité :</strong> ${c.fiabilite_info_10}/10</li>
             </ul>
-            <p class="source"><a href="${encodeURI(c.source.url)}" target="_blank" rel="noopener noreferrer">Source : ${escapeHtml(c.source.media)}${dateSuffix}</a></p>
-            <p class="disclaimer">Présomption d'innocence — informations issues de la presse publique.</p>
+            <p class="source"><a href="${encodeURI(c.source_url)}" target="_blank" rel="noopener noreferrer">Source : ${escapeHtml(c.source_media)}${dateSuffix}</a></p>
+            ${approx}
+            <p class="disclaimer">Présomption d'innocence — informations issues de la presse publique. <a href="/methodologie">Méthodologie</a></p>
           </div>
         `;
-
-        new maplibregl.Marker({ color: '#c0392b' })
-          .setLngLat([c.lng, c.lat])
-          .setPopup(new maplibregl.Popup({ offset: 25, maxWidth: popupMaxWidth() }).setHTML(popupHtml))
+        new maplibregl.Popup({ offset: 14, maxWidth: popupMaxWidth() })
+          .setLngLat((f.geometry.coordinates as [number, number]).slice() as [number, number])
+          .setHTML(html)
           .addTo(map);
-      }
-    </script>
+      });
 
-    <style is:global>
-      :root {
-        --fg: #1a1a1a;
-        --muted: #555;
-        --bg: #fafafa;
-        --accent: #c0392b;
-        --safe-l: env(safe-area-inset-left, 0px);
-        --safe-r: env(safe-area-inset-right, 0px);
-        --safe-t: env(safe-area-inset-top, 0px);
-        --safe-b: env(safe-area-inset-bottom, 0px);
+      for (const id of ['clusters', 'unclustered']) {
+        map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+        map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
       }
-      * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-        font-size: 16px; /* lisibilité tactile */
-        color: var(--fg);
-        background: var(--bg);
-        -webkit-text-size-adjust: 100%;
-        overscroll-behavior: none; /* évite le pull-to-refresh quand on pan la carte */
-      }
-      body {
-        display: flex;
-        flex-direction: column;
-        /* 100dvh = hauteur dynamique du viewport mobile (gère la barre d'URL qui se rétracte) */
-        min-height: 100vh;
-        min-height: 100dvh;
-      }
+    });
+  </script>
 
-      /* Header — compact sur mobile, un peu plus aéré sur desktop */
-      .site-header {
-        padding: 0.6rem calc(0.9rem + var(--safe-r)) 0.6rem calc(0.9rem + var(--safe-l));
-        padding-top: calc(0.6rem + var(--safe-t));
-        border-bottom: 1px solid #e0e0e0;
-        background: #fff;
-      }
-      .site-header h1 {
-        margin: 0;
-        font-size: 1.05rem;
-        letter-spacing: -0.01em;
-      }
-      .site-header .tagline {
-        margin: 0.15rem 0 0;
-        color: var(--muted);
-        font-size: 0.78rem;
-        line-height: 1.35;
-      }
+  <style is:global>
+    #map { flex: 1; width: 100%; min-height: 0; }
 
-      /* Map — prend toute la hauteur restante */
-      main { flex: 1; display: flex; min-height: 0; }
-      #map { flex: 1; width: 100%; height: 100%; }
+    .legend {
+      position: absolute;
+      left: calc(0.6rem + var(--safe-l));
+      bottom: calc(0.6rem + var(--safe-b));
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 0.5rem 0.7rem;
+      font-size: 0.72rem;
+      line-height: 1.35;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      max-width: 56vw;
+      z-index: 1;
+    }
+    .legend-title { margin: 0 0 0.3rem; font-weight: 600; font-size: 0.72rem; color: var(--fg); }
+    .legend ul { list-style: none; margin: 0; padding: 0; }
+    .legend li { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem; color: var(--muted); }
+    .legend li:last-child { margin-bottom: 0; }
+    .legend .dot {
+      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+      border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+      flex-shrink: 0;
+    }
+    .legend-count { margin: 0.4rem 0 0; padding-top: 0.3rem; border-top: 1px solid #eee; color: var(--muted); font-size: 0.68rem; }
 
-      /* Footer — discret, sécurité iOS */
-      .site-footer {
-        padding: 0.5rem calc(0.9rem + var(--safe-r)) calc(0.5rem + var(--safe-b)) calc(0.9rem + var(--safe-l));
-        border-top: 1px solid #e0e0e0;
-        background: #fff;
-        font-size: 0.72rem;
-        line-height: 1.4;
-        color: var(--muted);
-      }
-      .site-footer p { margin: 0; }
-      .site-footer a { color: var(--muted); }
+    .maplibregl-ctrl-group button { width: 36px; height: 36px; }
+    @media (pointer: coarse) {
+      .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+    }
 
-      /* Cibles tactiles : marker un peu plus grand pour faciliter le tap */
-      .maplibregl-marker { cursor: pointer; }
-      .maplibregl-marker svg { width: 32px; height: 32px; }
+    .popup h3 { margin: 0 0 0.2rem; font-size: 0.95rem; line-height: 1.25; }
+    .popup .meta { margin: 0 0 0.45rem; color: var(--muted); font-size: 0.8rem; }
+    .popup .statement { margin: 0 0 0.45rem; font-weight: 600; font-size: 0.88rem; line-height: 1.35; }
+    .popup .facts { margin: 0 0 0.45rem; padding-left: 1rem; font-size: 0.82rem; line-height: 1.4; }
+    .popup .facts li { margin-bottom: 0.1rem; }
+    .popup .source { margin: 0 0 0.45rem; font-size: 0.82rem; word-break: break-word; }
+    .popup .source a { color: #1a4f9c; }
+    .popup .approx { margin: 0 0 0.35rem; font-size: 0.72rem; color: #b06a00; line-height: 1.3; }
+    .popup .disclaimer { margin: 0; font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.35; }
+    .popup .disclaimer a { color: var(--muted); }
 
-      /* Boutons zoom : taille tactile confortable (Apple ≥ 44px) */
-      .maplibregl-ctrl-group button { width: 36px; height: 36px; }
-      @media (pointer: coarse) {
-        .maplibregl-ctrl-group button { width: 44px; height: 44px; }
-      }
-
-      /* Popup — wording éditorial, lisible sur petit écran */
-      .popup h3 { margin: 0 0 0.2rem; font-size: 0.95rem; line-height: 1.25; }
-      .popup .meta { margin: 0 0 0.45rem; color: var(--muted); font-size: 0.8rem; }
-      .popup .statement { margin: 0 0 0.45rem; font-weight: 600; font-size: 0.88rem; line-height: 1.35; }
-      .popup .facts { margin: 0 0 0.45rem; padding-left: 1rem; font-size: 0.82rem; line-height: 1.4; }
-      .popup .facts li { margin-bottom: 0.1rem; }
-      .popup .source { margin: 0 0 0.45rem; font-size: 0.82rem; word-break: break-word; }
-      .popup .source a { color: #1a4f9c; }
-      .popup .disclaimer { margin: 0; font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.35; }
-
-      /* Tablette / desktop : on peut respirer un peu */
-      @media (min-width: 720px) {
-        .site-header { padding: 1rem 1.5rem; }
-        .site-header h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
-        .site-header .tagline { font-size: 0.9rem; }
-        .site-footer { padding: 0.75rem 1.5rem; font-size: 0.8rem; }
-      }
-    </style>
-  </body>
-</html>
+    @media (min-width: 720px) {
+      .legend { font-size: 0.8rem; max-width: none; }
+      .legend-title { font-size: 0.8rem; }
+      .legend-count { font-size: 0.74rem; }
+    }
+  </style>
+</Layout>

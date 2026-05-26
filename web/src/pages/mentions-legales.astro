@@ -1,0 +1,190 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// Email de contact public — à connecter à Cloudflare Email Routing (gratuit) une fois le
+// domaine sousnosyeux.fr enregistré. Tant que ce n'est pas en place, la mention reste valable
+// (les emails à cette adresse rebondiront, mais l'engagement éditorial est conservé).
+const CONTACT_EMAIL = 'contact@sousnosyeux.fr';
+
+const droitReponseBody = `Bonjour,
+
+Je souhaite exercer mon droit de réponse / demander une rectification concernant la fiche suivante publiée sur sousnosyeux.
+
+— Identifiant de la fiche (visible dans la popup, ex : POC-04) :
+— URL de la fiche / pin concerné :
+— Élément contesté ou à corriger :
+— Élément à ajouter ou rectifier :
+— Qualité du demandeur (établissement, personne concernée, conseil, etc.) :
+— Justificatifs joints :
+
+Conformément à l'article 6.IV de la LCEN du 21 juin 2004, je sollicite la publication de cette réponse dans un délai de 3 jours à compter de la réception.
+
+Coordonnées du demandeur (nom, qualité, adresse, téléphone) :
+
+Cordialement,`;
+
+const droitReponseHref =
+  `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Droit de réponse — sousnosyeux')}&body=${encodeURIComponent(droitReponseBody)}`;
+
+const signalementBody = `Bonjour,
+
+Je signale un contenu publié sur sousnosyeux pour les motifs suivants (LCEN art. 6.I.5) :
+
+— Identifiant de la fiche :
+— URL concernée :
+— Motif du signalement (manifestement illicite, source rétractée, erreur factuelle, etc.) :
+— Éléments à l'appui :
+
+Coordonnées :
+
+Cordialement,`;
+
+const signalementHref =
+  `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Signalement de contenu — sousnosyeux')}&body=${encodeURIComponent(signalementBody)}`;
+---
+
+<Layout
+  title="Mentions légales — sousnosyeux"
+  description="Mentions légales du site sousnosyeux : éditeur, hébergeur, droit de réponse, signalement de contenu, données personnelles."
+>
+  <article class="prose">
+    <h1>Mentions légales</h1>
+    <p class="lede">
+      Conformément à la loi pour la confiance dans l'économie numérique (LCEN) du 21 juin 2004.
+      Dernière mise à jour : <time datetime="2026-05-25">25 mai 2026</time>.
+    </p>
+
+    <h2 id="editeur">1. Éditeur du site</h2>
+    <ul>
+      <li><strong>Directeur de publication :</strong> Adrien Etienne</li>
+      <li><strong>Statut :</strong> personne physique, à titre non professionnel</li>
+      <li><strong>Adresse postale :</strong> communiquée sur demande écrite à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+      <li><strong>Contact :</strong> <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></li>
+    </ul>
+    <p>
+      Le site <strong>sousnosyeux</strong> est un projet citoyen non commercial.
+      Il ne mène pas d'enquête et se borne à relayer des affaires déjà documentées publiquement par la presse,
+      dans le strict respect de la présomption d'innocence (voir <a href="/methodologie">méthodologie</a>).
+    </p>
+
+    <h2 id="hebergeur">2. Hébergeur</h2>
+    <ul>
+      <li><strong>Cloudflare, Inc.</strong></li>
+      <li>101 Townsend Street, San Francisco, CA 94107, États-Unis</li>
+      <li>Service utilisé : Cloudflare Pages</li>
+      <li>Site : <a href="https://www.cloudflare.com" rel="noopener noreferrer" target="_blank">cloudflare.com</a></li>
+    </ul>
+
+    <h2 id="licences">3. Licences</h2>
+    <ul>
+      <li>
+        <strong>Code source</strong> : licence
+        <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="license">AGPL-3.0</a>.
+        Disponible publiquement sur <a href="https://github.com/06adretn11/sousnosyeux" rel="noopener noreferrer" target="_blank">github.com/06adretn11/sousnosyeux</a>.
+      </li>
+      <li>
+        <strong>Base de données éditoriale</strong> (fiches, sources, scores) : licence
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="license">CC-BY-SA-4.0</a>.
+        Toute réutilisation doit citer <em>sousnosyeux</em> et conserver la même licence.
+      </li>
+    </ul>
+
+    <h2 id="donnees-personnelles">4. Données personnelles et cookies</h2>
+    <p>
+      <strong>Aucune donnée personnelle des visiteurs n'est collectée.</strong> Le site est statique,
+      ne dépose aucun cookie de mesure d'audience ni de traceur publicitaire, et ne charge aucun
+      script tiers de profilage.
+    </p>
+    <p>
+      Les ressources tierces appelées par le navigateur lors de la consultation sont :
+    </p>
+    <ul>
+      <li>tuiles cartographiques <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer" target="_blank">OpenStreetMap</a> ;</li>
+      <li>polices glyphes via le service hébergé par MapLibre.</li>
+    </ul>
+    <p>
+      Ces requêtes peuvent enregistrer l'adresse IP du visiteur dans leurs journaux techniques,
+      hors du contrôle de sousnosyeux. Consultez leurs politiques de confidentialité respectives.
+    </p>
+    <p>
+      Lorsqu'une personne utilise un lien de contact (signalement, droit de réponse, correction),
+      les données qu'elle transmet par email sont utilisées uniquement pour traiter la demande et
+      ne sont jamais redivulguées sans son accord.
+    </p>
+
+    <h2 id="propriete-intellectuelle">5. Propriété intellectuelle des sources</h2>
+    <p>
+      Les liens hypertextes vers les articles de presse sont fournis à titre de référence.
+      Les titres et URL appartiennent à leurs éditeurs respectifs. sousnosyeux ne reproduit pas
+      le contenu intégral des articles : seul un wording standardisé minimal est affiché
+      (voir <a href="/methodologie#4-wording-standardisé-par-statut-judiciaire">méthodologie §4</a>).
+    </p>
+
+    <h2 id="droit-de-reponse">6. Droit de réponse</h2>
+    <p>
+      Conformément à l'<strong>article 6.IV de la LCEN</strong>, toute personne nommée ou désignée
+      par un contenu publié sur sousnosyeux peut exercer son droit de réponse. La demande doit être
+      adressée par écrit à <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> dans un délai de
+      <strong>3 mois à compter de la première mise en ligne</strong> du contenu contesté.
+    </p>
+    <p>
+      Pour faciliter le traitement, un modèle de demande pré-rempli est disponible :
+    </p>
+    <p>
+      <a class="cta" href={droitReponseHref}>📧 Ouvrir un email de droit de réponse</a>
+    </p>
+    <p>
+      La réponse sera publiée dans un délai maximal de <strong>3 jours</strong> à compter de la
+      réception de la demande recevable, conformément à la loi.
+    </p>
+
+    <h2 id="signalement">7. Signaler un contenu illicite</h2>
+    <p>
+      Conformément à l'<strong>article 6.I.5 de la LCEN</strong>, toute personne peut signaler
+      un contenu manifestement illicite (diffamation, atteinte à la vie privée, source rétractée,
+      erreur factuelle grave, etc.) :
+    </p>
+    <p>
+      <a class="cta" href={signalementHref}>🚩 Signaler un contenu</a>
+    </p>
+
+    <h2 id="retrait">8. Retrait éditorial proactif</h2>
+    <p>Indépendamment du droit de réponse, une fiche est retirée de la carte dans les cas suivants :</p>
+    <ul>
+      <li>relaxe définitive, non-lieu définitif ou classement sans suite ;</li>
+      <li>rétractation publique de la source primaire ;</li>
+      <li>erreur factuelle confirmée (établissement mal identifié, faits inexacts) ;</li>
+      <li>demande motivée d'une personne directement concernée jugée fondée par la direction de publication.</li>
+    </ul>
+
+    <h2 id="responsabilite">9. Responsabilité</h2>
+    <p>
+      sousnosyeux est un site éditorial citoyen et bénévole. Malgré le soin apporté à la vérification
+      des sources et au respect de la présomption d'innocence, des erreurs peuvent subsister.
+      L'éditeur s'engage à corriger toute information inexacte dès qu'elle lui est signalée
+      conformément aux procédures décrites ci-dessus.
+    </p>
+
+    <h2 id="droit-applicable">10. Droit applicable</h2>
+    <p>
+      Les présentes mentions légales sont régies par le droit français. Tout litige relève des
+      tribunaux français compétents.
+    </p>
+  </article>
+
+  <style>
+    .prose .cta {
+      display: inline-block;
+      padding: 0.55rem 0.95rem;
+      background: var(--link);
+      color: #fff !important;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin: 0.3rem 0;
+    }
+    .prose .cta:hover { background: #163d7a; }
+    .prose time { font-variant-numeric: tabular-nums; }
+  </style>
+</Layout>

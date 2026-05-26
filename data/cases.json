@@ -29,7 +29,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.929089,
+      "lng": 2.39742,
+      "geocode_source": "ban-commune",
+      "geocode_score": 0.95,
+      "geocode_match": "La Courneuve"
     },
     {
       "case_id": "POC-03",
@@ -52,7 +57,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.80373920214341,
+      "lng": 1.963512960855009,
+      "geocode_source": "annuaire-education",
+      "geocode_score": 1,
+      "geocode_match": "Ecole élémentaire Jules Vallès"
     },
     {
       "case_id": "POC-04",
@@ -75,7 +85,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.849896,
+      "lng": 2.286385,
+      "geocode_source": "ban",
+      "geocode_score": 0.55,
+      "geocode_match": "Rue Emeriau 75015 Paris"
     },
     {
       "case_id": "POC-05",
@@ -98,7 +113,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.860683,
+      "lng": 2.370472,
+      "geocode_source": "ban",
+      "geocode_score": 0.48,
+      "geocode_match": "Rue Alphonse Baudin 75011 Paris"
     },
     {
       "case_id": "POC-06",
@@ -121,7 +141,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.854751,
+      "lng": 2.377066,
+      "geocode_source": "ban",
+      "geocode_score": 0.7,
+      "geocode_match": "Passage Bullourde 75011 Paris"
     },
     {
       "case_id": "POC-07",
@@ -144,7 +169,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.86075077878407,
+      "lng": 2.382979992397667,
+      "geocode_source": "annuaire-education",
+      "geocode_score": 0.5,
+      "geocode_match": "E.E.PU SERVAN 29 rue Servan"
     },
     {
       "case_id": "POC-08",
@@ -167,7 +197,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.852719,
+      "lng": 2.39054,
+      "geocode_source": "ban",
+      "geocode_score": 0.43,
+      "geocode_match": "Cité Voltaire 75011 Paris"
     },
     {
       "case_id": "POC-09",
@@ -190,7 +225,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.851742,
+      "lng": 2.386405,
+      "geocode_source": "ban",
+      "geocode_score": 0.51,
+      "geocode_match": "Rue Titon 75011 Paris"
     },
     {
       "case_id": "POC-10",
@@ -213,7 +253,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.841438,
+      "lng": 2.30801,
+      "geocode_source": "ban",
+      "geocode_score": 0.57,
+      "geocode_match": "Rue des Volontaires 75015 Paris"
     },
     {
       "case_id": "PARIS-001",
@@ -236,7 +281,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.859887,
+      "lng": 2.311121,
+      "geocode_source": "ban",
+      "geocode_score": 0.5,
+      "geocode_match": "Rue Saint-Dominique 75007 Paris"
     },
     {
       "case_id": "PARIS-004",
@@ -259,7 +309,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.865232,
+      "lng": 2.361134,
+      "geocode_source": "ban",
+      "geocode_score": 0.44,
+      "geocode_match": "Rue Paul Dubois 75003 Paris"
     },
     {
       "case_id": "PARIS-006",
@@ -282,7 +337,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.864353,
+      "lng": 2.375397,
+      "geocode_source": "ban",
+      "geocode_score": 0.41,
+      "geocode_match": "Avenue Parmentier 75011 Paris"
     },
     {
       "case_id": "PARIS-007",
@@ -305,7 +365,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.844756,
+      "lng": 2.389791,
+      "geocode_source": "ban",
+      "geocode_score": 0.4,
+      "geocode_match": "Rue de Reuilly 75012 Paris"
     },
     {
       "case_id": "PARIS-008",
@@ -328,7 +393,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.833196,
+      "lng": 2.328467,
+      "geocode_source": "ban",
+      "geocode_score": 0.7,
+      "geocode_match": "Rue Boulard 75014 Paris"
     },
     {
       "case_id": "PARIS-009",
@@ -351,7 +421,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.852072,
+      "lng": 2.383418,
+      "geocode_source": "ban",
+      "geocode_score": 0.42,
+      "geocode_match": "Rue Faidherbe 75011 Paris"
     },
     {
       "case_id": "PARIS-010",
@@ -374,7 +449,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.851216,
+      "lng": 2.403689,
+      "geocode_source": "ban",
+      "geocode_score": 0.46,
+      "geocode_match": "Rue des Grands Champs 75020 Paris"
     },
     {
       "case_id": "PARIS-011",
@@ -397,7 +477,12 @@
           "source_type": "presse",
           "is_primary": true
         }
-      ]
+      ],
+      "lat": 48.875672,
+      "lng": 2.353901,
+      "geocode_source": "ban",
+      "geocode_score": 0.65,
+      "geocode_match": "Rue Léon Schwartzenberg 75010 Paris"
     }
   ]
 }
