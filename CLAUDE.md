@@ -142,10 +142,25 @@ sousnosyeux/
    - ✅ CI/CD : chaque push sur `main` déclenche un rebuild automatique
    - ⏭️ Bascule éventuelle `cases.json` → vue `cases_public` Supabase (si on veut un refresh sans rebuild)
    - ⏭️ Nettoyage DNS : supprimer les TXT OVH orphelins (`"1|www.sousnosyeux.org"`, `"3|welcome"`)
-3. **Phase 4 — Revue juridique + procédures**
+3. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré à ce stade)
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
-4. **Phase 5 — Mise en ligne POC publique** (= communication / partage du lien)
+   - ℹ️ **Note de cadrage** : le projet ne fait que relayer des articles de presse et des condamnations officielles — pas de noms, pas de création d'information. Le risque est limité tant qu'on ne crée pas de contenu original. Objectif : standardiser au maximum le retraitement avec citation systématique de la source dans les modales.
+4. **Phase 5 — Alimentation de la BDD à grande échelle**
+   - ⏭️ Alimenter en volume : saisie manuelle + contribution du public pour faire remonter des affaires
+   - ⏭️ Définir un flux simple de traitement : 1 affaire + 2 liens sources = écriture en BDD
+   - ⏭️ Process de validation : vérification des infos avant publication dans les modales (scoring fiabilité, wording standardisé)
+   - ⏭️ Bascule `cases.json` → vue `cases_public` Supabase (nécessaire pour gérer le volume sans rebuild)
+5. **Phase 6 — Design du site**
+   - ⏭️ Refonte visuelle : site, carte, modales, légende
+   - ⏭️ Dégradé de couleur sur les clusters (actuellement bleu uni)
+   - ⏭️ Identité graphique / charte
+6. **Phase 7 — Suivi des affaires**
+   - ⏭️ Suivre les suites données par les autorités quand les faits sont avérés (condamnations, procédures, moyens mis en œuvre)
+   - ⏭️ Établir la stratégie de veille pour récupérer cette information (flux RSS presse, alertes, contributions)
+   - ⏭️ Adapter le modèle de données pour historiser les évolutions d'une affaire
+7. **Phase 8 — Communication publique** (vient APRÈS les phases 4–7)
+   - ⏭️ Partage du lien, réseaux sociaux, prise de contact associations / journalistes
 
 ## 9. Fiches exclues du MVP (à renforcer plus tard)
 
