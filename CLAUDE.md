@@ -12,7 +12,7 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : MVP Paris — Phase 3 (front) itérations 1+2 livrées, pages méthodologie + mentions légales livrées
+- **Phase** : MVP Paris — Phase 3b terminée (site déployé et accessible publiquement)
 - **Volume MVP** : 17 affaires, score ≥ 8/10 — **toutes géocodées**
 - **Repo GitHub** : https://github.com/06adretn11/sousnosyeux (public)
 - **Branche par défaut** : `main`
@@ -24,6 +24,11 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 - **Domaine** : `sousnosyeux.org` réservé chez OVH ✅
 - **DNS** : nameservers migrés vers Cloudflare ✅ (zone gérée côté Cloudflare)
 - **Email** : `contact@sousnosyeux.org` via Cloudflare Email Routing → redirige vers email perso utilisateur ✅
+- **Hébergement** : Cloudflare Workers (static assets) — build auto à chaque push sur `main` ✅
+  - URL publique : `https://sousnosyeux.org` ✅
+  - URL worker : `https://sousnosyeux.adr-etn.workers.dev` ✅
+  - Redirect `www.sousnosyeux.org` → apex via Cloudflare Redirect Rule (301) ✅
+  - SSL automatique Cloudflare ✅
 - **Front Astro** : `web/` (Astro 5 + MapLibre 4, tuiles OSM)
   - Layout partagé avec nav Carte / Méthodologie / Mentions légales ✅
   - Carte fonctionnelle avec **17 pins géocodés** (annuaire-éducation, BAN, centroïde commune en fallback) ✅
@@ -42,7 +47,8 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Seuil publication MVP | `fiabilite_info_10 >= 8` | Plus strict que le brief (≥ 7), pour le 1er MVP |
 | Stack DB | Supabase eu-west-1 | RGPD, même région qu'autre projet utilisateur |
 | Stack front | **Astro + MapLibre** | Bon équilibre simplicité/perf/SEO |
-| Hébergement front | Cloudflare Pages | 0€, perf, déjà dans la stack |
+| Hébergement front | Cloudflare Workers (static assets) | 0€, perf, déjà dans la stack, deploy via `wrangler deploy` |
+| Deploy command | `npx wrangler deploy` + `wrangler.jsonc` dans `web/` | Nouvelle interface unifiée Workers & Pages de Cloudflare |
 | Licence code | **AGPL-3.0** | Copyleft fort, empêche fermeture du fork |
 | Licence données | **CC-BY-SA-4.0** | Préserve traçabilité, oblige citation source |
 | Visibilité repo | Public | Cohérent avec principe de transparence |
@@ -96,6 +102,9 @@ sousnosyeux/
 ├── scripts/
 │   └── geocode.mjs          # géocodage en cascade annuaire-éducation → BAN → centroïde
 ├── web/                     # front Astro (Astro 5 + MapLibre 4)
+│   ├── wrangler.jsonc         # config Cloudflare Workers (static assets)
+│   ├── public/
+│   │   └── .assetsignore      # requis par wrangler pour le deploy
 │   ├── src/
 │   │   ├── layouts/
 │   │   │   └── Layout.astro          # header + nav + footer partagés (variant map | page)
@@ -127,14 +136,16 @@ sousnosyeux/
    - ✅ Page mentions légales (LCEN, droit de réponse mailto)
    - ⏭️ **Améliorer la fiche La Courneuve** (POC-02) — actuellement sur centroïde commune, chercher adresse précise de l'École Charlie-Chaplin
    - ⏭️ Restaurer un dégradé de couleur sur les clusters (actuellement bleu uni)
-2. **Phase 3b — Déploiement public**
-   - ⏭️ Déployer sur Cloudflare Pages depuis le repo GitHub
-   - ⏭️ Brancher le domaine `sousnosyeux.org` sur Cloudflare Pages
+2. **Phase 3b — Déploiement public** ✅ terminée
+   - ✅ Déployer sur Cloudflare Workers (static assets) depuis le repo GitHub
+   - ✅ Brancher le domaine `sousnosyeux.org` (custom domain Worker + redirect www→apex)
+   - ✅ CI/CD : chaque push sur `main` déclenche un rebuild automatique
    - ⏭️ Bascule éventuelle `cases.json` → vue `cases_public` Supabase (si on veut un refresh sans rebuild)
+   - ⏭️ Nettoyage DNS : supprimer les TXT OVH orphelins (`"1|www.sousnosyeux.org"`, `"3|welcome"`)
 3. **Phase 4 — Revue juridique + procédures**
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
-4. **Phase 5 — Mise en ligne POC publique**
+4. **Phase 5 — Mise en ligne POC publique** (= communication / partage du lien)
 
 ## 9. Fiches exclues du MVP (à renforcer plus tard)
 
