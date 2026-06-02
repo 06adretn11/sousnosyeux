@@ -2,6 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import casesDoc from '../../../data/cases.json';
 
+// Source de vérité : data/cases.json
+// Synchronisé depuis Supabase via : node --env-file=.env.local scripts/sync-data.mjs
+// Pas de fetch runtime ni build-time → compatible Workers static assets (0 env var côté Cloudflare).
+
 const allCases = (casesDoc.cases as any[])
   .filter((c) => typeof c.lat === 'number' && typeof c.lng === 'number')
   .map((c) => ({
@@ -18,11 +22,9 @@ const allCases = (casesDoc.cases as any[])
     lat: c.lat,
     lng: c.lng,
     geocode_source: c.geocode_source ?? null,
-    source: {
-      media: c.sources?.[0]?.media ?? '',
-      url: c.sources?.[0]?.url ?? '',
-      publication_date: c.sources?.[0]?.publication_date ?? null,
-    },
+    source_media: c.sources?.[0]?.media ?? '',
+    source_url: c.sources?.[0]?.url ?? '',
+    source_date: c.sources?.[0]?.publication_date ?? null,
   }));
 
 const totalCount = casesDoc.cases.length;
@@ -67,7 +69,9 @@ const geocodedCount = allCases.length;
       lat: number;
       lng: number;
       geocode_source: string | null;
-      source: { media: string; url: string; publication_date: string | null };
+      source_media: string;
+      source_url: string;
+      source_date: string | null;
     };
 
     const dataEl = document.getElementById('cases-data');
@@ -94,9 +98,9 @@ const geocodedCount = allCases.length;
           enfants_concernes_public: c.enfants_concernes_public,
           fiabilite_info_10: c.fiabilite_info_10,
           geocode_source: c.geocode_source,
-          source_media: c.source.media,
-          source_url: c.source.url,
-          source_date: c.source.publication_date,
+          source_media: c.source_media,
+          source_url: c.source_url,
+          source_date: c.source_date,
         },
       })),
     };

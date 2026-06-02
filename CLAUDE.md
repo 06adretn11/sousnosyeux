@@ -12,15 +12,21 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : MVP Paris — Phase 3b terminée (site déployé et accessible publiquement)
-- **Volume MVP** : 17 affaires, score ≥ 8/10 — **toutes géocodées**
+- **Phase** : Phase 5 en cours — pipeline d'alimentation en masse opérationnel
+- **Volume** : 17 affaires POC + **26 affaires IDF importées** (FR-2026-0001 à FR-2026-0026) = **43 affaires en base**
+  - 17 POC publiées (`publiée`) — affichées sur la carte
+  - 26 nouvelles en statut `candidate` — en cours de review via `tools/review.html`
+  - Review en cours par l'utilisateur (checkboxes scoring, inversion sources, publication)
 - **Repo GitHub** : https://github.com/06adretn11/sousnosyeux (public)
 - **Branche par défaut** : `main`
 - **Supabase** : projet `sousnosyeux` (AWS eu-west-1, plan NANO)
   - Schéma SQL appliqué ✅
   - Migration 001 (lat/lng + vue) appliquée ✅
   - Migration 002 (UPDATE coords) appliquée ✅
-  - Seed appliqué ✅ (17 cases + 17 sources, basculées en `publiée` pour tests)
+  - **Migration 003 appliquée ✅** (colonnes scoring détaillé, trigger auto-calcul, vue enrichie avec sources, table contributions, colonne adresse)
+  - Seed appliqué ✅ (17 cases + 17 sources)
+  - 26 nouvelles affaires IDF importées via `import-cases.mjs` ✅
+  - 42 sources en base (27 initiales + 15 rattrapées via repair-sources.mjs) ✅
 - **Domaine** : `sousnosyeux.org` réservé chez OVH ✅
 - **DNS** : nameservers migrés vers Cloudflare ✅ (zone gérée côté Cloudflare)
 - **Email** : `contact@sousnosyeux.org` via Cloudflare Email Routing → redirige vers email perso utilisateur ✅
@@ -29,16 +35,25 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - URL worker : `https://sousnosyeux.adr-etn.workers.dev` ✅
   - Redirect `www.sousnosyeux.org` → apex via Cloudflare Redirect Rule (301) ✅
   - SSL automatique Cloudflare ✅
+  - ⚠️ **Pas de variables d'environnement possibles** côté Workers static assets → le front lit `data/cases.json` (synchro Supabase → JSON via script local)
 - **Front Astro** : `web/` (Astro 5 + MapLibre 4, tuiles OSM)
   - Layout partagé avec nav Carte / Méthodologie / Mentions légales ✅
-  - Carte fonctionnelle avec **17 pins géocodés** (annuaire-éducation, BAN, centroïde commune en fallback) ✅
+  - Carte fonctionnelle avec pins géocodés ✅
   - Clustering MapLibre actif (clusterRadius 35, clusterMaxZoom 13) ✅
   - Pins colorés par `statut_des_faits` + légende ✅
   - Popup avec wording standardisé par statut judiciaire + avertissement quand coord approximative ✅
-  - `fitBounds` initial sur les 17 affaires ✅
-  - Page `/methodologie` (sources, score, wording, principes éditoriaux, géolocalisation) ✅
-  - Page `/mentions-legales` (LCEN conforme : éditeur, hébergeur Cloudflare, licences, droit de réponse mailto, signalement art. 6.I.5) ✅
-- **Géocodage** : script `scripts/geocode.mjs` en cascade annuaire-éducation → BAN → centroïde commune. Bilan : 14 BAN précision rue, 2 annuaire-éducation précision école, 1 centroïde commune (La Courneuve)
+  - `fitBounds` initial sur les affaires ✅
+  - Page `/methodologie` + Page `/mentions-legales` ✅
+  - **Source de données** : `data/cases.json` importé statiquement (synchro Supabase → JSON via `scripts/sync-data.mjs`)
+- **Pipeline d'import** : opérationnel ✅
+  - `scripts/import-cases.mjs` : CSV → validation → dédoublonnage → géocodage → INSERT Supabase
+  - `scripts/bulk-publish.mjs` : publication en masse des candidates score ≥ 8
+  - `scripts/sync-data.mjs` : Supabase → `data/cases.json` (synchro avant push)
+  - `scripts/repair-sources.mjs` : rattrapage one-shot des sources avec dates partielles (déjà utilisé)
+  - `tools/review.html` : outil local de validation (sources visibles, checkboxes scoring, inversion source primaire, publication 1 clic)
+  - `docs/prompt_crawler.md` : prompt pour faire crawler un LLM avec accès web
+- **Géocodage** : cascade annuaire-éducation → BAN → centroïde commune, intégré dans `import-cases.mjs`
+- **Environnement** : ⚠️ Proxy Cdiscount → nécessite `$env:NODE_TLS_REJECT_UNAUTHORIZED="0"` avant les commandes Node.js qui appellent Supabase
 
 ## 3. Décisions verrouillées (NE PAS remettre en cause sans validation explicite)
 
@@ -58,7 +73,13 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Email contact | `contact@sousnosyeux.org` via Cloudflare Email Routing | Gratuit, sans serveur SMTP à maintenir, redirige vers email perso |
 | Adresse postale (mentions légales) | « communiquée sur demande écrite à contact@... » | Évite d'exposer le domicile, tolérance courante projets citoyens — à revalider en revue juridique phase 4 |
 | Droit de réponse | Mailto avec template pré-rempli | Pas de backend, RGPD-friendly, suffisant pour MVP |
-| Source de vérité front | `data/cases.json` importé en frontmatter Astro | Statique, pas de fetch runtime, pas de clés Supabase côté client. Bascule sur vue `cases_public` reportée |
+| Source de vérité front | `data/cases.json` synchro depuis Supabase via `scripts/sync-data.mjs` | Statique, pas de fetch runtime, pas de clés Supabase côté client. Workers static assets ne supporte pas les env vars → pas de bascule possible vers fetch build-time |
+| Pipeline d'import | CSV → `import-cases.mjs` → Supabase → review dans `tools/review.html` → `sync-data.mjs` → push | Workflow testé et opérationnel avec 26 affaires IDF |
+| Dédoublonnage | Match sur `etablissement` + `commune` + `role_mis_en_cause` | Permet 2 affaires distinctes au même établissement (ex: Aqueduc — animateur + enseignant) |
+| Scoring | 5 critères booléens × 2 pts = fiabilite_info_10, trigger auto-calcul | Checkboxes visibles dans `tools/review.html` avec info contextuelle (nom média, date, etc.) |
+| Anti-spam futur | Cloudflare Turnstile | Gratuit, invisible, déjà dans l'écosystème Cloudflare — pour le formulaire de contribution phase 8 |
+| Dates partielles CSV | Normalisées en YYYY-MM-DD (`"2026"` → `"2026-01-01"`, `"2026-03"` → `"2026-03-01"`) | Postgres `date` n'accepte que le format complet |
+| Proxy entreprise | `$env:NODE_TLS_REJECT_UNAUTHORIZED="0"` avant commandes Node.js | Proxy Cdiscount intercepte le SSL — workaround local uniquement |
 | Glyphes MapLibre | `demotiles.maplibre.org` avec `Noto Sans Regular` | Service maintenu par MapLibre, gratuit. ⚠ Si glyphes 404 : ne PAS utiliser `Open Sans Semibold` (non servi) |
 | Properties GeoJSON | **Aplaties** (pas d'objet imbriqué) | Supercluster éjecte silencieusement les features avec nested objects → cause de bug de clustering avéré |
 
@@ -83,25 +104,33 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ```
 sousnosyeux/
-├── README.md                # présentation publique
-├── CLAUDE.md                # ce fichier — contexte pour Claude Code
-├── LICENSE                  # AGPL-3.0 (code)
-├── LICENSE-DATA             # CC-BY-SA-4.0 (données)
+├── README.md                  # présentation publique
+├── CLAUDE.md                  # ce fichier — contexte pour Claude Code
+├── LICENSE                    # AGPL-3.0 (code)
+├── LICENSE-DATA               # CC-BY-SA-4.0 (données)
 ├── .gitignore
-├── .env.example             # template — utilisateur a son .env.local rempli localement
-├── TUTO_SUPABASE.md         # tuto création projet Supabase
-├── TUTO_IMPORT.md           # tuto import seed
+├── .env.example               # template — utilisateur a son .env.local rempli localement
+├── TUTO_SUPABASE.md           # tuto création projet Supabase
+├── TUTO_IMPORT.md             # tuto import (seed + import en masse Phase 5)
 ├── supabase/
-│   ├── schema.sql           # tables + enums + RLS + vue publique
-│   ├── seed.sql             # INSERT idempotent des 17 fiches
+│   ├── schema.sql             # tables + enums + RLS + vue publique
+│   ├── seed.sql               # INSERT idempotent des 17 fiches POC
 │   └── migrations/
-│       ├── 001_add_geocoords.sql   # ajoute lat/lng à cases + recrée cases_public
-│       └── 002_geocode_data.sql    # UPDATE coords (généré par scripts/geocode.mjs)
+│       ├── 001_add_geocoords.sql           # ajoute lat/lng à cases + recrée cases_public
+│       ├── 002_geocode_data.sql            # UPDATE coords (généré par scripts/geocode.mjs)
+│       └── 003_scoring_columns_and_view.sql # scoring détaillé, trigger, vue enrichie, contributions
 ├── data/
-│   └── cases.json           # 17 fiches normalisées + lat/lng/geocode_source (source de vérité éditoriale)
+│   ├── cases.json             # affaires publiées (synchro Supabase → JSON via sync-data.mjs)
+│   └── import-batch.csv       # CSV des 34 affaires IDF (input du pipeline)
 ├── scripts/
-│   └── geocode.mjs          # géocodage en cascade annuaire-éducation → BAN → centroïde
-├── web/                     # front Astro (Astro 5 + MapLibre 4)
+│   ├── geocode.mjs            # géocodage en cascade (POC — standalone)
+│   ├── import-cases.mjs       # CSV → validation → dédoublonnage → géocodage → INSERT Supabase
+│   ├── bulk-publish.mjs       # publication en masse des candidates score ≥ seuil
+│   ├── sync-data.mjs          # Supabase → data/cases.json (synchro avant push)
+│   └── repair-sources.mjs     # rattrapage one-shot des sources avec dates partielles (déjà utilisé)
+├── tools/
+│   └── review.html            # outil local de validation (sources, scoring, publication)
+├── web/                       # front Astro (Astro 5 + MapLibre 4)
 │   ├── wrangler.jsonc         # config Cloudflare Workers (static assets)
 │   ├── public/
 │   │   └── .assetsignore      # requis par wrangler pour le deploy
@@ -114,8 +143,9 @@ sousnosyeux/
 │   │       └── mentions-legales.astro # page LCEN
 │   └── package.json
 └── docs/
-    ├── brief_projet.md      # cahier des charges (référence éditoriale)
-    └── mvp_paris_score8plus.md # source des fiches MVP
+    ├── brief_projet.md        # cahier des charges (référence éditoriale)
+    ├── mvp_paris_score8plus.md # source des fiches MVP
+    └── prompt_crawler.md      # prompt pour LLM crawler (recherche d'affaires)
 ```
 
 ## 7. Modèle de données (résumé)
@@ -127,49 +157,45 @@ sousnosyeux/
 
 ## 8. Prochaines étapes prévues
 
-1. **Phase 3 — Front Astro + MapLibre** (quasi terminée)
-   - ✅ Init projet Astro dans `web/` (Astro 5 + MapLibre 4)
-   - ✅ Itération 1 : carte Paris fonctionnelle, popup, responsive mobile-first
-   - ✅ Itération 2 : géocodage 17 fiches (annuaire-éducation + BAN + centroïde commune), pins colorés par statut, clustering, légende
-   - ✅ Layout partagé avec navigation Carte / Méthodologie / Mentions légales
-   - ✅ Page méthodologie
-   - ✅ Page mentions légales (LCEN, droit de réponse mailto)
-   - ⏭️ **Améliorer la fiche La Courneuve** (POC-02) — actuellement sur centroïde commune, chercher adresse précise de l'École Charlie-Chaplin
-   - ⏭️ Restaurer un dégradé de couleur sur les clusters (actuellement bleu uni)
-2. **Phase 3b — Déploiement public** ✅ terminée
-   - ✅ Déployer sur Cloudflare Workers (static assets) depuis le repo GitHub
-   - ✅ Brancher le domaine `sousnosyeux.org` (custom domain Worker + redirect www→apex)
-   - ✅ CI/CD : chaque push sur `main` déclenche un rebuild automatique
-   - ⏭️ Bascule éventuelle `cases.json` → vue `cases_public` Supabase (si on veut un refresh sans rebuild)
-   - ⏭️ Nettoyage DNS : supprimer les TXT OVH orphelins (`"1|www.sousnosyeux.org"`, `"3|welcome"`)
-3. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré à ce stade)
+1. **Phase 5 — Alimentation en masse** (EN COURS)
+   - ✅ Pipeline opérationnel : prompt crawler → CSV → import → review → sync → deploy
+   - ✅ 26 affaires IDF importées (1er batch), sources rattrapées
+   - ✅ Outil de review local (`tools/review.html`) avec scoring, sources, inversion primaire/secondaire
+   - 🔄 **Review en cours** : utilisateur valide les 26 candidates dans review.html
+   - ⏭️ Après review : `sync-data.mjs` → commit `data/cases.json` → push → rebuild Cloudflare
+   - ⏭️ Lancer d'autres tranches crawler (2021–2024, hors IDF) pour atteindre ~250 affaires
+   - ⏭️ Améliorer le dédoublonnage (variations de noms d'établissements → fuzzy match ?)
+2. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré)
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
-   - ℹ️ **Note de cadrage** : le projet ne fait que relayer des articles de presse et des condamnations officielles — pas de noms, pas de création d'information. Le risque est limité tant qu'on ne crée pas de contenu original. Objectif : standardiser au maximum le retraitement avec citation systématique de la source dans les modales.
-4. **Phase 5 — Alimentation de la BDD à grande échelle**
-   - ⏭️ Alimenter en volume : saisie manuelle + contribution du public pour faire remonter des affaires
-   - ⏭️ Définir un flux simple de traitement : 1 affaire + 2 liens sources = écriture en BDD
-   - ⏭️ Process de validation : vérification des infos avant publication dans les modales (scoring fiabilité, wording standardisé)
-   - ⏭️ Bascule `cases.json` → vue `cases_public` Supabase (nécessaire pour gérer le volume sans rebuild)
-5. **Phase 6 — Design du site**
+   - ℹ️ **Note** : le projet ne fait que relayer des articles de presse — pas de noms, pas de création d'information. Risque limité.
+3. **Phase 6 — Design du site**
    - ⏭️ Refonte visuelle : site, carte, modales, légende
    - ⏭️ Dégradé de couleur sur les clusters (actuellement bleu uni)
    - ⏭️ Identité graphique / charte
-6. **Phase 7 — Suivi des affaires**
-   - ⏭️ Suivre les suites données par les autorités quand les faits sont avérés (condamnations, procédures, moyens mis en œuvre)
-   - ⏭️ Établir la stratégie de veille pour récupérer cette information (flux RSS presse, alertes, contributions)
-   - ⏭️ Adapter le modèle de données pour historiser les évolutions d'une affaire
-7. **Phase 8 — Communication publique** (vient APRÈS les phases 4–7)
+4. **Phase 7 — Suivi des affaires**
+   - ⏭️ Historiser les évolutions (condamnations, procédures)
+   - ⏭️ Veille : flux RSS, alertes, contributions
+   - ⏭️ Adapter le modèle de données
+5. **Phase 8 — Communication publique** (vient APRÈS les phases 4–7)
    - ⏭️ Partage du lien, réseaux sociaux, prise de contact associations / journalistes
+   - ⏭️ Formulaire de contribution public (Turnstile anti-spam)
+
+### Tâches techniques en attente (toutes phases)
+- ⏭️ Améliorer la fiche La Courneuve (POC-02) — centroïde commune → adresse précise
+- ⏭️ Nettoyage DNS : supprimer les TXT OVH orphelins
+- ⏭️ Commit + push de tous les nouveaux fichiers Phase 5 (scripts, tools, data, migrations, docs)
 
 ## 9. Fiches exclues du MVP (à renforcer plus tard)
 
 3 fiches à 7/10 stockées dans `docs/mvp_paris_score8plus.md` mais **non importées en base** :
 - PARIS-002 (Vigée-Lebrun, Paris 15e)
-- PARIS-003 (Aqueduc, Paris 10e)
+- PARIS-003 (Aqueduc, Paris 10e) — ⚠️ attention : une affaire Aqueduc avec rôle différent existe déjà via le batch IDF
 - PARIS-005 (Rochechouart, Paris 9e)
 
 Action future : ajouter une seconde source pour chacune → monter à 8/10 → importer.
+
+⚠️ **Doublons à surveiller** : le dédoublonnage match exact sur `etablissement + commune + role_mis_en_cause`. Les variations de noms (ex: « École Charlie-Chaplin » vs « École maternelle Charlie-Chaplin ») ne sont pas détectées automatiquement → vérifier manuellement dans review.html.
 
 ## 10. Préférences utilisateur
 

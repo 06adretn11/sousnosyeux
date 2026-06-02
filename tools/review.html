@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sousnosyeux — Validation des affaires</title>
+<style>
+  :root { --bg: #f5f5f5; --card: #fff; --border: #ddd; --accent: #1a4f9c; --green: #27ae60; --orange: #e67e22; --red: #c0392b; --muted: #888; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: #222; padding: 1rem; max-width: 960px; margin: 0 auto; }
+
+  h1 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+  .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+  /* Connexion */
+  #login { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  #login label { display: block; font-weight: 600; margin-bottom: 0.3rem; font-size: 0.85rem; }
+  #login input { width: 100%; padding: 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; margin-bottom: 0.8rem; font-family: monospace; }
+  #login button { background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 0.6rem 1.2rem; cursor: pointer; font-size: 0.9rem; }
+  #login button:hover { opacity: 0.9; }
+  #login .error { color: var(--red); font-size: 0.85rem; margin-top: 0.5rem; }
+
+  /* Stats */
+  .stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1rem; flex: 1; min-width: 120px; text-align: center; }
+  .stat .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+  .stat .label { font-size: 0.75rem; color: var(--muted); }
+
+  /* Filtres */
+  .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filters button { padding: 0.4rem 0.8rem; border: 1px solid var(--border); border-radius: 4px; background: var(--card); cursor: pointer; font-size: 0.8rem; }
+  .filters button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* Carte affaire */
+  .case-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin-bottom: 1rem; transition: border-color 0.2s; }
+  .case-card.published { border-left: 4px solid var(--green); }
+  .case-card.rejected { border-left: 4px solid var(--red); opacity: 0.7; }
+  .case-card.low-score { opacity: 0.6; }
+
+  .case-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.8rem; }
+  .case-id { font-size: 0.75rem; color: var(--muted); font-family: monospace; }
+  .case-title { font-size: 1rem; font-weight: 600; }
+  .case-meta { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+  .case-meta span { margin-right: 0.8rem; }
+
+  .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px; font-size: 0.72rem; font-weight: 600; }
+  .badge-score { background: #e8f5e9; color: #2e7d32; }
+  .badge-score.low { background: #fff3e0; color: #e65100; }
+  .badge-score.very-low { background: #ffebee; color: #c62828; }
+  .badge-status { background: #e3f2fd; color: #1565c0; }
+  .badge-status.publiee { background: #e8f5e9; color: #2e7d32; }
+
+  /* Sources */
+  .sources { margin-bottom: 1rem; }
+  .sources h4 { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; }
+  .source-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid #f0f0f0; font-size: 0.82rem; flex-wrap: wrap; }
+  .source-row:last-child { border-bottom: none; }
+  .source-row .primary-tag { font-size: 0.68rem; background: var(--accent); color: #fff; padding: 0.1rem 0.35rem; border-radius: 3px; }
+  .source-row .media { font-weight: 600; min-width: 120px; }
+  .source-row .date { color: var(--muted); min-width: 90px; }
+  .source-row a { color: var(--accent); text-decoration: none; word-break: break-all; }
+  .source-row a:hover { text-decoration: underline; }
+  .no-source { font-size: 0.82rem; color: var(--red); font-style: italic; }
+  .btn-swap { font-size: 0.72rem; padding: 0.15rem 0.5rem; border: 1px solid var(--border); border-radius: 3px; background: #fff; color: var(--accent); cursor: pointer; margin-left: 0.5rem; vertical-align: middle; }
+  .btn-swap:hover { background: #eef; }
+
+  /* Source editing */
+  .source-edit { width: 100%; display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 0.4rem; padding: 0.4rem 0; align-items: center; }
+  .source-edit input { padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; font-family: inherit; }
+  .source-edit input.url-input { grid-column: 1 / -1; font-family: monospace; font-size: 0.75rem; }
+  .source-edit select { padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.8rem; }
+  .btn-edit { font-size: 0.68rem; padding: 0.15rem 0.4rem; border: 1px solid var(--border); border-radius: 3px; background: #fff; color: var(--accent); cursor: pointer; }
+  .btn-edit:hover { background: #eef; }
+  .btn-delete-source { font-size: 0.68rem; padding: 0.15rem 0.4rem; border: 1px solid #fcc; border-radius: 3px; background: #fff; color: var(--red); cursor: pointer; }
+  .btn-delete-source:hover { background: #fee; }
+  .btn-save-source { font-size: 0.72rem; padding: 0.25rem 0.6rem; border: none; border-radius: 3px; background: var(--green); color: #fff; cursor: pointer; }
+  .btn-save-source:hover { opacity: 0.9; }
+  .btn-cancel-source { font-size: 0.72rem; padding: 0.25rem 0.6rem; border: 1px solid var(--border); border-radius: 3px; background: #fff; cursor: pointer; }
+  .btn-add-source { font-size: 0.75rem; padding: 0.3rem 0.7rem; border: 1px dashed var(--border); border-radius: 4px; background: #fff; color: var(--accent); cursor: pointer; margin-top: 0.4rem; display: inline-block; }
+  .btn-add-source:hover { background: #f0f4ff; border-color: var(--accent); }
+
+  /* Scoring */
+  .scoring { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-bottom: 1rem; }
+  .crit { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.6rem; background: #fafafa; border-radius: 4px; font-size: 0.82rem; cursor: pointer; user-select: none; }
+  .crit:hover { background: #f0f0f0; }
+  .crit input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--green); cursor: pointer; }
+  .crit .pts { font-size: 0.72rem; color: var(--muted); margin-left: auto; }
+
+  /* Score total */
+  .score-display { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.8rem; }
+
+  /* Actions */
+  .actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .actions button { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.82rem; font-weight: 600; }
+  .btn-publish { background: var(--green); color: #fff; }
+  .btn-publish:hover { opacity: 0.9; }
+  .btn-publish:disabled { background: #ccc; cursor: not-allowed; }
+  .btn-unpublish { background: var(--orange); color: #fff; }
+  .btn-reject { background: var(--red); color: #fff; }
+  .btn-reject:hover { opacity: 0.9; }
+  .btn-save { background: var(--accent); color: #fff; }
+  .actions .status-msg { font-size: 0.8rem; color: var(--green); }
+
+  .resume { font-size: 0.82rem; color: #555; font-style: italic; margin-bottom: 0.8rem; padding: 0.5rem; background: #f9f9f9; border-radius: 4px; }
+
+  #cases-list { min-height: 200px; }
+  .loading { text-align: center; padding: 3rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<h1>sousnosyeux — Validation des affaires</h1>
+<p class="subtitle">Outil local de review. Les modifications sont enregistrees directement dans Supabase.</p>
+
+<div id="login">
+  <label>Supabase URL</label>
+  <input type="text" id="sb-url" placeholder="https://xxxxx.supabase.co">
+  <label>Service Role Key</label>
+  <input type="password" id="sb-key" placeholder="eyJhbGciOi...">
+  <button onclick="connect()">Charger les affaires</button>
+  <div class="error" id="login-error"></div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="stats" id="stats"></div>
+  <div class="filters" id="filters"></div>
+  <div id="cases-list"><div class="loading">Chargement...</div></div>
+</div>
+
+<script>
+let SB_URL, SB_KEY;
+let allCases = [];
+let allSources = {};
+let currentFilter = 'candidate';
+
+// Try to pre-fill from localStorage
+const saved = JSON.parse(localStorage.getItem('sny_review') || '{}');
+if (saved.url) document.getElementById('sb-url').value = saved.url;
+if (saved.key) document.getElementById('sb-key').value = saved.key;
+
+async function sbFetch(path, opts = {}) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    ...opts,
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': opts.method === 'PATCH' ? 'return=representation' : 'return=representation',
+      ...(opts.headers || {}),
+    },
+  });
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return res.json();
+}
+
+async function connect() {
+  SB_URL = document.getElementById('sb-url').value.trim().replace(/\/$/, '');
+  SB_KEY = document.getElementById('sb-key').value.trim();
+
+  if (!SB_URL || !SB_KEY) {
+    document.getElementById('login-error').textContent = 'Remplis les 2 champs.';
+    return;
+  }
+
+  try {
+    // Test connection
+    allCases = await sbFetch('cases?select=*&order=case_id');
+
+    // Load all sources
+    const sources = await sbFetch('sources?select=*&order=case_id,is_primary.desc');
+    allSources = {};
+    for (const s of sources) {
+      if (!allSources[s.case_id]) allSources[s.case_id] = [];
+      allSources[s.case_id].push(s);
+    }
+
+    // Save to localStorage
+    localStorage.setItem('sny_review', JSON.stringify({ url: SB_URL, key: SB_KEY }));
+
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    renderAll();
+  } catch (e) {
+    document.getElementById('login-error').textContent = `Erreur : ${e.message}`;
+  }
+}
+
+function renderAll() {
+  renderStats();
+  renderFilters();
+  renderCases();
+}
+
+function renderStats() {
+  const total = allCases.length;
+  const candidates = allCases.filter(c => c.publication_status === 'candidate').length;
+  const published = allCases.filter(c => c.publication_status === 'publiee' || c.publication_status === 'publiée').length;
+  const rejected = allCases.filter(c => c.publication_status === 'retirée' || c.publication_status === 'retiree').length;
+  const high = allCases.filter(c => c.fiabilite_info_10 >= 8).length;
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="num">${total}</div><div class="label">Total</div></div>
+    <div class="stat"><div class="num">${candidates}</div><div class="label">Candidates</div></div>
+    <div class="stat"><div class="num">${published}</div><div class="label">Publiees</div></div>
+    <div class="stat"><div class="num">${rejected}</div><div class="label">Rejetees</div></div>
+    <div class="stat"><div class="num">${high}</div><div class="label">Score >= 8</div></div>
+  `;
+}
+
+function renderFilters() {
+  const filters = [
+    { key: 'candidate', label: 'Candidates' },
+    { key: 'publiee', label: 'Publiees' },
+    { key: 'retiree', label: 'Rejetees' },
+    { key: 'all', label: 'Toutes' },
+  ];
+  document.getElementById('filters').innerHTML = filters.map(f =>
+    `<button class="${f.key === currentFilter ? 'active' : ''}" onclick="setFilter('${f.key}')">${f.label}</button>`
+  ).join('');
+}
+
+function setFilter(f) { currentFilter = f; renderFilters(); renderCases(); }
+
+function renderCases() {
+  let cases = [...allCases];
+  if (currentFilter === 'candidate') cases = cases.filter(c => c.publication_status === 'candidate');
+  else if (currentFilter === 'publiee') cases = cases.filter(c => c.publication_status === 'publiée' || c.publication_status === 'publiee');
+  else if (currentFilter === 'retiree') cases = cases.filter(c => c.publication_status === 'retirée' || c.publication_status === 'retiree');
+
+  if (cases.length === 0) {
+    document.getElementById('cases-list').innerHTML = '<div class="loading">Aucune affaire dans ce filtre.</div>';
+    return;
+  }
+
+  document.getElementById('cases-list').innerHTML = cases.map(c => renderCard(c)).join('');
+}
+
+function renderCard(c) {
+  const sources = allSources[c.case_id] || [];
+  const score = c.fiabilite_info_10 ?? 0;
+  const scoreClass = score >= 8 ? '' : score >= 6 ? 'low' : 'very-low';
+  const isPublished = c.publication_status === 'publiée';
+  const isRejected = c.publication_status === 'retirée';
+  const cardClass = isRejected ? 'rejected' : isPublished ? 'published' : score < 8 ? 'low-score' : '';
+
+  const crits = [
+    { key: 'crit_source_fiable', label: 'Source fiable et identifiable', hint: sources.length > 0 ? sources[0].media : '?' },
+    { key: 'crit_article_recent', label: 'Article recent (< 2 ans)', hint: sources.length > 0 && sources[0].publication_date ? sources[0].publication_date : '?' },
+    { key: 'crit_etablissement_nomme', label: 'Etablissement nomme', hint: c.etablissement },
+    { key: 'crit_statut_clair', label: 'Statut judiciaire clair', hint: c.statut_judiciaire },
+    { key: 'crit_recoupement', label: '2e source ou source institutionnelle', hint: sources.length >= 2 ? sources[1].media : 'aucune 2e source' },
+  ];
+
+  return `
+    <div class="case-card ${cardClass}" id="card-${c.case_id}">
+      <div class="case-header">
+        <div>
+          <span class="case-id">${esc(c.case_id)}</span>
+          <div class="case-title">${esc(c.etablissement)}</div>
+        </div>
+        <div style="text-align:right">
+          <span class="badge badge-score ${scoreClass}">${score}/10</span>
+          <span class="badge badge-status ${isPublished ? 'publiee' : ''}">${esc(c.publication_status)}</span>
+        </div>
+      </div>
+
+      <div class="case-meta">
+        <span>${esc(c.commune)}</span>
+        <span>${esc(c.departement || '')}</span>
+        <span>${esc(c.type_structure)}</span>
+        <span>${esc(c.role_mis_en_cause)}</span>
+        <span>${esc(c.type_affaire)}</span>
+        <span>${esc(c.statut_judiciaire)}</span>
+      </div>
+
+      ${c.commentaire_validation ? `<div class="resume">${esc(c.commentaire_validation)}</div>` : ''}
+
+      <div class="sources">
+        <h4>Sources (${sources.length})${sources.length >= 2 ? ' <button class="btn-swap" onclick="swapPrimary(\''+c.case_id+'\')">inverser 1re/2e</button>' : ''}</h4>
+        ${sources.length === 0 ? '<div class="no-source">Aucune source en base</div>' :
+          sources.map(s => `
+            <div class="source-row" id="src-${s.source_id}">
+              ${s.is_primary ? '<span class="primary-tag">1re</span>' : '<span style="font-size:0.68rem;color:var(--muted)">2e</span>'}
+              <span class="media">${esc(s.media)}</span>
+              <span class="date">${s.publication_date || '—'}</span>
+              <a href="${esc(s.url)}" target="_blank" rel="noopener">ouvrir</a>
+              <button class="btn-edit" onclick="editSource('${c.case_id}','${s.source_id}')">editer</button>
+              <button class="btn-delete-source" onclick="deleteSource('${c.case_id}','${s.source_id}')">suppr.</button>
+            </div>
+          `).join('')
+        }
+        <button class="btn-add-source" onclick="addSourceForm('${c.case_id}')">+ Ajouter une source</button>
+        <div id="add-src-${c.case_id}"></div>
+      </div>
+
+      <div class="scoring">
+        ${crits.map(cr => `
+          <label class="crit">
+            <input type="checkbox" ${c[cr.key] ? 'checked' : ''} onchange="updateCrit('${c.case_id}','${cr.key}',this.checked)">
+            <span>${cr.label}<br><small style="color:var(--muted)">${esc(cr.hint)}</small></span>
+            <span class="pts">2 pts</span>
+          </label>
+        `).join('')}
+      </div>
+
+      <div class="score-display" id="score-${c.case_id}">Score : ${score}/10</div>
+
+      <div class="actions">
+        ${c.publication_status === 'retirée' ?
+          `<button class="btn-unpublish" onclick="unreject('${c.case_id}')">Remettre en candidate</button>` :
+          !isPublished ?
+          `<button class="btn-publish" ${score < 8 ? 'disabled title="Score < 8"' : ''} onclick="publish('${c.case_id}')">Publier</button>
+           <button class="btn-reject" onclick="reject('${c.case_id}')">Rejeter</button>` :
+          `<button class="btn-unpublish" onclick="unpublish('${c.case_id}')">Depublier</button>`
+        }
+        <span class="status-msg" id="msg-${c.case_id}"></span>
+      </div>
+    </div>
+  `;
+}
+
+async function updateCrit(caseId, critKey, value) {
+  const c = allCases.find(x => x.case_id === caseId);
+  if (!c) return;
+
+  c[critKey] = value;
+
+  // Recalculate score locally
+  const score =
+    (c.crit_source_fiable ? 2 : 0) +
+    (c.crit_article_recent ? 2 : 0) +
+    (c.crit_etablissement_nomme ? 2 : 0) +
+    (c.crit_statut_clair ? 2 : 0) +
+    (c.crit_recoupement ? 2 : 0);
+
+  c.fiabilite_info_10 = score;
+  document.getElementById(`score-${caseId}`).textContent = `Score : ${score}/10`;
+
+  // Update publish button state
+  const card = document.getElementById(`card-${caseId}`);
+  const pubBtn = card.querySelector('.btn-publish');
+  if (pubBtn) {
+    pubBtn.disabled = score < 8;
+    pubBtn.title = score < 8 ? 'Score < 8' : '';
+  }
+
+  // Save to Supabase
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ [critKey]: value }),
+    });
+    showMsg(caseId, 'Enregistre');
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+async function publish(caseId) {
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ publication_status: 'publiée' }),
+    });
+    const c = allCases.find(x => x.case_id === caseId);
+    if (c) c.publication_status = 'publiée';
+    renderAll();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+async function unpublish(caseId) {
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ publication_status: 'candidate' }),
+    });
+    const c = allCases.find(x => x.case_id === caseId);
+    if (c) c.publication_status = 'candidate';
+    renderAll();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+async function reject(caseId) {
+  if (!confirm('Rejeter cette affaire ? Elle ne sera plus visible dans les candidates.')) return;
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ publication_status: 'retirée' }),
+    });
+    const c = allCases.find(x => x.case_id === caseId);
+    if (c) c.publication_status = 'retirée';
+    renderAll();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+async function unreject(caseId) {
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ publication_status: 'candidate' }),
+    });
+    const c = allCases.find(x => x.case_id === caseId);
+    if (c) c.publication_status = 'candidate';
+    renderAll();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+function showMsg(caseId, msg, isError = false) {
+  const el = document.getElementById(`msg-${caseId}`);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isError ? 'var(--red)' : 'var(--green)';
+  setTimeout(() => { el.textContent = ''; }, 3000);
+}
+
+async function swapPrimary(caseId) {
+  const sources = allSources[caseId];
+  if (!sources || sources.length < 2) return;
+
+  const current1 = sources.find(s => s.is_primary);
+  const current2 = sources.find(s => !s.is_primary);
+  if (!current1 || !current2) return;
+
+  try {
+    // 1) Retirer le flag primaire de l'ancienne 1re (contourne la contrainte unique)
+    await sbFetch(`sources?source_id=eq.${current1.source_id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_primary: false }),
+    });
+    // 2) Mettre le flag primaire sur la nouvelle 1re
+    await sbFetch(`sources?source_id=eq.${current2.source_id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ is_primary: true }),
+    });
+
+    // Mettre à jour localement
+    current1.is_primary = false;
+    current2.is_primary = true;
+    // Retrier : primaire en premier
+    allSources[caseId] = [current2, current1];
+
+    renderCases();
+    showMsg(caseId, 'Sources inversees');
+  } catch (e) {
+    showMsg(caseId, `Erreur swap: ${e.message}`, true);
+  }
+}
+
+// --- Source editing ---
+
+function editSource(caseId, sourceId) {
+  const s = (allSources[caseId] || []).find(x => x.source_id === sourceId);
+  if (!s) return;
+
+  const row = document.getElementById(`src-${sourceId}`);
+  if (!row) return;
+
+  row.innerHTML = `
+    <div class="source-edit">
+      <input type="text" value="${esc(s.media)}" id="edit-media-${sourceId}" placeholder="Media">
+      <input type="date" value="${s.publication_date || ''}" id="edit-date-${sourceId}">
+      <select id="edit-type-${sourceId}">
+        <option value="presse" ${s.source_type === 'presse' ? 'selected' : ''}>presse</option>
+        <option value="institution" ${s.source_type === 'institution' ? 'selected' : ''}>institution</option>
+        <option value="justice" ${s.source_type === 'justice' ? 'selected' : ''}>justice</option>
+      </select>
+      <span></span>
+      <input class="url-input" type="url" value="${esc(s.url)}" id="edit-url-${sourceId}" placeholder="https://...">
+      <div style="display:flex;gap:0.3rem;grid-column:1/-1;justify-content:flex-end;">
+        <button class="btn-cancel-source" onclick="renderCases()">Annuler</button>
+        <button class="btn-save-source" onclick="saveSource('${caseId}','${sourceId}')">Enregistrer</button>
+      </div>
+    </div>
+  `;
+}
+
+async function saveSource(caseId, sourceId) {
+  const media = document.getElementById(`edit-media-${sourceId}`).value.trim();
+  const date = document.getElementById(`edit-date-${sourceId}`).value || null;
+  const url = document.getElementById(`edit-url-${sourceId}`).value.trim();
+  const sourceType = document.getElementById(`edit-type-${sourceId}`).value;
+
+  if (!media || !url) { alert('Media et URL sont obligatoires.'); return; }
+
+  try {
+    await sbFetch(`sources?source_id=eq.${sourceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ media, publication_date: date, url, source_type: sourceType }),
+    });
+
+    const s = (allSources[caseId] || []).find(x => x.source_id === sourceId);
+    if (s) { s.media = media; s.publication_date = date; s.url = url; s.source_type = sourceType; }
+
+    renderCases();
+    showMsg(caseId, 'Source mise a jour');
+  } catch (e) {
+    alert(`Erreur: ${e.message}`);
+  }
+}
+
+async function deleteSource(caseId, sourceId) {
+  if (!confirm('Supprimer cette source ?')) return;
+
+  try {
+    await sbFetch(`sources?source_id=eq.${sourceId}`, { method: 'DELETE' });
+
+    allSources[caseId] = (allSources[caseId] || []).filter(x => x.source_id !== sourceId);
+    renderCases();
+    showMsg(caseId, 'Source supprimee');
+  } catch (e) {
+    alert(`Erreur: ${e.message}`);
+  }
+}
+
+function addSourceForm(caseId) {
+  const container = document.getElementById(`add-src-${caseId}`);
+  if (container.querySelector('.source-edit')) return;
+
+  container.innerHTML = `
+    <div class="source-edit" style="margin-top:0.5rem;padding:0.5rem;background:#f9f9f9;border-radius:4px;">
+      <input type="text" id="new-media-${caseId}" placeholder="Nom du media (ex: Le Parisien)">
+      <input type="date" id="new-date-${caseId}">
+      <select id="new-type-${caseId}">
+        <option value="presse">presse</option>
+        <option value="institution">institution</option>
+        <option value="justice">justice</option>
+      </select>
+      <span></span>
+      <input class="url-input" type="url" id="new-url-${caseId}" placeholder="https://...">
+      <div style="display:flex;gap:0.3rem;grid-column:1/-1;justify-content:flex-end;">
+        <button class="btn-cancel-source" onclick="document.getElementById('add-src-${caseId}').innerHTML=''">Annuler</button>
+        <button class="btn-save-source" onclick="createSource('${caseId}')">Ajouter</button>
+      </div>
+    </div>
+  `;
+}
+
+async function createSource(caseId) {
+  const media = document.getElementById(`new-media-${caseId}`).value.trim();
+  const date = document.getElementById(`new-date-${caseId}`).value || null;
+  const url = document.getElementById(`new-url-${caseId}`).value.trim();
+  const sourceType = document.getElementById(`new-type-${caseId}`).value;
+
+  if (!media || !url) { alert('Media et URL sont obligatoires.'); return; }
+
+  const hasSources = (allSources[caseId] || []).length > 0;
+
+  try {
+    const [created] = await sbFetch('sources', {
+      method: 'POST',
+      body: JSON.stringify({
+        case_id: caseId,
+        media,
+        publication_date: date,
+        url,
+        source_type: sourceType,
+        is_primary: !hasSources,
+      }),
+    });
+
+    if (!allSources[caseId]) allSources[caseId] = [];
+    allSources[caseId].push(created);
+
+    renderCases();
+    showMsg(caseId, 'Source ajoutee');
+  } catch (e) {
+    alert(`Erreur: ${e.message}`);
+  }
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+</body>
+</html>

@@ -1,67 +1,121 @@
-# Tuto — Import des 17 fiches dans Supabase
+# Tuto — Import des affaires dans Supabase
 
-## Prérequis
+## Partie A — Import initial (17 fiches MVP, déjà fait)
+
+### Prérequis
 
 - Schéma déjà posé via [supabase/schema.sql](supabase/schema.sql) ✅ (enums vérifiés)
 - Vous êtes dans l'interface Supabase, projet `sousnosyeux`
 
-## Méthode recommandée — SQL Editor
+### Méthode recommandée — SQL Editor
 
 Plus simple que d'écrire un script Node pour 17 lignes. Pas de Node, pas de clés à manipuler.
 
-### Étape 1 — Ouvrir le SQL Editor
+1. Menu de gauche → **SQL Editor** → **+ New query**
+2. Ouvrir [supabase/seed.sql](supabase/seed.sql) → **Tout sélectionner** → **Copier** → **Coller** → **Run**
+3. Vérifier : `nb_cases` = 17, `nb_sources` = 17
+4. Table Editor → `cases` : 17 lignes visibles
+5. `select * from cases_public;` → 0 ligne (normal, tout est en `candidate`)
 
-Menu de gauche → **SQL Editor** → **+ New query**.
+### Script idempotent
 
-### Étape 2 — Coller le seed
+Le seed peut être re-joué sans risque (`ON CONFLICT DO UPDATE`).
 
-1. Ouvrir [supabase/seed.sql](supabase/seed.sql)
-2. **Tout sélectionner** (Ctrl+A) → **Copier** (Ctrl+C)
-3. Coller dans le SQL Editor Supabase
-4. Cliquer **Run** (bouton en bas à droite, ou Ctrl+Entrée)
+---
 
-### Étape 3 — Lire les résultats
+## Partie B — Import en masse (Phase 5)
 
-Le script termine par 3 requêtes de vérification. Dans le panneau **Results** vous devez voir :
+### Prérequis
 
-| Vérification | Valeur attendue |
+- Node.js 20+
+- Fichier `.env.local` avec `SUPABASE_URL` et `SUPABASE_SERVICE_ROLE_KEY`
+- **Migration 003 appliquée** (voir ci-dessous)
+
+### Étape 0 — Appliquer la migration 003
+
+Dans le **SQL Editor** du dashboard Supabase, coller et exécuter :
+
+```
+supabase/migrations/003_scoring_columns_and_view.sql
+```
+
+Cela ajoute :
+- 5 colonnes de scoring (checkboxes dans le Table Editor)
+- Le trigger d'auto-calcul du score
+- La vue enrichie `cases_public` (avec lat/lng + source primaire)
+- La table `contributions` (pour le futur formulaire public)
+
+### Étape 1 — Préparer le CSV
+
+1. Lancer le prompt de `docs/prompt_crawler.md` dans un LLM avec accès web
+2. Consolider les résultats dans `data/import-batch.csv`
+3. Colonnes attendues :
+
+```
+etablissement,commune,departement,adresse,type_structure,role_mis_en_cause,type_affaire,statut_judiciaire,statut_des_faits,enfants,url1,media1,date1,url2,media2,date2,resume_faits
+```
+
+4. Conseil : ouvrir le CSV dans un tableur pour corriger les valeurs d'enum avant import
+
+#### Valeurs d'enum valides
+
+| Champ | Valeurs |
 |---|---|
-| `nb_cases` | **17** |
-| `nb_sources` | **17** |
-| Liste des `case_id` | POC-02 → PARIS-011 (17 lignes), toutes en `candidate` |
+| type_structure | crèche, maternelle, élémentaire, collège, lycée, périscolaire, centre de loisirs, internat, autre |
+| role_mis_en_cause | enseignant, animateur périscolaire, ATSEM, direction, personnel de crèche, parent, tiers, intervenant extérieur, autre |
+| type_affaire | viol, agression sexuelle, atteinte sexuelle, images pédocriminelles, violences sexuelles, mixte, à qualifier |
+| statut_judiciaire | plainte, enquête, mise en examen, procès, condamnation non définitive, condamnation définitive, relaxe / non-lieu / classement, à qualifier |
+| statut_des_faits | allégué, retenu par jugement non définitif, établi judiciairement, non établi, mixte |
+| enfants | 1 enfant, plusieurs enfants, non précisé |
 
-Si vous voyez ces 3 résultats : import OK.
+### Étape 2 — Dry-run (validation sans insertion)
 
-### Étape 4 — Inspecter dans le Table Editor
-
-Menu de gauche → **Table Editor** → cliquer sur `cases` : vous devez voir les 17 lignes.
-
-### Étape 5 — Tester la vue publique
-
-Retourner dans **SQL Editor** et lancer :
-
-```sql
-select * from cases_public;
+```bash
+node --env-file=.env.local scripts/import-cases.mjs --dry-run
 ```
 
-**Attendu : 0 ligne.** C'est normal — la vue ne renvoie que les fiches `publication_status = 'publiée'`. Au départ toutes les fiches sont en `candidate` → invisibles côté public. Vous basculerez les fiches vers `publiée` après revue juridique, une par une :
+Vérifie : erreurs de validation, doublons, géocodage, scoring auto.
 
-```sql
-update cases set publication_status = 'publiée' where case_id = 'POC-07';
+### Étape 3 — Import réel
+
+```bash
+node --env-file=.env.local scripts/import-cases.mjs
 ```
 
-## En cas d'erreur
+Les fiches arrivent en statut **`candidate`** dans Supabase.
 
-| Erreur | Cause | Solution |
-|---|---|---|
-| `invalid input value for enum ...` | enum non créé ou valeur fautive | re-jouer [schema.sql](supabase/schema.sql) |
-| `relation "cases" does not exist` | schéma pas appliqué | jouer [schema.sql](supabase/schema.sql) d'abord |
-| `duplicate key value violates unique constraint` | déjà importé | le script est idempotent (ON CONFLICT) → re-jouer écrase, c'est OK |
+### Étape 4 — Validation dans le dashboard Supabase
 
-## Script idempotent
+1. **Table Editor** → table `cases` → filtrer `publication_status = candidate`
+2. Pour chaque fiche, vérifier les 5 checkboxes :
+   - ☑️ `crit_source_fiable` — source identifiable et fiable ?
+   - ☑️ `crit_article_recent` — article récent (< 2 ans) ?
+   - ☑️ `crit_etablissement_nomme` — établissement nommé ?
+   - ☑️ `crit_statut_clair` — statut judiciaire clair ?
+   - ☑️ `crit_recoupement` — 2e source ou source institutionnelle ?
+3. Le score `fiabilite_info_10` se **recalcule automatiquement** via trigger
+4. Si score ≥ 8 et tout OK → changer `publication_status` en **`publiée`**
 
-Le seed peut être re-joué sans risque :
-- `cases` : `ON CONFLICT DO UPDATE` → rafraîchit les champs
-- `sources` : `DELETE` préalable des sources des 17 cases puis `INSERT` → toujours propre
+#### Publication en masse
 
-C'est utile quand vous corrigerez une typo ou modifierez une catégorisation.
+```bash
+node --env-file=.env.local scripts/bulk-publish.mjs --dry-run   # aperçu
+node --env-file=.env.local scripts/bulk-publish.mjs              # publication
+```
+
+### Étape 5 — Synchroniser vers le JSON et déployer
+
+Le site lit `data/cases.json` au build (pas de fetch Supabase côté Cloudflare).
+Il faut donc synchroniser la base vers le JSON, puis push :
+
+```bash
+# 1. Synchro Supabase → JSON
+node --env-file=.env.local scripts/sync-data.mjs
+
+# 2. Commit + push → rebuild automatique Cloudflare
+git add data/cases.json
+git commit -m "data: sync N affaires depuis Supabase"
+git push
+```
+
+Aucune configuration côté Cloudflare n'est nécessaire — tout se fait localement avec `.env.local`.
