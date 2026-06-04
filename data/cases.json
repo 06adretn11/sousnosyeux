@@ -2,9 +2,9 @@
   "_meta": {
     "project": "sousnosyeux",
     "version": "sync",
-    "generated_at": "2026-06-02",
+    "generated_at": "2026-06-04",
     "seuil_publication": 8,
-    "total_cases": 35,
+    "total_cases": 53,
     "source": "supabase",
     "note": "Généré automatiquement par scripts/sync-data.mjs depuis Supabase."
   },
@@ -652,6 +652,618 @@
       ],
       "lat": null,
       "lng": null,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0027",
+      "etablissement": "École maternelle Les Aresquiers",
+      "commune": "Vic-la-Gardiole",
+      "departement": "Hérault",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "ATSEM",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Une ATSEM a été mise en examen après des soupçons de viols et d'agressions sexuelles visant plusieurs enfants.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-08-12",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+          "media": "La Dépêche",
+          "publication_date": "2025-07-31",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 43.48927686776033,
+      "lng": 3.793659599142787,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0028",
+      "etablissement": "École primaire Robert-Doisneau",
+      "commune": "Lucenay",
+      "departement": "Rhône",
+      "type_structure": "autre",
+      "role_mis_en_cause": "parent",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un parent d'élève a été mis en examen pour viols, agressions sexuelles et enregistrements d'images pornographiques visant plusieurs enfants.",
+      "sources": [
+        {
+          "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+          "media": "Le Progrès",
+          "publication_date": "2026-04-30",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+          "media": "Le Dauphiné Libéré",
+          "publication_date": "2026-04-30",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 45.9146414896614,
+      "lng": 4.705575703281742,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0029",
+      "etablissement": "Collège Saint-Charles",
+      "commune": "Chauny",
+      "departement": "Aisne",
+      "type_structure": "collège",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un enseignant de collège privé a été renvoyé devant le tribunal pour des agressions sexuelles rapportées sur une élève.",
+      "sources": [
+        {
+          "url": "https://www.cnews.fr/faits-divers/2026-03-03/un-enseignant-suspecte-davoir-eu-une-relation-avec-une-eleve-de-14-ans-juge",
+          "media": "CNEWS",
+          "publication_date": "2026-03-03",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.leparisien.fr/faits-divers/aisne-un-enseignant-juge-pour-agressions-sexuelles-sur-une-collegienne-de-14-ans-07-01-2026-YFU7KRP3WRDZRCCADQQQH6L45E.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-01-07",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 49.61464377713932,
+      "lng": 3.2119830505587914,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0030",
+      "etablissement": "Lycée Bagatelle",
+      "commune": "Saint-Gaudens",
+      "departement": "Haute-Garonne",
+      "type_structure": "lycée",
+      "role_mis_en_cause": "direction",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un ancien proviseur adjoint de lycée a été mis en examen pour des faits sexuels rapportés par plusieurs lycéennes.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-01-19",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "media": "Actu17",
+          "publication_date": "2026-01-21",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 43.103852,
+      "lng": 0.712652,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0031",
+      "etablissement": "Collège Simone-Veil",
+      "commune": "La Bâtie-Neuve",
+      "departement": "Hautes-Alpes",
+      "type_structure": "collège",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un professeur de collège a été condamné en première instance pour agression sexuelle sur une élève.",
+      "sources": [
+        {
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/02/20/coupable-d-agression-sexuelle-sur-une-eleve-un-professeur-de-college-condamne-a-de-la-prison-avec-sursis",
+          "media": "Le Dauphiné Libéré",
+          "publication_date": "2026-02-20",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
+          "media": "Alpes 1",
+          "publication_date": "2026-02-20",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 44.56419135590082,
+      "lng": 6.201393289853617,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0032",
+      "etablissement": "Collège-lycée Saint-Joseph",
+      "commune": "Gap",
+      "departement": "Hautes-Alpes",
+      "type_structure": "autre",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un enseignant de collège-lycée privé a été condamné en première instance pour des faits sexuels rapportés par plusieurs élèves.",
+      "sources": [
+        {
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/11/26/le-professeur-de-saint-joseph-accuse-d-abus-sexuels-pendant-dix-ans-condamne-a-de-la-prison-avec-sursis",
+          "media": "Le Dauphiné Libéré",
+          "publication_date": "2025-11-26",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://alpesdusud.laradioplus.com/news/hautes-alpes/14462/prison-avec-sursis-pour-le-professeur-de-saint-joseph-a-gap",
+          "media": "Alpes 1",
+          "publication_date": "2025-11-26",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 44.553337,
+      "lng": 6.073336,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0033",
+      "etablissement": "Collège de Quartier-Français",
+      "commune": "Sainte-Suzanne",
+      "departement": "La Réunion",
+      "type_structure": "collège",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "atteinte sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un enseignant de collège a été mis en examen après des soupçons de relation sexuelle avec une élève mineure de son établissement.",
+      "sources": [
+        {
+          "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+          "media": "Linfo.re",
+          "publication_date": "2026-04-01",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+          "media": "Zinfos974",
+          "publication_date": "2026-04-01",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": -20.936642,
+      "lng": 55.632603,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0035",
+      "etablissement": "Crèche Joyeuse Tribu",
+      "commune": "Lyon 6e",
+      "departement": "Rhône",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Dans cette crèche, une plainte a visé un salarié après un signalement d'un enfant; l'enquête a ensuite été classée sans suite selon la presse.",
+      "sources": [
+        {
+          "url": "https://www.leprogres.fr/faits-divers-justice/2025/06/20/un-salarie-suspecte-de-comportement-inapproprie-dans-deux-creches-people-baby-encore-dans-la-tourmente",
+          "media": "Le Progrès",
+          "publication_date": "2025-06-20",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "media": "France 3 Régions",
+          "publication_date": "2025-06-18",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 45.770107,
+      "lng": 4.85043,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0036",
+      "etablissement": "Crèche Chat Perché",
+      "commune": "Lyon 3e",
+      "departement": "Rhône",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "plainte",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Dans une seconde crèche du même groupe, un salarié déjà signalé a fait l'objet d'un nouveau signalement à caractère sexuel concernant un enfant.",
+      "sources": [
+        {
+          "url": "https://www.leprogres.fr/faits-divers-justice/2025/06/20/un-salarie-suspecte-de-comportement-inapproprie-dans-deux-creches-people-baby-encore-dans-la-tourmente",
+          "media": "Le Progrès",
+          "publication_date": "2025-06-20",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+          "media": "Lyon capitale",
+          "publication_date": "2025-06-20",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 45.751578,
+      "lng": 4.869577,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0037",
+      "etablissement": "Centre de loisirs du Chambon",
+      "commune": "Laguenne-sur-Avalouze",
+      "departement": "Corrèze",
+      "type_structure": "centre de loisirs",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un animateur de centre de loisirs a été mis en examen pour viol, agressions sexuelles et captation d'images pornographiques sur mineur.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-08-19",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+          "media": "La Dépêche",
+          "publication_date": "2025-08-19",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 45.248843,
+      "lng": 1.783421,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0038",
+      "etablissement": "École élémentaire non nommée",
+      "commune": "Saché",
+      "departement": "Indre-et-Loire",
+      "type_structure": "élémentaire",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "atteinte sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Un enseignant intervenant dans cette école a été mis en examen pour des atteintes sexuelles rapportées sur plusieurs élèves.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-06-27",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.rtl.fr/actu/justice-faits-divers/indre-et-loire-un-maitre-d-ecole-mis-en-examen-et-ecroue-pour-atteintes-sexuelles-sur-ses-eleves-7900519908",
+          "media": "RTL",
+          "publication_date": "2025-06-27",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 47.239517,
+      "lng": 0.532401,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0041",
+      "etablissement": "Lycée non nommé",
+      "commune": "Rouen",
+      "departement": "Seine-Maritime",
+      "type_structure": "lycée",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "atteinte sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Un enseignant de lycée a été condamné en première instance pour des atteintes sexuelles sur plusieurs anciennes élèves mineures.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/un-professeur-de-lycee-en-normandie-juge-pour-avoir-eu-des-relations-sexuelles-avec-trois-de-ses-eleves-mineures-04-12-2025-BTGX72H7AZDN3N7PVDGOR4LGUE.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-12-04",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+          "media": "Femme Actuelle",
+          "publication_date": "2025-12-01",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 49.440051,
+      "lng": 1.093912,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0042",
+      "etablissement": "Collège Jules-Ferry",
+      "commune": "Delle",
+      "departement": "Territoire de Belfort",
+      "type_structure": "collège",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un enseignant a été condamné pour des messages sexuels adressés à une élève et pour détention d'images pédocriminelles.",
+      "sources": [
+        {
+          "url": "https://www.estrepublicain.fr/faits-divers-justice/2025/12/16/je-testais-les-limites-ce-professeur-envoyait-des-messages-sexuels-a-une-eleve-de-14-ans",
+          "media": "L'Est Républicain",
+          "publication_date": "2025-12-16",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+          "media": "France 3 Régions",
+          "publication_date": "2024-03-27",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 47.50919545199764,
+      "lng": 6.990440773789195,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0043",
+      "etablissement": "Lycée Saint-Denis",
+      "commune": "Annonay",
+      "departement": "Ardèche",
+      "type_structure": "lycée",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "images pédocriminelles",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "non précisé",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un enseignant de lycée a été condamné en première instance pour détention d'images pédocriminelles.",
+      "sources": [
+        {
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/07/01/debusque-par-les-americains-ce-professeur-avait-31-000-fichiers-pedopornographiques-sur-son-ordinateur-24-mois-de-prison-avec-sursis",
+          "media": "Le Dauphiné Libéré",
+          "publication_date": "2025-07-01",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+          "media": "Ici",
+          "publication_date": "2025-07-02",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 45.239114,
+      "lng": 4.676682,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0044",
+      "etablissement": "Établissement professionnel non nommé",
+      "commune": "Charentay",
+      "departement": "Rhône",
+      "type_structure": "autre",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 8,
+      "commentaire_validation": "Un enseignant d'un établissement professionnel a été condamné en première instance pour agression sexuelle sur une élève mineure.",
+      "sources": [
+        {
+          "url": "https://www.leprogres.fr/faits-divers-justice/2025/12/03/le-prof-de-math-avait-agresse-sexuellement-une-eleve-pendant-plusieurs-mois-cinq-ans-de-prison",
+          "media": "Le Progrès",
+          "publication_date": "2025-12-03",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lyonmag.com/article/148706/le-prof-imposait-des-relations-sexuelles-a-une-eleve-mineure-il-echappe-au-proces-pour-viols-pas-a-la-prison",
+          "media": "LyonMag",
+          "publication_date": "2025-12-04",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 46.084203,
+      "lng": 4.681116,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0045",
+      "etablissement": "Collège Jehan le Povremoyne",
+      "commune": "Saint-Valéry-en-Caux",
+      "departement": "Seine-Maritime",
+      "type_structure": "collège",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un ancien surveillant de collège a été jugé pour des agressions sexuelles, des faits assimilés et de la corruption de mineurs concernant plusieurs élèves.",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-09-17",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+          "media": "La Dépêche",
+          "publication_date": "2025-09-17",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 49.861719720847304,
+      "lng": 0.710227189210735,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0046",
+      "etablissement": "Deux écoles maternelles non nommées",
+      "commune": "Rezé",
+      "departement": "Loire-Atlantique",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "condamnation non définitive",
+      "statut_des_faits": "retenu par jugement non définitif",
+      "enfants_concernes_public": "plusieurs enfants",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un ancien animateur périscolaire intervenant dans deux écoles maternelles de Rezé a été condamné en première instance pour agressions sexuelles sur plusieurs enfants.",
+      "sources": [
+        {
+          "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+          "media": "France 3 Régions",
+          "publication_date": "2026-04-23",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+          "media": "La Nouvelle Republique",
+          "publication_date": "2026-04-24",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 47.17269,
+      "lng": -1.552789,
+      "geocode_source": null,
+      "geocode_score": null
+    },
+    {
+      "case_id": "FR-2026-0047",
+      "etablissement": "École Alexandre-Copello",
+      "commune": "Marseille 5e",
+      "departement": "Bouches-du-Rhône",
+      "type_structure": "autre",
+      "role_mis_en_cause": "intervenant extérieur",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "fiabilite_info_10": 10,
+      "commentaire_validation": "Un technicien intervenant dans une école a été renvoyé devant le tribunal pour une agression sexuelle rapportée sur une enfant scolarisée dans l'établissement.",
+      "sources": [
+        {
+          "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+          "media": "La Provence",
+          "publication_date": "2026-03-30",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
+          "media": "Radio France",
+          "publication_date": "2026-03-09",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ],
+      "lat": 43.29373,
+      "lng": 5.390849,
       "geocode_source": null,
       "geocode_score": null
     },
