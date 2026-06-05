@@ -12,11 +12,10 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : Phase 5 en cours — pipeline d'alimentation en masse opérationnel
-- **Volume** : 17 affaires POC + **26 affaires IDF importées** (FR-2026-0001 à FR-2026-0026) = **43 affaires en base**
-  - 17 POC publiées (`publiée`) — affichées sur la carte
-  - 26 nouvelles en statut `candidate` — en cours de review via `tools/review.html`
-  - Review en cours par l'utilisateur (checkboxes scoring, inversion sources, publication)
+- **Phase** : Phase 5 terminée → Phase 5b (analyse d'articles) en cours
+- **Volume** : 17 POC + 26 IDF + 21 hors-IDF = **64 affaires en base**, dont **53 publiées**
+  - 53 publiées (`publiée`) — affichées sur la carte
+  - 11 rejetées après review
 - **Repo GitHub** : https://github.com/06adretn11/sousnosyeux (public)
 - **Branche par défaut** : `main`
 - **Supabase** : projet `sousnosyeux` (AWS eu-west-1, plan NANO)
@@ -25,8 +24,9 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - Migration 002 (UPDATE coords) appliquée ✅
   - **Migration 003 appliquée ✅** (colonnes scoring détaillé, trigger auto-calcul, vue enrichie avec sources, table contributions, colonne adresse)
   - Seed appliqué ✅ (17 cases + 17 sources)
-  - 26 nouvelles affaires IDF importées via `import-cases.mjs` ✅
-  - 42 sources en base (27 initiales + 15 rattrapées via repair-sources.mjs) ✅
+  - 26 affaires IDF importées via `import-cases.mjs` ✅
+  - 21 affaires hors-IDF importées (batch 2) ✅
+  - Sources en base : ~110+ (automatiques + rattrapées via repair-sources.mjs) ✅
 - **Domaine** : `sousnosyeux.org` réservé chez OVH ✅
 - **DNS** : nameservers migrés vers Cloudflare ✅ (zone gérée côté Cloudflare)
 - **Email** : `contact@sousnosyeux.org` via Cloudflare Email Routing → redirige vers email perso utilisateur ✅
@@ -50,7 +50,12 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - `scripts/bulk-publish.mjs` : publication en masse des candidates score ≥ 8
   - `scripts/sync-data.mjs` : Supabase → `data/cases.json` (synchro avant push)
   - `scripts/repair-sources.mjs` : rattrapage one-shot des sources avec dates partielles (déjà utilisé)
-  - `tools/review.html` : outil local de validation (sources visibles, checkboxes scoring, inversion source primaire, publication 1 clic)
+  - `scripts/article-server.mjs` : serveur local d'analyse d'articles (HTTP localhost:3456)
+    - Fetch HTML → extraction texte → analyse LLM (Claude API) ou mots-clés
+    - Propose des mises à jour de statut judiciaire, type d'affaire, résumé
+    - Nécessite `ANTHROPIC_API_KEY` dans `.env.local` pour le mode LLM (optionnel)
+  - `tools/review.html` : outil local de validation (sources, scoring, analyse d'articles, publication 1 clic)
+    - Bouton "analyser" par source → appelle article-server → affiche suggestions avec "appliquer"
   - `docs/prompt_crawler.md` : prompt pour faire crawler un LLM avec accès web
 - **Géocodage** : cascade annuaire-éducation → BAN → centroïde commune, intégré dans `import-cases.mjs`
 - **Environnement** : ⚠️ Proxy Cdiscount → nécessite `$env:NODE_TLS_REJECT_UNAUTHORIZED="0"` avant les commandes Node.js qui appellent Supabase
@@ -82,6 +87,10 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Proxy entreprise | `$env:NODE_TLS_REJECT_UNAUTHORIZED="0"` avant commandes Node.js | Proxy Cdiscount intercepte le SSL — workaround local uniquement |
 | Glyphes MapLibre | `demotiles.maplibre.org` avec `Noto Sans Regular` | Service maintenu par MapLibre, gratuit. ⚠ Si glyphes 404 : ne PAS utiliser `Open Sans Semibold` (non servi) |
 | Properties GeoJSON | **Aplaties** (pas d'objet imbriqué) | Supercluster éjecte silencieusement les features avec nested objects → cause de bug de clustering avéré |
+| Analyse d'articles | Serveur local Node.js (localhost:3456) + Claude API | LLM pour extraction structurée (statut, type, résumé) ; mots-clés en fallback sans clé API |
+| Coût API analyse | Acceptable (~0,01€/article, négligeable à 200 affaires) | Clé personnelle Anthropic Console — séparée du compte Claude Code entreprise |
+| Veille statuts | Script local lancé manuellement → scheduled agent si ça marche | Évite la conso tokens Claude Code ; l'agent appelle juste le script |
+| Collaboration review | Partage du fichier `tools/review.html` + credentials Supabase de vive voix | Option rapide validée ; passer à RLS + auth Supabase si collaboration régulière |
 
 ## 4. Principes éditoriaux NON-NÉGOCIABLES
 
@@ -121,13 +130,15 @@ sousnosyeux/
 │       └── 003_scoring_columns_and_view.sql # scoring détaillé, trigger, vue enrichie, contributions
 ├── data/
 │   ├── cases.json             # affaires publiées (synchro Supabase → JSON via sync-data.mjs)
-│   └── import-batch.csv       # CSV des 34 affaires IDF (input du pipeline)
+│   ├── import-batch.csv       # CSV des 34 affaires IDF (input du pipeline)
+│   └── import-batch-hdf.csv   # CSV des 21 affaires hors-IDF (batch 2)
 ├── scripts/
 │   ├── geocode.mjs            # géocodage en cascade (POC — standalone)
 │   ├── import-cases.mjs       # CSV → validation → dédoublonnage → géocodage → INSERT Supabase
 │   ├── bulk-publish.mjs       # publication en masse des candidates score ≥ seuil
 │   ├── sync-data.mjs          # Supabase → data/cases.json (synchro avant push)
-│   └── repair-sources.mjs     # rattrapage one-shot des sources avec dates partielles (déjà utilisé)
+│   ├── repair-sources.mjs     # rattrapage one-shot des sources avec dates partielles (déjà utilisé)
+│   └── article-server.mjs     # serveur local d'analyse d'articles (port 3456)
 ├── tools/
 │   └── review.html            # outil local de validation (sources, scoring, publication)
 ├── web/                       # front Astro (Astro 5 + MapLibre 4)
@@ -157,29 +168,37 @@ sousnosyeux/
 
 ## 8. Prochaines étapes prévues
 
-1. **Phase 5 — Alimentation en masse** (EN COURS)
+1. **Phase 5 — Alimentation en masse** (TERMINÉE)
    - ✅ Pipeline opérationnel : prompt crawler → CSV → import → review → sync → deploy
-   - ✅ 26 affaires IDF importées (1er batch), sources rattrapées
-   - ✅ Outil de review local (`tools/review.html`) avec scoring, sources, inversion primaire/secondaire
-   - 🔄 **Review en cours** : utilisateur valide les 26 candidates dans review.html
-   - ⏭️ Après review : `sync-data.mjs` → commit `data/cases.json` → push → rebuild Cloudflare
-   - ⏭️ Lancer d'autres tranches crawler (2021–2024, hors IDF) pour atteindre ~250 affaires
+   - ✅ 26 affaires IDF importées (batch 1), 21 hors-IDF (batch 2)
+   - ✅ 53 affaires publiées, 11 rejetées après review
+   - ✅ Outil de review local (`tools/review.html`) avec scoring, sources, analyse d'articles
+   - ⏭️ Lancer d'autres tranches crawler (2021–2024, autres régions) pour atteindre ~250 affaires
    - ⏭️ Améliorer le dédoublonnage (variations de noms d'établissements → fuzzy match ?)
-2. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré)
+2. **Phase 5b — Analyse d'articles + veille** (EN COURS)
+   - ✅ `scripts/article-server.mjs` : serveur local d'analyse (fetch + extraction texte + LLM)
+   - ✅ Intégration dans `review.html` : bouton "analyser" par source, suggestions avec "appliquer"
+   - ✅ Mode mots-clés (sans clé API) fonctionnel — utilisé pour la 1ère passe manuelle
+   - ⏭️ **Phase 5b-A** : 1ère passe manuelle en cours — lancer `article-server.mjs` + review.html, analyser chaque source, appliquer les suggestions, puis `sync-data.mjs` → push
+   - ⏭️ **Phase 5b-B (dans ~1 mois)** : `scripts/watch-updates.mjs` — recherche web ciblée par affaire pour détecter les évolutions de statut
+     - Coût API validé : ~0,01€/article, négligeable même à 200 affaires → ajouter `ANTHROPIC_API_KEY` dans `.env.local` à ce moment-là
+     - Scheduling : agent planifié qui lance le script 1×/mois (évite la conso tokens Claude Code)
+3. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré)
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
    - ℹ️ **Note** : le projet ne fait que relayer des articles de presse — pas de noms, pas de création d'information. Risque limité.
-3. **Phase 6 — Design du site**
+4. **Phase 6 — Design du site**
    - ⏭️ Refonte visuelle : site, carte, modales, légende
    - ⏭️ Dégradé de couleur sur les clusters (actuellement bleu uni)
    - ⏭️ Identité graphique / charte
-4. **Phase 7 — Suivi des affaires**
+5. **Phase 7 — Suivi des affaires + réactions publiques**
    - ⏭️ Historiser les évolutions (condamnations, procédures)
-   - ⏭️ Veille : flux RSS, alertes, contributions
+   - ⏭️ Section « réactions/décisions des services publics » par affaire (nouveau champ modèle)
    - ⏭️ Adapter le modèle de données
-5. **Phase 8 — Communication publique** (vient APRÈS les phases 4–7)
+6. **Phase 8 — Communication publique + contributions** (vient APRÈS les phases 4–7)
    - ⏭️ Partage du lien, réseaux sociaux, prise de contact associations / journalistes
    - ⏭️ Formulaire de contribution public (Turnstile anti-spam)
+   - ⏭️ Section « parole aux parents/associations » — témoignages liés à une affaire
 
 ### Tâches techniques en attente (toutes phases)
 - ⏭️ Améliorer la fiche La Courneuve (POC-02) — centroïde commune → adresse précise

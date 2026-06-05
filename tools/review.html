@@ -105,6 +105,30 @@
 
   #cases-list { min-height: 200px; }
   .loading { text-align: center; padding: 3rem; color: var(--muted); }
+
+  /* Article analyzer */
+  .analyzer-status { font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; margin-bottom: 0.5rem; display: none; }
+  .analyzer-status.online { display: inline-block; background: #e8f5e9; color: #2e7d32; }
+  .analyzer-status.offline { display: inline-block; background: #fff3e0; color: #e65100; }
+  .btn-analyze { font-size: 0.68rem; padding: 0.15rem 0.4rem; border: 1px solid #d0e0ff; border-radius: 3px; background: #f0f4ff; color: var(--accent); cursor: pointer; }
+  .btn-analyze:hover { background: #dde8ff; }
+  .btn-analyze:disabled { opacity: 0.5; cursor: wait; }
+  .analysis-panel { margin-top: 0.8rem; padding: 0.8rem; background: #f0f4ff; border: 1px solid #c0d4f0; border-radius: 6px; font-size: 0.82rem; }
+  .analysis-panel h4 { font-size: 0.85rem; color: var(--accent); margin-bottom: 0.5rem; }
+  .analysis-row { display: flex; justify-content: space-between; align-items: center; padding: 0.3rem 0; border-bottom: 1px solid #e0e8f4; }
+  .analysis-row:last-child { border-bottom: none; }
+  .analysis-field { color: var(--muted); font-size: 0.78rem; min-width: 140px; }
+  .analysis-value { font-weight: 600; }
+  .analysis-value.changed { color: var(--orange); }
+  .analysis-value.same { color: var(--muted); }
+  .btn-apply-field { font-size: 0.68rem; padding: 0.1rem 0.4rem; border: 1px solid var(--green); border-radius: 3px; background: #fff; color: var(--green); cursor: pointer; margin-left: 0.4rem; }
+  .btn-apply-field:hover { background: #e8f5e9; }
+  .btn-apply-all { margin-top: 0.5rem; padding: 0.4rem 0.8rem; background: var(--green); color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+  .btn-apply-all:hover { opacity: 0.9; }
+  .analysis-text { margin-top: 0.5rem; padding: 0.5rem; background: #fff; border: 1px solid #e0e8f4; border-radius: 4px; font-size: 0.78rem; color: #444; max-height: 200px; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; }
+  .analysis-evolution { margin-top: 0.5rem; padding: 0.4rem 0.6rem; background: #fff3e0; border-left: 3px solid var(--orange); border-radius: 0 4px 4px 0; font-size: 0.8rem; }
+  .analysis-confidence { font-size: 0.72rem; color: var(--muted); text-align: right; margin-top: 0.3rem; }
+  .analysis-close { float: right; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 1rem; }
 </style>
 </head>
 <body>
@@ -122,7 +146,10 @@
 </div>
 
 <div id="app" style="display:none">
-  <div class="stats" id="stats"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+    <div class="stats" id="stats" style="margin-bottom:0"></div>
+    <span class="analyzer-status" id="analyzer-badge"></span>
+  </div>
   <div class="filters" id="filters"></div>
   <div id="cases-list"><div class="loading">Chargement...</div></div>
 </div>
@@ -284,6 +311,7 @@ function renderCard(c) {
               <span class="media">${esc(s.media)}</span>
               <span class="date">${s.publication_date || '—'}</span>
               <a href="${esc(s.url)}" target="_blank" rel="noopener">ouvrir</a>
+              <button class="btn-analyze" onclick="analyzeArticle('${c.case_id}','${s.source_id}')" ${!analyzerOnline ? 'disabled title="Serveur non connecte"' : ''}>analyser</button>
               <button class="btn-edit" onclick="editSource('${c.case_id}','${s.source_id}')">editer</button>
               <button class="btn-delete-source" onclick="deleteSource('${c.case_id}','${s.source_id}')">suppr.</button>
             </div>
@@ -292,6 +320,8 @@ function renderCard(c) {
         <button class="btn-add-source" onclick="addSourceForm('${c.case_id}')">+ Ajouter une source</button>
         <div id="add-src-${c.case_id}"></div>
       </div>
+
+      <div id="analysis-${c.case_id}"></div>
 
       <div class="scoring">
         ${crits.map(cr => `
@@ -580,6 +610,210 @@ function esc(s) {
   if (!s) return '';
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+// === Article Analyzer ===
+
+const ANALYZER_URL = 'http://localhost:3456';
+let analyzerOnline = false;
+let analyzerMode = 'unknown';
+
+async function checkAnalyzer() {
+  try {
+    const res = await fetch(`${ANALYZER_URL}/health`, { signal: AbortSignal.timeout(2000) });
+    const data = await res.json();
+    analyzerOnline = data.ok;
+    analyzerMode = data.llm ? 'LLM' : 'mots-cles';
+  } catch { analyzerOnline = false; }
+  updateAnalyzerBadge();
+}
+
+function updateAnalyzerBadge() {
+  const badge = document.getElementById('analyzer-badge');
+  if (!badge) return;
+  if (analyzerOnline) {
+    badge.className = 'analyzer-status online';
+    badge.textContent = `Analyseur: ${analyzerMode}`;
+  } else {
+    badge.className = 'analyzer-status offline';
+    badge.textContent = 'Analyseur: hors ligne';
+  }
+}
+
+async function analyzeArticle(caseId, sourceId) {
+  const c = allCases.find(x => x.case_id === caseId);
+  const s = (allSources[caseId] || []).find(x => x.source_id === sourceId);
+  if (!c || !s) return;
+
+  // Disable button pendant l'analyse
+  const btns = document.querySelectorAll(`#card-${CSS.escape(caseId)} .btn-analyze`);
+  btns.forEach(b => { b.disabled = true; b.textContent = 'analyse...'; });
+
+  const container = document.getElementById(`analysis-${caseId}`);
+  container.innerHTML = '<div class="analysis-panel"><h4>Analyse en cours...</h4></div>';
+
+  try {
+    const res = await fetch(`${ANALYZER_URL}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: s.url,
+        context: {
+          etablissement: c.etablissement,
+          commune: c.commune,
+          statut_judiciaire: c.statut_judiciaire,
+          statut_des_faits: c.statut_des_faits,
+          type_affaire: c.type_affaire,
+        },
+      }),
+    });
+
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error);
+
+    renderAnalysis(caseId, data, c);
+  } catch (e) {
+    container.innerHTML = `<div class="analysis-panel"><h4>Erreur</h4><p style="color:var(--red)">${esc(e.message)}</p></div>`;
+  } finally {
+    btns.forEach(b => { b.disabled = !analyzerOnline; b.textContent = 'analyser'; });
+  }
+}
+
+function renderAnalysis(caseId, data, caseData) {
+  const container = document.getElementById(`analysis-${caseId}`);
+  const a = data.analysis; // null si mode keywords
+  const hints = data.hints || [];
+
+  if (data.mode === 'llm' && a) {
+    // Mode LLM : affichage structuré
+    const fields = [
+      { key: 'statut_judiciaire', label: 'Statut judiciaire', current: caseData.statut_judiciaire, suggested: a.statut_judiciaire },
+      { key: 'statut_des_faits', label: 'Statut des faits', current: caseData.statut_des_faits, suggested: a.statut_des_faits },
+      { key: 'type_affaire', label: 'Type affaire', current: caseData.type_affaire, suggested: a.type_affaire },
+      { key: 'enfants_concernes_public', label: 'Enfants', current: caseData.enfants_concernes_public, suggested: a.enfants },
+    ];
+
+    const hasChanges = fields.some(f => f.suggested && f.suggested !== f.current);
+
+    let html = `<div class="analysis-panel">
+      <button class="analysis-close" onclick="document.getElementById('analysis-${caseId}').innerHTML=''">&times;</button>
+      <h4>Analyse ${data.mode === 'llm' ? 'LLM' : 'mots-cles'} — ${esc(data.title ? data.title.slice(0, 80) : 'article')}</h4>`;
+
+    if (a.evolution_detectee) {
+      html += `<div class="analysis-evolution">⚡ <strong>Évolution detectee :</strong> ${esc(a.commentaire_evolution)}</div>`;
+    }
+
+    html += fields.map(f => {
+      if (!f.suggested) return '';
+      const changed = f.suggested !== f.current;
+      return `<div class="analysis-row">
+        <span class="analysis-field">${f.label}</span>
+        <span class="analysis-value ${changed ? 'changed' : 'same'}">${esc(f.suggested)}${changed ? ` <small style="color:var(--muted)">(actuel: ${esc(f.current)})</small>` : ' ✓'}</span>
+        ${changed ? `<button class="btn-apply-field" onclick="applyField('${caseId}','${f.key}','${esc(f.suggested).replace(/'/g, "\\'")}')">appliquer</button>` : ''}
+      </div>`;
+    }).join('');
+
+    if (a.resume) {
+      html += `<div class="analysis-row"><span class="analysis-field">Resume suggere</span><span class="analysis-value">${esc(a.resume)}</span>
+        <button class="btn-apply-field" onclick="applyResume('${caseId}',this)" data-resume="${esc(a.resume).replace(/"/g, '&quot;')}">appliquer</button></div>`;
+    }
+
+    if (hasChanges) {
+      const changedFields = fields.filter(f => f.suggested && f.suggested !== f.current);
+      const applyData = JSON.stringify(Object.fromEntries(changedFields.map(f => [f.key, f.suggested])));
+      html += `<button class="btn-apply-all" onclick='applyAllFields("${caseId}",${esc(applyData)})'>Appliquer toutes les modifications</button>`;
+    }
+
+    html += `<div class="analysis-confidence">Confiance : ${a.confidence || '?'}</div>`;
+
+    // Extrait texte
+    if (data.text_excerpt) {
+      html += `<details style="margin-top:0.5rem"><summary style="font-size:0.78rem;color:var(--muted);cursor:pointer">Voir l'extrait de l'article</summary>
+        <div class="analysis-text">${esc(data.text_excerpt)}</div></details>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+
+  } else {
+    // Mode mots-clés
+    let html = `<div class="analysis-panel">
+      <button class="analysis-close" onclick="document.getElementById('analysis-${caseId}').innerHTML=''">&times;</button>
+      <h4>Analyse par mots-cles — ${esc(data.title ? data.title.slice(0, 80) : 'article')}</h4>`;
+
+    if (hints.length === 0) {
+      html += '<p style="color:var(--muted)">Aucun indice detecte automatiquement. Lire l\'extrait ci-dessous.</p>';
+    } else {
+      html += hints.map(h => {
+        const current = caseData[h.field];
+        const changed = h.value !== current;
+        return `<div class="analysis-row">
+          <span class="analysis-field">${h.field} <small>(${h.confidence})</small></span>
+          <span class="analysis-value ${changed ? 'changed' : 'same'}">${esc(h.value)}${h.note ? ` <small style="color:var(--orange)">⚠ ${esc(h.note)}</small>` : ''}</span>
+          ${changed ? `<button class="btn-apply-field" onclick="applyField('${caseId}','${h.field}','${esc(h.value).replace(/'/g, "\\'")}')">appliquer</button>` : ''}
+        </div>`;
+      }).join('');
+    }
+
+    if (data.text_excerpt) {
+      html += `<details open style="margin-top:0.5rem"><summary style="font-size:0.78rem;color:var(--muted);cursor:pointer">Extrait de l'article</summary>
+        <div class="analysis-text">${esc(data.text_excerpt)}</div></details>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+  }
+}
+
+async function applyField(caseId, field, value) {
+  const c = allCases.find(x => x.case_id === caseId);
+  if (!c) return;
+
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ [field]: value }),
+    });
+    c[field] = value;
+    showMsg(caseId, `${field} mis a jour`);
+    renderCases();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+async function applyResume(caseId, btn) {
+  const resume = btn.getAttribute('data-resume')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+  await applyField(caseId, 'commentaire_validation', resume);
+}
+
+async function applyAllFields(caseId, changes) {
+  const c = allCases.find(x => x.case_id === caseId);
+  if (!c) return;
+
+  const parsed = typeof changes === 'string' ? JSON.parse(changes) : changes;
+
+  try {
+    await sbFetch(`cases?case_id=eq.${caseId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(parsed),
+    });
+    Object.assign(c, parsed);
+    showMsg(caseId, 'Tous les champs mis a jour');
+    renderCases();
+  } catch (e) {
+    showMsg(caseId, `Erreur: ${e.message}`, true);
+  }
+}
+
+// Vérifier le serveur toutes les 30s
+setInterval(checkAnalyzer, 30000);
+// Et au démarrage (après connect)
+const origConnect = connect;
+connect = async function() {
+  await origConnect();
+  checkAnalyzer();
+};
 </script>
 </body>
 </html>
