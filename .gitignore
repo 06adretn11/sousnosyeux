@@ -39,6 +39,9 @@ venv/
 supabase/.branches/
 supabase/.temp/
 
+# --- Rapports générés (veille) ---
+data/watch-report.json
+
 # --- Claude Code (config locale Preview MCP) ---
 .claude/
 web/.claude/
