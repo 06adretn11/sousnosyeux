@@ -4,53 +4,165 @@ import casesDoc from '../../../data/cases.json';
 
 // Source de vérité : data/cases.json
 // Synchronisé depuis Supabase via : node --env-file=.env.local scripts/sync-data.mjs
-// Pas de fetch runtime ni build-time → compatible Workers static assets (0 env var côté Cloudflare).
 
 const allCases = (casesDoc.cases as any[])
   .filter((c) => typeof c.lat === 'number' && typeof c.lng === 'number')
   .map((c) => ({
-    case_id: c.case_id,
-    etablissement: c.etablissement,
-    commune: c.commune,
-    type_structure: c.type_structure,
-    role_mis_en_cause: c.role_mis_en_cause,
-    type_affaire: c.type_affaire,
-    statut_judiciaire: c.statut_judiciaire,
-    statut_des_faits: c.statut_des_faits,
+    case_id:                c.case_id,
+    etablissement:          c.etablissement,
+    commune:                c.commune,
+    type_structure:         c.type_structure,
+    role_mis_en_cause:      c.role_mis_en_cause,
+    type_affaire:           c.type_affaire,
+    statut_judiciaire:      c.statut_judiciaire,
+    statut_des_faits:       c.statut_des_faits,
     enfants_concernes_public: c.enfants_concernes_public,
-    fiabilite_info_10: c.fiabilite_info_10,
-    lat: c.lat,
-    lng: c.lng,
-    geocode_source: c.geocode_source ?? null,
-    source_media: c.sources?.[0]?.media ?? '',
-    source_url: c.sources?.[0]?.url ?? '',
-    source_date: c.sources?.[0]?.publication_date ?? null,
+    fiabilite_info_10:      c.fiabilite_info_10,
+    lat:                    c.lat,
+    lng:                    c.lng,
+    geocode_source:         c.geocode_source ?? null,
+    source_media:           c.sources?.[0]?.media ?? '',
+    source_url:             c.sources?.[0]?.url ?? '',
+    source_date:            c.sources?.[0]?.publication_date ?? null,
   }));
 
-const totalCount = casesDoc.cases.length;
+const totalCount    = casesDoc.cases.length;
 const geocodedCount = allCases.length;
+
+// Tri sidebar : plus récent en premier
+const sortedCases = [...allCases].sort((a, b) => {
+  const ya = a.source_date ? a.source_date.slice(0, 4) : '0';
+  const yb = b.source_date ? b.source_date.slice(0, 4) : '0';
+  return yb.localeCompare(ya);
+});
+
+
+// Helpers statut → catégorie et libellé court
+function statutCat(s: string): 'red' | 'blue' | 'orange' | 'green' | 'muted' {
+  if (['condamnation définitive', 'condamnation non définitive'].includes(s)) return 'red';
+  if (['mise en examen', 'enquête', 'procès'].includes(s)) return 'blue';
+  if (['plainte', 'à qualifier'].includes(s)) return 'orange';
+  if (['relaxe / non-lieu / classement'].includes(s)) return 'green';
+  return 'muted';
+}
+
+function statutLabel(s: string): string {
+  const m: Record<string, string> = {
+    'condamnation définitive':      'Condamné (déf.)',
+    'condamnation non définitive':  'Condamné (non-déf.)',
+    'mise en examen':               'Mis en examen',
+    'enquête':                      'Enquête',
+    'procès':                       'Procès en cours',
+    'plainte':                      'Plainte',
+    'relaxe / non-lieu / classement': 'Classé / Relaxé',
+    'à qualifier':                  'À qualifier',
+  };
+  return m[s] ?? s;
+}
+
+function caseYear(c: typeof allCases[0]): string {
+  return c.source_date ? c.source_date.slice(0, 4) : '';
+}
 ---
 
 <Layout
   title="sousnosyeux — Carte des affaires signalées"
-  description="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources publiques, présomption d'innocence respectée."
+  description="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources de presse publiques, présomption d'innocence respectée."
   variant="map"
 >
-  <div id="map" aria-label={`Carte des ${geocodedCount} affaires`}></div>
 
-  <aside class="legend" aria-label="Légende">
-    <p class="legend-title">Statut des faits</p>
-    <ul>
-      <li><span class="dot" style="background:#c0392b"></span>Allégué</li>
-      <li><span class="dot" style="background:#e67e22"></span>Retenu (jugement non déf.)</li>
-      <li><span class="dot" style="background:#7d3c98"></span>Établi judiciairement</li>
-      <li><span class="dot" style="background:#7f8c8d"></span>Autre / non précisé</li>
-    </ul>
-    <p class="legend-count">{geocodedCount}/{totalCount} affaires · score ≥ 8/10</p>
-  </aside>
+  <!-- ── BANDE INFO (compacte, 1 ligne) ── -->
+  <div class="info-band">
+    <div class="info-band-inner">
+      <span class="info-count">
+        <strong>{totalCount}</strong> affaires publiées
+      </span>
+      <span class="info-sep" aria-hidden="true">·</span>
+      <span class="info-tagline">Sources presse publiques · présomption d'innocence respectée</span>
+      <a href="/methodologie" class="info-link">Méthodologie →</a>
+    </div>
+  </div>
 
+  <!-- ── TOOLBAR FILTRES ── -->
+  <div class="toolbar" id="toolbar" role="toolbar" aria-label="Filtres">
+    <div class="toolbar-inner">
+      <span class="tb-label" aria-hidden="true">FILTRE :</span>
+      <button class="tb-btn active" data-filter="all" aria-pressed="true">
+        Tous (<span id="count-all">{geocodedCount}</span>)
+      </button>
+      <button class="tb-btn" data-filter="red" aria-pressed="false">
+        <span class="tb-dot" style="background:var(--red)" aria-hidden="true"></span>Condamné
+      </button>
+      <button class="tb-btn" data-filter="blue" aria-pressed="false">
+        <span class="tb-dot" style="background:var(--blue)" aria-hidden="true"></span>En cours
+      </button>
+      <button class="tb-btn" data-filter="orange" aria-pressed="false">
+        <span class="tb-dot" style="background:var(--orange)" aria-hidden="true"></span>Allégué / Plainte
+      </button>
+      <button class="tb-btn" data-filter="green" aria-pressed="false">
+        <span class="tb-dot" style="background:var(--green)" aria-hidden="true"></span>Classé / Relaxé
+      </button>
+    </div>
+  </div>
+
+  <!-- ── CARTE + SIDEBAR ── -->
+  <div class="map-layout">
+
+    <!-- Carte MapLibre -->
+    <div class="map-wrap">
+      <div id="map" aria-label={`Carte des ${geocodedCount} affaires signalées`}></div>
+
+      <!-- Légende -->
+      <div class="map-legend" aria-label="Légende de la carte">
+        <p class="legend-title">Statut judiciaire</p>
+        <ul>
+          <li><span class="ldot" style="background:var(--red)"></span>Condamné</li>
+          <li><span class="ldot" style="background:var(--blue)"></span>En cours</li>
+          <li><span class="ldot" style="background:var(--orange)"></span>Allégué / Plainte</li>
+          <li><span class="ldot" style="background:var(--green)"></span>Classé / Relaxé</li>
+        </ul>
+        <p class="legend-count">{geocodedCount}/{totalCount} affaires · score ≥ 8/10</p>
+      </div>
+    </div>
+
+    <!-- Sidebar liste des affaires -->
+    <aside class="sidebar" aria-label="Liste des affaires">
+      <div class="sidebar-head">
+        <span class="sidebar-title">Affaires</span>
+        <span class="sidebar-count" id="sidebar-count">{geocodedCount} résultats</span>
+      </div>
+      <div class="sidebar-list" id="sidebar-list">
+        {sortedCases.map((c) => (
+          <button
+            class="case-item"
+            data-id={c.case_id}
+            data-cat={statutCat(c.statut_judiciaire)}
+            data-lat={c.lat}
+            data-lng={c.lng}
+            aria-label={`${c.etablissement}, ${c.commune}, ${statutLabel(c.statut_judiciaire)}`}
+          >
+            <span class={`case-bar cat-${statutCat(c.statut_judiciaire)}`} aria-hidden="true"></span>
+            <span class="case-content">
+              <span class="case-top">
+                <span class="case-name">{c.etablissement}</span>
+                <span class="case-year">{caseYear(c)}</span>
+              </span>
+              <span class="case-loc">{c.commune} · {c.type_structure}</span>
+              <span class={`case-badge badge-${statutCat(c.statut_judiciaire)}`}>
+                {statutLabel(c.statut_judiciaire)}
+              </span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Données JSON pour le script client -->
   <script type="application/json" id="cases-data" set:html={JSON.stringify(allCases)} />
 
+  <!-- ── SCRIPT CARTE ── -->
   <script>
     import maplibregl from 'maplibre-gl';
     import 'maplibre-gl/dist/maplibre-gl.css';
@@ -74,57 +186,74 @@ const geocodedCount = allCases.length;
       source_date: string | null;
     };
 
+    // ── Données ──
     const dataEl = document.getElementById('cases-data');
     if (!dataEl?.textContent) throw new Error('cases-data missing');
     const cases: CaseRow[] = JSON.parse(dataEl.textContent);
 
-    // GeoJSON FeatureCollection — propriétés APLATIES (pas d'objet imbriqué).
-    // Supercluster (moteur de clustering de MapLibre) ne gère pas bien les
-    // nested objects et peut silencieusement éjecter des features sinon.
+    // ── Catégorie de statut → couleur B2 ──
+    function statutCat(s: string): string {
+      if (['condamnation définitive', 'condamnation non définitive'].includes(s)) return 'red';
+      if (['mise en examen', 'enquête', 'procès'].includes(s)) return 'blue';
+      if (['plainte', 'à qualifier'].includes(s)) return 'orange';
+      if (['relaxe / non-lieu / classement'].includes(s)) return 'green';
+      return 'muted';
+    }
+
+    const catColor: Record<string, string> = {
+      red:    '#E63946',
+      blue:   '#457B9D',
+      orange: '#D97706',
+      green:  '#2D6A4F',
+      muted:  '#8B9BAD',
+    };
+
+    // GeoJSON — propriétés APLATIES (requis par Supercluster)
     const geojson = {
       type: 'FeatureCollection' as const,
       features: cases.map((c) => ({
         type: 'Feature' as const,
         geometry: { type: 'Point' as const, coordinates: [c.lng, c.lat] },
         properties: {
-          case_id: c.case_id,
-          etablissement: c.etablissement,
-          commune: c.commune,
-          type_structure: c.type_structure,
-          role_mis_en_cause: c.role_mis_en_cause,
-          type_affaire: c.type_affaire,
-          statut_judiciaire: c.statut_judiciaire,
-          statut_des_faits: c.statut_des_faits,
+          case_id:                  c.case_id,
+          etablissement:            c.etablissement,
+          commune:                  c.commune,
+          type_structure:           c.type_structure,
+          role_mis_en_cause:        c.role_mis_en_cause,
+          type_affaire:             c.type_affaire,
+          statut_judiciaire:        c.statut_judiciaire,
+          statut_des_faits:         c.statut_des_faits,
           enfants_concernes_public: c.enfants_concernes_public,
-          fiabilite_info_10: c.fiabilite_info_10,
-          geocode_source: c.geocode_source,
-          source_media: c.source_media,
-          source_url: c.source_url,
-          source_date: c.source_date,
+          fiabilite_info_10:        c.fiabilite_info_10,
+          geocode_source:           c.geocode_source,
+          source_media:             c.source_media,
+          source_url:               c.source_url,
+          source_date:              c.source_date,
+          stat_cat:                 statutCat(c.statut_judiciaire),
         },
       })),
     };
 
-
+    // ── Wording popup par statut judiciaire ──
     const wordingByStatut: Record<string, string> = {
-      'plainte': 'Une plainte a été déposée selon une source publique',
-      'enquête': 'Une enquête est en cours selon une source publique',
-      'mise en examen': 'Une mise en examen a été prononcée selon une source publique',
-      'procès': 'Un procès est en cours selon une source publique',
-      'condamnation non définitive': 'Une condamnation non définitive a été prononcée selon une source publique',
-      'condamnation définitive': 'Une condamnation définitive a été prononcée selon une source publique',
-      'relaxe / non-lieu / classement': 'Une relaxe / un non-lieu / un classement a été prononcé selon une source publique',
-      'à qualifier': 'Une source publique rapporte les faits, qualification à préciser',
+      'plainte':                          'Une plainte a été déposée selon une source publique',
+      'enquête':                          'Une enquête est en cours selon une source publique',
+      'mise en examen':                   'Une mise en examen a été prononcée selon une source publique',
+      'procès':                           'Un procès est en cours selon une source publique',
+      'condamnation non définitive':      'Une condamnation non définitive a été prononcée selon une source publique',
+      'condamnation définitive':          'Une condamnation définitive a été prononcée selon une source publique',
+      'relaxe / non-lieu / classement':   'Une relaxe / un non-lieu / un classement a été prononcé selon une source publique',
+      'à qualifier':                      'Une source publique rapporte les faits, qualification à préciser',
     };
 
     const escapeHtml = (s: string) =>
-      s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+      s.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 
+    // ── Carte ──
     const map = new maplibregl.Map({
       container: 'map',
       style: {
         version: 8,
-        // Service de glyphes de MapLibre — n'expose que "Noto Sans Regular" et "Metropolis".
         glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
         sources: {
           'osm-tiles': {
@@ -140,15 +269,14 @@ const geocodedCount = allCases.length;
         },
         layers: [{ id: 'osm', type: 'raster', source: 'osm-tiles' }],
       },
-      center: [2.3522, 48.8566],
-      zoom: 11,
+      center: [2.35, 46.5],   // Centre France métropolitaine
+      zoom: 5,
       dragRotate: false,
       pitchWithRotate: false,
       touchPitch: false,
       attributionControl: false,
     });
     map.touchZoomRotate.disableRotation();
-    // Debug : exposer la map en dev pour pouvoir l'inspecter depuis la console.
     if (import.meta.env.DEV) (window as any)._map = map;
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
@@ -156,13 +284,14 @@ const geocodedCount = allCases.length;
 
     const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
 
-    const colorByFaits: maplibregl.ExpressionSpecification = [
-      'match',
-      ['get', 'statut_des_faits'],
-      'allégué', '#c0392b',
-      'retenu par jugement non définitif', '#e67e22',
-      'établi judiciairement', '#7d3c98',
-      '#7f8c8d',
+    // Expression couleur par catégorie (statut_judiciaire → cat → couleur)
+    const colorExpr: maplibregl.ExpressionSpecification = [
+      'match', ['get', 'stat_cat'],
+      'red',    '#E63946',
+      'blue',   '#457B9D',
+      'orange', '#D97706',
+      'green',  '#2D6A4F',
+      '#8B9BAD',
     ];
 
     map.on('load', () => {
@@ -170,30 +299,39 @@ const geocodedCount = allCases.length;
         type: 'geojson',
         data: geojson as any,
         cluster: true,
-        clusterRadius: 35,   // un peu plus serré : moins de regroupement à zoom moyen
-        clusterMaxZoom: 13,  // au-delà de zoom 13, chaque pin est individuel
+        clusterRadius: 15,    // très serré : clustering uniquement si les pins se superposent vraiment
+        clusterMaxZoom: 11,   // au-delà du zoom 11 (~niveau département), tous les pins sont individuels
       });
 
-      // Cadrer sur l'ensemble des affaires au démarrage : utile pour que l'utilisateur
-      // comprenne d'emblée la zone couverte (Paris + proche périphérie).
-      if (cases.length > 0) {
+      // Centrer sur les affaires en France métropolitaine uniquement.
+      // On filtre les coordonnées hors des bornes FR (évite les points mal géocodés
+      // qui éloigneraient le fitBounds de la France).
+      const FR_BOUNDS = { latMin: 41, latMax: 52, lngMin: -6, lngMax: 10 };
+      const validCases = cases.filter(
+        (c) => c.lat >= FR_BOUNDS.latMin && c.lat <= FR_BOUNDS.latMax
+              && c.lng >= FR_BOUNDS.lngMin && c.lng <= FR_BOUNDS.lngMax
+      );
+      if (validCases.length > 0) {
         const bounds = new maplibregl.LngLatBounds();
-        for (const c of cases) bounds.extend([c.lng, c.lat]);
-        map.fitBounds(bounds, { padding: { top: 60, bottom: 80, left: 40, right: 40 }, animate: false });
+        for (const c of validCases) bounds.extend([c.lng, c.lat]);
+        map.fitBounds(bounds, {
+          padding: { top: 60, bottom: 80, left: 40, right: 40 },
+          animate: false,
+        });
       }
 
+      // Clusters — cercles sombres (neutre, pas de couleur de statut)
       map.addLayer({
         id: 'clusters',
         type: 'circle',
         source: 'cases',
         filter: ['has', 'point_count'],
         paint: {
-          // Couleur unique pour démarrer simple — on remettra un dégradé une fois le rendu confirmé.
-          'circle-color': '#1a4f9c',
+          'circle-color': '#1A1A1A',
           'circle-radius': ['step', ['get', 'point_count'], 22, 5, 30, 10, 38],
           'circle-stroke-width': 3,
           'circle-stroke-color': '#ffffff',
-          'circle-opacity': 0.95,
+          'circle-opacity': 0.92,
         },
       });
 
@@ -204,67 +342,44 @@ const geocodedCount = allCases.length;
         filter: ['has', 'point_count'],
         layout: {
           'text-field': ['get', 'point_count_abbreviated'],
-          // Police garantie sur le service glyphs MapLibre (Open Sans Semibold n'y est pas).
           'text-font': ['Noto Sans Regular'],
-          'text-size': 14,
+          'text-size': 13,
           'text-allow-overlap': true,
         },
         paint: { 'text-color': '#ffffff' },
       });
 
+      // Pins individuels — couleur par catégorie de statut
       map.addLayer({
         id: 'unclustered',
         type: 'circle',
         source: 'cases',
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-color': colorByFaits,
+          'circle-color': colorExpr,
           'circle-radius': 9,
-          'circle-stroke-width': 2,
+          'circle-stroke-width': 2.5,
           'circle-stroke-color': '#ffffff',
         },
       });
 
+      // ── Clic cluster → zoom ──
       map.on('click', 'clusters', (e) => {
         const f = e.features?.[0];
         if (!f || f.geometry.type !== 'Point') return;
-        const clusterId = (f.properties as any).cluster_id;
         const src = map.getSource('cases') as maplibregl.GeoJSONSource;
-        src.getClusterExpansionZoom(clusterId).then((zoom) => {
+        src.getClusterExpansionZoom((f.properties as any).cluster_id).then((zoom) => {
           map.easeTo({ center: f.geometry.coordinates as [number, number], zoom });
         });
       });
 
+      // ── Clic pin → popup (délégué à openPopupForCase) ──
       map.on('click', 'unclustered', (e) => {
         const f = e.features?.[0];
         if (!f || f.geometry.type !== 'Point') return;
-        const c = f.properties as any;
-        const phrase = wordingByStatut[c.statut_judiciaire] ?? 'Source publique disponible';
-        const dateSuffix = c.source_date ? ' (' + escapeHtml(c.source_date) + ')' : '';
-        const approx = c.geocode_source === 'centroid-arr' || c.geocode_source === 'ban-commune'
-          ? '<p class="approx">📍 Localisation approximative (centre de l\'arrondissement/commune).</p>'
-          : '';
-
-        const html = `
-          <div class="popup">
-            <h3>${escapeHtml(c.etablissement)}</h3>
-            <p class="meta">${escapeHtml(c.commune)} · ${escapeHtml(c.type_structure)}</p>
-            <p class="statement">${escapeHtml(phrase)}.</p>
-            <ul class="facts">
-              <li><strong>Type d'affaire :</strong> ${escapeHtml(c.type_affaire)}</li>
-              <li><strong>Rôle mis en cause :</strong> ${escapeHtml(c.role_mis_en_cause)}</li>
-              <li><strong>Enfants concernés :</strong> ${escapeHtml(c.enfants_concernes_public)}</li>
-              <li><strong>Fiabilité :</strong> ${c.fiabilite_info_10}/10</li>
-            </ul>
-            <p class="source"><a href="${encodeURI(c.source_url)}" target="_blank" rel="noopener noreferrer">Source : ${escapeHtml(c.source_media)}${dateSuffix}</a></p>
-            ${approx}
-            <p class="disclaimer">Présomption d'innocence — informations issues de la presse publique. <a href="/methodologie">Méthodologie</a></p>
-          </div>
-        `;
-        new maplibregl.Popup({ offset: 14, maxWidth: popupMaxWidth() })
-          .setLngLat((f.geometry.coordinates as [number, number]).slice() as [number, number])
-          .setHTML(html)
-          .addTo(map);
+        const caseId = (f.properties as any).case_id;
+        const c = cases.find((row) => row.case_id === caseId);
+        if (c) openPopupForCase(c);
       });
 
       for (const id of ['clusters', 'unclustered']) {
@@ -272,56 +387,527 @@ const geocodedCount = allCases.length;
         map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
       }
     });
+
+    // ── Fonction partagée : ouvrir la popup pour un cas ──
+    // Utilisée depuis le clic sur un pin ET depuis le clic dans la sidebar.
+    let activePopup: maplibregl.Popup | null = null;
+
+    function openPopupForCase(c: CaseRow) {
+      const coords: [number, number] = [c.lng, c.lat];
+      const phrase  = wordingByStatut[c.statut_judiciaire] ?? 'Source publique disponible';
+      const dateSfx = c.source_date ? ` (${escapeHtml(c.source_date.slice(0, 10))})` : '';
+      const approx  = (c.geocode_source === 'centroid-arr' || c.geocode_source === 'ban-commune')
+        ? '<p class="popup-b2-approx">📍 Localisation approximative (centre de commune/arrondissement).</p>'
+        : '';
+
+      const html = `
+        <div class="popup-b2">
+          <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}</p>
+          <h3 class="popup-b2-title">${escapeHtml(c.etablissement)}</h3>
+          <p class="popup-b2-loc">${escapeHtml(c.commune)}${c.source_date ? ' · ' + c.source_date.slice(0, 4) : ''}</p>
+          <p class="popup-b2-phrase">${escapeHtml(phrase)}.</p>
+          <ul class="popup-b2-facts">
+            <li><b>Type d'affaire :</b> ${escapeHtml(c.type_affaire)}</li>
+            <li><b>Rôle mis en cause :</b> ${escapeHtml(c.role_mis_en_cause)}</li>
+            <li><b>Enfants concernés :</b> ${escapeHtml(c.enfants_concernes_public)}</li>
+          </ul>
+          <p class="popup-b2-source">
+            <a href="${encodeURI(c.source_url)}" target="_blank" rel="noopener noreferrer">
+              Source : ${escapeHtml(c.source_media)}${dateSfx}
+            </a>
+          </p>
+          ${approx}
+          <p class="popup-b2-disclaimer">
+            Présomption d'innocence. Informations issues de la presse.
+            <a href="/methodologie">Méthodologie</a>
+          </p>
+        </div>
+      `;
+
+      // Fermer la popup existante si ouverte
+      activePopup?.remove();
+
+      const mapH   = map.getContainer().clientHeight;
+      const pt     = map.project(coords);
+      const offsetY = pt.y < mapH * 0.35
+        ? Math.min(120, mapH * 0.25)
+        : -Math.min(100, mapH * 0.2);
+
+      activePopup = new maplibregl.Popup({ offset: 14, maxWidth: popupMaxWidth() })
+        .setLngLat(coords)
+        .setHTML(html);
+
+      map.easeTo({ center: coords, offset: [0, offsetY], duration: 220 });
+      setTimeout(() => { if (activePopup) activePopup.addTo(map); }, 230);
+
+      highlightSidebarCase(c.case_id);
+    }
+
+    // ── Sidebar : highlight ──
+    function highlightSidebarCase(caseId: string) {
+      document.querySelectorAll('.case-item').forEach((el) => el.classList.remove('active'));
+      const el = document.querySelector<HTMLElement>(`.case-item[data-id="${caseId}"]`);
+      if (el) {
+        el.classList.add('active');
+        el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    // ── Sidebar : clic → zoomer ET ouvrir la popup ──
+    document.querySelectorAll<HTMLElement>('.case-item').forEach((el) => {
+      el.addEventListener('click', () => {
+        const caseId = el.dataset.id!;
+        const c = cases.find((row) => row.case_id === caseId);
+        if (!c) return;
+
+        // Si le zoom est trop faible, on zoome d'abord, puis on ouvre la popup
+        const targetZoom = Math.max(map.getZoom(), 14);
+        if (map.getZoom() < 13) {
+          map.flyTo({ center: [c.lng, c.lat], zoom: targetZoom, duration: 600 });
+          setTimeout(() => openPopupForCase(c), 650);
+        } else {
+          openPopupForCase(c);
+        }
+      });
+    });
+
+    // ── Toolbar : filtres ──
+    const filterBtns = document.querySelectorAll<HTMLButtonElement>('.tb-btn[data-filter]');
+    let activeFilter = 'all';
+
+    filterBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeFilter = btn.dataset.filter!;
+
+        filterBtns.forEach((b) => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+
+        // Filtrer la couche carte
+        const layerFilter = activeFilter === 'all'
+          ? ['!', ['has', 'point_count']]
+          : ['all', ['!', ['has', 'point_count']], ['==', ['get', 'stat_cat'], activeFilter]];
+        map.setFilter('unclustered', layerFilter as any);
+
+        // Filtrer la sidebar
+        let visibleCount = 0;
+        document.querySelectorAll<HTMLElement>('.case-item').forEach((item) => {
+          const show = activeFilter === 'all' || item.dataset.cat === activeFilter;
+          item.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+        const countEl = document.getElementById('sidebar-count');
+        if (countEl) countEl.textContent = `${visibleCount} résultat${visibleCount > 1 ? 's' : ''}`;
+      });
+    });
   </script>
 
+  <!-- ── STYLES PAGE ── -->
   <style is:global>
-    #map { flex: 1; width: 100%; min-height: 0; }
 
-    .legend {
+    /* ── BANDE INFO ── */
+    .info-band {
+      background: var(--bg-card);
+      border-bottom: 3px solid var(--red);
+    }
+    .info-band-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .info-count strong {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--red);
+    }
+    .info-sep { color: var(--border); }
+    .info-tagline { color: var(--muted); }
+    .info-link {
+      margin-left: auto;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+    .info-link:hover { text-decoration: underline; }
+
+    /* ── TOOLBAR ── */
+    .toolbar {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: var(--header-h);
+      z-index: 90;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .toolbar-inner {
+      max-width: 1160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      height: 48px;
+      padding: 0 1.25rem;
+      white-space: nowrap;
+    }
+    .tb-label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      flex-shrink: 0;
+      margin-right: 0.25rem;
+    }
+    .tb-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 3px;
+      border: 1.5px solid var(--border);
+      font-size: 0.78rem;
+      font-weight: 500;
+      font-family: var(--sans);
+      cursor: pointer;
+      background: var(--bg-card);
+      color: var(--text);
+      white-space: nowrap;
+      transition: border-color 0.1s, background 0.1s, color 0.1s;
+    }
+    .tb-btn:hover { border-color: #C5C5C3; }
+    .tb-btn.active {
+      border-color: var(--red);
+      background: var(--red);
+      color: white;
+    }
+    .tb-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── MAP LAYOUT ── */
+    .map-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 55vw auto;
+      max-width: 1160px;
+      margin: 0 auto;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .map-wrap {
+      position: relative;
+      background: #DDE2EA;
+      overflow: hidden;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      min-height: 300px;
+    }
+
+    /* ── LÉGENDE CARTE ── */
+    .map-legend {
       position: absolute;
-      left: calc(0.6rem + var(--safe-l));
       bottom: calc(0.6rem + var(--safe-b));
-      background: rgba(255, 255, 255, 0.95);
+      left: calc(0.6rem + var(--safe-l));
+      background: rgba(255, 255, 255, 0.96);
       border: 1px solid #ddd;
       border-radius: 6px;
       padding: 0.5rem 0.7rem;
-      font-size: 0.72rem;
-      line-height: 1.35;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      max-width: 56vw;
+      font-size: 0.7rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      max-width: 54vw;
       z-index: 1;
     }
-    .legend-title { margin: 0 0 0.3rem; font-weight: 600; font-size: 0.72rem; color: var(--fg); }
-    .legend ul { list-style: none; margin: 0; padding: 0; }
-    .legend li { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.15rem; color: var(--muted); }
-    .legend li:last-child { margin-bottom: 0; }
-    .legend .dot {
-      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
-      border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+    .legend-title {
+      margin: 0 0 0.3rem;
+      font-weight: 700;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .map-legend ul { list-style: none; margin: 0; padding: 0; }
+    .map-legend li {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.15rem;
+      color: var(--text);
+      font-size: 0.7rem;
+    }
+    .ldot {
+      display: inline-block;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      border: 1.5px solid #fff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
       flex-shrink: 0;
     }
-    .legend-count { margin: 0.4rem 0 0; padding-top: 0.3rem; border-top: 1px solid #eee; color: var(--muted); font-size: 0.68rem; }
+    .legend-count {
+      margin: 0.4rem 0 0;
+      padding-top: 0.3rem;
+      border-top: 1px solid #eee;
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-family: var(--mono);
+    }
 
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sidebar-head {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 1;
+    }
+    .sidebar-title {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text);
+    }
+    .sidebar-count {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .case-item {
+      display: flex;
+      align-items: stretch;
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      gap: 0.65rem;
+      transition: background 0.1s;
+      font-family: var(--sans);
+    }
+    .case-item:hover { background: #F5F5F3; }
+    .case-item.active {
+      background: var(--red-bg);
+      border-left: 3px solid var(--red);
+      padding-left: calc(1rem - 2px);
+    }
+
+    .case-bar {
+      width: 3px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      align-self: stretch;
+      min-height: 14px;
+    }
+    .cat-red    { background: var(--red); }
+    .cat-blue   { background: var(--blue); }
+    .cat-orange { background: var(--orange); }
+    .cat-green  { background: var(--green); }
+    .cat-muted  { background: #CBD5E1; }
+
+    .case-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      min-width: 0;
+      flex: 1;
+    }
+    .case-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .case-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .case-year {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .case-loc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: var(--mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .case-badge {
+      display: inline-block;
+      margin-top: 0.3rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 2px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      align-self: flex-start;
+    }
+    .badge-red    { background: var(--red-bg);    color: var(--red); }
+    .badge-blue   { background: var(--blue-bg);   color: var(--blue); }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); }
+    .badge-green  { background: var(--green-bg);  color: var(--green); }
+    .badge-muted  { background: #F1F5F9; color: #64748B; }
+
+    /* ── POPUP ── */
+    .maplibregl-popup-content { padding: 0; border-radius: 6px; overflow: hidden; }
+
+    .popup-b2 { padding: 0.9rem 1rem; font-family: var(--sans); max-width: 300px; }
+    .popup-b2-kicker {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--red);
+      margin: 0 0 0.2rem;
+    }
+    .popup-b2-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      margin: 0 0 0.15rem;
+      line-height: 1.3;
+      color: var(--text);
+    }
+    .popup-b2-loc {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin: 0 0 0.6rem;
+    }
+    .popup-b2-phrase {
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.4;
+      margin: 0 0 0.55rem;
+      color: var(--text);
+    }
+    .popup-b2-facts {
+      margin: 0 0 0.55rem;
+      padding-left: 1rem;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+    .popup-b2-facts li { margin-bottom: 0.1rem; }
+    .popup-b2-source {
+      margin: 0 0 0.45rem;
+      font-size: 0.75rem;
+      word-break: break-word;
+    }
+    .popup-b2-source a { color: var(--blue); }
+    .popup-b2-approx {
+      margin: 0 0 0.35rem;
+      font-size: 0.68rem;
+      color: #B06A00;
+      line-height: 1.3;
+    }
+    .popup-b2-disclaimer {
+      margin: 0;
+      font-size: 0.67rem;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.35;
+      border-top: 1px solid var(--border);
+      padding-top: 0.4rem;
+    }
+    .popup-b2-disclaimer a { color: var(--muted); }
+
+    /* MapLibre controls */
     .maplibregl-ctrl-group button { width: 36px; height: 36px; }
     @media (pointer: coarse) {
       .maplibregl-ctrl-group button { width: 44px; height: 44px; }
     }
 
-    .popup h3 { margin: 0 0 0.2rem; font-size: 0.95rem; line-height: 1.25; }
-    .popup .meta { margin: 0 0 0.45rem; color: var(--muted); font-size: 0.8rem; }
-    .popup .statement { margin: 0 0 0.45rem; font-weight: 600; font-size: 0.88rem; line-height: 1.35; }
-    .popup .facts { margin: 0 0 0.45rem; padding-left: 1rem; font-size: 0.82rem; line-height: 1.4; }
-    .popup .facts li { margin-bottom: 0.1rem; }
-    .popup .source { margin: 0 0 0.45rem; font-size: 0.82rem; word-break: break-word; }
-    .popup .source a { color: #1a4f9c; }
-    .popup .approx { margin: 0 0 0.35rem; font-size: 0.72rem; color: #b06a00; line-height: 1.3; }
-    .popup .disclaimer { margin: 0; font-size: 0.72rem; color: var(--muted); font-style: italic; line-height: 1.35; }
-    .popup .disclaimer a { color: var(--muted); }
-
+    /* ── DESKTOP ── */
     @media (min-width: 720px) {
-      .legend { font-size: 0.8rem; max-width: none; }
-      .legend-title { font-size: 0.8rem; }
-      .legend-count { font-size: 0.74rem; }
+      /* Hero 2 colonnes */
+      .hero-inner {
+        grid-template-columns: 1fr auto;
+        gap: 2.5rem;
+        align-items: stretch;
+      }
+      .hero-text {
+        padding: 2.25rem 2rem 2rem 0;
+        border-right: 1px solid var(--border);
+      }
+      .hero-stats {
+        flex-direction: column;
+        gap: 0;
+        padding: 2.25rem 0 2rem 0;
+        border-top: none;
+        min-width: 160px;
+        justify-content: center;
+      }
+      .big-stat {
+        flex: none;
+        padding: 1rem 0;
+        padding-right: 0;
+        margin-right: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .big-stat:last-child { border-bottom: none; }
+      .big-num { font-size: clamp(2rem, 3.5vw, 3.2rem); }
+
+      /* Map + sidebar côte à côte — pleine hauteur disponible */
+      .map-layout {
+        grid-template-columns: 1fr 340px;
+        /* header(60) + info-band(38+3border=41) + toolbar(48) = 149px */
+        height: calc(100vh - 149px);
+        min-height: 420px;
+        grid-template-rows: 1fr;
+      }
+      .sidebar {
+        border-top: none;
+        border-left: 1px solid var(--border);
+        height: 100%;
+        overflow-y: auto;
+      }
+      .map-legend {
+        max-width: none;
+        font-size: 0.78rem;
+      }
+
     }
   </style>
+
 </Layout>

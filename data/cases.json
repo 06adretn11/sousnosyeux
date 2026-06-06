@@ -2,7 +2,7 @@
   "_meta": {
     "project": "sousnosyeux",
     "version": "sync",
-    "generated_at": "2026-06-04",
+    "generated_at": "2026-06-06",
     "seuil_publication": 8,
     "total_cases": 53,
     "source": "supabase",
