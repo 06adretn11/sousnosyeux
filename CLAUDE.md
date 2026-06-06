@@ -12,7 +12,7 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 
 ## 2. État actuel
 
-- **Phase** : Phase 5 terminée → Phase 5b (analyse d'articles) en cours
+- **Phase** : Phase 5 terminée · Phase 5b terminée · **Phase 6 (design) terminée → V0 déployée en prod**
 - **Volume** : 17 POC + 26 IDF + 21 hors-IDF = **64 affaires en base**, dont **53 publiées**
   - 53 publiées (`publiée`) — affichées sur la carte
   - 11 rejetées après review
@@ -37,12 +37,18 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - SSL automatique Cloudflare ✅
   - ⚠️ **Pas de variables d'environnement possibles** côté Workers static assets → le front lit `data/cases.json` (synchro Supabase → JSON via script local)
 - **Front Astro** : `web/` (Astro 5 + MapLibre 4, tuiles OSM)
-  - Layout partagé avec nav Carte / Méthodologie / Mentions légales ✅
-  - Carte fonctionnelle avec pins géocodés ✅
-  - Clustering MapLibre actif (clusterRadius 35, clusterMaxZoom 13) ✅
-  - Pins colorés par `statut_des_faits` + légende ✅
-  - Popup avec wording standardisé par statut judiciaire + avertissement quand coord approximative ✅
-  - `fitBounds` initial sur les affaires ✅
+  - **Design B2 implémenté** (Phase 6) ✅ — direction "Éditorial sobre + lanceur d'alerte"
+  - Polices : DM Sans (UI) + DM Mono (chiffres/codes) + Playfair Display (titres)
+  - Palette : rouge `#E63946` · bleu `#457B9D` · vert `#2D6A4F` · orange `#D97706`
+  - Header blanc compact : logo avec barre rouge, nav, bouton "Nous contacter" (rouge) · "Mentions légales" masqué sur mobile
+  - Bande info compacte (1 ligne) : compteur affaires + tagline + lien méthodologie
+  - Toolbar filtres sticky (Tous / Condamné / En cours / Allégué / Classé) — filtre carte ET sidebar simultanément
+  - Carte centrée France métropolitaine (`fitBounds` filtré sur bornes FR lat 41–52 / lng -6–10)
+  - Clustering réduit : `clusterRadius 15`, `clusterMaxZoom 11` — pins individuels visibles dès zoom 12
+  - Pins colorés par catégorie `statut_judiciaire` ✅
+  - Popup partagée `openPopupForCase()` — déclenchée depuis pin ET depuis sidebar, avec pan automatique
+  - Sidebar statique scrollable : liste affaires par date, barre colorée, badge statut, clic → zoom + popup
+  - Footer sombre avec liens légaux
   - Page `/methodologie` + Page `/mentions-legales` ✅
   - **Source de données** : `data/cases.json` importé statiquement (synchro Supabase → JSON via `scripts/sync-data.mjs`)
 - **Pipeline d'import** : opérationnel ✅
@@ -98,6 +104,10 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Source recherche veille | Google News RSS (gratuit, sans clé API) | Suffisant pour ~200 affaires, pas de rate limit observé |
 | Détection évolution | Analyse des titres (mots-clés forward-only) | Les URLs Google News sont des redirections opaques (consent GDPR), impossible de fetcher le contenu côté serveur |
 | Scheduling veille | Exécution manuelle 1×/mois (rappel calendrier) | Routine distante bloquée par compte Business Cdiscount — revoir quand accès GitHub autorisé côté org |
+| Direction design | **B2 "Éditorial"** — DM Sans + DM Mono + Playfair Display, palette rouge/bleu/vert/orange | 3 directions A/B/C maquettées, 3 variations B1/B2/B3 affinées, B2 validé par l'utilisateur |
+| Clustering carte | `clusterRadius 15`, `clusterMaxZoom 11` | Pins individuels visibles dès zoom 12 (niveau département) — validé Phase 6 |
+| Centre initial carte | `fitBounds` filtré sur bornes France (lat 41–52, lng -6–10) | Évite les points mal géocodés qui élargissaient la vue hors France |
+| CTA "Nous contacter" | Bouton rouge dans le header (nav) | Suppression du bandeau CTA rouge pleine largeur — intégré dans le header |
 
 ## 4. Principes éditoriaux NON-NÉGOCIABLES
 
@@ -196,10 +206,14 @@ sousnosyeux/
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
    - ℹ️ **Note** : le projet ne fait que relayer des articles de presse — pas de noms, pas de création d'information. Risque limité.
-4. **Phase 6 — Design du site**
-   - ⏭️ Refonte visuelle : site, carte, modales, légende
-   - ⏭️ Dégradé de couleur sur les clusters (actuellement bleu uni)
-   - ⏭️ Identité graphique / charte
+4. **Phase 6 — Design du site** (TERMINÉE)
+   - ✅ 3 directions visuelles maquettées (A Sobre/Institutionnel, B Terrain/Alerte, C Citoyen/Humain)
+   - ✅ Direction B2 "Éditorial" choisie et implémentée
+   - ✅ 3 variations B1/B2/B3 maquettées pour affiner
+   - ✅ Déployée en prod sur sousnosyeux.org (commit 6bb51c7)
+   - ⏭️ Feedbacks prod à intégrer (tests en cours)
+   - ⏭️ Dégradé de couleur sur les clusters selon statut majoritaire
+   - ⏭️ Identité graphique / charte complète (favicon, og:image…)
 5. **Phase 7 — Suivi des affaires + réactions publiques**
    - ⏭️ Historiser les évolutions (condamnations, procédures)
    - ⏭️ Section « réactions/décisions des services publics » par affaire (nouveau champ modèle)
