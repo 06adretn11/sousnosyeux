@@ -52,6 +52,10 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - `scripts/repair-sources.mjs` : rattrapage one-shot des sources avec dates partielles (déjà utilisé)
   - `scripts/article-server.mjs` : serveur local d'analyse d'articles (HTTP localhost:3456)
     - Fetch HTML → extraction texte → analyse LLM (Claude API) ou mots-clés
+  - `scripts/watch-updates.mjs` : veille automatique sur les affaires publiées ✅
+    - Google News RSS → filtrage doublons → détection d'évolution par titre → rapport JSON
+    - Usage : `node scripts/watch-updates.mjs` (options: `--limit N`, `--case ID`, `--dry-run`)
+    - Rapport : `data/watch-report.json` (gitignored)
     - Propose des mises à jour de statut judiciaire, type d'affaire, résumé
     - Nécessite `ANTHROPIC_API_KEY` dans `.env.local` pour le mode LLM (optionnel)
   - `tools/review.html` : outil local de validation (sources, scoring, analyse d'articles, publication 1 clic)
@@ -91,6 +95,9 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Coût API analyse | Acceptable (~0,01€/article, négligeable à 200 affaires) | Clé personnelle Anthropic Console — séparée du compte Claude Code entreprise |
 | Veille statuts | Script local lancé manuellement → scheduled agent si ça marche | Évite la conso tokens Claude Code ; l'agent appelle juste le script |
 | Collaboration review | Partage du fichier `tools/review.html` + credentials Supabase de vive voix | Option rapide validée ; passer à RLS + auth Supabase si collaboration régulière |
+| Source recherche veille | Google News RSS (gratuit, sans clé API) | Suffisant pour ~200 affaires, pas de rate limit observé |
+| Détection évolution | Analyse des titres (mots-clés forward-only) | Les URLs Google News sont des redirections opaques (consent GDPR), impossible de fetcher le contenu côté serveur |
+| Scheduling veille | Exécution manuelle 1×/mois (rappel calendrier) | Routine distante bloquée par compte Business Cdiscount — revoir quand accès GitHub autorisé côté org |
 
 ## 4. Principes éditoriaux NON-NÉGOCIABLES
 
@@ -138,7 +145,8 @@ sousnosyeux/
 │   ├── bulk-publish.mjs       # publication en masse des candidates score ≥ seuil
 │   ├── sync-data.mjs          # Supabase → data/cases.json (synchro avant push)
 │   ├── repair-sources.mjs     # rattrapage one-shot des sources avec dates partielles (déjà utilisé)
-│   └── article-server.mjs     # serveur local d'analyse d'articles (port 3456)
+│   ├── article-server.mjs     # serveur local d'analyse d'articles (port 3456)
+│   └── watch-updates.mjs      # veille automatique Google News RSS → watch-report.json
 ├── tools/
 │   └── review.html            # outil local de validation (sources, scoring, publication)
 ├── web/                       # front Astro (Astro 5 + MapLibre 4)
@@ -175,14 +183,15 @@ sousnosyeux/
    - ✅ Outil de review local (`tools/review.html`) avec scoring, sources, analyse d'articles
    - ⏭️ Lancer d'autres tranches crawler (2021–2024, autres régions) pour atteindre ~250 affaires
    - ⏭️ Améliorer le dédoublonnage (variations de noms d'établissements → fuzzy match ?)
-2. **Phase 5b — Analyse d'articles + veille** (EN COURS)
+2. **Phase 5b — Analyse d'articles + veille** (TERMINÉE)
    - ✅ `scripts/article-server.mjs` : serveur local d'analyse (fetch + extraction texte + LLM)
    - ✅ Intégration dans `review.html` : bouton "analyser" par source, suggestions avec "appliquer"
    - ✅ Mode mots-clés (sans clé API) fonctionnel — utilisé pour la 1ère passe manuelle
-   - ⏭️ **Phase 5b-A** : 1ère passe manuelle en cours — lancer `article-server.mjs` + review.html, analyser chaque source, appliquer les suggestions, puis `sync-data.mjs` → push
-   - ⏭️ **Phase 5b-B (dans ~1 mois)** : `scripts/watch-updates.mjs` — recherche web ciblée par affaire pour détecter les évolutions de statut
-     - Coût API validé : ~0,01€/article, négligeable même à 200 affaires → ajouter `ANTHROPIC_API_KEY` dans `.env.local` à ce moment-là
-     - Scheduling : agent planifié qui lance le script 1×/mois (évite la conso tokens Claude Code)
+   - ✅ **Phase 5b-A** : 1ère passe manuelle terminée
+   - ✅ **Phase 5b-B** : `scripts/watch-updates.mjs` — veille automatique via Google News RSS
+     - Détection d'évolution par analyse des titres (forward-only : ignore les statuts antérieurs)
+     - Gratuit (pas de clé API), ~2 min pour 53 affaires
+     - Routine distante créée (`trig_01D91SxNpG2egWBhE1c4soUC`) mais bloquée par compte Business Cdiscount → exécution manuelle 1×/mois en attendant
 3. **Phase 4 — Revue juridique + procédures** (critique mais risque modéré)
    - ⏭️ Faire relire méthodologie + mentions légales par un avocat presse
    - ⏭️ Trancher sur l'adresse postale (domiciliation vs maintien « sur demande »)
