@@ -44,17 +44,24 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
         </a>
         <nav aria-label="Navigation principale">
           <ul>
-            {nav.map((n) => (
-              <li class={n.href === '/mentions-legales' ? 'nav-mentions' : undefined}>
-                <a
-                  href={n.href}
-                  aria-current={(!n.cta && isActive(n.href)) ? 'page' : undefined}
-                  class={n.cta ? 'nav-cta' : undefined}
-                >
-                  {n.label}
-                </a>
-              </li>
-            ))}
+            {nav.map((n) => {
+              const liClass =
+                n.href === '/mentions-legales' ? 'nav-mentions'
+                : n.href === '/' ? 'nav-carte'
+                : n.href === '/methodologie' ? 'nav-methodo'
+                : undefined;
+              return (
+                <li class={liClass}>
+                  <a
+                    href={n.href}
+                    aria-current={(!n.cta && isActive(n.href)) ? 'page' : undefined}
+                    class={n.cta ? 'nav-cta' : undefined}
+                  >
+                    {n.label}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>
@@ -129,8 +136,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
       }
       main { flex: 1; }
 
-      /* Variant carte : pas de bounce-scroll sur iOS */
-      body[data-variant="map"] { overscroll-behavior: none; }
+      /* Variant carte : pas de bounce-scroll sur iOS, pas de scroll horizontal */
+      body[data-variant="map"] { overscroll-behavior: none; overflow-x: hidden; }
 
       /* ── HEADER ── */
       .site-header {
@@ -183,8 +190,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
         margin: 0; padding: 0;
         align-items: center;
       }
-      /* Mentions légales masquées sur mobile — visible dans le footer */
-      .site-header nav li.nav-mentions { display: none; }
+      /* Sur mobile : seul le bouton CTA reste visible — les autres liens sont dans le footer */
+      .site-header nav li.nav-mentions,
+      .site-header nav li.nav-carte,
+      .site-header nav li.nav-methodo { display: none; }
       .site-header nav a {
         display: inline-block;
         padding: 0.3rem 0.5rem;
@@ -320,7 +329,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
 
       @media (min-width: 720px) {
         :root { --header-h: 60px; }
-        .site-header nav li.nav-mentions { display: list-item; }
+        .site-header nav li.nav-mentions,
+        .site-header nav li.nav-carte,
+        .site-header nav li.nav-methodo { display: list-item; }
         .site-header nav a { font-size: 0.875rem; padding: 0.4rem 0.75rem; }
         .prose { padding: 2.5rem 1rem 4rem; }
         .prose h1 { font-size: 2.1rem; }

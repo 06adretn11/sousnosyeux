@@ -522,7 +522,6 @@ function caseYear(c: typeof allCases[0]): string {
       align-items: center;
       gap: 0.6rem;
       font-size: 0.8rem;
-      overflow-x: auto;
       white-space: nowrap;
     }
     .info-count strong {
@@ -532,7 +531,8 @@ function caseYear(c: typeof allCases[0]): string {
       color: var(--red);
     }
     .info-sep { color: var(--border); }
-    .info-tagline { color: var(--muted); }
+    /* Tagline masquée sur mobile pour laisser le lien visible */
+    .info-tagline { display: none; color: var(--muted); }
     .info-link {
       margin-left: auto;
       font-size: 0.75rem;
@@ -601,14 +601,15 @@ function caseYear(c: typeof allCases[0]): string {
     }
 
     /* ── MAP LAYOUT ── */
+    /* --info-band-h = 38px contenu + 3px border = 41px ; toolbar = 48px + 1px = 49px */
+    :root { --above-map-h: calc(var(--header-h) + 41px + 49px); }
+
     .map-layout {
       display: grid;
       grid-template-columns: 1fr;
-      grid-template-rows: 55vw auto;
-      max-width: 1160px;
-      margin: 0 auto;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
+      /* Mobile : carte occupe ~65% de l'espace dispo, sidebar strip en bas */
+      height: calc(100dvh - var(--above-map-h));
+      grid-template-rows: 1fr 220px;
     }
     .map-wrap {
       position: relative;
@@ -891,11 +892,11 @@ function caseYear(c: typeof allCases[0]): string {
       /* Map + sidebar côte à côte — pleine hauteur disponible */
       .map-layout {
         grid-template-columns: 1fr 340px;
-        /* header(60) + info-band(38+3border=41) + toolbar(48) = 149px */
-        height: calc(100vh - 149px);
+        height: calc(100dvh - var(--above-map-h));
         min-height: 420px;
         grid-template-rows: 1fr;
       }
+      .info-tagline { display: inline; }
       .sidebar {
         border-top: none;
         border-left: 1px solid var(--border);
