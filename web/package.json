@@ -8,7 +8,9 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:drafts": "node ../scripts/with-drafts.mjs astro build",
+    "qa": "node ../scripts/qa/run-all.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0",

@@ -1,0 +1,121 @@
+{
+  "_meta": {
+    "avertissement": "BROUILLON. Sélection explicite des affaires d’un hub (DATA_CONTRACT_V0 §5). Aucune requête géographique implicite au moment du rendu.",
+    "genere_le": "2026-09-15",
+    "genere_depuis": "data/cases.json (instantané du 2026-06-06)",
+    "statut": "draft"
+  },
+  "hub_id": "paris",
+  "zone_label": "Paris",
+  "zone_kind": "departement",
+  "status": "draft",
+  "template_version": "hub-v1.0.0",
+  "rules_version": "editorial-v0",
+  "verified_at": null,
+  "case_ids": [
+    {
+      "case_id": "FR-2026-0001",
+      "position": 1
+    },
+    {
+      "case_id": "FR-2026-0002",
+      "position": 2
+    },
+    {
+      "case_id": "FR-2026-0003",
+      "position": 3
+    },
+    {
+      "case_id": "FR-2026-0004",
+      "position": 4
+    },
+    {
+      "case_id": "FR-2026-0005",
+      "position": 5
+    },
+    {
+      "case_id": "FR-2026-0006",
+      "position": 6
+    },
+    {
+      "case_id": "FR-2026-0007",
+      "position": 7
+    },
+    {
+      "case_id": "FR-2026-0008",
+      "position": 8
+    },
+    {
+      "case_id": "FR-2026-0012",
+      "position": 9
+    },
+    {
+      "case_id": "FR-2026-0016",
+      "position": 10
+    },
+    {
+      "case_id": "FR-2026-0023",
+      "position": 11
+    },
+    {
+      "case_id": "FR-2026-0024",
+      "position": 12
+    },
+    {
+      "case_id": "PARIS-001",
+      "position": 13
+    },
+    {
+      "case_id": "PARIS-004",
+      "position": 14
+    },
+    {
+      "case_id": "PARIS-006",
+      "position": 15
+    },
+    {
+      "case_id": "PARIS-007",
+      "position": 16
+    },
+    {
+      "case_id": "PARIS-008",
+      "position": 17
+    },
+    {
+      "case_id": "PARIS-009",
+      "position": 18
+    },
+    {
+      "case_id": "PARIS-010",
+      "position": 19
+    },
+    {
+      "case_id": "POC-04",
+      "position": 20
+    },
+    {
+      "case_id": "POC-05",
+      "position": 21
+    },
+    {
+      "case_id": "POC-06",
+      "position": 22
+    },
+    {
+      "case_id": "POC-07",
+      "position": 23
+    },
+    {
+      "case_id": "POC-08",
+      "position": 24
+    },
+    {
+      "case_id": "POC-09",
+      "position": 25
+    },
+    {
+      "case_id": "POC-10",
+      "position": 26
+    }
+  ]
+}

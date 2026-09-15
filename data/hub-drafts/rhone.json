@@ -1,0 +1,190 @@
+{
+  "_meta": {
+    "avertissement": "BROUILLON NON PUBLIABLE. Rendu de travail, noindex, relié à aucune page publique. Les informations judiciaires proviennent d’un instantané non revérifié.",
+    "genere_le": "2026-09-15",
+    "source": "data/cases.json",
+    "statut": "draft"
+  },
+  "payload_hash": "be115bf91cfe21566d5f46b4461ecb032111a918c9763696ae16d0f5535c4742",
+  "publishable": false,
+  "bloquants": 1,
+  "alertes": 4,
+  "findings": [
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0028",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null
+    },
+    {
+      "rule": "R5_relaxe_encore_publiee",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0035",
+      "message": "issue favorable (relaxe / non-lieu / classement) mais fiche toujours publiée — retrait requis",
+      "evidence": null
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0035",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0036",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0044",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null
+    }
+  ],
+  "payload": {
+    "hub_id": "rhone",
+    "zone_label": "Rhône",
+    "zone_kind": "departement",
+    "template_version": "hub-v1.0.0",
+    "rules_version": "editorial-v0",
+    "verified_at": null,
+    "compteurs": {
+      "affaires": 4,
+      "etablissements": 4,
+      "par_statut": {
+        "mise en examen": 1,
+        "relaxe / non-lieu / classement": 1,
+        "plainte": 1,
+        "condamnation non définitive": 1
+      },
+      "echeances_futures": 0
+    },
+    "affaires": [
+      {
+        "case_id": "FR-2026-0028",
+        "etablissement": "École primaire Robert-Doisneau",
+        "commune": "Lucenay",
+        "departement": "Rhône",
+        "type_structure": "autre",
+        "role_mis_en_cause": "parent",
+        "type_affaire": "mixte",
+        "statut_judiciaire": "mise en examen",
+        "statut_des_faits": "allégué",
+        "enfants_concernes_public": "plusieurs enfants",
+        "lat": 45.9146414896614,
+        "lng": 4.705575703281742,
+        "sources": [
+          {
+            "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+            "media": "Le Progrès",
+            "publication_date": "2026-04-30",
+            "source_type": "presse",
+            "is_primary": true
+          },
+          {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+            "media": "Le Dauphiné Libéré",
+            "publication_date": "2026-04-30",
+            "source_type": "presse",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "case_id": "FR-2026-0035",
+        "etablissement": "Crèche Joyeuse Tribu",
+        "commune": "Lyon 6e",
+        "departement": "Rhône",
+        "type_structure": "crèche",
+        "role_mis_en_cause": "personnel de crèche",
+        "type_affaire": "agression sexuelle",
+        "statut_judiciaire": "relaxe / non-lieu / classement",
+        "statut_des_faits": "non établi",
+        "enfants_concernes_public": "1 enfant",
+        "lat": 45.770107,
+        "lng": 4.85043,
+        "sources": [
+          {
+            "url": "https://www.leprogres.fr/faits-divers-justice/2025/06/20/un-salarie-suspecte-de-comportement-inapproprie-dans-deux-creches-people-baby-encore-dans-la-tourmente",
+            "media": "Le Progrès",
+            "publication_date": "2025-06-20",
+            "source_type": "presse",
+            "is_primary": true
+          },
+          {
+            "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+            "media": "France 3 Régions",
+            "publication_date": "2025-06-18",
+            "source_type": "presse",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "case_id": "FR-2026-0036",
+        "etablissement": "Crèche Chat Perché",
+        "commune": "Lyon 3e",
+        "departement": "Rhône",
+        "type_structure": "crèche",
+        "role_mis_en_cause": "personnel de crèche",
+        "type_affaire": "violences sexuelles",
+        "statut_judiciaire": "plainte",
+        "statut_des_faits": "allégué",
+        "enfants_concernes_public": "1 enfant",
+        "lat": 45.751578,
+        "lng": 4.869577,
+        "sources": [
+          {
+            "url": "https://www.leprogres.fr/faits-divers-justice/2025/06/20/un-salarie-suspecte-de-comportement-inapproprie-dans-deux-creches-people-baby-encore-dans-la-tourmente",
+            "media": "Le Progrès",
+            "publication_date": "2025-06-20",
+            "source_type": "presse",
+            "is_primary": true
+          },
+          {
+            "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+            "media": "Lyon capitale",
+            "publication_date": "2025-06-20",
+            "source_type": "presse",
+            "is_primary": false
+          }
+        ]
+      },
+      {
+        "case_id": "FR-2026-0044",
+        "etablissement": "Établissement professionnel non nommé",
+        "commune": "Charentay",
+        "departement": "Rhône",
+        "type_structure": "autre",
+        "role_mis_en_cause": "enseignant",
+        "type_affaire": "agression sexuelle",
+        "statut_judiciaire": "condamnation non définitive",
+        "statut_des_faits": "retenu par jugement non définitif",
+        "enfants_concernes_public": "1 enfant",
+        "lat": 46.084203,
+        "lng": 4.681116,
+        "sources": [
+          {
+            "url": "https://www.leprogres.fr/faits-divers-justice/2025/12/03/le-prof-de-math-avait-agresse-sexuellement-une-eleve-pendant-plusieurs-mois-cinq-ans-de-prison",
+            "media": "Le Progrès",
+            "publication_date": "2025-12-03",
+            "source_type": "presse",
+            "is_primary": true
+          },
+          {
+            "url": "https://www.lyonmag.com/article/148706/le-prof-imposait-des-relations-sexuelles-a-une-eleve-mineure-il-echappe-au-proces-pour-viols-pas-a-la-prison",
+            "media": "LyonMag",
+            "publication_date": "2025-12-04",
+            "source_type": "presse",
+            "is_primary": false
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "_meta": {
+    "avertissement": "BROUILLON. Sélection explicite des affaires d’un hub (DATA_CONTRACT_V0 §5). Aucune requête géographique implicite au moment du rendu.",
+    "genere_le": "2026-09-15",
+    "genere_depuis": "data/cases.json (instantané du 2026-06-06)",
+    "statut": "draft"
+  },
+  "hub_id": "paris-11e",
+  "zone_label": "Paris 11e arrondissement",
+  "zone_kind": "arrondissement",
+  "status": "draft",
+  "template_version": "hub-v1.0.0",
+  "rules_version": "editorial-v0",
+  "verified_at": null,
+  "case_ids": [
+    {
+      "case_id": "FR-2026-0016",
+      "position": 1
+    },
+    {
+      "case_id": "FR-2026-0023",
+      "position": 2
+    },
+    {
+      "case_id": "PARIS-006",
+      "position": 3
+    },
+    {
+      "case_id": "PARIS-009",
+      "position": 4
+    },
+    {
+      "case_id": "POC-05",
+      "position": 5
+    },
+    {
+      "case_id": "POC-06",
+      "position": 6
+    },
+    {
+      "case_id": "POC-07",
+      "position": 7
+    },
+    {
+      "case_id": "POC-08",
+      "position": 8
+    },
+    {
+      "case_id": "POC-09",
+      "position": 9
+    }
+  ]
+}
