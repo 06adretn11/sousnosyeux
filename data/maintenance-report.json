@@ -1,0 +1,639 @@
+{
+  "generated_at": "2026-09-15",
+  "corpus": "data/cases.json",
+  "mode": "observation",
+  "mutations": 0,
+  "total_affaires": 53,
+  "compteurs": {
+    "affaires": 53,
+    "etablissements": 47,
+    "par_statut": {
+      "procès": 7,
+      "enquête": 15,
+      "plainte": 6,
+      "mise en examen": 12,
+      "condamnation non définitive": 11,
+      "relaxe / non-lieu / classement": 2
+    },
+    "derniere_verif": null,
+    "echeances_futures": 0
+  },
+  "resume": {
+    "total": 65,
+    "bloquants": 10,
+    "alertes": 55,
+    "nouvelles": 0,
+    "inchangees": 65,
+    "resolues": 0
+  },
+  "par_priorite": {
+    "1": {
+      "libelle": "P1 — issue favorable ou contradictoire (traiter en premier)",
+      "count": 2
+    },
+    "4": {
+      "libelle": "P4 — doublon probable",
+      "count": 4
+    },
+    "5": {
+      "libelle": "P5 — défaut de source bloquant",
+      "count": 5
+    },
+    "6": {
+      "libelle": "P6 — source dégradée",
+      "count": 1
+    },
+    "8": {
+      "libelle": "P8 — traçabilité de revue",
+      "count": 53
+    }
+  },
+  "findings": [
+    {
+      "rule": "R5_relaxe_encore_publiee",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0024",
+      "message": "issue favorable (relaxe / non-lieu / classement) mais fiche toujours publiée — retrait requis",
+      "evidence": null,
+      "fingerprint": "9572c50503ba238c",
+      "priorite": 1
+    },
+    {
+      "rule": "R5_relaxe_encore_publiee",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0035",
+      "message": "issue favorable (relaxe / non-lieu / classement) mais fiche toujours publiée — retrait requis",
+      "evidence": null,
+      "fingerprint": "7220feb4c4309378",
+      "priorite": 1
+    },
+    {
+      "rule": "R9_doublon_probable",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0003/PARIS-010",
+      "message": "doublon probable (grands champs::paris 20e) — même URL de source, même date de publication, coordonnées identiques",
+      "evidence": "École Grands Champs ≡ École maternelle Grands-Champs",
+      "fingerprint": "6dd659ce5adaa274",
+      "priorite": 4
+    },
+    {
+      "rule": "R9_doublon_probable",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0007/PARIS-007",
+      "message": "doublon probable (reuilly::paris 12e) — même URL de source, même date de publication",
+      "evidence": "École maternelle Reuilly II ≡ École maternelle Reuilly",
+      "fingerprint": "95477c619e0acdc0",
+      "priorite": 4
+    },
+    {
+      "rule": "R9_doublon_probable",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0008/PARIS-008",
+      "message": "doublon probable (boulard::paris 14e) — même URL de source, même date de publication",
+      "evidence": "École Boulard ≡ École maternelle Boulard",
+      "fingerprint": "f7b9b016f99085cf",
+      "priorite": 4
+    },
+    {
+      "rule": "R9_doublon_probable",
+      "severity": "alerte",
+      "case_id": "FR-2026-0023/PARIS-009",
+      "message": "doublon probable (faidherbe::paris 11e) — coordonnées identiques",
+      "evidence": "École maternelle de la rue Faidherbe ≡ École maternelle Faidherbe",
+      "fingerprint": "b51be8a7c3e96a50",
+      "priorite": 4
+    },
+    {
+      "rule": "R4_source_primaire_non_admissible",
+      "severity": "bloquant",
+      "case_id": "FR-2026-0008",
+      "message": "source primaire non admissible : encyclopédie collaborative",
+      "evidence": "Wikipédia",
+      "fingerprint": "f189d7766a4f5fab",
+      "priorite": 5
+    },
+    {
+      "rule": "R4_source_primaire_non_admissible",
+      "severity": "bloquant",
+      "case_id": "PARIS-001",
+      "message": "source primaire non admissible : agrégateur sans rédaction",
+      "evidence": "MSN / reprise presse",
+      "fingerprint": "1e044cb02f893a2b",
+      "priorite": 5
+    },
+    {
+      "rule": "R4_source_primaire_sans_date",
+      "severity": "bloquant",
+      "case_id": "POC-02",
+      "message": "source primaire sans date de publication",
+      "evidence": "Ouest-France",
+      "fingerprint": "b758bd4368f2ae0b",
+      "priorite": 5
+    },
+    {
+      "rule": "R4_source_primaire_sans_date",
+      "severity": "bloquant",
+      "case_id": "POC-09",
+      "message": "source primaire sans date de publication",
+      "evidence": "France 3",
+      "fingerprint": "f3bcf5005048f46e",
+      "priorite": 5
+    },
+    {
+      "rule": "R4_source_primaire_sans_date",
+      "severity": "bloquant",
+      "case_id": "POC-10",
+      "message": "source primaire sans date de publication",
+      "evidence": "ELLE",
+      "fingerprint": "efc0bccac65c75d3",
+      "priorite": 5
+    },
+    {
+      "rule": "R4_source_secondaire_non_admissible",
+      "severity": "alerte",
+      "case_id": "FR-2026-0016",
+      "message": "source secondaire non admissible : contenu sous paywall, non vérifiable publiquement",
+      "evidence": "Mediapart",
+      "fingerprint": "79a7c37b8f6d08eb",
+      "priorite": 6
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0001",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "645a8967f9e21fab",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0002",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "66a53109c9beb059",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0003",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "35a1fe8e8a411623",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0004",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "09b9c82913d4e220",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0005",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "8d5a6601136e1d1c",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0006",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "4c3aa24d41329920",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0007",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "2d36fd0c235dac50",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0008",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "5cfecfb51d78e846",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0011",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "74ea7ee0c67fb48e",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0012",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "335681331ce94bb1",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0013",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "2ad7b0ad0c21bc18",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0016",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "a952a0165c21c5d7",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0020",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "5a463e3567cc21fc",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0021",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "fc4b0f930e524761",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0022",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "61920322d19823d9",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0023",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "aef8ffb43ea57d43",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0024",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "4de4d88158295f45",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0025",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "d7e076359ce18bfd",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0026",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "af792c41ffd65c0a",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0027",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "64c8cb2bb1032d4f",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0028",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "0f8a7aac00689d67",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0029",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "1b25e1b9b5efc823",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0030",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "66552edc07c1f6fd",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0031",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "2c69a1c841337174",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0032",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "ae4c0f34336e33e6",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0033",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "71bcf31f45990208",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0035",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "c89262d39d075765",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0036",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "e565c6de4b535a8e",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0037",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "127f94406917389c",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0038",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "4d5d0570f08b2368",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0041",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "9690eb4b39865798",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0042",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "6f390d7b8187817f",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0043",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "5e571bc31ff4a024",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0044",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "1664c91f56689ba3",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0045",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "ef551905d3d895b5",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0046",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "a850ab1f9ba204d7",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0047",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "ea8d7c095ba7f226",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-001",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "e1ebf83c6e324049",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-004",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "e63d22d069c9e1f7",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-006",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "02167fc67d815ed4",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-007",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "6f4f87d8a71f0aa5",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-008",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "435888fcb55a806f",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-009",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "c94b350f10b3da4d",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "PARIS-010",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "c13ff170a89003f2",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-02",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "c5b5f9ca4c3b074b",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-03",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "21696a3c0d2b19d1",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-04",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "80b4dd5e69430c09",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-05",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "5fc982903c263d7e",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-06",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "971d80f2980be394",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-07",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "a3d0bb53ed632a25",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-08",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "31cf995127c21bf7",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-09",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "0be92bd4e8a52116",
+      "priorite": 8
+    },
+    {
+      "rule": "R5_verified_at_absent",
+      "severity": "alerte",
+      "case_id": "POC-10",
+      "message": "fiche publiée sans date de vérification humaine",
+      "evidence": null,
+      "fingerprint": "5c40cc732896f187",
+      "priorite": 8
+    }
+  ],
+  "resolues": []
+}

@@ -1,0 +1,184 @@
+{
+  "_meta": {
+    "avertissement": "FICTIF — corpus de simulation d entretien. Aucune affaire reelle. Ne jamais importer en base.",
+    "cycle": 2,
+    "libelle": "Apres correction et retrait"
+  },
+  "cases": [
+    {
+      "etablissement": "Ecole Alpha-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte qu une enquête a été ouverte.",
+      "sources": [
+        {
+          "url": "https://fictif.test/a",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-08-01",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-01"
+    },
+    {
+      "etablissement": "Ecole Beta-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte qu une enquête a été ouverte.",
+      "sources": [
+        {
+          "url": "https://fictif.test/a",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-08-01",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-02"
+    },
+    {
+      "etablissement": "Creche Gamma-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "retirée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte un classement sans suite.",
+      "sources": [
+        {
+          "url": "https://fictif.test/a",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-08-01",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-03"
+    },
+    {
+      "etablissement": "Ecole Delta-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte qu une enquête a été ouverte.",
+      "sources": [
+        {
+          "url": "https://fictif.test/d",
+          "media": "Ouest-Fictif",
+          "publication_date": "2026-06-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-04"
+    },
+    {
+      "etablissement": "Ecole maternelle Epsilon-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte qu une enquête a été ouverte.",
+      "sources": [
+        {
+          "url": "https://fictif.test/e",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-07-15",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-05a"
+    },
+    {
+      "etablissement": "Ecole Epsilon-Fictive",
+      "commune": "Ville-Cycle",
+      "departement": "Testiere",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "retirée",
+      "verified_at": "2026-09-10",
+      "lat": 48,
+      "lng": 2,
+      "resume_public": "Une source publique rapporte qu une enquête a été ouverte.",
+      "sources": [
+        {
+          "url": "https://fictif.test/e",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-07-15",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": [],
+      "case_id": "CYC-05b",
+      "merged_into": "CYC-05a"
+    }
+  ]
+}
