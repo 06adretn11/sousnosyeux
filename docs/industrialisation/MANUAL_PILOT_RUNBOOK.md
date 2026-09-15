@@ -19,8 +19,30 @@ Pourquoi celui-là :
   depuis trois mois : le pilote est obligé de chercher une issue, ce qui est exactement
   l'exercice à calibrer.
 
-État de départ : `publishable: false` · `R4_source_primaire_sans_date` sur `POC-09` ·
-`R5_verified_at_absent` sur les 9 · `R9_doublon_probable` sur `FR-2026-0023`/`PARIS-009`.
+### Préflight — exécuté le 15/09/2026, **le pilote ne l'a pas été**
+
+Croisement des 10 constats bloquants du corpus avec les 9 affaires du hub :
+
+| | |
+|---|---|
+| Bloquants du corpus touchant le hub | **1 sur 10** |
+| Lequel | `R4_source_primaire_sans_date` — `POC-09` (École Titon), source **France 3 non datée** |
+| Alertes du hub | `R5_verified_at_absent` × 9 · `R9_doublon_probable` × 1 (`FR-2026-0023`/`PARIS-009`) |
+| `payload_hash` | `3a78e3e5368ecdca…` |
+| `publishable` | `false` |
+
+**Hors périmètre du hub** : les 2 fiches à statut « relaxe » douteux (D1), les 3 paires de
+doublons (D2), la fiche au patronyme exposé (D6), les 2 sources primaires non admissibles,
+les 2 autres sources non datées. Aucun de ces sujets ne bloque le pilote, et le pilote ne les
+débloque pas.
+
+**Le seul bloquant qui touche le hub est l'entrée prévue du scénario S2.** Le pilote n'est
+pas empêché par ce constat : il est construit autour de lui. Un hub sans défaut ne
+calibrerait rien.
+
+**Verdict du préflight : `READY_FOR_MANUAL_PILOT`.**
+
+Détail du croisement : `EVIDENCE_MANIFEST.md` §9.
 
 ## 2. Rôles
 
@@ -78,8 +100,9 @@ preuve conservée.
 
 | | |
 |---|---|
-| Entrée | `FR-2026-0023` / `PARIS-009` — doublon probable, établissement Faidherbe |
+| Entrée | `FR-2026-0023` / `PARIS-009` — doublon probable, établissement Faidherbe. C'est la **seule** paire de doublons présente dans ce hub ; les trois autres sont hors périmètre |
 | Attendu | trancher `MERGE` ou `KEEP_SEPARATE` (cf. `DECISION_PACK.md` D2). Si `MERGE` : la fiche fusionnée passe en `retirée`, `merged_into` pointe vers la survivante |
+| ⚠️ Méthode imposée | **ne pas conclure à partir d'une URL commune ni de coordonnées identiques.** Le corpus contient une URL citée par 5 affaires distinctes, et les coordonnées sont un artefact du géocodage du nom. La seule preuve recevable est ce que l'article dit du **nombre de personnes mises en cause** et du **nombre d'établissements**. Ici les deux fiches ont des sources et des dates **différentes** : les deux doivent être lues. |
 | Contrôle en cascade | la correction doit se propager à **tous** les agrégats : carte, hub, compteurs, dans la même opération |
 | Vérification | `node scripts/scan-maintenance.mjs` — l'alerte doit apparaître comme **résolue**, et un second passage ne doit créer **aucune** nouvelle alerte |
 | Preuve | rapport d'entretien avant/après, décision écrite et motivée |

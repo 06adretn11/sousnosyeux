@@ -1,4 +1,4 @@
-# DECISION_PACK — cinq décisions humaines
+# DECISION_PACK — décisions humaines
 
 _15 septembre 2026 · branche `feat/hub-pre-executeur-clean`._
 
@@ -8,10 +8,11 @@ Chaque décision est arbitrable en lisant la section correspondante, sans relire
 | # | Objet | Recommandation | Confiance |
 |---|---|---|---|
 | **D1** | 2 fiches étiquetées `relaxe / non-lieu / classement` | **NE PAS retirer** — corriger le statut, qui paraît faux | moyenne |
-| **D2** | 3 doublons supposés | **MERGE** pour les 3 · 1 paire supplémentaire en `HUMAN_REVIEW` | élevée |
+| **D2** | 3 doublons supposés | **2 `MERGE`** (`0003/010`, `0007/007`) · **1 `HUMAN_REVIEW`** (`0008/008`) · +1 paire Faidherbe en `HUMAN_REVIEW` | moyenne |
 | **D3** | Clé `service_role` | **Rotation** — comportement dangereux avéré, publication non démontrée | élevée |
-| **D4** | Migration 004 | **Appliquer**, avec `PGCLIENTENCODING=UTF8` impérativement épinglé | élevée |
+| **D4** | Migration 004 | **Appliquer**, mais l'encodage UTF-8 doit être garanti par le **processus**, pas par un poste | moyenne |
 | **D5** | Objet d'une revue | **Revue portant sur une `content_version` immuable** | moyenne |
+| **D6** | `FR-2026-0026` — patronyme exposé dans une URL publique | **Retirer la source réhébergée** (option C), puis retrouver l'article d'origine | élevée |
 
 ---
 
@@ -93,37 +94,225 @@ Correctif proposé (non appliqué) : `statut_judiciaire` → `enquête`, et exam
 
 ## D2 — Trois doublons supposés
 
-Les trois paires partagent **exactement la même URL de source primaire** — ce n'est pas une
-ressemblance de nom, c'est le même article saisi deux fois.
+> ⚠️ **Cette section corrige une erreur de raisonnement de la version précédente.**
+> J'y concluais `MERGE` avec confiance **élevée** pour les trois paires, au motif qu'elles
+> partagent la même URL de source primaire. **Ce motif ne vaut rien**, et le corpus lui-même
+> le démontre.
 
-| Paire | Établissement normalisé | Commune | Rôle | Période | Source primaire | Motif du rapprochement | Verdict | Confiance |
-|---|---|---|---|---|---|---|---|---|
-| `FR-2026-0003` / `PARIS-010` | grands champs | Paris 20e | tiers | 03/2026 | **URL Le Parisien identique** (20/03/2026) | même URL, **coordonnées identiques au 10⁻⁶**, même type, même statut, même généralisation d'enfants | **`MERGE`** | **élevée** |
-| `FR-2026-0007` / `PARIS-007` | reuilly | Paris 12e | animateur périscolaire | 09/2025 | **URL 20 Minutes identique** (`4174086-20250919`) | même URL, coordonnées à ~110 m (deux géocodages du même groupe scolaire), variante de graphie « Reuilly II » / « Reuilly » | **`MERGE`** | **élevée** |
-| `FR-2026-0008` / `PARIS-008` | boulard | Paris 14e | animateur périscolaire | 03/2026 | **URL Le Parisien identique** (11/03/2026) | même URL, coordonnées à ~60 m, « École Boulard » / « École maternelle Boulard » | **`MERGE`** | **élevée** |
+### D2-0 · Pourquoi une URL commune ne prouve rien
 
-Divergences à trancher au moment de la fusion (elles n'infirment pas le rapprochement, elles
-montrent une saisie incohérente du **même** fait) :
+Six URL du corpus sont partagées par plusieurs affaires. La plus partagée l'est par **cinq
+affaires distinctes** :
 
-- `FR-2026-0007` a `type_structure: maternelle`, `PARIS-007` a `périscolaire` ;
-- `FR-2026-0008` a `type_affaire: violences sexuelles`, `PARIS-008` a `mixte` ;
-- `FR-2026-0008` porte un libellé de média erroné (voir §D2-bis).
+| URL | Affaires qui la citent |
+|---|---|
+| Le Parisien 20/03/2026 — *trois hommes dont deux animateurs périscolaires interpellés…* | `FR-2026-0001` (Aqueduc, animateur) · `FR-2026-0002` (Aqueduc, enseignant) · `FR-2026-0003` (Grands Champs, tiers) · `FR-2026-0004` (Vigée Lebrun, animateur) · `PARIS-010` (Grands-Champs, tiers) |
+| CNEWS 20/03/2026 | 3 affaires, 3 établissements |
+| ELLE 2026 — *quelles sont les écoles parisiennes les plus touchées* | 2 affaires, 2 établissements |
+| Le Progrès 20/06/2025 | `FR-2026-0035` (Lyon 6e) · `FR-2026-0036` (Lyon 3e) |
 
-**Paire supplémentaire, non concluante** — `FR-2026-0023` / `PARIS-009`, école Faidherbe
-(11e) : coordonnées identiques et même rôle, mais **sources et dates différentes** (20 Minutes
-08/12/2025 vs Le Parisien 20/11/2025). La presse décrit deux mis en cause distincts dans le
-même établissement. **`HUMAN_REVIEW`**, confiance faible — ne pas fusionner automatiquement.
+Ces articles sont des **synthèses multi-établissements**. Deux fiches qui les citent sont
+donc **attendues**, y compris quand elles décrivent des affaires parfaitement distinctes.
 
-**Conséquence sur le compteur** : si les 3 fusions sont validées, le corpus publié passe de
-**53 à 50**. Cela reste une hypothèse jusqu'à validation.
+Deuxième artefact à écarter : **les coordonnées identiques ne sont pas une corroboration**.
+Elles résultent du géocodage du même couple `établissement + commune` : deux graphies proches
+produisent mécaniquement le même point. C'est une conséquence du rapprochement supposé, pas
+une preuve indépendante.
 
-### D2-bis · Défauts de sourçage révélés en qualifiant D2
+Il ne reste donc qu'un seul type de preuve recevable : **ce que l'article dit du nombre de
+personnes mises en cause et du nombre d'établissements concernés.**
+
+### D2-1 · `FR-2026-0003` / `PARIS-010` — Grands Champs, Paris 20e
+
+| | `FR-2026-0003` | `PARIS-010` |
+|---|---|---|
+| Établissement | École Grands Champs | École maternelle Grands-Champs |
+| Rôle · type · statut · faits · enfants | `tiers` · agression sexuelle · enquête · allégué · plusieurs | **identiques** |
+| Coordonnées | 48.851216 / 2.403689 | **identiques** (artefact de géocodage) |
+| Sources | Le Parisien + CNEWS | Le Parisien seule |
+
+**Preuve recevable** : l'article titre *trois hommes **dont deux animateurs périscolaires***.
+Il décrit donc **au plus un** mis en cause non-animateur. Or les deux fiches portent le rôle
+`tiers` et ne s'appuient que sur cet article. Le corpus ne peut pas en tirer deux `tiers`.
+
+**Réserve** : le même article alimente déjà cinq fiches, dont un `enseignant` (`FR-2026-0002`).
+Le décompte du corpus ne se réconcilie pas proprement avec « trois hommes ». L'article n'a pas
+pu être lu intégralement (accès refusé).
+
+**Verdict : `MERGE` · confiance moyenne.** À confirmer par la lecture de l'article.
+
+### D2-2 · `FR-2026-0007` / `PARIS-007` — Reuilly, Paris 12e
+
+| | `FR-2026-0007` | `PARIS-007` |
+|---|---|---|
+| Établissement | École maternelle Reuilly **II** | École maternelle Reuilly |
+| `type_structure` | maternelle | **périscolaire** |
+| Rôle · type · statut · faits · enfants | animateur périscolaire · agression sexuelle · enquête · allégué · 1 enfant | **identiques** |
+| Coordonnées | 48.845678 / 2.388686 | 48.844756 / 2.389791 — **~110 m d'écart** |
+| Sources | 20 Minutes + Linfo.re | 20 Minutes seule |
+
+**Preuve recevable** : l'article (titre et reprises concordantes) décrit **un seul** animateur
+suspendu dans **une seule** maternelle, en août-septembre 2025. Deux fiches ne peuvent en
+sortir.
+
+**Réserve sérieuse** : « Reuilly II » n'est pas nécessairement une variante de graphie.
+Paris numérote de véritables écoles distinctes au sein d'un même groupe scolaire. L'écart de
+110 m entre les deux géocodages est compatible avec **deux adresses réelles**. Si les deux
+établissements existent, l'une des deux fiches n'est pas un doublon mais une **mauvaise
+attribution** — à corriger, pas à fusionner.
+
+**Verdict : `MERGE` · confiance moyenne**, conditionné à la vérification que « Reuilly » et
+« Reuilly II » désignent bien le même établissement. Sinon : correction d'attribution.
+
+### D2-3 · `FR-2026-0008` / `PARIS-008` — Boulard, Paris 14e
+
+| | `FR-2026-0008` | `PARIS-008` |
+|---|---|---|
+| Établissement | École Boulard | École maternelle Boulard |
+| `type_structure` | maternelle | **périscolaire** |
+| `type_affaire` | **violences sexuelles** | **mixte** |
+| Rôle · statut · faits · enfants | animateur périscolaire · enquête · allégué · plusieurs | **identiques** |
+| Coordonnées | 48.83373… / 2.32893… | 48.833196 / 2.328467 — ~60 m |
+| Sources | Radio France *(libellé « Wikipédia », faux)* + Le Parisien | Le Parisien seule |
+
+**Preuve recevable — elle va dans l'autre sens.** L'article titre *****trois** animateurs
+écartés d'**une** maternelle***. Le même établissement héberge donc, selon la source
+elle-même, **trois** mis en cause au même rôle. Deux fiches « animateur périscolaire à
+Boulard » citant cet article sont exactement ce qu'on attend de **deux affaires distinctes**.
+
+Rien ne distingue ces deux fiches comme portant sur la **même** personne. Les divergences de
+`type_affaire` (`violences sexuelles` / `mixte`) sont même cohérentes avec deux mis en cause
+différents.
+
+**Verdict : `HUMAN_REVIEW` · confiance faible.** Ne pas fusionner. `KEEP_SEPARATE` est au
+moins aussi plausible que `MERGE`.
+
+### D2-4 · Récapitulatif et effet sur le compteur
+
+| Paire | Verdict | Confiance | Preuve décisive |
+|---|---|---|---|
+| `FR-2026-0003` / `PARIS-010` | **`MERGE`** | moyenne | l'article décrit au plus **un** non-animateur |
+| `FR-2026-0007` / `PARIS-007` | **`MERGE`** | moyenne | l'article décrit **un seul** animateur dans **une seule** maternelle |
+| `FR-2026-0008` / `PARIS-008` | **`HUMAN_REVIEW`** | faible | l'article décrit **trois** animateurs dans **la même** maternelle |
+| `FR-2026-0023` / `PARIS-009` (Faidherbe, 11e) | **`HUMAN_REVIEW`** | faible | sources et dates différentes ; la presse décrit deux mis en cause distincts |
+
+**Conséquence sur le compteur** : au mieux **53 → 51**, et seulement si les deux `MERGE` sont
+confirmés par lecture des articles. L'hypothèse « 53 → 50 » de la version précédente est
+**retirée**.
+
+**Conséquence sur la règle `R9_doublon_probable`** : elle classe `bloquant` dès qu'une URL est
+commune. Sur ce corpus, ce critère produit au moins un faux positif (`Boulard`). La règle
+devrait retomber en `alerte` tant qu'aucune preuve tirée du **contenu** de la source n'est
+disponible. Non modifié dans cette passe.
+
+### D2-bis · Divergences de saisie à trancher lors d'une fusion éventuelle
+
+- `FR-2026-0007` : `type_structure` `maternelle` vs `périscolaire` sur `PARIS-007` ;
+- `FR-2026-0008` : `type_affaire` `violences sexuelles` vs `mixte` sur `PARIS-008` ;
+- `FR-2026-0008` : libellé de média faux (voir §D2-ter).
+
+### D2-ter · Défauts de sourçage révélés en qualifiant D2
 
 | Fiche | Constat | Gravité |
 |---|---|---|
-| `FR-2026-0026` | Établissement « Collège non nommé », commune « non précisée », **aucune coordonnée**, source primaire = **PDF d'un article Le Parisien réhébergé sur le site d'un cabinet d'avocats**, dont le nom de fichier contient **le patronyme d'une personne**. Cette URL est publiée dans `data/cases.json` et rendue sur le site. | 🔴 vecteur de ré-identification dans un artefact public |
-| `FR-2026-0008` | Média saisi « Wikipédia », URL réelle = **radiofrance.fr** (France Culture). Ce n'est pas une source Wikipédia : c'est un **libellé faux**. | 🟠 corrige un constat erroné de la session précédente |
+| `FR-2026-0026` | Patronyme exposé dans une URL publique — **traité à part, voir D6** | 🔴 |
+| `FR-2026-0008` | Média saisi « Wikipédia », URL réelle = **radiofrance.fr** (France Culture). Ce n'est pas une source Wikipédia : c'est un **libellé faux**. La règle `R4_source_primaire_non_admissible` se déclenche donc sur une **fausse cause** : corriger le libellé fera disparaître le constat sans rien améliorer au sourçage. | 🟠 corrige un constat erroné de la session précédente |
 | `PARIS-001` | Reprise MSN ; l'éditeur d'origine **n'a pas pu être identifié** (3 requêtes). | 🟠 `UNKNOWN` |
+
+---
+
+## D6 — `FR-2026-0026` : patronyme exposé dans une URL publique
+
+> Ajoutée à la demande d'Adrien. Elle porte le nombre de décisions à six : elle ne pouvait
+> pas rester une ligne de tableau, l'exposition est d'une autre nature que les autres
+> constats.
+
+### Le constat
+
+| Champ | Valeur |
+|---|---|
+| `etablissement` | « Collège non nommé, Essonne » |
+| `commune` | « commune non précisée » |
+| `lat` / `lng` | `null` / `null` |
+| Source primaire | `cabinetlombard.net/wp-content/uploads/2021/01/2021-01-06-Article-Le-Parisien-affaire-<PATRONYME>-1.pdf` |
+| Média saisi | « Le Parisien » (le domaine est celui d'un cabinet d'avocats) |
+| Date | 2021-01-06 |
+| Source secondaire | Libération, 21/04/2016 — *pédophilie collège de Villemoisson : failles et soupçons* |
+
+Le nom de fichier du PDF contient **le patronyme d'une personne**, dans un segment de la
+forme `affaire-<nom>`. Cette URL est stockée dans `data/cases.json`, **fichier suivi par Git
+dans un dépôt public**, et rendue telle quelle dans le lien de source du site.
+
+### Pourquoi c'est d'une autre nature que les autres constats
+
+Le principe éditorial non négociable du projet est : **jamais le nom de la personne mise en
+cause**. Ici il n'est pas dans un champ, il est dans une **URL** — un endroit que ni la revue
+éditoriale, ni les règles de contenu (`R1`) ne regardent, puisqu'elles inspectent les textes
+publiables, pas les liens.
+
+Aggravations :
+
+1. la fiche ne nomme ni l'établissement ni la commune, mais l'URL et la source secondaire
+   désignent **Villemoisson** : le recoupement rétablit ce que l'anonymisation retirait ;
+2. la source primaire n'est pas l'éditeur : c'est un **PDF réhébergé** sur le site d'un
+   cabinet d'avocats, sans garantie d'intégrité ni de pérennité ;
+3. les faits remontent à **2016-2021**, hors du périmètre temporel du reste du corpus.
+
+### Options
+
+| # | Option | Effet | Coût | Risque résiduel |
+|---|---|---|---|---|
+| **A** | Remplacer la source primaire par l'article **Le Parisien d'origine** | supprime l'URL exposante, rétablit le bon éditeur | il faut retrouver l'article de 2021 | aucun si trouvé ; sinon blocage |
+| **B** | Rétrograder le PDF en secondaire et promouvoir **Libération 2016** en primaire | source déjà présente, éditeur identifié, accessible | immédiat | l'URL exposante **reste publiée** tant qu'elle est citée |
+| **C** | Supprimer purement la source `cabinetlombard.net` | supprime l'exposition immédiatement | la fiche perd sa source la plus récente | Libération 2016 reste seule : fiche affaiblie mais conforme |
+| **D** | Dépublier la fiche (`publication_status = 'retirée'`) | supprime tout | perte d'une information d'intérêt public | aucun |
+
+**Recommandation : C maintenant, A ensuite.** Retirer d'abord l'URL exposante — c'est la
+seule action qui arrête l'exposition sans dépendre d'une recherche. Puis chercher l'article
+Le Parisien d'origine et le réintroduire comme source primaire.
+
+L'option B est insuffisante : rétrograder ne dépublie pas. Une source secondaire est **rendue
+sur le site** exactement comme une primaire.
+
+### Patch proposé — **non appliqué**
+
+Aucune donnée n'a été modifiée. La suppression d'une source est une mutation de production,
+réservée à Adrien.
+
+```
+-- À exécuter uniquement après décision. Option C.
+-- 1) Constater avant
+select source_id, media, url, is_primary
+  from sources where case_id = 'FR-2026-0026';
+
+-- 2) Supprimer la source réhébergée
+delete from sources
+ where case_id = 'FR-2026-0026'
+   and url like 'https://cabinetlombard.net/%';
+
+-- 3) Promouvoir Libération en source primaire
+update sources set is_primary = true
+ where case_id = 'FR-2026-0026'
+   and url like 'https://www.liberation.fr/%';
+
+-- 4) Contrôler : exactement une primaire, datée
+select count(*) from sources
+ where case_id = 'FR-2026-0026' and is_primary and publication_date is not null;
+```
+
+Puis `node --env-file=.env.local scripts/sync-data.mjs` et vérifier :
+`grep -c cabinetlombard data/cases.json` → **0**.
+
+### Ce que ce constat révèle au-delà d'une fiche
+
+Aucun contrôle n'inspecte aujourd'hui les **URL** à la recherche d'information personnelle :
+`R1` ne lit que les textes publiables. Un contrôle `URL ne contient pas de segment
+`affaire-<nom>`, `proces-<nom>`, `<prenom>-<nom>`` manque. Il n'a pas été écrit dans cette
+passe — la consigne était de ne rien développer. **À ouvrir comme tâche distincte.**
+
+⚠️ Un retrait de la fiche ou de sa source ne supprime **pas** l'URL de l'historique Git :
+elle restera dans les commits passés de `data/cases.json`. Le nettoyage d'historique est une
+opération destructive, à décider séparément.
 
 ---
 
@@ -201,6 +390,50 @@ avait créé des **libellés d'énumération corrompus**. L'erreur ne se manifes
 > **Appliquer impérativement avec `PGCLIENTENCODING=UTF8`**, ou depuis l'éditeur SQL du
 > dashboard Supabase (UTF-8 natif). Avec un encodage latin, les libellés accentués
 > (`publiée`, `enquête`, `à qualifier`) seraient corrompus **silencieusement**.
+
+#### Pourquoi ceci suffit à maintenir la porte 2 en `PROVISIONAL`
+
+Ma preuve d'exécution vaut pour **un poste Windows sur lequel j'ai exporté la variable à la
+main**. C'est une propriété de mon environnement, pas du processus de migration.
+
+Tant que l'encodage dépend de la machine et de l'opérateur, la migration est **reproductible
+par accident**, pas par construction. Or son mode d'échec est le pire possible : elle ne
+plante pas au moment de la corruption, elle plante **plus tard**, et entre les deux les
+libellés d'énumération sont faux en base.
+
+La porte 2 est donc ramenée de `PASSED` à **`PROVISIONAL`**. Elle ne pourra repasser que
+lorsque l'une de ces garanties existera :
+
+| # | Garantie | Effet |
+|---|---|---|
+| **G1** | La migration s'exécute par un chemin qui **impose** l'encodage (éditeur SQL Supabase, ou script d'application qui pose `PGCLIENTENCODING=UTF8` et refuse de démarrer sinon) | supprime la dépendance au poste |
+| **G2** | `004` commence par une **assertion** qui échoue tôt et bruyamment si un libellé accentué connu est absent de son énumération | déplace l'échec au bon endroit |
+| **G3** | La procédure d'application vérifie les libellés **avant** et **après**, et le contrôle fait partie du livrable | rend l'erreur détectable par l'opérateur |
+
+Requête d'assertion proposée, à placer en tête de la procédure — **non ajoutée à `004`**,
+puisque cette passe ne développe rien :
+
+```sql
+-- Doit renvoyer t. Sinon : encodage client fautif, NE PAS CONTINUER.
+select bool_and(l = any (enum_range(null::publication_status)::text[])) as encodage_ok
+  from unnest(array['publiée','candidate','validée','retirée']) as l;
+```
+
+**Testée** sur la base éphémère : renvoie `t` lorsqu'elle est exécutée depuis un fichier
+UTF-8 avec `PGCLIENTENCODING=UTF8`.
+
+⚠️ La même requête passée en ligne de commande via `psql -c` a échoué :
+
+```
+ERROR:  invalid byte sequence for encoding "UTF8": 0xe9 0x65 0x27
+```
+
+Le shell avait transmis les accents en Latin-1. **C'est exactement le mode de défaillance que
+l'assertion cherche à attraper**, reproduit ici par accident. Conclusion opérationnelle :
+exécuter l'assertion **depuis un fichier** (`psql -f`), jamais via `-c`. Ce détail est la
+meilleure illustration de pourquoi la porte 2 ne peut pas rester `PASSED` : la chaîne complète
+— shell, fichier, client, serveur — doit être UTF-8, et une seule maille suffit à corrompre
+silencieusement.
 
 ### Requêtes de contrôle avant / après
 

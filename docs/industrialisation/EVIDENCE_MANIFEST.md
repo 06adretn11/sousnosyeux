@@ -49,7 +49,7 @@ Cluster jetable hors dépôt, base `sny_clean`. **La production n'a pas été to
 | P14 | `004_rollback.sql` | `0` | 6 tables → **0** ; `cases_public` (v1) survit ; **4 lignes `cases` préservées** |
 | P15 | `004` ré-appliquée après rollback | `0` | 0 → 6 tables |
 
-### ⚠️ Découverte de cette passe — condition d'application
+### 🔴 Porte 2 rétrogradée à `PROVISIONAL`
 
 Au premier essai, `004` a échoué :
 
@@ -57,13 +57,31 @@ Au premier essai, `004` a échoué :
 ERROR:  invalid input value for enum publication_status: "publiée"
 ```
 
-Cause : `schema.sql` avait été lu avec un encodage client autre qu'UTF-8, créant les
+Cause : `schema.sql` avait été lu avec un encodage client autre qu'UTF-8, créant des
 **libellés d'énumération corrompus**. L'erreur n'apparaît qu'ensuite, dans `004`.
 
-**Conséquence pour l'application réelle** : la migration doit être appliquée avec
-`PGCLIENTENCODING=UTF8` explicitement épinglé, ou depuis l'éditeur SQL Supabase (UTF-8
-natif). Appliquée avec un encodage latin, elle corromprait silencieusement les libellés
-d'énumération. Ce point est repris dans `DECISION_PACK.md` → D4.
+Les lignes P10 à P15 ci-dessus ont été obtenues **après** avoir exporté `PGCLIENTENCODING=UTF8`
+à la main, sur un poste Windows. **Elles ne prouvent donc pas que la migration est
+reproductible : elles prouvent qu'elle fonctionne sur mon poste, une fois la variable posée.**
+
+C'est insuffisant pour une porte `PASSED`, pour trois raisons :
+
+1. l'encodage dépend du **poste et de l'opérateur**, pas du processus ;
+2. le mode d'échec est différé — la corruption a lieu à `schema.sql`, l'erreur surgit dans
+   `004`, et entre les deux la base contient des libellés faux ;
+3. la fragilité s'est reproduite pendant la rédaction : la même requête d'assertion, passée
+   par `psql -c` au lieu de `psql -f`, a échoué avec
+   `invalid byte sequence for encoding "UTF8": 0xe9`.
+
+> **Verdict corrigé — porte 2 : `PASSED` → `PROVISIONAL`.**
+> Le tableau de `GATE_0_REPORT.md` est **périmé sur cette ligne** ; ce manifeste fait foi.
+> La porte ne repassera que lorsque l'encodage sera garanti **par le chemin d'exécution**
+> (éditeur SQL Supabase, ou script qui pose la variable et refuse de démarrer sans elle),
+> et non par une manipulation d'environnement. Garanties G1/G2/G3 et requête d'assertion
+> testée : `DECISION_PACK.md` → D4.
+
+**État des portes après correction** : 0 `PASSED` · 1 `PROVISIONAL` · 2 **`PROVISIONAL`** ·
+3 `PROVISIONAL` · 4 `PROVISIONAL`. **Aucune porte n'est `PASSED` sur la dimension exécution.**
 
 ## 5. Contrôles de rendu
 
@@ -109,11 +127,55 @@ Aucune valeur détectée n'est affichée. Motifs : JWT, `sb_secret_`, clé Anthr
 | Archive de sauvegarde locale | **0** |
 | `.env.local` | ignoré, **0 commit** dans tout l'historique — jamais entré dans Git |
 
-## 9. Ce que ces preuves ne démontrent pas
+## 9. Préflight du candidat `paris-11e`
+
+Exécuté le 15/09/2026. **Aucune donnée modifiée, aucun scénario du pilote joué.**
+
+Croisement des **10 constats bloquants du corpus** avec les 9 affaires du hub
+(`FR-2026-0016`, `FR-2026-0023`, `PARIS-006`, `PARIS-009`, `POC-05`, `POC-06`, `POC-07`,
+`POC-08`, `POC-09`) :
+
+| Constat bloquant du corpus | Affaire | Touche `paris-11e` |
+|---|---|---|
+| `R4_source_primaire_sans_date` — France 3 non datée | `POC-09` | ✅ **OUI** |
+| `R4_source_primaire_non_admissible` — libellé « Wikipédia » | `FR-2026-0008` | ❌ non |
+| `R4_source_primaire_non_admissible` — reprise MSN | `PARIS-001` | ❌ non |
+| `R4_source_primaire_sans_date` — Ouest-France | `POC-02` | ❌ non |
+| `R4_source_primaire_sans_date` — ELLE | `POC-10` | ❌ non |
+| `R5_relaxe_encore_publiee` | `FR-2026-0024` | ❌ non |
+| `R5_relaxe_encore_publiee` | `FR-2026-0035` | ❌ non |
+| `R9_doublon_probable` | `FR-2026-0003`/`PARIS-010` | ❌ non |
+| `R9_doublon_probable` | `FR-2026-0007`/`PARIS-007` | ❌ non |
+| `R9_doublon_probable` | `FR-2026-0008`/`PARIS-008` | ❌ non |
+
+**1 bloquant sur 10 touche le hub.**
+
+Alertes propres au hub : `R5_verified_at_absent` × **9** (les 9 affaires) et
+`R9_doublon_probable` × **1** (`FR-2026-0023` / `PARIS-009`, Faidherbe — `HUMAN_REVIEW`).
+
+`payload_hash 3a78e3e5368ecdca…` · `publishable: false` · 9 affaires · 8 établissements.
+
+### Lecture
+
+Le seul bloquant qui touche le hub — la source France 3 non datée de `POC-09`, École Titon —
+**est exactement l'entrée prévue du scénario S2** du runbook. Le pilote n'est pas empêché par
+ce constat : il est construit autour de lui.
+
+Aucun des constats les plus lourds ne touche le hub : les deux fiches à statut douteux (D1)
+et les trois paires de doublons (D2) sont **hors périmètre**. Les décisions D1, D2 et D6
+peuvent donc être arbitrées **sans bloquer le pilote**, et réciproquement.
+
+Réserve : `publishable: false`. Le hub **ne peut pas être publié** en l'état — ce qui est
+sans effet ici, puisque aucun scénario du pilote ne publie.
+
+**Verdict du préflight : `READY_FOR_MANUAL_PILOT`.**
+
+## 10. Ce que ces preuves ne démontrent pas
 
 - **Aucune qualité éditoriale.** 16 règles et 11 fixtures prouvent que les contrôles
   fonctionnent, pas que le corpus est exact.
 - **Aucun cycle de maintenance réel.** Les 4 cycles sont simulés sur fixtures.
-- **Aucune application en production.** La migration n'a tourné que sur une base jetable.
+- **Aucune application en production.** La migration n'a tourné que sur une base jetable, et
+  seulement après avoir fixé l'encodage à la main (cf. §4).
 - **Aucune validation humaine.** Aucun hub n'a été relu, approuvé ni publié.
 - **Aucune disponibilité réseau** des URL de source n'a été contrôlée.
