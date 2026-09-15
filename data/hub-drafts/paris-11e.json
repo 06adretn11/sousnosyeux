@@ -8,15 +8,8 @@
   "payload_hash": "3a78e3e5368ecdcabc40272096415806b52eeefb99e9f5d67d7d272044bd31d8",
   "publishable": false,
   "bloquants": 1,
-  "alertes": 11,
+  "alertes": 10,
   "findings": [
-    {
-      "rule": "R4_source_secondaire_non_admissible",
-      "severity": "alerte",
-      "case_id": "FR-2026-0016",
-      "message": "source secondaire non admissible : contenu sous paywall, non vérifiable publiquement",
-      "evidence": "Mediapart"
-    },
     {
       "rule": "R5_verified_at_absent",
       "severity": "alerte",

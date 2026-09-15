@@ -41,14 +41,15 @@ Aucun compteur n'est saisi : tous sont recalculés depuis les affaires retenues.
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0006` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0007` | fiche publiée sans date de vérification humaine |
 | 🔴 bloquant | `R4_source_primaire_non_admissible` | `FR-2026-0008` | source primaire non admissible : encyclopédie collaborative |
+| 🟠 alerte | `R4_media_incoherent` | `FR-2026-0008` | libellé « Wikipédia » incohérent avec le domaine |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0008` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0012` | fiche publiée sans date de vérification humaine |
-| 🟠 alerte | `R4_source_secondaire_non_admissible` | `FR-2026-0016` | source secondaire non admissible : contenu sous paywall, non vérifiable publiquement |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0016` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0023` | fiche publiée sans date de vérification humaine |
 | 🔴 bloquant | `R5_relaxe_encore_publiee` | `FR-2026-0024` | issue favorable (relaxe / non-lieu / classement) mais fiche toujours publiée — retrait requis |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0024` | fiche publiée sans date de vérification humaine |
 | 🔴 bloquant | `R4_source_primaire_non_admissible` | `PARIS-001` | source primaire non admissible : agrégateur sans rédaction |
+| 🟠 alerte | `R4_media_incoherent` | `PARIS-001` | libellé « MSN / reprise presse » incohérent avec le domaine |
 | 🟠 alerte | `R5_verified_at_absent` | `PARIS-001` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `PARIS-004` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `PARIS-006` | fiche publiée sans date de vérification humaine |

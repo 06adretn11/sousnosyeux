@@ -8,7 +8,7 @@
   "payload_hash": "cf18d473b23196e3456c0c972cbd33ab00ecf8d870b70af70de6d18cb4a27c95",
   "publishable": false,
   "bloquants": 8,
-  "alertes": 28,
+  "alertes": 29,
   "findings": [
     {
       "rule": "R5_verified_at_absent",
@@ -67,6 +67,13 @@
       "evidence": "Wikipédia"
     },
     {
+      "rule": "R4_media_incoherent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0008",
+      "message": "libellé « Wikipédia » incohérent avec le domaine",
+      "evidence": "radiofrance.fr"
+    },
+    {
       "rule": "R5_verified_at_absent",
       "severity": "alerte",
       "case_id": "FR-2026-0008",
@@ -79,13 +86,6 @@
       "case_id": "FR-2026-0012",
       "message": "fiche publiée sans date de vérification humaine",
       "evidence": null
-    },
-    {
-      "rule": "R4_source_secondaire_non_admissible",
-      "severity": "alerte",
-      "case_id": "FR-2026-0016",
-      "message": "source secondaire non admissible : contenu sous paywall, non vérifiable publiquement",
-      "evidence": "Mediapart"
     },
     {
       "rule": "R5_verified_at_absent",
@@ -121,6 +121,13 @@
       "case_id": "PARIS-001",
       "message": "source primaire non admissible : agrégateur sans rédaction",
       "evidence": "MSN / reprise presse"
+    },
+    {
+      "rule": "R4_media_incoherent",
+      "severity": "alerte",
+      "case_id": "PARIS-001",
+      "message": "libellé « MSN / reprise presse » incohérent avec le domaine",
+      "evidence": "msn.com"
     },
     {
       "rule": "R5_verified_at_absent",

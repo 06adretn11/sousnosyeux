@@ -19,11 +19,11 @@
     "echeances_futures": 0
   },
   "resume": {
-    "total": 65,
+    "total": 67,
     "bloquants": 10,
-    "alertes": 55,
-    "nouvelles": 0,
-    "inchangees": 65,
+    "alertes": 57,
+    "nouvelles": 67,
+    "inchangees": 0,
     "resolues": 0
   },
   "par_priorite": {
@@ -39,13 +39,13 @@
       "libelle": "P5 — défaut de source bloquant",
       "count": 5
     },
-    "6": {
-      "libelle": "P6 — source dégradée",
-      "count": 1
-    },
     "8": {
       "libelle": "P8 — traçabilité de revue",
       "count": 53
+    },
+    "9": {
+      "libelle": "P9 — autre",
+      "count": 3
     }
   },
   "findings": [
@@ -147,15 +147,6 @@
       "evidence": "ELLE",
       "fingerprint": "efc0bccac65c75d3",
       "priorite": 5
-    },
-    {
-      "rule": "R4_source_secondaire_non_admissible",
-      "severity": "alerte",
-      "case_id": "FR-2026-0016",
-      "message": "source secondaire non admissible : contenu sous paywall, non vérifiable publiquement",
-      "evidence": "Mediapart",
-      "fingerprint": "79a7c37b8f6d08eb",
-      "priorite": 6
     },
     {
       "rule": "R5_verified_at_absent",
@@ -633,6 +624,33 @@
       "evidence": null,
       "fingerprint": "5c40cc732896f187",
       "priorite": 8
+    },
+    {
+      "rule": "R4_media_incoherent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0008",
+      "message": "libellé « Wikipédia » incohérent avec le domaine",
+      "evidence": "radiofrance.fr",
+      "fingerprint": "673163263b4bf1ce",
+      "priorite": 9
+    },
+    {
+      "rule": "R4_media_incoherent",
+      "severity": "alerte",
+      "case_id": "FR-2026-0026",
+      "message": "libellé « Le Parisien » incohérent avec le domaine",
+      "evidence": "cabinetlombard.net",
+      "fingerprint": "bc36f1d4a39755a8",
+      "priorite": 9
+    },
+    {
+      "rule": "R4_media_incoherent",
+      "severity": "alerte",
+      "case_id": "PARIS-001",
+      "message": "libellé « MSN / reprise presse » incohérent avec le domaine",
+      "evidence": "msn.com",
+      "fingerprint": "1a96fac1f18b3c69",
+      "priorite": 9
     }
   ],
   "resolues": []

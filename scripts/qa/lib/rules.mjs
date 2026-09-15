@@ -60,8 +60,20 @@ const MEDIA_NON_ADMISSIBLE = [
   { re: /reprise presse/i, motif: 'reprise sans éditeur identifié' },
   { re: /facebook|twitter|\bx\.com\b|instagram|tiktok/i, motif: 'réseau social' },
   { re: /\bblog\b/i, motif: 'blog personnel' },
-  { re: /mediapart/i, motif: 'contenu sous paywall, non vérifiable publiquement' },
 ];
+
+/**
+ * Médias à accès restreint.
+ *
+ * Crédibilité et accessibilité sont deux choses distinctes : un journal
+ * payant peut être parfaitement crédible, et l'écarter pour cette seule
+ * raison appauvrirait le sourçage. Ce qui pose problème, c'est qu'une
+ * affirmation sensible repose UNIQUEMENT sur une source que le lecteur
+ * ne peut pas ouvrir pour la vérifier.
+ */
+const MEDIA_PAYANT = [/mediapart/i, /\babonn[ée]s?\b/i];
+const estPayant = (s) =>
+  s.access_status === 'paywall' || MEDIA_PAYANT.some((re) => re.test(String(s.media || '')));
 
 const UNITES_FR =
   '(?:un|une|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze)';
@@ -230,9 +242,9 @@ export function ruleSources(c) {
       );
     }
 
-    // Une source non admissible reste non admissible même en secondaire :
-    // elle est CITÉE dans le rendu, donc offerte au lecteur comme
-    // vérification possible — ce qu'elle ne permet pas.
+    // Non-admissibilité = problème de CRÉDIBILITÉ de l'éditeur.
+    // Elle vaut aussi en source secondaire : la source est citée au lecteur
+    // comme moyen de vérification, ce qu'elle ne permet pas.
     const ko = MEDIA_NON_ADMISSIBLE.find((m) => m.re.test(String(s.media || '')));
     if (ko) {
       out.push(
@@ -246,7 +258,28 @@ export function ruleSources(c) {
       );
     }
 
-    if (s.access_status && s.access_status !== 'ok' && !s.archive_url) {
+    // Cohérence média ↔ domaine : un libellé qui ne correspond pas à l'URL
+    // fausse toute lecture de la qualité du sourçage.
+    const dom = (String(s.url || '').match(/^https?:\/\/(?:www\.)?([^/]+)/) || [])[1];
+    if (dom) {
+      // Comparaison par jeton significatif plutôt que par préfixe : les
+      // domaines réordonnent et élident (« L'Est Républicain » →
+      // estrepublicain.fr, « La Gazette en Yvelines » → lagazette-yvelines.fr).
+      const domCle = dom.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const jetons = String(s.media || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .split(/[^a-z0-9]+/)
+        .filter((t) => t.length >= 5);
+      if (jetons.length > 0 && !jetons.some((t) => domCle.includes(t))) {
+        out.push(
+          finding('R4_media_incoherent', 'alerte', c.case_id, `libellé « ${s.media} » incohérent avec le domaine`, dom)
+        );
+      }
+    }
+
+    if (s.access_status && s.access_status !== 'ok' && s.access_status !== 'paywall' && !s.archive_url) {
       out.push(
         finding(
           'R4_source_indisponible_sans_archive',
@@ -258,6 +291,23 @@ export function ruleSources(c) {
       );
     }
   }
+
+  // Accessibilité — distincte de la crédibilité (contrat éditorial §4).
+  // Une source payante est légitime ; ce qui ne l'est pas, c'est qu'AUCUNE
+  // source ouverte ne permette au lecteur de vérifier l'affirmation.
+  const ouvertes = sources.filter((s) => !estPayant(s));
+  if (sources.length > 0 && ouvertes.length === 0) {
+    out.push(
+      finding(
+        'R4_aucune_source_accessible',
+        'bloquant',
+        c.case_id,
+        'toutes les sources sont à accès restreint — aucune vérification possible par le lecteur',
+        sources.map((s) => s.media).join(', ')
+      )
+    );
+  }
+
   return out;
 }
 

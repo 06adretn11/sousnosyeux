@@ -24,11 +24,11 @@
       "publication_status": "publiée",
       "verified_at": "2026-09-01",
       "resume_public": "Une source publique rapporte une mise en examen visant un animateur périscolaire. La mise en examen ne vaut pas culpabilité.",
-      "lat": 48.0,
-      "lng": 2.0,
+      "lat": 48,
+      "lng": 2,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-1",
+          "url": "https://lequotidienfictif.test/article-1",
           "media": "Le Quotidien Fictif",
           "publication_date": "2026-08-20",
           "source_type": "presse",
@@ -42,7 +42,7 @@
           "event_type": "mise_en_examen",
           "statut_apres": "mise en examen",
           "libelle_public": "Une source publique rapporte une mise en examen.",
-          "source_url": "https://exemple-presse-fictive.test/article-1",
+          "source_url": "https://lequotidienfictif.test/article-1",
           "is_future": false
         }
       ],
@@ -55,11 +55,13 @@
         }
       ]
     },
-
     {
       "case_id": "FIX-02-a-generaliser",
       "_titre": "Données trop précises — âge, année de naissance, nombre exact d'enfants",
-      "_expect": ["R1_information_interdite", "R2_enfants_non_generalise"],
+      "_expect": [
+        "R1_information_interdite",
+        "R2_enfants_non_generalise"
+      ],
       "etablissement": "École maternelle du Ponton-Fictif",
       "commune": "Villeneuve-Test",
       "departement": "Testière",
@@ -76,7 +78,7 @@
       "lng": 2.1,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-2",
+          "url": "https://lequotidienfictif.test/article-2",
           "media": "Le Quotidien Fictif",
           "publication_date": "2026-09-01",
           "source_type": "presse",
@@ -87,7 +89,6 @@
       "events": [],
       "claims": []
     },
-
     {
       "case_id": "FIX-03-a-completer",
       "_titre": "Sources incomplètes — primaire sans date, média non admissible, URL tronquée",
@@ -113,7 +114,7 @@
       "lng": 1.5,
       "sources": [
         {
-          "url": "https://fr.wikipedia-fictive.test/wiki/Affaire...",
+          "url": "https://wikipedia-fictive.test/wiki/Affaire...",
           "media": "Wikipédia",
           "publication_date": null,
           "source_type": "presse",
@@ -124,11 +125,13 @@
       "events": [],
       "claims": []
     },
-
     {
       "case_id": "FIX-04-contradictoire",
       "_titre": "Information contradictoire — transition régressive documentée",
-      "_expect": ["R7_transition_regressive", "R7_statut_divergent"],
+      "_expect": [
+        "R7_transition_regressive",
+        "R7_statut_divergent"
+      ],
       "etablissement": "École élémentaire du Vallon-Fictif",
       "commune": "Bourg-Témoin",
       "departement": "Testière",
@@ -145,7 +148,7 @@
       "lng": 1.6,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-4",
+          "url": "https://lagazettefictive.test/article-4",
           "media": "La Gazette Fictive",
           "publication_date": "2026-07-02",
           "source_type": "presse",
@@ -159,7 +162,7 @@
           "event_type": "mise_en_examen",
           "statut_apres": "mise en examen",
           "libelle_public": "Une source publique rapporte une mise en examen.",
-          "source_url": "https://exemple-presse-fictive.test/article-4",
+          "source_url": "https://lequotidienfictif.test/article-4",
           "is_future": false
         },
         {
@@ -167,17 +170,19 @@
           "event_type": "décision",
           "statut_apres": "enquête",
           "libelle_public": "Une source publique rapporte que la mise en examen a été annulée et que l'enquête se poursuit.",
-          "source_url": "https://exemple-presse-fictive.test/article-4",
+          "source_url": "https://lequotidienfictif.test/article-4",
           "is_future": false
         }
       ],
       "claims": []
     },
-
     {
       "case_id": "FIX-05-perime",
       "_titre": "Échéance future dépassée + fiche périmée",
-      "_expect": ["R3_echeance_depassee", "R6_fiche_perimee"],
+      "_expect": [
+        "R3_echeance_depassee",
+        "R6_fiche_perimee"
+      ],
       "etablissement": "École maternelle du Clocher-Fictif",
       "commune": "Bourg-Témoin",
       "departement": "Testière",
@@ -194,7 +199,7 @@
       "lng": 1.7,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-5",
+          "url": "https://lagazettefictive.test/article-5",
           "media": "La Gazette Fictive",
           "publication_date": "2026-02-10",
           "source_type": "presse",
@@ -208,17 +213,18 @@
           "event_type": "délibéré",
           "statut_apres": null,
           "libelle_public": "Délibéré attendu le 16 juin 2026.",
-          "source_url": "https://exemple-presse-fictive.test/article-5",
+          "source_url": "https://lequotidienfictif.test/article-5",
           "is_future": true
         }
       ],
       "claims": []
     },
-
     {
       "case_id": "FIX-06a-doublon",
       "_titre": "Doublon — variante de graphie, même source",
-      "_expect_pair": ["R9_doublon_probable"],
+      "_expect_pair": [
+        "R9_doublon_probable"
+      ],
       "etablissement": "École maternelle Reuilly-Fictive II",
       "commune": "Bourg-Témoin",
       "departement": "Testière",
@@ -235,7 +241,7 @@
       "lng": 1.8,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-6",
+          "url": "https://lagazettefictive.test/article-6",
           "media": "La Gazette Fictive",
           "publication_date": "2026-04-19",
           "source_type": "presse",
@@ -246,7 +252,6 @@
       "events": [],
       "claims": []
     },
-
     {
       "case_id": "FIX-06b-doublon",
       "_titre": "Doublon — jumeau du précédent",
@@ -267,7 +272,7 @@
       "lng": 1.8,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-6",
+          "url": "https://lagazettefictive.test/article-6",
           "media": "La Gazette Fictive",
           "publication_date": "2026-04-19",
           "source_type": "presse",
@@ -278,11 +283,13 @@
       "events": [],
       "claims": []
     },
-
     {
       "case_id": "FIX-07-relaxe",
       "_titre": "Relaxe / non-lieu / classement encore publiée — retrait requis",
-      "_expect": ["R5_relaxe_encore_publiee", "R7_issue_favorable"],
+      "_expect": [
+        "R5_relaxe_encore_publiee",
+        "R7_issue_favorable"
+      ],
       "etablissement": "Crèche du Tilleul-Fictif",
       "commune": "Villeneuve-Test",
       "departement": "Testière",
@@ -299,7 +306,7 @@
       "lng": 2.2,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-7",
+          "url": "https://lequotidienfictif.test/article-7",
           "media": "Le Quotidien Fictif",
           "publication_date": "2026-09-02",
           "source_type": "presse",
@@ -313,7 +320,7 @@
           "event_type": "enquête",
           "statut_apres": "enquête",
           "libelle_public": "Une source publique rapporte l'ouverture d'une enquête.",
-          "source_url": "https://exemple-presse-fictive.test/article-7",
+          "source_url": "https://lequotidienfictif.test/article-7",
           "is_future": false
         },
         {
@@ -321,13 +328,12 @@
           "event_type": "décision",
           "statut_apres": "relaxe / non-lieu / classement",
           "libelle_public": "Une source publique rapporte un classement sans suite.",
-          "source_url": "https://exemple-presse-fictive.test/article-7",
+          "source_url": "https://lequotidienfictif.test/article-7",
           "is_future": false
         }
       ],
       "claims": []
     },
-
     {
       "case_id": "FIX-08-retrait",
       "_titre": "Retrait effectué — la fiche ne doit plus déclencher de constat bloquant",
@@ -349,7 +355,7 @@
       "lng": 2.3,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-8",
+          "url": "https://lequotidienfictif.test/article-8",
           "media": "Le Quotidien Fictif",
           "publication_date": "2026-09-02",
           "source_type": "presse",
@@ -363,17 +369,20 @@
           "event_type": "retrait",
           "statut_apres": "relaxe / non-lieu / classement",
           "libelle_public": "Fiche retirée de la carte après classement sans suite.",
-          "source_url": "https://exemple-presse-fictive.test/article-8",
+          "source_url": "https://lequotidienfictif.test/article-8",
           "is_future": false
         }
       ],
       "claims": []
     },
-
     {
       "case_id": "FIX-09-claim-non-sourcee",
       "_titre": "Affirmation sensible sans source ni passage justificatif",
-      "_expect": ["R8_claim_sans_source", "R8_claim_sans_passage", "R7_evenement_non_source"],
+      "_expect": [
+        "R8_claim_sans_source",
+        "R8_claim_sans_passage",
+        "R7_evenement_non_source"
+      ],
       "etablissement": "École maternelle du Pré-Fictif",
       "commune": "Ville-Neuve-Témoin",
       "departement": "Testière",
@@ -390,7 +399,7 @@
       "lng": 1.9,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-9",
+          "url": "https://lagazettefictive.test/article-9",
           "media": "La Gazette Fictive",
           "publication_date": "2026-08-30",
           "source_type": "presse",
@@ -422,11 +431,13 @@
         }
       ]
     },
-
     {
       "case_id": "FIX-10-fuite-interne",
       "_titre": "Champ interne présent dans une fiche destinée au public",
-      "_expect_projection": ["commentaire_validation", "fiabilite_info_10"],
+      "_expect_projection": [
+        "commentaire_validation",
+        "fiabilite_info_10"
+      ],
       "_expect": [],
       "etablissement": "École maternelle du Marais-Fictif",
       "commune": "Ville-Neuve-Témoin",
@@ -446,12 +457,86 @@
       "lng": 1.4,
       "sources": [
         {
-          "url": "https://exemple-presse-fictive.test/article-10",
+          "url": "https://lagazettefictive.test/article-10",
           "media": "La Gazette Fictive",
           "publication_date": "2026-08-28",
           "source_type": "presse",
           "is_primary": true,
           "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+    {
+      "case_id": "FIX-11-media-incoherent",
+      "_titre": "Libellé de média incohérent avec le domaine de l URL",
+      "_expect": [
+        "R4_media_incoherent"
+      ],
+      "etablissement": "École maternelle du Vieux-Pont-Fictif",
+      "commune": "Ville-Media",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-01",
+      "resume_public": "Une source publique rapporte une mise en examen visant un animateur périscolaire. La mise en examen ne vaut pas culpabilité.",
+      "lat": 48,
+      "lng": 2,
+      "sources": [
+        {
+          "url": "https://radiofictive.test/emission/1",
+          "media": "Le Journal Fictif du Soir",
+          "publication_date": "2026-08-20",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+    {
+      "case_id": "FIX-12-tout-payant",
+      "_titre": "Toutes les sources sont à accès restreint — aucune vérification possible",
+      "_expect": [
+        "R4_aucune_source_accessible"
+      ],
+      "etablissement": "Crèche du Quai-Fictif",
+      "commune": "Ville-Payante",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-01",
+      "resume_public": "Une source publique rapporte une mise en examen visant un animateur périscolaire. La mise en examen ne vaut pas culpabilité.",
+      "lat": 48,
+      "lng": 2,
+      "sources": [
+        {
+          "url": "https://mediapart-fictif.test/a",
+          "media": "Mediapart",
+          "publication_date": "2026-08-10",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "paywall"
+        },
+        {
+          "url": "https://mediapart-fictif.test/b",
+          "media": "Mediapart",
+          "publication_date": "2026-08-12",
+          "source_type": "presse",
+          "is_primary": false,
+          "access_status": "paywall"
         }
       ],
       "events": [],

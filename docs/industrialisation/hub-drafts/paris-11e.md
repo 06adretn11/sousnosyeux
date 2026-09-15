@@ -31,7 +31,6 @@ Aucun compteur n'est saisi : tous sont recalculés depuis les affaires retenues.
 
 | Sévérité | Règle | Cible | Constat |
 |---|---|---|---|
-| 🟠 alerte | `R4_source_secondaire_non_admissible` | `FR-2026-0016` | source secondaire non admissible : contenu sous paywall, non vérifiable publiquement |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0016` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `FR-2026-0023` | fiche publiée sans date de vérification humaine |
 | 🟠 alerte | `R5_verified_at_absent` | `PARIS-006` | fiche publiée sans date de vérification humaine |
