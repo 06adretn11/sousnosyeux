@@ -1,0 +1,461 @@
+{
+  "_meta": {
+    "objet": "Corpus de test du contrat éditorial — porte 1",
+    "avertissement": "FICTIF. Établissements, communes, médias et URL sont inventés. Aucune de ces fiches ne décrit une affaire réelle. Ne jamais importer en base.",
+    "today_reference": "2026-09-14",
+    "usage": "node scripts/qa/self-test.mjs",
+    "convention": "_expect liste les identifiants de règle qui DOIVENT se déclencher. _expect_clean signifie : aucun constat."
+  },
+  "cases": [
+    {
+      "case_id": "FIX-01-publiable",
+      "_titre": "Cas publiable — doit passer toutes les règles",
+      "_expect": [],
+      "_expect_clean": true,
+      "etablissement": "École maternelle des Lilas-Fictifs",
+      "commune": "Villeneuve-Test",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-01",
+      "resume_public": "Une source publique rapporte une mise en examen visant un animateur périscolaire. La mise en examen ne vaut pas culpabilité.",
+      "lat": 48.0,
+      "lng": 2.0,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-1",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-08-20",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-08-20",
+          "event_type": "mise_en_examen",
+          "statut_apres": "mise en examen",
+          "libelle_public": "Une source publique rapporte une mise en examen.",
+          "source_url": "https://exemple-presse-fictive.test/article-1",
+          "is_future": false
+        }
+      ],
+      "claims": [
+        {
+          "claim_text": "Une source publique rapporte une mise en examen.",
+          "sensitivity": "sensible",
+          "source_id": "src-fix-01",
+          "justifying_quote": "un animateur a été mis en examen"
+        }
+      ]
+    },
+
+    {
+      "case_id": "FIX-02-a-generaliser",
+      "_titre": "Données trop précises — âge, année de naissance, nombre exact d'enfants",
+      "_expect": ["R1_information_interdite", "R2_enfants_non_generalise"],
+      "etablissement": "École maternelle du Ponton-Fictif",
+      "commune": "Villeneuve-Test",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "5",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "resume_public": "Un animateur de 47 ans, né en 2005, est jugé pour des faits présumés sur 5 enfants de maternelle.",
+      "lat": 48.1,
+      "lng": 2.1,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-2",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-09-01",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-03-a-completer",
+      "_titre": "Sources incomplètes — primaire sans date, média non admissible, URL tronquée",
+      "_expect": [
+        "R4_source_primaire_sans_date",
+        "R4_source_primaire_non_admissible",
+        "R4_url_tronquee",
+        "R5_verified_at_absent"
+      ],
+      "etablissement": "Crèche des Grenouilles-Fictives",
+      "commune": "Bourg-Témoin",
+      "departement": "Testière",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "non précisé",
+      "publication_status": "publiée",
+      "verified_at": null,
+      "resume_public": "Une source publique rapporte qu'une enquête a été ouverte.",
+      "lat": 47.5,
+      "lng": 1.5,
+      "sources": [
+        {
+          "url": "https://fr.wikipedia-fictive.test/wiki/Affaire...",
+          "media": "Wikipédia",
+          "publication_date": null,
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-04-contradictoire",
+      "_titre": "Information contradictoire — transition régressive documentée",
+      "_expect": ["R7_transition_regressive", "R7_statut_divergent"],
+      "etablissement": "École élémentaire du Vallon-Fictif",
+      "commune": "Bourg-Témoin",
+      "departement": "Testière",
+      "type_structure": "élémentaire",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-05",
+      "resume_public": "Une source publique rapporte qu'une enquête a été ouverte.",
+      "lat": 47.6,
+      "lng": 1.6,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-4",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-07-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-05-02",
+          "event_type": "mise_en_examen",
+          "statut_apres": "mise en examen",
+          "libelle_public": "Une source publique rapporte une mise en examen.",
+          "source_url": "https://exemple-presse-fictive.test/article-4",
+          "is_future": false
+        },
+        {
+          "event_date": "2026-07-02",
+          "event_type": "décision",
+          "statut_apres": "enquête",
+          "libelle_public": "Une source publique rapporte que la mise en examen a été annulée et que l'enquête se poursuit.",
+          "source_url": "https://exemple-presse-fictive.test/article-4",
+          "is_future": false
+        }
+      ],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-05-perime",
+      "_titre": "Échéance future dépassée + fiche périmée",
+      "_expect": ["R3_echeance_depassee", "R6_fiche_perimee"],
+      "etablissement": "École maternelle du Clocher-Fictif",
+      "commune": "Bourg-Témoin",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-03-01",
+      "resume_public": "Une source publique rapporte qu'un procès est en cours.",
+      "lat": 47.7,
+      "lng": 1.7,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-5",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-02-10",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-06-16",
+          "event_type": "délibéré",
+          "statut_apres": null,
+          "libelle_public": "Délibéré attendu le 16 juin 2026.",
+          "source_url": "https://exemple-presse-fictive.test/article-5",
+          "is_future": true
+        }
+      ],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-06a-doublon",
+      "_titre": "Doublon — variante de graphie, même source",
+      "_expect_pair": ["R9_doublon_probable"],
+      "etablissement": "École maternelle Reuilly-Fictive II",
+      "commune": "Bourg-Témoin",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-05",
+      "resume_public": "Une source publique rapporte qu'une enquête a été ouverte.",
+      "lat": 47.8,
+      "lng": 1.8,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-6",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-04-19",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-06b-doublon",
+      "_titre": "Doublon — jumeau du précédent",
+      "_expect": [],
+      "etablissement": "École Reuilly-Fictive",
+      "commune": "Bourg-Témoin",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-05",
+      "resume_public": "Une source publique rapporte qu'une enquête a été ouverte.",
+      "lat": 47.8,
+      "lng": 1.8,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-6",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-04-19",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-07-relaxe",
+      "_titre": "Relaxe / non-lieu / classement encore publiée — retrait requis",
+      "_expect": ["R5_relaxe_encore_publiee", "R7_issue_favorable"],
+      "etablissement": "Crèche du Tilleul-Fictif",
+      "commune": "Villeneuve-Test",
+      "departement": "Testière",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "non précisé",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-08",
+      "resume_public": "Une source publique rapporte un classement sans suite.",
+      "lat": 48.2,
+      "lng": 2.2,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-7",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-09-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-05-01",
+          "event_type": "enquête",
+          "statut_apres": "enquête",
+          "libelle_public": "Une source publique rapporte l'ouverture d'une enquête.",
+          "source_url": "https://exemple-presse-fictive.test/article-7",
+          "is_future": false
+        },
+        {
+          "event_date": "2026-09-02",
+          "event_type": "décision",
+          "statut_apres": "relaxe / non-lieu / classement",
+          "libelle_public": "Une source publique rapporte un classement sans suite.",
+          "source_url": "https://exemple-presse-fictive.test/article-7",
+          "is_future": false
+        }
+      ],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-08-retrait",
+      "_titre": "Retrait effectué — la fiche ne doit plus déclencher de constat bloquant",
+      "_expect": [],
+      "_expect_clean": true,
+      "etablissement": "Crèche du Tilleul-Fictif",
+      "commune": "Ville-Retirée",
+      "departement": "Testière",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "non précisé",
+      "publication_status": "retirée",
+      "verified_at": "2026-09-08",
+      "resume_public": "Une source publique rapporte un classement sans suite.",
+      "lat": 48.3,
+      "lng": 2.3,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-8",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-09-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-09-03",
+          "event_type": "retrait",
+          "statut_apres": "relaxe / non-lieu / classement",
+          "libelle_public": "Fiche retirée de la carte après classement sans suite.",
+          "source_url": "https://exemple-presse-fictive.test/article-8",
+          "is_future": false
+        }
+      ],
+      "claims": []
+    },
+
+    {
+      "case_id": "FIX-09-claim-non-sourcee",
+      "_titre": "Affirmation sensible sans source ni passage justificatif",
+      "_expect": ["R8_claim_sans_source", "R8_claim_sans_passage", "R7_evenement_non_source"],
+      "etablissement": "École maternelle du Pré-Fictif",
+      "commune": "Ville-Neuve-Témoin",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "plainte",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "resume_public": "Une source publique rapporte qu'une plainte a été déposée.",
+      "lat": 47.9,
+      "lng": 1.9,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-9",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-08-30",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-08-30",
+          "event_type": "plainte",
+          "statut_apres": "plainte",
+          "libelle_public": "Une source publique rapporte le dépôt d'une plainte.",
+          "is_future": false
+        }
+      ],
+      "claims": [
+        {
+          "claim_text": "Plusieurs familles auraient signalé des faits similaires.",
+          "sensitivity": "sensible",
+          "source_id": null,
+          "justifying_quote": null
+        },
+        {
+          "claim_text": "L'établissement a suspendu l'agent.",
+          "sensitivity": "sensible",
+          "source_id": "src-fix-09",
+          "justifying_quote": "   "
+        }
+      ]
+    },
+
+    {
+      "case_id": "FIX-10-fuite-interne",
+      "_titre": "Champ interne présent dans une fiche destinée au public",
+      "_expect_projection": ["commentaire_validation", "fiabilite_info_10"],
+      "_expect": [],
+      "etablissement": "École maternelle du Marais-Fictif",
+      "commune": "Ville-Neuve-Témoin",
+      "departement": "Testière",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-10",
+      "resume_public": "Une source publique rapporte qu'une enquête a été ouverte.",
+      "commentaire_validation": "note de revue interne — ne doit jamais sortir",
+      "fiabilite_info_10": 9,
+      "lat": 47.4,
+      "lng": 1.4,
+      "sources": [
+        {
+          "url": "https://exemple-presse-fictive.test/article-10",
+          "media": "La Gazette Fictive",
+          "publication_date": "2026-08-28",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [],
+      "claims": []
+    }
+  ]
+}
