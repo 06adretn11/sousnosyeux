@@ -1,0 +1,1408 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow,noarchive" />
+    <meta name="theme-color" content="#151429" />
+    <title>Reconstruction — Hub affaires Paris 11e — sousnosyeux</title>
+    <meta
+      name="description"
+      content="Reconstruction visuelle non publiable du prototype Hub Affaires V3 de sousnosyeux."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #151517;
+        --muted: #74747a;
+        --paper: #f7f7f4;
+        --card: #ffffff;
+        --line: #e7e5e1;
+        --dark: #17162c;
+        --red: #ec3150;
+        --red-soft: #fff1f3;
+        --blue: #4b819b;
+        --blue-soft: #eaf4f8;
+        --orange: #d98609;
+        --orange-soft: #fff4d9;
+        --green: #2c6d58;
+        --green-soft: #c9f4dd;
+        --sans: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono: "DM Mono", "Courier New", monospace;
+        --display: "Playfair Display", Georgia, serif;
+        --shadow: 0 1px 0 rgb(22 22 24 / 4%), 0 8px 30px rgb(22 22 24 / 4%);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.48;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: #4d717e;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
+
+      a:hover {
+        color: var(--red);
+      }
+
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .review-board {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        color: #e9e7ef;
+        background: var(--dark);
+        border-bottom: 2px solid var(--red);
+      }
+
+      .review-board[hidden] {
+        display: none;
+      }
+
+      .review-inner {
+        width: min(1160px, 100%);
+        min-height: 174px;
+        margin: 0 auto;
+        padding: 18px 20px 15px;
+        display: grid;
+        grid-template-columns: 120px minmax(150px, 210px) minmax(250px, 1fr) auto;
+        align-items: center;
+        gap: 24px;
+      }
+
+      .review-kicker,
+      .review-version,
+      .review-score,
+      .review-warning,
+      .review-toggle,
+      .eyebrow,
+      .section-title,
+      .breadcrumb,
+      .source-kind,
+      .event-date,
+      .completeness-label,
+      .status-chip,
+      .case-type {
+        font-family: var(--mono);
+      }
+
+      .review-kicker {
+        color: #a6a4b1;
+        font-size: 0.9rem;
+        letter-spacing: 0.035em;
+        line-height: 1.55;
+        text-transform: uppercase;
+      }
+
+      .review-version {
+        color: var(--red);
+        font-size: 1rem;
+        font-weight: 500;
+        line-height: 1.45;
+      }
+
+      .review-checks {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 9px;
+      }
+
+      .review-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 26px;
+        padding: 3px 10px;
+        border-radius: 3px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.035em;
+        line-height: 1;
+        text-transform: uppercase;
+        box-shadow: inset 0 0 0 1px rgb(255 255 255 / 45%);
+      }
+
+      .review-chip.ok {
+        color: #264f41;
+        background: var(--green-soft);
+      }
+
+      .review-chip.warn {
+        color: #a76000;
+        background: #fff2bb;
+      }
+
+      .review-score {
+        margin-top: 4px;
+        color: #aaa8b5;
+        font-size: 0.84rem;
+      }
+
+      .review-meta {
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .review-warning {
+        max-width: 225px;
+        color: #ffb7c4;
+        font-size: 0.67rem;
+        line-height: 1.55;
+        text-align: right;
+        text-transform: uppercase;
+      }
+
+      .review-toggle {
+        padding: 6px 9px;
+        color: #c8c5d2;
+        background: transparent;
+        border: 1px solid #4d4b60;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.65rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .review-toggle:hover {
+        color: #fff;
+        border-color: #8c899d;
+      }
+
+      .restore-review {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 49;
+        display: none;
+        padding: 7px 10px;
+        color: #fff;
+        background: var(--dark);
+        border: 1px solid #444256;
+        border-radius: 3px;
+        font: 0.68rem var(--mono);
+        cursor: pointer;
+      }
+
+      .site-header {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .site-header-inner {
+        width: min(1160px, 100%);
+        height: 64px;
+        margin: 0 auto;
+        padding: 0 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .brand {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        gap: 10px;
+        color: var(--ink);
+        font: 500 1rem var(--mono);
+        letter-spacing: 0.06em;
+        text-decoration: none;
+      }
+
+      .brand::before {
+        width: 4px;
+        height: 23px;
+        background: var(--red);
+        border-radius: 2px;
+        content: "";
+      }
+
+      .nav-scroll {
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .nav-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      .main-nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 23px;
+        min-width: max-content;
+      }
+
+      .main-nav a {
+        color: #626167;
+        font-size: 0.9rem;
+        text-decoration: none;
+      }
+
+      .main-nav a:hover {
+        color: var(--ink);
+      }
+
+      .main-nav .contact-button {
+        padding: 9px 14px;
+        color: #fff;
+        background: var(--red);
+        border-radius: 4px;
+        font-weight: 700;
+      }
+
+      .breadcrumb-wrap {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .breadcrumb {
+        width: min(1160px, 100%);
+        margin: 0 auto;
+        padding: 15px 22px;
+        color: #77757b;
+        font-size: 0.78rem;
+      }
+
+      .breadcrumb strong {
+        color: #46454a;
+      }
+
+      .hero {
+        background: #fff;
+      }
+
+      .hero-copy {
+        width: min(1160px, 100%);
+        margin: 0 auto;
+        padding: 29px 22px 25px;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--red);
+        font-size: 0.74rem;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 800px;
+        margin: 0;
+        font: 700 clamp(2.05rem, 5vw, 4rem) / 1.02 var(--display);
+        letter-spacing: -0.035em;
+      }
+
+      .hero-subtitle {
+        margin: 11px 0 0;
+        color: #69686d;
+        font-size: clamp(1rem, 2vw, 1.18rem);
+      }
+
+      .stats-band {
+        color: #fff;
+        background: #111113;
+      }
+
+      .stats-inner {
+        width: min(1160px, 100%);
+        min-height: 112px;
+        margin: 0 auto;
+        padding: 24px 22px;
+        display: grid;
+        grid-template-columns: repeat(5, auto) 1fr;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .stat {
+        padding-right: 18px;
+        white-space: nowrap;
+        border-right: 1px solid #3b3a3e;
+      }
+
+      .stat strong {
+        color: var(--red);
+        font: 500 1.55rem var(--mono);
+      }
+
+      .deadline-chip {
+        justify-self: end;
+        padding: 8px 13px;
+        color: #d98b28;
+        background: rgb(217 134 9 / 10%);
+        border: 1px solid rgb(217 134 9 / 45%);
+        border-radius: 3px;
+        font: 0.78rem var(--mono);
+        white-space: nowrap;
+      }
+
+      .completeness {
+        background: #fff;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .completeness-inner {
+        width: min(1160px, 100%);
+        min-height: 45px;
+        margin: 0 auto;
+        padding: 9px 22px;
+        display: grid;
+        grid-template-columns: auto minmax(100px, 1fr) auto;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .completeness-label {
+        color: #69686e;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+      }
+
+      .progress-track {
+        height: 7px;
+        overflow: hidden;
+        background: #e8e8e8;
+        border-radius: 99px;
+      }
+
+      .progress-track span {
+        display: block;
+        width: 85%;
+        height: 100%;
+        background: var(--green);
+        border-radius: inherit;
+      }
+
+      .progress-value {
+        color: var(--green);
+        font: 600 0.82rem var(--mono);
+      }
+
+      .page-shell {
+        width: min(1160px, 100%);
+        margin: 0 auto;
+        padding: 34px 22px 62px;
+      }
+
+      .method-note {
+        max-width: 800px;
+        margin: 0 0 34px;
+        padding: 17px 19px;
+        color: #6b696f;
+        background: #fff;
+        border-left: 3px solid #d8d6d1;
+        font-size: 0.9rem;
+        font-style: italic;
+      }
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.9fr);
+        align-items: start;
+        gap: 42px;
+      }
+
+      .section {
+        margin-top: 38px;
+      }
+
+      .section:first-child {
+        margin-top: 0;
+      }
+
+      .section-title {
+        margin: 0 0 17px;
+        padding-bottom: 8px;
+        color: #77757a;
+        border-bottom: 1px solid var(--line);
+        font-size: 0.78rem;
+        font-weight: 400;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+
+      .case-list {
+        display: grid;
+        gap: 13px;
+      }
+
+      .case-card,
+      .summary-card,
+      .agenda-list,
+      .timeline-card,
+      .resource-list,
+      .association-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 3px;
+        box-shadow: var(--shadow);
+      }
+
+      .case-card {
+        position: relative;
+        padding: 18px 20px 16px 23px;
+      }
+
+      .case-card::before {
+        position: absolute;
+        top: 16px;
+        bottom: 16px;
+        left: 0;
+        width: 3px;
+        background: var(--case-color, var(--blue));
+        content: "";
+      }
+
+      .case-card.blue {
+        --case-color: var(--blue);
+      }
+
+      .case-card.orange {
+        --case-color: var(--orange);
+      }
+
+      .case-title {
+        margin: 0;
+        font-size: 1.03rem;
+        line-height: 1.25;
+      }
+
+      .case-meta {
+        margin: 3px 0 10px;
+        color: #858389;
+        font-size: 0.8rem;
+      }
+
+      .case-summary {
+        margin: 0 0 11px;
+        color: #37363a;
+        font-size: 0.93rem;
+      }
+
+      .case-tags {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 8px;
+      }
+
+      .status-chip,
+      .case-type {
+        display: inline-block;
+        padding: 3px 7px;
+        font-size: 0.66rem;
+      }
+
+      .status-chip {
+        color: #496b79;
+        background: var(--blue-soft);
+        text-transform: uppercase;
+      }
+
+      .orange .status-chip {
+        color: #a96909;
+        background: var(--orange-soft);
+      }
+
+      .case-type {
+        color: #66646a;
+        background: #f6f6f6;
+      }
+
+      .source-link {
+        color: #777b80;
+        font-size: 0.76rem;
+      }
+
+      .source-link + .source-link::before {
+        margin: 0 6px;
+        color: #c1bfc2;
+        content: "·";
+      }
+
+      .summary-card {
+        padding: 22px;
+      }
+
+      .summary-card p {
+        margin: 0 0 18px;
+      }
+
+      .summary-card p:last-of-type {
+        margin-bottom: 25px;
+      }
+
+      .summary-source {
+        padding-top: 17px;
+        color: #89878c;
+        border-top: 1px solid #efeeeb;
+        font-size: 0.75rem;
+      }
+
+      .featured-hearing {
+        margin-bottom: 13px;
+        padding: 16px 18px;
+        background: var(--red-soft);
+        border-left: 3px solid var(--red);
+      }
+
+      .featured-hearing p {
+        margin: 0;
+      }
+
+      .agenda-list {
+        padding: 15px 18px;
+      }
+
+      .agenda-row {
+        display: grid;
+        grid-template-columns: 78px 1fr;
+        gap: 12px;
+        padding: 7px 0;
+      }
+
+      .agenda-date {
+        color: #64808b;
+        font: 0.72rem var(--mono);
+      }
+
+      .agenda-school {
+        font-weight: 700;
+      }
+
+      .agenda-sub {
+        display: block;
+        color: #87858b;
+        font-size: 0.75rem;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 13px;
+        margin-bottom: 17px;
+      }
+
+      .metric {
+        min-height: 112px;
+        padding: 17px;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+
+      .metric strong {
+        display: block;
+        color: var(--red);
+        font: 500 2rem/1 var(--mono);
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 6px;
+        font-size: 0.78rem;
+        line-height: 1.35;
+      }
+
+      .metric small {
+        display: block;
+        margin-top: 6px;
+        color: #aaa8ad;
+        font-size: 0.62rem;
+      }
+
+      .timeline-card {
+        padding: 4px 24px;
+      }
+
+      .timeline-group-title {
+        margin: 20px 0 0;
+        padding-bottom: 9px;
+        color: #77757a;
+        border-bottom: 1px solid var(--line);
+        font: 0.72rem var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      .timeline-item {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 18px;
+        padding: 20px 0;
+        border-bottom: 1px solid #eeedea;
+      }
+
+      .timeline-item:last-child {
+        border-bottom: 0;
+      }
+
+      .event-date {
+        color: #85838a;
+        font-size: 0.7rem;
+      }
+
+      .event-body h3 {
+        margin: 0 0 3px;
+        font-size: 0.95rem;
+      }
+
+      .event-body p {
+        margin: 0 0 6px;
+        font-size: 0.86rem;
+      }
+
+      .press-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+      }
+
+      blockquote {
+        margin: 0;
+        padding: 23px;
+        background: #fff;
+        border-left: 3px solid #d7d5d0;
+        box-shadow: var(--shadow);
+      }
+
+      blockquote p {
+        margin: 0 0 17px;
+        font-family: var(--display);
+        font-size: 1.03rem;
+        font-style: italic;
+        line-height: 1.55;
+      }
+
+      blockquote footer {
+        color: #6f6d72;
+        font-size: 0.75rem;
+      }
+
+      blockquote strong {
+        color: var(--ink);
+      }
+
+      .resource-list {
+        padding: 8px 24px;
+      }
+
+      .resource-item {
+        display: grid;
+        grid-template-columns: 34px 1fr;
+        gap: 14px;
+        padding: 17px 0;
+        border-bottom: 1px solid #ecebe8;
+      }
+
+      .resource-item:last-child {
+        border-bottom: 0;
+      }
+
+      .resource-icon {
+        padding-top: 1px;
+        font-size: 1.1rem;
+        text-align: center;
+        filter: grayscale(0.3);
+      }
+
+      .source-kind {
+        display: block;
+        margin-bottom: 3px;
+        color: #7c7a80;
+        font-size: 0.66rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .resource-title {
+        display: inline-block;
+        margin-bottom: 4px;
+        font-size: 0.91rem;
+      }
+
+      .resource-description {
+        margin: 0;
+        color: #77757a;
+        font-size: 0.75rem;
+      }
+
+      .association-card {
+        padding: 22px 24px;
+      }
+
+      .association + .association {
+        margin-top: 21px;
+        padding-top: 21px;
+        border-top: 1px solid #ecebe8;
+      }
+
+      .association h3 {
+        margin: 0 0 7px;
+        font-size: 1rem;
+      }
+
+      .association p {
+        margin: 0 0 9px;
+        color: #4d4b50;
+        font-size: 0.88rem;
+      }
+
+      .association-meta {
+        color: #747278;
+        font-size: 0.75rem;
+      }
+
+      .contribution {
+        margin-top: 26px;
+        padding: 25px;
+        text-align: center;
+        background: #fff;
+        border: 2px solid var(--red);
+        border-radius: 7px;
+      }
+
+      .contribution h2 {
+        margin: 0 0 7px;
+        font-size: 1.08rem;
+      }
+
+      .contribution p {
+        max-width: 650px;
+        margin: 0 auto 17px;
+        color: #737177;
+        font-size: 0.9rem;
+      }
+
+      .primary-button {
+        display: inline-block;
+        padding: 11px 25px;
+        color: #fff;
+        background: var(--red);
+        border-radius: 4px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+
+      .primary-button:hover {
+        color: #fff;
+        background: #d92745;
+      }
+
+      .site-footer {
+        color: #8e8c92;
+        background: #111113;
+      }
+
+      .footer-inner {
+        width: min(1160px, 100%);
+        margin: 0 auto;
+        padding: 32px 22px;
+      }
+
+      .footer-brand {
+        margin-bottom: 9px;
+        color: #fff;
+        font: 0.9rem var(--mono);
+        letter-spacing: 0.08em;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px 10px;
+        font-size: 0.78rem;
+      }
+
+      .footer-links a {
+        color: #9c9aa0;
+        text-decoration: none;
+      }
+
+      @media (max-width: 850px) {
+        .review-inner {
+          grid-template-columns: 74px 146px minmax(180px, 1fr);
+          gap: 10px;
+          padding: 9px 12px 8px;
+        }
+
+        .review-meta {
+          display: none;
+        }
+
+        .review-kicker {
+          font-size: 0.67rem;
+        }
+
+        .review-version {
+          font-size: 0.73rem;
+        }
+
+        .review-checks {
+          gap: 6px;
+        }
+
+        .review-chip {
+          min-height: 21px;
+          padding: 3px 8px;
+          font-size: 0.59rem;
+        }
+
+        .review-score {
+          font-size: 0.65rem;
+        }
+
+        .content-grid {
+          grid-template-columns: 1fr;
+          gap: 38px;
+        }
+
+        .timeline-item {
+          grid-template-columns: 112px 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        body {
+          font-size: 15px;
+        }
+
+        .review-inner {
+          min-width: 360px;
+          min-height: 174px;
+          grid-template-columns: 65px 76px 1fr;
+          gap: 9px;
+          padding: 9px 10px 8px;
+        }
+
+        .review-kicker {
+          font-size: 0.62rem;
+        }
+
+        .review-version {
+          font-size: 0.66rem;
+          line-height: 1.45;
+        }
+
+        .review-chip {
+          font-size: 0.56rem;
+        }
+
+        .site-header-inner {
+          height: 54px;
+          padding: 0 18px;
+          gap: 14px;
+        }
+
+        .brand {
+          font-size: 0.82rem;
+        }
+
+        .brand::before {
+          height: 20px;
+        }
+
+        .main-nav {
+          gap: 20px;
+        }
+
+        .main-nav a {
+          font-size: 0.75rem;
+        }
+
+        .breadcrumb {
+          padding: 12px 18px;
+          white-space: nowrap;
+          overflow-x: auto;
+        }
+
+        .hero-copy {
+          padding: 24px 18px 22px;
+        }
+
+        .eyebrow {
+          font-size: 0.66rem;
+        }
+
+        h1 {
+          font-size: 2.05rem;
+        }
+
+        .hero-subtitle {
+          font-size: 0.94rem;
+        }
+
+        .stats-inner {
+          min-height: 205px;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 21px 0;
+          padding: 20px 18px;
+        }
+
+        .stat {
+          padding-right: 10px;
+          font-size: 0.8rem;
+        }
+
+        .stat:nth-child(even) {
+          padding-left: 18px;
+          border-right: 0;
+        }
+
+        .stat strong {
+          font-size: 1.28rem;
+        }
+
+        .deadline-chip {
+          grid-column: 1 / -1;
+          justify-self: end;
+          font-size: 0.68rem;
+        }
+
+        .completeness-inner {
+          padding: 9px 18px;
+          gap: 12px;
+        }
+
+        .page-shell {
+          padding: 27px 18px 44px;
+        }
+
+        .method-note {
+          font-size: 0.78rem;
+        }
+
+        .section {
+          margin-top: 31px;
+        }
+
+        .section-title {
+          font-size: 0.68rem;
+        }
+
+        .case-card {
+          padding: 16px 15px 14px 23px;
+        }
+
+        .case-title {
+          font-size: 0.94rem;
+        }
+
+        .case-summary {
+          font-size: 0.85rem;
+        }
+
+        .summary-card,
+        .agenda-list,
+        .timeline-card,
+        .resource-list,
+        .association-card {
+          box-shadow: none;
+        }
+
+        .summary-card {
+          padding: 19px;
+        }
+
+        .metrics {
+          gap: 10px;
+        }
+
+        .metric {
+          padding: 14px;
+        }
+
+        .metric strong {
+          font-size: 1.65rem;
+        }
+
+        .timeline-card {
+          padding: 3px 14px;
+        }
+
+        .timeline-item {
+          grid-template-columns: 78px 1fr;
+          gap: 12px;
+          padding: 17px 0;
+        }
+
+        .event-date {
+          font-size: 0.62rem;
+        }
+
+        .event-body h3 {
+          font-size: 0.88rem;
+        }
+
+        .event-body p {
+          font-size: 0.79rem;
+        }
+
+        .press-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .resource-list {
+          padding: 6px 17px;
+        }
+
+        .resource-item {
+          grid-template-columns: 28px 1fr;
+          gap: 10px;
+        }
+
+        .contribution {
+          padding: 22px 17px;
+        }
+      }
+
+      @media print {
+        .review-board,
+        .restore-review {
+          display: none !important;
+        }
+
+        a {
+          color: inherit;
+        }
+
+        .case-card,
+        .summary-card,
+        .timeline-card,
+        .resource-list,
+        .association-card {
+          break-inside: avoid;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      RECONSTRUCTION VISUELLE — 14/09/2026
+      Source disponible : transcription Markdown + enregistrement mobile.
+      Le contenu ci-dessous n'a pas été revérifié et ne doit pas être publié.
+      La mention historique « Publiable en l'état » est conservée uniquement pour la fidélité au prototype.
+    -->
+    <section class="review-board" id="review-board" aria-label="Panneau de revue du prototype">
+      <div class="review-inner">
+        <div class="review-kicker">Hub<br />affaires</div>
+        <div class="review-version">V3 —<br />Publiable<br />en l’état<br />· 9 juin<br />2026</div>
+        <div class="review-checks">
+          <span class="review-chip ok">Affaires ✓</span>
+          <span class="review-chip ok">Réponse publique ✓</span>
+          <span class="review-chip ok">Causes presse ✓</span>
+          <span class="review-chip ok">Ressources ✓</span>
+          <span class="review-chip warn">Associations ⚠ 2/5</span>
+          <span class="review-score">85 % complété</span>
+        </div>
+        <div class="review-meta">
+          <span class="review-warning">Reconstruction de référence · contenu historique non revérifié · ne pas publier</span>
+          <button class="review-toggle" type="button" id="hide-review" aria-controls="review-board">Masquer QA</button>
+        </div>
+      </div>
+    </section>
+    <button class="restore-review" type="button" id="show-review">Afficher QA</button>
+
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a class="brand" href="#top">sousnosyeux</a>
+        <div class="nav-scroll" aria-label="Navigation horizontale">
+          <nav class="main-nav" aria-label="Navigation principale">
+            <a href="#affaires">Carte</a>
+            <a href="#methodologie">Méthodologie</a>
+            <a href="#associations">À propos</a>
+            <a class="contact-button" href="mailto:contact@sousnosyeux.org">Nous contacter</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <div class="breadcrumb-wrap">
+        <div class="breadcrumb">Carte › Paris › <strong>Paris 11e arrondissement</strong></div>
+      </div>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Zone · Paris 11e arrondissement</p>
+          <h1>Affaires signalées — Paris 11e</h1>
+          <p class="hero-subtitle">Périscolaire et structures d’accueil de mineurs · Mise à jour : 9 juin 2026</p>
+        </div>
+      </section>
+
+      <section class="stats-band" aria-label="Chiffres clés">
+        <div class="stats-inner">
+          <span class="stat"><strong>9</strong> affaires</span>
+          <span class="stat"><strong>7</strong> établissements</span>
+          <span class="stat"><strong>2</strong> mises en examen</span>
+          <span class="stat"><strong>2</strong> procès en cours</span>
+          <span class="stat"><strong>0</strong> condamnation</span>
+          <span class="deadline-chip">⚠ Délibéré Titon · 16 juin 2026</span>
+        </div>
+      </section>
+
+      <div class="completeness" aria-label="Complétude du prototype">
+        <div class="completeness-inner">
+          <span class="completeness-label">Complétude hub :</span>
+          <span class="progress-track"><span></span></span>
+          <span class="progress-value">85 %</span>
+        </div>
+      </div>
+
+      <div class="page-shell">
+        <p class="method-note" id="methodologie">
+          Présomption d’innocence respectée. Toutes les informations sont issues de sources de presse publiques
+          citées individuellement. Aucun nom de personne mise en cause n’est mentionné.
+          <a href="#">Méthodologie complète →</a>
+        </p>
+
+        <div class="content-grid">
+          <div class="primary">
+            <section class="section" id="affaires">
+              <h2 class="section-title">9 affaires documentées</h2>
+              <div class="case-list">
+                <article class="case-card blue">
+                  <h3 class="case-title">École maternelle Servan</h3>
+                  <p class="case-meta">Animateur périscolaire · Avril–mai 2026</p>
+                  <p class="case-summary">Animateur (né en 2005) mis en examen fin avril 2026 et placé en détention provisoire pour faits de nature sexuelle présumés sur 3 enfants. Enquête débutée après plainte déposée en novembre 2025.</p>
+                  <div class="case-tags"><span class="status-chip">Mis en examen</span><span class="case-type">violences sexuelles</span></div>
+                  <a class="source-link" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a>
+                </article>
+
+                <article class="case-card blue">
+                  <h3 class="case-title">École maternelle Bullourde</h3>
+                  <p class="case-meta">Animateur périscolaire · Automne 2025 – Février 2026</p>
+                  <p class="case-summary">Animateur mis en examen en février 2026 pour agression sexuelle, exhibition sexuelle et corruption de mineur de moins de 15 ans. Trois animateurs avaient été suspendus dès l’automne 2025. L’animateur est sous contrôle judiciaire et interdit d’exercer auprès de mineurs.</p>
+                  <div class="case-tags"><span class="status-chip">Mis en examen</span><span class="case-type">violences sexuelles</span></div>
+                  <a class="source-link" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info, 14/11/2025 ↗</a>
+                  <a class="source-link" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a>
+                </article>
+
+                <article class="case-card blue">
+                  <h3 class="case-title">École maternelle Alphonse-Baudin</h3>
+                  <p class="case-meta">Animateur périscolaire · Printemps 2025 – Mai 2026</p>
+                  <p class="case-summary">Deux animateurs suspendus dès le printemps 2025 après signalement. L’animateur principal, placé en garde à vue fin juin 2025, a été jugé le 26 mai 2026 pour agressions sexuelles sur 5 enfants de maternelle.</p>
+                  <div class="case-tags"><span class="status-chip">Jugé</span><span class="case-type">violences sexuelles</span></div>
+                  <a class="source-link" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info, 14/11/2025 ↗</a>
+                  <a class="source-link" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a>
+                </article>
+
+                <article class="case-card orange">
+                  <h3 class="case-title">École Titon</h3>
+                  <p class="case-meta">Animateur périscolaire · 2025</p>
+                  <p class="case-summary">Animateur de 47 ans jugé pour harcèlement sexuel et agression sexuelle. Le parquet a requis 18 mois avec sursis. Délibéré attendu le 16 juin 2026.</p>
+                  <div class="case-tags"><span class="status-chip">Délibéré 16 juin</span><span class="case-type">violences sexuelles</span></div>
+                  <a class="source-link" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a>
+                </article>
+
+                <article class="case-card orange">
+                  <h3 class="case-title">École maternelle — Paris 11e</h3>
+                  <p class="case-meta">Animateur périscolaire · Mars 2026</p>
+                  <p class="case-summary">Animateur suspendu sans délai après signalement de la direction et plainte pour viol sur un enfant de trois ans. La brigade de protection des mineurs (BPM) a été saisie.</p>
+                  <div class="case-tags"><span class="status-chip">Plainte</span><span class="case-type">viol</span></div>
+                  <a class="source-link" href="https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php" target="_blank" rel="noreferrer">Le Parisien, 27/03/2026 ↗</a>
+                </article>
+
+                <article class="case-card orange">
+                  <h3 class="case-title">Crèche Le Lagon des Ours</h3>
+                  <p class="case-meta">Éducateur · Mars 2026</p>
+                  <p class="case-summary">Éducateur visé par des plaintes et signalements pour faits présumés à caractère sexuel sur des enfants pris en charge à la crèche.</p>
+                  <div class="case-tags"><span class="status-chip">Plainte</span><span class="case-type">violences sexuelles</span></div>
+                  <a class="source-link" href="https://www.leparisien.fr/faits-divers/au-debut-on-nose-pas-y-croire-a-paris-un-educateur-de-creche-soupconne-de-violences-sexuelles-sur-des-enfants-20-03-2026-PFHIH4MIMRAIDHPXTDZJ2DN3BQ.php" target="_blank" rel="noreferrer">Le Parisien, 20/03/2026 ↗</a>
+                </article>
+
+                <article class="case-card blue">
+                  <h3 class="case-title">École maternelle Faidherbe</h3>
+                  <p class="case-meta">Animateur périscolaire · Décembre 2025</p>
+                  <p class="case-summary">La brigade de protection des mineurs saisie après de nouvelles plaintes pour agressions sexuelles visant un animateur de l’école.</p>
+                  <div class="case-tags"><span class="status-chip">Enquête</span><span class="case-type">agression sexuelle</span></div>
+                  <a class="source-link" href="https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle" target="_blank" rel="noreferrer">20 Minutes, 08/12/2025 ↗</a>
+                </article>
+
+                <article class="case-card blue">
+                  <h3 class="case-title">École maternelle Faidherbe <small>(2e affaire)</small></h3>
+                  <p class="case-meta">Animatrice périscolaire · Novembre 2025</p>
+                  <p class="case-summary">Deuxième animatrice suspendue dans le même établissement à la suite de violences signalées.</p>
+                  <div class="case-tags"><span class="status-chip">Enquête</span><span class="case-type">violences</span></div>
+                  <a class="source-link" href="https://www.leparisien.fr/faits-divers/paris-une-deuxieme-animatrice-suspendue-a-lecole-faidherbe-a-la-suite-de-violences-20-11-2025-DDEF6ZI34NEQTCU3JO2HN7ZTNE.php" target="_blank" rel="noreferrer">Le Parisien, 20/11/2025 ↗</a>
+                </article>
+
+                <article class="case-card orange">
+                  <h3 class="case-title">École maternelle Parmentier</h3>
+                  <p class="case-meta">Animateur périscolaire · Novembre 2025</p>
+                  <p class="case-summary">Deuxième plainte pour viol aggravé déposée contre un animateur de maternelle.</p>
+                  <div class="case-tags"><span class="status-chip">Plainte</span><span class="case-type">viol</span></div>
+                  <a class="source-link" href="https://www.lefigaro.fr/faits-divers/paris-une-nouvelle-plainte-pour-viol-aggrave-deposee-contre-un-animateur-de-maternelle-20251119" target="_blank" rel="noreferrer">Le Figaro, 19/11/2025 ↗</a>
+                </article>
+              </div>
+            </section>
+          </div>
+
+          <aside class="secondary">
+            <section class="section">
+              <h2 class="section-title">Suivi judiciaire</h2>
+              <div class="summary-card">
+                <p><strong>2 procès en cours (11e)</strong> — Alphonse-Baudin (jugé 26 mai), Titon (délibéré 16 juin).</p>
+                <p><strong>2 mises en examen (11e)</strong> — Bullourde (fév. 2026, contrôle judiciaire), Servan (avr. 2026, détention provisoire).</p>
+                <p><strong>4 plaintes / enquêtes</strong> — Voltaire, Parmentier, Lagon des Ours, Faidherbe.</p>
+                <p><strong>0 condamnation définitive</strong> à ce stade.</p>
+                <div class="summary-source">Sources : <a href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a></div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h2 class="section-title">Prochaines audiences</h2>
+              <div class="featured-hearing"><p><strong>16 juin 2026</strong> — Délibéré dans l’affaire Titon (11e). Le parquet a requis 18 mois avec sursis.</p></div>
+              <div class="agenda-list">
+                <div class="agenda-row"><span class="agenda-date">26 juin</span><span><span class="agenda-school">École Aqueduc (10e)</span><span class="agenda-sub">Procès — animateur</span></span></div>
+                <div class="agenda-row"><span class="agenda-date">31 août</span><span><span class="agenda-school">École Vigée-Lebrun (15e)</span><span class="agenda-sub">Procès — animateur</span></span></div>
+                <div class="agenda-row"><span class="agenda-date">1er sept.</span><span><span class="agenda-school">École Grands Champs (20e)</span><span class="agenda-sub">Procès — compagnon d’une institutrice</span></span></div>
+                <p class="summary-source"><a href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3 Île-de-France, 22 mai 2026 ↗</a></p>
+              </div>
+            </section>
+          </aside>
+        </div>
+
+        <section class="section">
+          <h2 class="section-title">Réponse des pouvoirs publics</h2>
+          <div class="metrics">
+            <div class="metric"><strong>78</strong><span>animateurs suspendus à Paris en 2026</span><small>dont 31 pour violences sexuelles</small></div>
+            <div class="metric"><strong>52</strong><span>suspensions pour violences sexuelles en 3 ans</span><small>2023–2025 · Ville de Paris</small></div>
+          </div>
+
+          <div class="timeline-card">
+            <h3 class="timeline-group-title">Suspensions et enquêtes</h3>
+            <article class="timeline-item">
+              <div class="event-date">Aut. 2025</div>
+              <div class="event-body"><h3>Mairie de Paris</h3><p>Animateurs signalés « retirés du terrain et suspendus dès connaissance des alertes remontées par les parents ». Dépôt de plainte en soutien aux victimes.</p><a class="source-link" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info, 14/11/2025 ↗</a></div>
+            </article>
+            <article class="timeline-item">
+              <div class="event-date">7 nov. 2025</div>
+              <div class="event-body"><h3>Rectorat de Paris</h3><p>Trois enseignants de maternelle suspendus depuis la rentrée, « à la suite de plaintes portant sur des faits présumés de violences sexuelles sur des enfants » (10e, 19e, 20e).</p><a class="source-link" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info, 14/11/2025 ↗</a></div>
+            </article>
+            <article class="timeline-item">
+              <div class="event-date">27 mars 2026</div>
+              <div class="event-body"><h3>Direction d’école — Paris 11e</h3><p>Signalement de la directrice → suspension sans délai de l’animateur → avis au parquet → BPM saisie.</p><a class="source-link" href="https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php" target="_blank" rel="noreferrer">Le Parisien, 27/03/2026 ↗</a></div>
+            </article>
+
+            <h3 class="timeline-group-title">Plans structurels</h3>
+            <article class="timeline-item">
+              <div class="event-date">Nov. 2025</div>
+              <div class="event-body"><h3>Patrick Bloche, 1er adjoint (éducation)</h3><p>Formation obligatoire de 2 jours (nouveaux animateurs) et 2 demi-journées (en poste). Poste de défenseur des enfants. Suspension définitive même sans condamnation.</p><a class="source-link" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info, 14/11/2025 ↗</a></div>
+            </article>
+            <article class="timeline-item">
+              <div class="event-date">14 avr. 2026</div>
+              <div class="event-body"><h3>Emmanuel Grégoire, 1er adjoint</h3><p>Plan en 6 axes : service municipal d’agrément et de contrôle, hotline dédiée (06 17 52 66 21), convention citoyenne sur la protection de l’enfant à l’école.</p><a class="source-link" href="https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461" target="_blank" rel="noreferrer">Paris.fr, 14/04/2026 ↗</a></div>
+            </article>
+
+            <h3 class="timeline-group-title">État judiciaire</h3>
+            <article class="timeline-item">
+              <div class="event-date">22 mai 2026</div>
+              <div class="event-body"><h3>Parquet de Paris</h3><p>3 informations judiciaires ouvertes (dont Servan + Bullourde dans le 11e). 5 procès programmés à Paris d’ici septembre 2026. Sur 16 gardes à vue : 13 libérées faute de charges, 3 présentées à un juge.</p><a class="source-link" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">France 3, 22/05/2026 ↗</a></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Ce que dit la presse</h2>
+          <div class="press-grid">
+            <blockquote>
+              <p>« Il y a une opacité complète de la part de la municipalité, mais aussi des services d’enquête. Les parents ne sont pas informés sur la situation de leurs enfants, ni de l’étendue des violences sexuelles. »</p>
+              <footer><strong>Arié Alimi</strong>, avocat des familles de victimes · <a href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">France Info avec AFP, 14/11/2025 ↗</a></footer>
+            </blockquote>
+            <blockquote>
+              <p>« le chiffre noir de ces délinquances, c’est-à-dire tout ce qu’on ne connaissait pas de ces délinquances, est monstrueux »</p>
+              <footer><strong>Laure Beccuau</strong>, procureure de Paris · <a href="https://www.youtube.com/watch?v=ylMNmMdtJWQ" target="_blank" rel="noreferrer">Le Grand Jury RTL / Public Sénat ↗</a></footer>
+            </blockquote>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Pour aller plus loin</h2>
+          <div class="resource-list">
+            <article class="resource-item"><div class="resource-icon">🎙️</div><div><span class="source-kind">Podcast · 1 h 20 min · Accès libre</span><a class="resource-title" href="https://open.spotify.com/episode/0eZDN0S11qMuuNEcEVE0rT" target="_blank" rel="noreferrer">« Violences dans le périscolaire » — Women Stories, épisode #16 ↗</a><p class="resource-description">Témoignages de trois mères (prénoms modifiés). Paris 11e · 29 avril 2026</p></div></article>
+            <article class="resource-item"><div class="resource-icon">🗞️</div><div><span class="source-kind">Enquête · Accès libre</span><a class="resource-title" href="https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html" target="_blank" rel="noreferrer">« Ce que l’on sait des accusations visant des animateurs périscolaires à Paris » ↗</a><p class="resource-description">Synthèse : mesures, déclarations officielles, témoignages · France Info avec AFP · 14 novembre 2025</p></div></article>
+            <article class="resource-item"><div class="resource-icon">📋</div><div><span class="source-kind">État des lieux judiciaire · Accès libre</span><a class="resource-title" href="https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html" target="_blank" rel="noreferrer">« Cinq procès déjà programmés dans l’affaire du périscolaire à Paris » ↗</a><p class="resource-description">Parquet de Paris — 3 informations judiciaires, 5 procès · France 3 · 22 mai 2026</p></div></article>
+            <article class="resource-item"><div class="resource-icon">🏛️</div><div><span class="source-kind">Document officiel · Accès libre</span><a class="resource-title" href="https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461" target="_blank" rel="noreferrer">Plan d’action contre les violences faites aux enfants — Ville de Paris ↗</a><p class="resource-description">6 axes, hotline 06 17 52 66 21 · Paris.fr · 14 avril 2026</p></div></article>
+          </div>
+        </section>
+
+        <section class="section" id="associations">
+          <h2 class="section-title">Associations mobilisées</h2>
+          <div class="association-card">
+            <article class="association"><h3>L’Enfant Bleu – Enfance Maltraitée</h3><p>Constituée partie civile dans le procès de l’animateur de l’école maternelle Alphonse-Baudin (11e), audience du 26 mai 2026. Dénonce « des défaillances majeures dans la protection des mineurs ».</p><div class="association-meta"><a href="https://www.enfantbleu.org/" target="_blank" rel="noreferrer">enfantbleu.org ↗</a> · ActuMag, 18/05/2026</div></article>
+            <article class="association"><h3>Innocence en Danger</h3><p>A publié un communiqué public avant l’audience du 26 mai 2026 intitulé « Procès animateur école Alphonse Baudin ». Suit publiquement le dossier.</p><div class="association-meta"><a href="https://www.innocenceendanger.org/" target="_blank" rel="noreferrer">innocenceendanger.org ↗</a> · Site officiel, 22/05/2026</div></article>
+          </div>
+
+          <div class="contribution">
+            <h2>Vous avez des informations sur ces affaires ?</h2>
+            <p>Source de presse, décision de justice, réponse institutionnelle — toute information sourcée nous aide à compléter ce dossier.</p>
+            <a class="primary-button" href="mailto:contact@sousnosyeux.org?subject=Paris%2011e%20%E2%80%94%20Nouvelle%20information">Nous écrire</a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div class="footer-brand">sousnosyeux · carte citoyenne</div>
+        <div class="footer-links"><a href="#methodologie">Méthodologie</a><span>·</span><a href="#">Mentions légales</a><span>·</span><a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a></div>
+      </div>
+    </footer>
+
+    <script>
+      const board = document.getElementById("review-board");
+      const hide = document.getElementById("hide-review");
+      const show = document.getElementById("show-review");
+
+      hide?.addEventListener("click", () => {
+        board.hidden = true;
+        show.style.display = "block";
+      });
+
+      show?.addEventListener("click", () => {
+        board.hidden = false;
+        show.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
