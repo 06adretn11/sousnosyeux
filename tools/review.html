@@ -140,7 +140,13 @@
   <label>Supabase URL</label>
   <input type="text" id="sb-url" placeholder="https://xxxxx.supabase.co">
   <label>Service Role Key</label>
-  <input type="password" id="sb-key" placeholder="eyJhbGciOi...">
+  <input type="password" id="sb-key" placeholder="eyJhbGciOi..." autocomplete="off">
+  <p style="font-size:0.78rem;line-height:1.5;color:#8a3b2f;background:#fff1ee;border-left:3px solid #c0392b;padding:0.6rem 0.8rem;margin:0.7rem 0;">
+    ⚠️ Cette cle <strong>bypasse toutes les RLS</strong> : lecture, ecriture et suppression sur
+    toutes les tables. Elle n'est <strong>plus memorisee</strong> par cet outil et doit etre
+    ressaisie a chaque session. Ne l'utiliser que sur une machine de confiance, dans un
+    navigateur sans extension non maitrisee, et ne jamais la coller ailleurs.
+  </p>
   <button onclick="connect()">Charger les affaires</button>
   <div class="error" id="login-error"></div>
 </div>
@@ -156,14 +162,42 @@
 
 <script>
 let SB_URL, SB_KEY;
+
+// Listes de colonnes explicites — pas de `select=*`.
+// L'outil de revue a legitimement besoin des champs INTERNES (score, criteres,
+// commentaire de validation) : c'est son role. Ce qui est interdit, c'est de les
+// laisser rejoindre un artefact public — cf. scripts/lib/public-projection.mjs.
+const REVIEW_CASE_SELECT = [
+  'case_id', 'etablissement', 'commune', 'departement', 'adresse',
+  'type_structure', 'role_mis_en_cause', 'type_affaire',
+  'statut_judiciaire', 'statut_des_faits', 'enfants_concernes_public',
+  'publication_status', 'commentaire_validation', 'fiabilite_info_10',
+  'crit_source_fiable', 'crit_article_recent', 'crit_etablissement_nomme',
+  'crit_statut_clair', 'crit_recoupement',
+  'lat', 'lng',
+].join(',');
+
+const REVIEW_SOURCE_SELECT = [
+  'source_id', 'case_id', 'url', 'media', 'publication_date',
+  'source_type', 'is_primary', 'access_checked_at', 'archive_url',
+].join(',');
+
 let allCases = [];
 let allSources = {};
 let currentFilter = 'candidate';
 
-// Try to pre-fill from localStorage
-const saved = JSON.parse(localStorage.getItem('sny_review') || '{}');
+// Pre-remplissage : URL uniquement.
+// La cle service_role n'est JAMAIS persistee (ni localStorage, ni sessionStorage,
+// ni cookie). Cf. docs/industrialisation/CORPUS_AUDIT_V0.md §4.
+// Purge d'une cle eventuellement stockee par une version anterieure de cet outil.
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem('sny_review') || '{}'); } catch { saved = {}; }
+if (saved.key) {
+  localStorage.setItem('sny_review', JSON.stringify({ url: saved.url || '' }));
+  console.warn('[sny] Une cle service_role heritee etait stockee en clair : elle vient d etre purgee. Considere-la comme compromise et fais-la tourner dans le dashboard Supabase.');
+  alert('Une cle service_role etait stockee en clair par une version precedente de cet outil.\n\nElle vient d etre effacee de ce navigateur.\n\n➡ Fais tourner la cle (Supabase > Settings > API > service_role) : considere-la comme compromise.');
+}
 if (saved.url) document.getElementById('sb-url').value = saved.url;
-if (saved.key) document.getElementById('sb-key').value = saved.key;
 
 async function sbFetch(path, opts = {}) {
   const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
@@ -191,18 +225,18 @@ async function connect() {
 
   try {
     // Test connection
-    allCases = await sbFetch('cases?select=*&order=case_id');
+    allCases = await sbFetch(`cases?select=${REVIEW_CASE_SELECT}&order=case_id`);
 
     // Load all sources
-    const sources = await sbFetch('sources?select=*&order=case_id,is_primary.desc');
+    const sources = await sbFetch(`sources?select=${REVIEW_SOURCE_SELECT}&order=case_id,is_primary.desc`);
     allSources = {};
     for (const s of sources) {
       if (!allSources[s.case_id]) allSources[s.case_id] = [];
       allSources[s.case_id].push(s);
     }
 
-    // Save to localStorage
-    localStorage.setItem('sny_review', JSON.stringify({ url: SB_URL, key: SB_KEY }));
+    // Ne persiste QUE l'URL du projet. Jamais la cle.
+    localStorage.setItem('sny_review', JSON.stringify({ url: SB_URL }));
 
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'block';

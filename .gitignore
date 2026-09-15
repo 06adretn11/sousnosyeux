@@ -41,6 +41,13 @@ supabase/.temp/
 
 # --- Rapports générés (veille) ---
 data/watch-report.json
+data/maintenance-state.json
+
+# --- Scanner d entretien : dossier de travail jetable ---
+.scan-cycles/
+
+# --- Cluster Postgres ephemere (tests de migration) ---
+pgdata/
 
 # --- Claude Code (config locale Preview MCP) ---
 .claude/

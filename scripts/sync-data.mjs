@@ -14,6 +14,14 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  CASE_SELECT,
+  SOURCE_SELECT,
+  projectCase,
+  projectSource,
+  assertNoInternalFields,
+} from './lib/public-projection.mjs';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const CASES_PATH = resolve(ROOT, 'data/cases.json');
@@ -39,7 +47,7 @@ async function main() {
 
   // 1) Récupérer les affaires publiées avec score >= 8
   const casesRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/cases?publication_status=eq.publiée&fiabilite_info_10=gte.8&select=*&order=case_id`,
+    `${SUPABASE_URL}/rest/v1/cases?publication_status=eq.publiée&fiabilite_info_10=gte.8&select=${CASE_SELECT}&order=case_id`,
     { headers }
   );
   if (!casesRes.ok) throw new Error(`Cases: HTTP ${casesRes.status} ${await casesRes.text()}`);
@@ -50,7 +58,7 @@ async function main() {
   let allSources = [];
   if (caseIds.length > 0) {
     const sourcesRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/sources?case_id=in.(${caseIds.map(id => `"${id}"`).join(',')})&select=*&order=case_id,is_primary.desc`,
+      `${SUPABASE_URL}/rest/v1/sources?case_id=in.(${caseIds.map(id => `"${id}"`).join(',')})&select=${SOURCE_SELECT}&order=case_id,is_primary.desc`,
       { headers }
     );
     if (!sourcesRes.ok) throw new Error(`Sources: HTTP ${sourcesRes.status} ${await sourcesRes.text()}`);
@@ -61,13 +69,7 @@ async function main() {
   const sourcesByCase = {};
   for (const s of allSources) {
     if (!sourcesByCase[s.case_id]) sourcesByCase[s.case_id] = [];
-    sourcesByCase[s.case_id].push({
-      url: s.url,
-      media: s.media,
-      publication_date: s.publication_date,
-      source_type: s.source_type,
-      is_primary: s.is_primary,
-    });
+    sourcesByCase[s.case_id].push(projectSource(s));
   }
 
   // 4) Construire le JSON de sortie
@@ -81,26 +83,15 @@ async function main() {
       source: 'supabase',
       note: 'Généré automatiquement par scripts/sync-data.mjs depuis Supabase.',
     },
+    // Projection par liste blanche — cf. docs/industrialisation/DATA_CONTRACT_V0.md §9
     cases: cases.map(c => ({
-      case_id: c.case_id,
-      etablissement: c.etablissement,
-      commune: c.commune,
-      departement: c.departement,
-      type_structure: c.type_structure,
-      role_mis_en_cause: c.role_mis_en_cause,
-      type_affaire: c.type_affaire,
-      statut_judiciaire: c.statut_judiciaire,
-      statut_des_faits: c.statut_des_faits,
-      enfants_concernes_public: c.enfants_concernes_public,
-      fiabilite_info_10: c.fiabilite_info_10,
-      commentaire_validation: c.commentaire_validation,
+      ...projectCase(c),
       sources: sourcesByCase[c.case_id] || [],
-      lat: c.lat,
-      lng: c.lng,
-      geocode_source: null, // pas stocké en base, sera regéocodé si besoin
-      geocode_score: null,
     })),
   };
+
+  // 4bis) Garde-fou terminal : aucun champ interne ne doit sortir d'ici.
+  assertNoInternalFields(output, 'data/cases.json');
 
   // 5) Comparer avec l'existant
   let existingCount = 0;
@@ -119,7 +110,7 @@ async function main() {
   for (const c of output.cases) {
     const geo = c.lat !== null ? '📍' : '⚠️ ';
     const srcCount = c.sources.length;
-    console.log(`  ${geo} ${c.case_id} — ${c.etablissement} (${c.commune}) — score ${c.fiabilite_info_10}/10 — ${srcCount} source(s)`);
+    console.log(`  ${geo} ${c.case_id} — ${c.etablissement} (${c.commune}) — ${srcCount} source(s)`);
   }
 
   if (DRY) {

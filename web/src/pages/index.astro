@@ -17,7 +17,6 @@ const allCases = (casesDoc.cases as any[])
     statut_judiciaire:      c.statut_judiciaire,
     statut_des_faits:       c.statut_des_faits,
     enfants_concernes_public: c.enfants_concernes_public,
-    fiabilite_info_10:      c.fiabilite_info_10,
     lat:                    c.lat,
     lng:                    c.lng,
     geocode_source:         c.geocode_source ?? null,
@@ -180,7 +179,6 @@ function caseYear(c: typeof allCases[0]): string {
       statut_judiciaire: string;
       statut_des_faits: string;
       enfants_concernes_public: string;
-      fiabilite_info_10: number;
       lat: number;
       lng: number;
       geocode_source: string | null;
@@ -227,7 +225,6 @@ function caseYear(c: typeof allCases[0]): string {
           statut_judiciaire:        c.statut_judiciaire,
           statut_des_faits:         c.statut_des_faits,
           enfants_concernes_public: c.enfants_concernes_public,
-          fiabilite_info_10:        c.fiabilite_info_10,
           geocode_source:           c.geocode_source,
           source_media:             c.source_media,
           source_url:               c.source_url,
