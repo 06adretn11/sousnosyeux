@@ -19,6 +19,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { requetesVeille } from './lib/routage-veille.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -34,43 +35,25 @@ const LIMIT = ARGS.includes('--limit')
 const CASE_FILTER = ARGS.includes('--case')
   ? ARGS[ARGS.indexOf('--case') + 1]
   : null;
+const USE_JSON = ARGS.includes('--json');
 
 const ARTICLE_SERVER = 'http://localhost:3456';
 const DELAY_BETWEEN_SEARCHES_MS = 2000;
 
-// --- Mots-clés de progression selon le statut judiciaire actuel ---
-const EVOLUTION_KEYWORDS = {
-  'plainte':                          ['enquête', 'garde à vue', 'mis en examen', 'interpellé'],
-  'enquête':                          ['mis en examen', 'renvoyé', 'tribunal', 'procès', 'garde à vue'],
-  'mise en examen':                   ['procès', 'renvoyé devant', 'tribunal correctionnel', 'assises', 'jugement'],
-  'procès':                           ['condamné', 'condamnation', 'relaxé', 'relaxe', 'acquitté', 'peine', 'prison'],
-  'condamnation non définitive':      ['appel', 'cassation', 'condamnation définitive', 'confirmé'],
-  'condamnation définitive':          ['incarcéré', 'prison', 'inscription FIJAIS'],
-  'relaxe / non-lieu / classement':   ['réouverture', 'appel', 'nouvelle plainte'],
-  'à qualifier':                      ['enquête', 'plainte', 'mis en examen', 'condamné', 'procès'],
-};
+// Les mots-clés de progression par état courant vivent dans
+// `lib/routage-veille.mjs` (BOOSTERS) : ce sont des BOOSTERS de recherche,
+// jamais une liste fermée — une requête ouverte tourne toujours en plus.
 
 // =====================================================================
 // Fonctions utilitaires
 // =====================================================================
 
-function buildSearchQuery(c) {
-  const parts = [];
-
-  if (c.etablissement) parts.push(`"${c.etablissement}"`);
-  if (c.commune) parts.push(c.commune);
-
-  const roleShort = (c.role_mis_en_cause || '')
-    .replace(/périscolaire/i, '')
-    .replace(/scolaire/i, '')
-    .trim();
-  if (roleShort) parts.push(roleShort);
-
-  const evolutionTerms = EVOLUTION_KEYWORDS[c.statut_judiciaire] || EVOLUTION_KEYWORDS['à qualifier'];
-  parts.push(`(${evolutionTerms.join(' OR ')})`);
-
-  return parts.join(' ');
-}
+// Deux requêtes par affaire : « en avant » (boosters de l'état courant, sans
+// le rôle qui la rétrécissait) et ouverte (établissement + commune seuls).
+// Mesuré sur Titon : l'appel du parquet n'était trouvé que par une requête
+// qui le nomme ; une requête ouverte ne le remonte pas.
+const FENETRE = ARGS.includes('--fenetre-jours') ? parseInt(ARGS[ARGS.indexOf('--fenetre-jours') + 1], 10) : 45;
+const buildSearchQuery = (c) => requetesVeille(c, { fenetreJours: FENETRE });
 
 function googleNewsRssUrl(query) {
   const q = encodeURIComponent(query);
@@ -241,13 +224,44 @@ function detectEvolutionFromTitle(title, currentStatut) {
 async function main() {
   console.log('📡 watch-updates — veille sur les affaires publiées\n');
 
-  const raw = JSON.parse(await readFile(CASES_PATH, 'utf-8'));
-  let cases = raw.cases || [];
+  // SOURCE DE VÉRITÉ : Neon, plus `data/cases.json`.
+  //
+  // `cases.json` est une PROJECTION figée, régénérée à la main avant un
+  // déploiement. Mesuré le 24/09/2026 : 53 affaires dans le JSON contre 56
+  // publiées dans Neon. `FR-2026-0048`, `FR-2026-0049` et `PARIS-011`
+  // n'étaient donc surveillées par rien, et rien ne le signalait — alors
+  // que `FR-2026-0049` est précisément l'affaire dont l'état publié est
+  // contredit par ses propres sources.
+  //
+  // `--json` conserve l'ancien comportement pour rejouer un cycle à
+  // l'identique hors ligne.
+  let cases;
+  if (USE_JSON) {
+    const raw = JSON.parse(await readFile(CASES_PATH, 'utf-8'));
+    cases = raw.cases || [];
+    console.log(`   source du stock : data/cases.json (projection figée)`);
+  } else {
+    const { connecter } = await import('./lib/neon.mjs');
+    const { sql } = connecter();
+    cases = await sql`
+      select c.case_id, c.etablissement, c.commune,
+             c.role_mis_en_cause::text  as role_mis_en_cause,
+             c.statut_judiciaire::text  as statut_judiciaire,
+             coalesce(
+               (select json_agg(json_build_object(
+                  'media', s.media, 'publication_date', s.publication_date, 'url', s.url))
+                from sources s where s.case_id = c.case_id),
+               '[]'::json) as sources
+      from cases c
+      where c.publication_status = 'publiée'
+      order by c.case_id`;
+    console.log(`   source du stock : Neon (${cases.length} affaires publiées)`);
+  }
 
   if (CASE_FILTER) {
     cases = cases.filter(c => c.case_id === CASE_FILTER);
     if (!cases.length) {
-      console.error(`❌ Affaire ${CASE_FILTER} non trouvée dans cases.json`);
+      console.error(`❌ Affaire ${CASE_FILTER} introuvable dans le stock publié`);
       process.exit(1);
     }
   }
@@ -264,11 +278,13 @@ async function main() {
 
   for (let i = 0; i < cases.length; i++) {
     const c = cases[i];
-    const query = buildSearchQuery(c);
+    const queries = buildSearchQuery(c);
+    const query = queries.avant;
     const label = `[${i + 1}/${cases.length}] ${c.case_id} — ${c.etablissement}, ${c.commune}`;
 
     console.log(`${label}`);
-    console.log(`   Requête : ${query}`);
+    console.log(`   Requête (avant)   : ${queries.avant}`);
+    console.log(`   Requête (ouverte) : ${queries.ouverte}`);
 
     if (DRY_RUN) {
       console.log(`   (dry-run — pas de recherche)\n`);
@@ -277,10 +293,14 @@ async function main() {
 
     let articles = [];
     try {
-      const rssUrl = googleNewsRssUrl(query);
-      const xml = await fetchRss(rssUrl);
-      articles = parseRssItems(xml);
-      console.log(`   → ${articles.length} résultat(s) Google News`);
+      articles = parseRssItems(await fetchRss(googleNewsRssUrl(queries.avant)));
+      await sleep(DELAY_BETWEEN_SEARCHES_MS);
+      const ouverts = parseRssItems(await fetchRss(googleNewsRssUrl(queries.ouverte)));
+      // Union dédupliquée par (titre, média) : la requête ouverte n'ajoute que
+      // ce que la requête « en avant » n'a pas remonté.
+      const vus = new Set(articles.map((a) => `${a.title}|${a.media}`));
+      for (const a of ouverts) if (!vus.has(`${a.title}|${a.media}`)) articles.push(a);
+      console.log(`   → ${articles.length} résultat(s) Google News (${ouverts.length} en requête ouverte)`);
     } catch (err) {
       console.log(`   ⚠️  Erreur recherche : ${err.message}`);
       report.results.push({
@@ -334,6 +354,7 @@ async function main() {
       commune: c.commune,
       statut_judiciaire: c.statut_judiciaire,
       query,
+      query_open: queries.ouverte,
       new_articles: newArticles,
     });
 

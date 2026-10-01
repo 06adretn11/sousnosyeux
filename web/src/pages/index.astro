@@ -23,6 +23,13 @@ const allCases = (casesDoc.cases as any[])
     source_media:           c.sources?.[0]?.media ?? '',
     source_url:             c.sources?.[0]?.url ?? '',
     source_date:            c.sources?.[0]?.publication_date ?? null,
+    // Synthèse d'état projetée depuis Neon. Absente pour les affaires qui
+    // ne portent encore aucun événement validé — elles gardent le rendu
+    // actuel. ⚠ ne jamais recopier dans les properties GeoJSON : un objet
+    // imbriqué y est silencieusement éjecté par Supercluster.
+    etat:                   c.etat ?? null,
+    // Écoles concernées quand une affaire en touche plusieurs (absent sinon).
+    etablissements:         c.etablissements ?? null,
   }));
 
 const totalCount    = casesDoc.cases.length;
@@ -45,7 +52,7 @@ function statutCat(s: string): 'red' | 'blue' | 'orange' | 'green' | 'muted' {
   return 'muted';
 }
 
-function statutLabel(s: string): string {
+function statutLabel(s: string, etat: { suites?: string[] } | null = null): string {
   const m: Record<string, string> = {
     'condamnation définitive':      'Condamné (déf.)',
     'condamnation non définitive':  'Condamné (non-déf.)',
@@ -56,7 +63,8 @@ function statutLabel(s: string): string {
     'relaxe / non-lieu / classement': 'Classé / Relaxé',
     'à qualifier':                  'À qualifier',
   };
-  return m[s] ?? s;
+  // Un recours en cours se lit dans le libellé : « Relaxé » seul se lirait comme acquis.
+  return (m[s] ?? s) + (etat?.suites?.includes('APPEL_EN_COURS') ? ' · appel' : '');
 }
 
 function caseYear(c: typeof allCases[0]): string {
@@ -138,7 +146,7 @@ function caseYear(c: typeof allCases[0]): string {
             data-cat={statutCat(c.statut_judiciaire)}
             data-lat={c.lat}
             data-lng={c.lng}
-            aria-label={`${c.etablissement}, ${c.commune}, ${statutLabel(c.statut_judiciaire)}`}
+            aria-label={`${c.etablissement}, ${c.commune}, ${statutLabel(c.statut_judiciaire, c.etat)}`}
           >
             <span class={`case-bar cat-${statutCat(c.statut_judiciaire)}`} aria-hidden="true"></span>
             <span class="case-content">
@@ -149,7 +157,7 @@ function caseYear(c: typeof allCases[0]): string {
               <span class="case-loc">{c.commune} · {c.type_structure}</span>
               <span class="case-tags">
                 <span class={`case-badge badge-${statutCat(c.statut_judiciaire)}`}>
-                  {statutLabel(c.statut_judiciaire)}
+                  {statutLabel(c.statut_judiciaire, c.etat)}
                 </span>
                 <span class="case-tag-type">{c.type_affaire}</span>
               </span>
@@ -167,6 +175,7 @@ function caseYear(c: typeof allCases[0]): string {
   <!-- ── SCRIPT CARTE ── -->
   <script>
     import maplibregl from 'maplibre-gl';
+    import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
     import 'maplibre-gl/dist/maplibre-gl.css';
 
     type CaseRow = {
@@ -185,6 +194,15 @@ function caseYear(c: typeof allCases[0]): string {
       source_media: string;
       source_url: string;
       source_date: string | null;
+      etat: {
+        statut: string;
+        date: string | null;
+        type_evenement: string;
+        finalite: string | null;
+        suites: string[];
+        sources: { media: string; date: string | null; url: string | null }[];
+      } | null;
+      etablissements: { etablissement: string; commune: string; role: string }[] | null;
     };
 
     // ── Données ──
@@ -234,20 +252,30 @@ function caseYear(c: typeof allCases[0]): string {
       })),
     };
 
-    // ── Wording popup par statut judiciaire ──
-    const wordingByStatut: Record<string, string> = {
-      'plainte':                          'Une plainte a été déposée selon une source publique',
-      'enquête':                          'Une enquête est en cours selon une source publique',
-      'mise en examen':                   'Une mise en examen a été prononcée selon une source publique',
-      'procès':                           'Un procès est en cours selon une source publique',
-      'condamnation non définitive':      'Une condamnation non définitive a été prononcée selon une source publique',
-      'condamnation définitive':          'Une condamnation définitive a été prononcée selon une source publique',
-      'relaxe / non-lieu / classement':   'Une relaxe / un non-lieu / un classement a été prononcé selon une source publique',
-      'à qualifier':                      'Une source publique rapporte les faits, qualification à préciser',
-    };
-
     const escapeHtml = (s: string) =>
       s.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
+
+    /**
+     * Bloc « Source : … » — la référence datée et cliquable.
+     *
+     * Le média est déjà nommé dans la phrase (« Selon X, … ») ; cette ligne
+     * porte la date de publication et le lien, que la prose ne peut pas
+     * porter. Certaines URL sont volontairement absentes du produit public.
+     */
+    function sourcesHtml(_c: CaseRow, srcs: { media: string; date: string | null; url: string | null }[]): string {
+      if (!srcs.length) return '';
+      const label = srcs.length > 1 ? 'Sources' : 'Source';
+      const items = srcs.map((s) => {
+        const lib = escapeHtml(s.media) + (s.date ? ' · ' + escapeHtml(dateLongue(s.date.slice(0, 10))) : '');
+        // Certaines URL sont volontairement absentes du produit public : le
+        // slug de l'article énonce une information que le contrat éditorial
+        // interdit de publier. On cite alors le média, sans lien mort.
+        return s.url
+          ? `<a href="${encodeURI(s.url)}" target="_blank" rel="noopener noreferrer">${lib}</a>`
+          : `<span>${lib}</span>`;
+      }).join(' · ');
+      return `${label} : ${items}`;
+    }
 
     // ── Carte ──
     const map = new maplibregl.Map({
@@ -394,8 +422,13 @@ function caseYear(c: typeof allCases[0]): string {
 
     function openPopupForCase(c: CaseRow) {
       const coords: [number, number] = [c.lng, c.lat];
-      const phrase  = wordingByStatut[c.statut_judiciaire] ?? 'Source publique disponible';
-      const dateSfx = c.source_date ? ` (${escapeHtml(c.source_date.slice(0, 10))})` : '';
+      // Source à créditer : celle de l'état validé si elle existe, sinon la
+      // source principale de l'affaire.
+      const src = sourceAffichee((c as any).etat, {
+        media: c.source_media, date: c.source_date, url: c.source_url,
+      });
+      const lignesEtat = phrasesEtat(c.statut_judiciaire, (c as any).etat, src);
+      const srcs = src ? [src] : [];
       const approx  = (c.geocode_source === 'centroid-arr' || c.geocode_source === 'ban-commune')
         ? '<p class="popup-b2-approx">📍 Localisation approximative (centre de commune/arrondissement).</p>'
         : '';
@@ -405,17 +438,16 @@ function caseYear(c: typeof allCases[0]): string {
           <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}</p>
           <h3 class="popup-b2-title">${escapeHtml(c.etablissement)}</h3>
           <p class="popup-b2-loc">${escapeHtml(c.commune)}${c.source_date ? ' · ' + c.source_date.slice(0, 4) : ''}</p>
-          <p class="popup-b2-phrase">${escapeHtml(phrase)}.</p>
+          ${c.etablissements && c.etablissements.length > 1
+            ? `<p class="popup-b2-loc"><b>Écoles concernées :</b> ${c.etablissements.map((e) => escapeHtml(e.etablissement)).join(' · ')}</p>`
+            : ''}
+          ${lignesEtat.map((l) => `<p class="popup-b2-phrase">${escapeHtml(l)}</p>`).join('')}
           <ul class="popup-b2-facts">
             <li><b>Type d'affaire :</b> ${escapeHtml(c.type_affaire)}</li>
             <li><b>Rôle mis en cause :</b> ${escapeHtml(c.role_mis_en_cause)}</li>
             <li><b>Enfants concernés :</b> ${escapeHtml(c.enfants_concernes_public)}</li>
           </ul>
-          <p class="popup-b2-source">
-            <a href="${encodeURI(c.source_url)}" target="_blank" rel="noopener noreferrer">
-              Source : ${escapeHtml(c.source_media)}${dateSfx}
-            </a>
-          </p>
+          <p class="popup-b2-source">${sourcesHtml(c, srcs)}</p>
           ${approx}
           <p class="popup-b2-disclaimer">
             Présomption d'innocence. Informations issues de la presse.

@@ -34,6 +34,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Routage de la veille — contre-exemples (le titre décide où regarder, jamais ce qui est vrai)',
+    script: 'scripts/qa/test-routage.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

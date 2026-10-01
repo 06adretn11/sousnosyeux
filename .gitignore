@@ -52,3 +52,7 @@ pgdata/
 # --- Claude Code (config locale Preview MCP) ---
 .claude/
 web/.claude/
+
+# --- Maintenance des affaires connues : sorties generees (MAINTENANCE_LOOP_2) ---
+data/maintenance-archive/
+data/maintenance-funnel.json

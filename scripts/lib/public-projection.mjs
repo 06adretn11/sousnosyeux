@@ -27,6 +27,30 @@ export const PUBLIC_CASE_FIELDS = Object.freeze([
   // encore en base : l'avertissement est aujourd'hui inerte.
   'geocode_source',
   'verified_at',
+  // Synthèse d'état — CONTRAT HOME.
+  //
+  // Bloc DÉRIVÉ, jamais saisi : il se reconstitue entièrement depuis
+  // `case_events` (l'événement validé), la proposition acceptée qui l'a
+  // produit (`state_proposals` via `applied_event_id`) et le registre
+  // `articles`. Aucune colonne n'a été ajoutée à Neon pour l'obtenir.
+  //
+  // Il n'existe que pour les affaires portant au moins un événement
+  // validé. Les autres gardent exactement le rendu actuel.
+  'etat',
+  // Établissements concernés quand une affaire en touche plusieurs
+  // (`case_establishments`). Omis pour les affaires mono-établissement :
+  // l'absence signifie « `etablissement` fait foi ».
+  'etablissements',
+]);
+
+/** Liste blanche — sous-champs du bloc `etat`. */
+export const PUBLIC_ETAT_FIELDS = Object.freeze([
+  'statut',
+  'date',
+  'type_evenement',
+  'finalite',
+  'suites',
+  'sources',
 ]);
 
 /** Liste blanche — colonnes d'une source exposables publiquement. */
