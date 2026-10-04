@@ -69,15 +69,21 @@ const WORDING = {
 };
 
 /** Mention obligatoire et non supprimable — contrat éditorial §2. */
-const MENTION_OBLIGATOIRE = 'La mise en examen ne vaut pas culpabilité.';
-const STATUTS_AVEC_MENTION = ['plainte', 'enquête', 'mise en examen', 'procès'];
+// Une mention PAR état : « mise en examen » ne s'applique qu'à la mise en examen
+// (une enquête ou une plainte n'impliquent aucune mise en examen). Mêmes
+// formulations que web/src/lib/etat-wording.ts.
+const MENTIONS = {
+  'plainte': 'Le dépôt d’une plainte ne vaut pas culpabilité.',
+  'enquête': 'L’ouverture d’une enquête ne préjuge pas de la culpabilité.',
+  'mise en examen': 'La mise en examen ne vaut pas culpabilité.',
+  'procès': 'La tenue d’un procès ne vaut pas culpabilité.',
+};
 
 export function libellePublic(statut) {
   const base = WORDING[statut];
   if (!base) return null;
-  if (STATUTS_AVEC_MENTION.includes(statut) && !base.includes(MENTION_OBLIGATOIRE)) {
-    return base + ' ' + MENTION_OBLIGATOIRE;
-  }
+  const mention = MENTIONS[statut];
+  if (mention && !base.includes(mention)) return base + ' ' + mention;
   return base;
 }
 
