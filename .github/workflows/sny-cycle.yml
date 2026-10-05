@@ -48,7 +48,7 @@ jobs:
         run: node scripts/maintenance-cycle.mjs --moteur deepseek/deepseek-v4.1-flash --contrat v2
 
       # C-E tournent même si la veille ou la maintenance ont échoué : les clics en attente ne doivent pas attendre.
-      - name: C. notifier (Telegram : information sans bouton, décision avec boutons)
+      - name: "C. notifier (Telegram : information sans bouton, décision avec boutons)"
         if: ${{ !cancelled() }}
         run: node scripts/telegram-v0.mjs notifier 10
       - name: D. recevoir les clics Telegram
