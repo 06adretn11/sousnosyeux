@@ -326,8 +326,16 @@ async function main() {
          --   REVIEW / en attente de corroboration de Discovery. Un rejet (« retirer ») n'est jamais surveillé.
          or exists (select 1 from reviews r
                      where r.case_id = c.case_id and r.next_review_at is not null and r.decision <> 'retirer')
+         -- + toute candidate EXPLICITEMENT validée par Adrien (clic VALIDATE de Discovery ou Decision Pack) : surveillée dès sa
+         --   validation, publiée ou non. Ni les candidates historiques non décidées, ni un simple rattachement (ATTACH), ni une
+         --   validation « par règle conditionnelle » (reviewed_by ne commence pas par « Adrien »).
+         or (c.publication_status = 'candidate'
+             and exists (select 1 from reviews r
+                          where r.case_id = c.case_id and r.decision = 'validé' and r.reviewed_by like 'Adrien%'
+                            and (r.comment like 'VALIDATED —%' or r.comment like '[Discovery-auto:%] VALIDATE —%'))
+             and not exists (select 1 from reviews x where x.case_id = c.case_id and x.decision = 'retirer'))
       order by c.case_id`;
-    console.log(`   source du stock : Neon (${cases.length} affaires : publiées + réexamens planifiés)`);
+    console.log(`   source du stock : Neon (${cases.length} affaires : publiées + réexamens planifiés + candidates validées)`);
   }
 
   if (CASE_FILTER) {
