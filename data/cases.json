@@ -1,13 +1,13 @@
 {
   "_meta": {
     "project": "sousnosyeux",
-    "version": "sync",
-    "generated_at": "2026-06-06",
+    "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 53,
-    "source": "supabase",
-    "note": "Généré automatiquement par scripts/sync-data.mjs depuis Supabase.",
-    "projection": "public-whitelist-v0"
+    "total_cases": 54,
+    "source": "neon",
+    "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
+    "projection": "public-whitelist-v0",
+    "generated_at": "2026-10-06"
   },
   "cases": [
     {
@@ -1115,6 +1115,43 @@
           "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
           "media": "Radio France",
           "publication_date": "2026-03-09",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0113",
+      "etablissement": "École maternelle Frida-Kahlo",
+      "commune": "Bordeaux",
+      "departement": "Gironde",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 44.82018248700588,
+      "lng": -0.5557746305776049,
+      "sources": [
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f",
+          "media": "Ouest-France",
+          "publication_date": "2026-07-01",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+          "media": "Le Figaro",
+          "publication_date": "2026-07-01",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/07/01/horreur-a-lecole-maternelle-un-atsem-et-un-animateur-periscolaire-vises-par-sept-plaintes-pour-violences-sexuelles-sur-mineurs-13448091.php",
+          "media": "Midi Libre (AFP)",
+          "publication_date": "2026-07-01",
           "source_type": "presse",
           "is_primary": false
         }
