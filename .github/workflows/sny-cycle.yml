@@ -1,11 +1,11 @@
 # SNY — cycle autonome : veille → maintenance → Telegram → clics → apply.
-# Aucun poste n'est requis. Planifié toutes les 4 h (GitHub planifie « au mieux » : +5 à +15 min possibles).
+# Aucun poste n'est requis. Maintenance : une fois par jour (GitHub planifie « au mieux » : +5 à +15 min possibles).
 # Note de sécurité : docs/industrialisation/AUTONOMOUS_LOOP_V1.md
 name: sny-cycle
 
 on:
   schedule:
-    - cron: '17 */4 * * *'
+    - cron: '37 6 * * *'   # 06:37 UTC = 08:37 à Paris en été (CEST), 07:37 en hiver (CET)
   workflow_dispatch:
 
 permissions:
@@ -57,3 +57,6 @@ jobs:
       - name: E. appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
         if: ${{ !cancelled() }}
         run: node scripts/appliquer-decisions.mjs --generique
+      - name: F. appliquer les décisions Discovery à Neon (jamais de publication)
+        if: ${{ !cancelled() }}
+        run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire

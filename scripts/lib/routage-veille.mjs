@@ -457,7 +457,14 @@ export function claimDejaEtabli({ case_id, claim, evenements }) {
  * nomment pas).
  */
 export function requetesVeille(c, { fenetreJours = 45 } = {}) {
-  const base = [c.etablissement ? `"${c.etablissement}"` : '', c.commune || ''].filter(Boolean).join(' ');
+  // Un établissement ANONYME (« Centre périscolaire de Charly (non nommé) », « École non nommée ») ne se
+  // cherche pas entre guillemets : la phrase exacte n'existera dans aucun article, la requête ne ramène
+  // rien et l'affaire n'est jamais surveillée. On cherche alors les mots du nom, sans la mention
+  // « non nommé » ni la parenthèse (mesuré à l'ouverture des dossiers REVIEW de Discovery #1).
+  const etab = c.etablissement || '';
+  const anonyme = /non nomm|\(/i.test(etab);
+  const nomCherche = etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
+  const base = [etab ? (anonyme ? nomCherche : `"${etab}"`) : '', (c.commune || '').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' ');
   const b = BOOSTERS[c.statut_judiciaire] || BOOSTERS['à qualifier'];
   const bq = b.map((x) => (/\s/.test(x) ? `"${x}"` : x)).join(' OR ');
   // La requête ouverte est BORNÉE DANS LE TEMPS : sans borne, elle remonte tout l'historique

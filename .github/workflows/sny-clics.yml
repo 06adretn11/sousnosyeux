@@ -1,4 +1,5 @@
-# SNY — récupération des clics Telegram + apply, toutes les 30 min (sans veille ni modèle : quelques secondes).
+# SNY — récupération des clics Telegram + apply, toutes les 30 min (sans veille ni modèle ni coût : quelques secondes).
+# Ce n'est PAS un run Discovery/Maintenance : il ne fait que traiter une décision déjà prise par Adrien.
 name: sny-clics
 
 on:
@@ -32,3 +33,5 @@ jobs:
         run: node scripts/telegram-v0.mjs recevoir
       - name: Appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
         run: node scripts/appliquer-decisions.mjs --generique
+      - name: Appliquer les décisions Discovery à Neon (jamais de publication)
+        run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire

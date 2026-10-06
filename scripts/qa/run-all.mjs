@@ -39,6 +39,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Discovery quotidien — vérification des extractions, familles de dépêches, messages Telegram',
+    script: 'scripts/qa/test-discovery.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

@@ -13,6 +13,7 @@
 // VALIDATE n'écrit que state_proposals.decision. Aucune publication, ici ni ailleurs.
 // =====================================================================
 import { connecter } from './lib/neon.mjs';
+import { messageDecision, boutons } from './lib/discovery-messages.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -106,7 +107,7 @@ async function info(cle) {
   const corps = p.analysis_action === 'STATE_CHANGE'
     ? `Évolution évoquée, mais la source ne l’établit pas assez : aucun changement proposé (état : ${esc(p.avant)}).`
     : `Nouvel article traité.\nAucun changement de la fiche (état : ${esc(p.avant)}).`;
-  return envoyer(`📰 <b>SNY</b> · ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : ''));
+  return envoyer(`🔄 <b>MAINTENANCE</b> · 📰 ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : ''));
 }
 
 async function decision(cle) {
@@ -121,7 +122,7 @@ async function decision(cle) {
   }
   const k = cle;
   return envoyer(
-    `⚖️ <b>SNY</b> · ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>` +
+    `🔄 <b>MAINTENANCE</b> · ⚖️ ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>` +
       `\n\nPreuve :\n« ${esc(q)} »` +
       `\n\nSNY a besoin de ta validation.`,
     {
@@ -134,12 +135,65 @@ async function decision(cle) {
   );
 }
 
+// --- nouvelle affaire potentielle (NEW_CASE_DISCOVERY V0) ---------------
+// Même mécanique que decision() : le clic n'écrit QUE la décision (CREATE → ACCEPT).
+// La fiche est créée plus tard, par scripts/appliquer-nouvelles-affaires.mjs.
+// Discovery : VALIDATE (nouvelle affaire) ou ATTACH (rapprochement) → ACCEPT ; CREATE = ancien nom de VALIDATE, accepté
+// pour ne casser aucun bouton déjà envoyé. Un bouton positif n'est valable que pour SON type de message.
+const NC_VERS_DB = { VALIDATE: 'ACCEPT', CREATE: 'ACCEPT', ATTACH: 'ACCEPT', REVIEW: 'REVIEW_REQUIRED', REJECT: 'REJECT' };
+
+async function nouvelle(cle) {
+  if (!/^[0-9a-f]{8}$/.test(cle || '')) throw new Error('clé attendue : 8 caractères hexadécimaux');
+  const r = await sql`select proposal_id::text pid, payload, decision::text decision, recommendation
+                        from new_case_proposals where proposal_id::text like ${cle + '%'}`;
+  if (r.length !== 1) throw new Error(`clé ${cle} : ${r.length} proposition(s) trouvée(s)`);
+  if (r[0].decision) throw new Error(`déjà décidée (${r[0].decision}) — rien envoyé`);
+  const k = r[0].pid.slice(0, 8);
+  const mid = await envoyer(messageDecision(r[0].payload, r[0].recommendation), boutons(r[0].recommendation, k));
+  if (!process.env.SNY_DRY) await sql`insert into telegram_envois (kind, cle, message_id) values ('decision', ${r[0].pid}, ${mid}) on conflict do nothing`;
+  return mid;
+}
+
+// notifierNouvelles : envoie, une seule fois, les propositions Discovery pas encore décidées. Aucun envoi s'il n'y en a pas.
+async function notifierNouvelles(max = 5) {
+  const rows = await sql`
+    select left(p.proposal_id::text, 8) k from new_case_proposals p
+     where p.decision is null and not exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text)
+     order by p.created_at`;
+  let envoyes = 0;
+  for (const r of rows) {
+    if (envoyes >= max) break;
+    try { await nouvelle(r.k); envoyes++; } catch (e) { console.log(`proposition ${r.k} non envoyée : ${e.message}`); }
+  }
+  console.log(`notifier-nouvelles : ${envoyes} envoyé(s), ${rows.length - envoyes} en attente (plafond ${max}/run)`);
+}
+
+async function clicNouvelle(cb, d, cle) {
+  const maj = await sql`
+    update new_case_proposals
+       set decision = ${NC_VERS_DB[d]}::proposal_decision, decided_by = 'Adrien (Telegram)',
+           decided_at = now(), decision_comment = ${'Bouton Telegram : ' + d}
+     where proposal_id::text like ${cle + '%'} and decision is null
+       and (${NC_VERS_DB[d] !== 'ACCEPT'} or (recommendation = 'ATTACH_EXISTING') = ${d === 'ATTACH'})
+    returning decision::text`;
+  if (maj.length) {
+    console.log(`nouvelle affaire : décision ${d} → ${NC_VERS_DB[d]} enregistrée sur ${cle}`);
+    await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'Décision enregistrée.' }).catch(() => {});
+    await tg('sendMessage', { chat_id: ALLOWED, text: `Décision enregistrée : ${d} (${cle}).` }).catch(() => {});
+  } else {
+    console.log(`double clic ou clé inconnue sur ${cle} : aucune écriture`);
+    await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'Déjà enregistrée.' }).catch(() => {});
+  }
+}
+
 async function clic(cb) {
   // Contrôle utilisateur ET chat : tout autre émetteur est ignoré en silence.
   if (cb.from?.id !== ALLOWED || cb.message?.chat?.id !== ALLOWED) {
     console.log('clic ignoré : émetteur non autorisé');
     return;
   }
+  const nc = /^sny:NC:(VALIDATE|CREATE|ATTACH|REVIEW|REJECT):([0-9a-f]{8})$/.exec(cb.data || '');
+  if (nc) return clicNouvelle(cb, nc[1], nc[2]);
   const m = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/.exec(cb.data || '');
   if (!m) { await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'Action inconnue.' }); return; }
   const [, d, cle] = m;
@@ -232,10 +286,12 @@ const [cmd, arg] = process.argv.slice(2);
 try {
   if (cmd === 'info') await info(arg);
   else if (cmd === 'decision') await decision(arg);
+  else if (cmd === 'nouvelle') await nouvelle(arg);
   else if (cmd === 'poll') await poll(Number(arg) || 600);
   else if (cmd === 'notifier') await notifier(Number(arg) || 10);
+  else if (cmd === 'notifier-nouvelles') await notifierNouvelles(Number(arg) || 5);
   else if (cmd === 'recevoir') await recevoir();
-  else console.error('usage : info <cle> | decision <cle> | poll [s] | notifier [max] | recevoir');
+  else console.error('usage : info <cle> | decision <cle> | nouvelle <cle> | poll [s] | notifier [max] | notifier-nouvelles [max] | recevoir');
 } catch (e) {
   console.error(e.message);
   process.exit(1);

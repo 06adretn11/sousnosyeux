@@ -11,6 +11,7 @@
 //   node scripts/watch-updates.mjs --case FR-2026-0001  # 1 affaire spécifique
 //   node scripts/watch-updates.mjs --analyze             # pré-analyse via article-server
 //   node scripts/watch-updates.mjs --dry-run             # affiche les requêtes sans chercher
+//   node scripts/watch-updates.mjs --no-context          # affaires seulement, sans requêtes libres
 //
 // Env (optionnel, pour --analyze) :
 //   article-server.mjs doit tourner sur localhost:3456
@@ -35,6 +36,7 @@ const LIMIT = ARGS.includes('--limit')
 const CASE_FILTER = ARGS.includes('--case')
   ? ARGS[ARGS.indexOf('--case') + 1]
   : null;
+const NO_CONTEXT = ARGS.includes('--no-context');
 const USE_JSON = ARGS.includes('--json');
 
 const ARTICLE_SERVER = 'http://localhost:3456';
@@ -43,6 +45,62 @@ const DELAY_BETWEEN_SEARCHES_MS = 2000;
 // Les mots-clés de progression par état courant vivent dans
 // `lib/routage-veille.mjs` (BOOSTERS) : ce sont des BOOSTERS de recherche,
 // jamais une liste fermée — une requête ouverte tourne toujours en plus.
+
+// Mots-clés détectant une déclaration ou mesure d'autorité dans un titre d'article
+const OFFICIAL_KEYWORDS = [
+  'rectorat', 'dasco', 'mairie', 'procureur', 'parquet',
+  'ministère', 'ministre', 'préfecture', 'inspection académique',
+  'caspe', 'igas', 'igesr',
+  'suspendu', 'suspension', 'licencié', 'licenciement',
+  'cellule de crise', 'protocole', 'rapport', 'audit', 'mission',
+  // Brigade de protection des mineurs
+  'brigade de protection des mineurs', 'bpm',
+  // Magistrature
+  'procureure de paris', 'laure beccuau',
+];
+
+// Acteurs notables liés aux affaires (avocats des familles, magistrats nommés)
+// Leur apparition dans un titre signale un développement significatif du dossier.
+const NOTABLE_ACTORS_KEYWORDS = [
+  'arié alimi', 'arie alimi',
+  'hannah kopp',
+  'rebecca royer',
+  'laure beccuau',
+  'beccuau',
+];
+
+// Requêtes libres lancées indépendamment des affaires.
+// Captent déclarations institutionnelles, prises de position d'acteurs notables,
+// et nouvelles publications d'associations — même sans lien direct avec un cas en base.
+const CONTEXT_QUERIES = [
+  // Avocats des familles
+  '"Arié Alimi" périscolaire',
+  '"Arié Alimi" animateur',
+  '"Hannah Kopp" enfants Paris',
+  '"Rebecca Royer" enfants Paris',
+  // Magistrature
+  '"Laure Beccuau" mineurs',
+  '"Laure Beccuau" périscolaire',
+  // Institutions (Ville de Paris, Éducation nationale)
+  '"DASCO" violences animateur Paris',
+  '"rectorat Paris" périscolaire animateur',
+  'mairie Paris plan animateurs violences',
+  '"brigade protection mineurs" Paris périscolaire',
+  '"IGAS" périscolaire',
+  '"IGESR" périscolaire',
+  // Associations impliquées dans les procès Paris 11e
+  '"L\'Enfant Bleu" périscolaire Paris',
+  '"Innocence en Danger" périscolaire Paris',
+  // Établissements nommés (Paris 11e et hubs liés)
+  '"Alphonse-Baudin" animateur',
+  '"Bullourde" animateur',
+  '"école Servan" animateur Paris',
+  '"école Titon" Paris animateur',
+  // Thématiques élargies
+  'périscolaire Paris procès animateur 2026',
+  'animateurs violences sexuelles Paris condamné',
+  '"réseau pédocriminel" périscolaire Paris',
+];
 
 // =====================================================================
 // Fonctions utilitaires
@@ -217,6 +275,16 @@ function detectEvolutionFromTitle(title, currentStatut) {
   return forwardEvolutions[0] || null;
 }
 
+function detectOfficialDeclaration(title) {
+  const lower = title.toLowerCase();
+  return OFFICIAL_KEYWORDS.filter(kw => lower.includes(kw));
+}
+
+function detectNotableActor(title) {
+  const lower = title.toLowerCase();
+  return NOTABLE_ACTORS_KEYWORDS.filter(kw => lower.includes(kw));
+}
+
 // =====================================================================
 // Pipeline principal
 // =====================================================================
@@ -254,8 +322,12 @@ async function main() {
                '[]'::json) as sources
       from cases c
       where c.publication_status = 'publiée'
+         -- + toute affaire dont un humain a planifié un réexamen (reviews.next_review_at) : les dossiers
+         --   REVIEW / en attente de corroboration de Discovery. Un rejet (« retirer ») n'est jamais surveillé.
+         or exists (select 1 from reviews r
+                     where r.case_id = c.case_id and r.next_review_at is not null and r.decision <> 'retirer')
       order by c.case_id`;
-    console.log(`   source du stock : Neon (${cases.length} affaires publiées)`);
+    console.log(`   source du stock : Neon (${cases.length} affaires : publiées + réexamens planifiés)`);
   }
 
   if (CASE_FILTER) {
@@ -273,6 +345,7 @@ async function main() {
     generated_at: new Date().toISOString(),
     total_cases_checked: cases.length,
     cases_with_updates: 0,
+    declarations_officielles_count: 0,
     results: [],
   };
 
@@ -321,12 +394,24 @@ async function main() {
     const newArticles = filterNewArticles(articles, existingSources);
     console.log(`   → ${newArticles.length} article(s) nouveau(x) (${existingSources.length} source(s), dernière: ${latestDate})`);
 
-    // Détection d'évolution par analyse des titres (toujours active)
+    // Détection d'évolution et de déclarations officielles par titre
     for (const article of newArticles) {
       const evol = detectEvolutionFromTitle(article.title, c.statut_judiciaire);
       if (evol) {
         article.evolution = evol;
         console.log(`     🔔 "${evol.term}" → suggère : ${evol.suggests}`);
+      }
+      const officialKws = detectOfficialDeclaration(article.title);
+      if (officialKws.length > 0) {
+        article.declaration_officielle = true;
+        article.declaration_keywords = officialKws;
+        console.log(`     📢 Déclaration officielle : ${officialKws.join(', ')}`);
+      }
+      const actorKws = detectNotableActor(article.title);
+      if (actorKws.length > 0) {
+        article.notable_actor = true;
+        article.notable_actor_keywords = actorKws;
+        console.log(`     👤 Acteur notable : ${actorKws.join(', ')}`);
       }
     }
 
@@ -347,6 +432,7 @@ async function main() {
     }
 
     if (newArticles.length > 0) report.cases_with_updates++;
+    report.declarations_officielles_count += newArticles.filter(a => a.declaration_officielle).length;
 
     report.results.push({
       case_id: c.case_id,
@@ -362,23 +448,82 @@ async function main() {
     console.log('');
   }
 
+  // ── Requêtes de contexte libre ────────────────────────────────────────
+  if (!DRY_RUN && !CASE_FILTER && !NO_CONTEXT) {
+    console.log('\n📡 Requêtes de contexte libre...\n');
+    const contextResults = [];
+
+    for (let i = 0; i < CONTEXT_QUERIES.length; i++) {
+      const query = CONTEXT_QUERIES[i];
+      process.stdout.write(`[${i + 1}/${CONTEXT_QUERIES.length}] ${query} `);
+
+      try {
+        const xml = await fetchRss(googleNewsRssUrl(query));
+        const articles = parseRssItems(xml);
+
+        const flagged = articles.map(a => {
+          const officialKws = detectOfficialDeclaration(a.title);
+          const actorKws = detectNotableActor(a.title);
+          return {
+            ...a,
+            ...(officialKws.length > 0 && { declaration_officielle: true, declaration_keywords: officialKws }),
+            ...(actorKws.length > 0 && { notable_actor: true, notable_actor_keywords: actorKws }),
+          };
+        });
+
+        console.log(`→ ${articles.length} résultat(s)`);
+        contextResults.push({ query, articles: flagged });
+      } catch (err) {
+        console.log(`⚠️  ${err.message}`);
+        contextResults.push({ query, error: err.message, articles: [] });
+      }
+
+      if (i < CONTEXT_QUERIES.length - 1) await sleep(DELAY_BETWEEN_SEARCHES_MS);
+    }
+
+    report.context_queries = contextResults;
+    report.context_queries_count = CONTEXT_QUERIES.length;
+    report.context_articles_count = contextResults.reduce((s, r) => s + r.articles.length, 0);
+  }
+
   if (!DRY_RUN) {
     await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
     console.log(`\n✅ Rapport écrit : data/watch-report.json`);
     console.log(`   ${report.cases_with_updates}/${report.total_cases_checked} affaire(s) avec nouveaux articles`);
+    if (report.declarations_officielles_count > 0) {
+      console.log(`   📢 ${report.declarations_officielles_count} déclaration(s) officielle(s) détectée(s)`);
+    }
+    if (report.context_queries_count > 0) {
+      console.log(`   📡 ${report.context_queries_count} requêtes contextuelles · ${report.context_articles_count} article(s)`);
+    }
 
     if (report.cases_with_updates > 0) {
-      console.log('\n📋 Résumé des nouveautés :');
+      console.log('\n📋 Résumé des nouveautés (affaires) :');
       for (const r of report.results) {
         if (r.new_articles?.length > 0) {
           console.log(`\n   ${r.case_id} — ${r.etablissement}, ${r.commune} (statut: ${r.statut_judiciaire})`);
           for (const a of r.new_articles) {
             const evolFlag = a.evolution ? ` 🔔 ${a.evolution.suggests}` : '';
-            console.log(`     • ${a.title}${evolFlag}`);
+            const officialFlag = a.declaration_officielle ? ` 📢 [${a.declaration_keywords.join(', ')}]` : '';
+            const actorFlag = a.notable_actor ? ` 👤 [${a.notable_actor_keywords.join(', ')}]` : '';
+            console.log(`     • ${a.title}${evolFlag}${officialFlag}${actorFlag}`);
             console.log(`       ${a.url}`);
             if (a.media) console.log(`       Source : ${a.media} (${a.published || '?'})`);
           }
         }
+      }
+    }
+
+    const notableContext = (report.context_queries || [])
+      .flatMap(r => r.articles)
+      .filter(a => a.declaration_officielle || a.notable_actor);
+    if (notableContext.length > 0) {
+      console.log('\n📋 Articles notables (contexte libre) :');
+      for (const a of notableContext) {
+        const flags = [a.declaration_officielle && '📢', a.notable_actor && '👤'].filter(Boolean).join(' ');
+        console.log(`   ${flags} ${a.title}`);
+        console.log(`     ${a.url}`);
+        if (a.media) console.log(`     Source : ${a.media} (${a.published || '?'})`);
       }
     }
   }

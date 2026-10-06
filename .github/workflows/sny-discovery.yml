@@ -1,0 +1,52 @@
+# SNY — Discovery : une fois par jour. Cherche dans la presse récente des affaires encore inconnues de SNY,
+# les qualifie (preuve relue, rapprochement), puis envoie à Adrien (Telegram) ce qui demande une décision.
+# Aucun changement utile = aucun message. Note de sécurité : docs/industrialisation/EXPLOITATION_QUOTIDIENNE.md
+name: sny-discovery
+
+on:
+  schedule:
+    - cron: '11 5 * * *'   # 05:11 UTC = 07:11 à Paris en été (CEST), 06:11 en hiver (CET)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "À blanc : calcule tout, n'écrit rien dans Neon, n'envoie rien sur Telegram"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Un seul job SNY à la fois : Telegram refuse deux getUpdates simultanés.
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      # Dépôt public => logs publics : le script n'affiche que des compteurs (jamais un titre, un lieu, une URL).
+      - name: A. discovery (presse récente → déduplication → qualification → propositions)
+        run: node scripts/discovery-quotidien.mjs ${{ inputs.dry_run && '--dry-run' || '' }}
+      - name: "B. notifier (Telegram : seulement les propositions jamais envoyées)"
+        if: ${{ !cancelled() && !inputs.dry_run }}
+        run: node scripts/telegram-v0.mjs notifier-nouvelles 5
+      - name: C. recevoir les clics Telegram
+        if: ${{ !cancelled() && !inputs.dry_run }}
+        run: node scripts/telegram-v0.mjs recevoir
+      - name: D. appliquer les décisions Discovery à Neon (jamais de publication)
+        if: ${{ !cancelled() && !inputs.dry_run }}
+        run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
