@@ -40,6 +40,8 @@ jobs:
 
       # Dépôt public => logs publics : le script n'affiche que des compteurs (jamais un titre, un lieu, une URL).
       - name: A. discovery (presse récente → déduplication → qualification → propositions)
+        env:
+          SNY_DIAG_NEON: ${{ inputs.dry_run && '1' || '' }}
         run: node scripts/discovery-quotidien.mjs ${{ inputs.dry_run && '--dry-run' || '' }}
       - name: "B. notifier (Telegram : seulement les propositions jamais envoyées)"
         if: ${{ !cancelled() && !inputs.dry_run }}

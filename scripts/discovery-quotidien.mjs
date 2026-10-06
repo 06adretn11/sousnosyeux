@@ -160,6 +160,11 @@ for (const g of grappes) {
 console.log(`signaux : ${neufs.length} jamais vus (${filtres.length} filtrés, ${candidatsNeufs.length} candidats) · ${aReexaminer.length} en attente réexaminés · ${expires.length} expirés`);
 console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s) · coût modèle ${cp.cout.toFixed(4)} $`);
 if (DRY) {
+  // Diagnostic privé : le dépôt est public, les logs CI ne montrent que des compteurs. Avec SNY_DIAG_NEON=1, les propositions
+  // qu'un run à blanc AURAIT faites sont déposées dans `discovery_dryrun` (jamais lue par un autre script) pour relecture locale.
+  if (process.env.SNY_DIAG_NEON === '1') {
+    for (const p of aEnvoyer) await sql`insert into discovery_dryrun (recommendation, payload) values (${p.recommendation}, ${JSON.stringify(p.payload)}::jsonb)`;
+  }
   console.log(`à blanc : rien écrit, rien envoyé. ${aEnvoyer.length} message(s) seraient proposés.`);
   for (const p of aEnvoyer) v('\n' + messageDecision(p.payload, p.recommendation).replace(/<\/?b>/g, '') + '\n');
 }
