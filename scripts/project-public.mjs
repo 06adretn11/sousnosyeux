@@ -42,6 +42,18 @@ const HOLDS_PATH = resolve(ROOT, 'data/publication-holds.json');
 const DIFF_ONLY = process.argv.includes('--diff');
 const DRY = process.argv.includes('--dry-run') || DIFF_ONLY;
 
+// PUBLICATION D'UNE SEULE AFFAIRE.
+//   --ajouter <case_id>   n'ajoute QUE cette affaire à l'artefact COMMITTÉ : toutes les autres entrées restent
+//                         exactement ce qu'elles sont (les mises à jour d'état en attente ne sont pas absorbées).
+//   --simuler             avec --diff/--dry-run : traite l'affaire comme publiée sans qu'elle le soit en base
+//                         (prévisualisation avant la mutation) ; refuse d'écrire.
+//   --coords lat,lng      avec --simuler : coordonnées prévues (la base n'en a pas encore).
+const argVal = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
+const AJOUTER = argVal('--ajouter');
+const SIMULER = process.argv.includes('--simuler');
+const COORDS = argVal('--coords');
+if (SIMULER && !DRY) { console.error('--simuler exige --diff ou --dry-run (jamais d’écriture sur une affaire non publiée)'); process.exit(2); }
+
 const SEUIL = 8;
 
 // ---------------------------------------------------------------------
@@ -97,9 +109,13 @@ export async function projeter(sql) {
            enfants_concernes_public::text as enfants_concernes_public,
            lat, lng
       from cases
-     where publication_status = 'publiée'
-       and fiabilite_info_10 >= ${SEUIL}
+     where (publication_status = 'publiée' and fiabilite_info_10 >= ${SEUIL})
+        or case_id = ${SIMULER ? AJOUTER : ''}
      order by case_id`;
+  if (SIMULER && COORDS) {
+    const [la, ln] = COORDS.split(',').map(Number);
+    for (const c of cases) if (c.case_id === AJOUTER) { c.lat = la; c.lng = ln; }
+  }
 
   const ids = cases.map((c) => c.case_id);
   const sources = ids.length
@@ -373,7 +389,30 @@ async function main() {
   try { avant = JSON.parse(await readFile(CASES_PATH, 'utf8')); } catch { /* absent */ }
 
   const { cases, sources, etats, etablissements } = await projeter(sql);
-  const { doc, gelees } = construire(cases, sources, etats, etablissements, holds, publie || avant);
+  const construit = construire(cases, sources, etats, etablissements, holds, publie || avant);
+  let { doc } = construit;
+  const { gelees } = construit;
+
+  if (AJOUTER) {
+    const base = publie || avant;
+    const nouvelle = doc.cases.find((c) => c.case_id === AJOUTER);
+    if (!base) throw new Error('--ajouter exige un artefact de référence (committé)');
+    if (!nouvelle) throw new Error(`${AJOUTER} n’est pas projetable : non publiée en base, sous le seuil ${SEUIL}, ou sous HOLD`);
+    const existante = base.cases.find((c) => c.case_id === AJOUTER);
+    if (existante) {
+      // Idempotence : déjà publiée et identique à la projection → rien à faire, aucune seconde insertion.
+      if (JSON.stringify(existante) === JSON.stringify(nouvelle)) {
+        console.log(`\n  NO_PUBLIC_CHANGE — ${AJOUTER} déjà publiée, entrée identique à la projection (0 insertion, 0 modification).\n`);
+        return;
+      }
+      throw new Error(`${AJOUTER} figure déjà dans l’artefact avec un contenu différent de la projection : ce n’est plus un ajout`);
+    }
+    if (typeof nouvelle.lat !== 'number' || typeof nouvelle.lng !== 'number') throw new Error(`${AJOUTER} n’a pas de coordonnées : le front ne l’afficherait pas`);
+    // Les autres entrées sont reprises TELLES QUELLES de l'artefact committé.
+    const cases = [...base.cases, nouvelle].sort((a, b) => a.case_id.localeCompare(b.case_id));
+    doc = { ...doc, cases, _meta: { ...doc._meta, total_cases: cases.length } };
+    assertNoInternalFields(doc, 'data/cases.json');
+  }
 
   const d = diffMetier(avant, doc);
   const inchange = avant
@@ -412,6 +451,12 @@ async function main() {
     console.log(`\n  total : ${d.modifs.length} modifiée(s) · ${d.ajouts.length} ajoutée(s) · ${d.retraits.length} retirée(s)`);
   }
 
+  // --sortie <fichier> : écrit la projection ailleurs que dans data/cases.json (prévisualisation, build à blanc).
+  if (argVal('--sortie')) {
+    await writeFile(argVal('--sortie'), JSON.stringify(doc, null, 2) + '\n', 'utf8');
+    console.log(`\n  (projection écrite hors artefact : ${argVal('--sortie')})\n`);
+    return;
+  }
   if (DRY) { console.log('\n  (rien écrit)\n'); return; }
 
   if (inchange) {
