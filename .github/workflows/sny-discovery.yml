@@ -5,8 +5,7 @@ name: sny-discovery
 
 on:
   schedule:
-    - cron: '11 5 * * *'   # 05:11 UTC = 07:11 à Paris en été (CEST), 06:11 en hiver (CET)
-    - cron: '22 10 * * *'   # TEMPORAIRE (preuve schedule 07/10) — à retirer
+    - cron: '11 5-16 * * *'   # une tentative par heure de 05:11 à 16:11 UTC (07:11-18:11 Paris en été) ; le garde-fou n'en laisse passer qu'une par jour
   workflow_dispatch:
     inputs:
       dry_run:
@@ -39,17 +38,28 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # Le planificateur GitHub perd des déclenchements : plusieurs créneaux dans la journée, UN SEUL passage productif.
+      # (workflow_dispatch n'est pas concerné.)
+      - name: 0. garde-fou quotidien
+        id: garde
+        if: ${{ github.event_name == 'schedule' }}
+        run: node scripts/garde-quotidien.mjs verifier discovery
+
       # Dépôt public => logs publics : le script n'affiche que des compteurs (jamais un titre, un lieu, une URL).
       - name: A. discovery (presse récente → déduplication → qualification → propositions)
+        if: ${{ steps.garde.outputs.skip != 'true' }}
         env:
           SNY_DIAG_NEON: ${{ inputs.dry_run && '1' || '' }}
         run: node scripts/discovery-quotidien.mjs ${{ inputs.dry_run && '--dry-run' || '' }}
       - name: "B. notifier (Telegram : seulement les propositions jamais envoyées)"
-        if: ${{ !cancelled() && !inputs.dry_run }}
+        if: ${{ (!cancelled() && !inputs.dry_run) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/telegram-v0.mjs notifier-nouvelles 5
       - name: C. recevoir les clics Telegram
-        if: ${{ !cancelled() && !inputs.dry_run }}
+        if: ${{ (!cancelled() && !inputs.dry_run) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/telegram-v0.mjs recevoir
       - name: D. appliquer les décisions Discovery à Neon (jamais de publication)
-        if: ${{ !cancelled() && !inputs.dry_run }}
+        if: ${{ (!cancelled() && !inputs.dry_run) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
+      - name: Z. consigner le passage du jour
+        if: ${{ github.event_name == 'schedule' && steps.garde.outputs.skip != 'true' && success() }}
+        run: node scripts/garde-quotidien.mjs marquer discovery

@@ -5,8 +5,7 @@ name: sny-cycle
 
 on:
   schedule:
-    - cron: '37 6 * * *'   # 06:37 UTC = 08:37 à Paris en été (CEST), 07:37 en hiver (CET)
-    - cron: '32 10 * * *'   # TEMPORAIRE (preuve schedule 07/10) — à retirer
+    - cron: '37 6-17 * * *'   # une tentative par heure de 06:37 à 17:37 UTC (08:37-19:37 Paris en été) ; le garde-fou n'en laisse passer qu'une par jour
   workflow_dispatch:
 
 permissions:
@@ -34,9 +33,17 @@ jobs:
           cache: npm
       - run: npm ci
 
+      # Le planificateur GitHub perd des déclenchements : plusieurs créneaux dans la journée, UN SEUL passage productif.
+      # (workflow_dispatch n'est pas concerné.)
+      - name: 0. garde-fou quotidien
+        id: garde
+        if: ${{ github.event_name == 'schedule' }}
+        run: node scripts/garde-quotidien.mjs verifier maintenance
+
       # Dépôt public => logs publics. La sortie de la veille (requêtes, titres, URL, erreur brute) va dans un
       # fichier du runner ; seuls deux compteurs et le code de sortie sont affichés.
       - name: A. veille (Google News → data/watch-report.json)
+        if: ${{ steps.garde.outputs.skip != 'true' }}
         run: |
           set +e
           node scripts/watch-updates.mjs > "$RUNNER_TEMP/watch.log" 2>&1
@@ -46,18 +53,22 @@ jobs:
           echo "watch-updates : code de sortie $code"
           exit $code
       - name: B. maintenance (preuve → compréhension → propositions)
+        if: ${{ steps.garde.outputs.skip != 'true' }}
         run: node scripts/maintenance-cycle.mjs --moteur deepseek/deepseek-v4.1-flash --contrat v2
 
       # C-E tournent même si la veille ou la maintenance ont échoué : les clics en attente ne doivent pas attendre.
       - name: "C. notifier (Telegram : information sans bouton, décision avec boutons)"
-        if: ${{ !cancelled() }}
+        if: ${{ (!cancelled()) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/telegram-v0.mjs notifier 10
       - name: D. recevoir les clics Telegram
-        if: ${{ !cancelled() }}
+        if: ${{ (!cancelled()) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/telegram-v0.mjs recevoir
       - name: E. appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
-        if: ${{ !cancelled() }}
+        if: ${{ (!cancelled()) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/appliquer-decisions.mjs --generique
       - name: F. appliquer les décisions Discovery à Neon (jamais de publication)
-        if: ${{ !cancelled() }}
+        if: ${{ (!cancelled()) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
+      - name: Z. consigner le passage du jour
+        if: ${{ github.event_name == 'schedule' && steps.garde.outputs.skip != 'true' && success() }}
+        run: node scripts/garde-quotidien.mjs marquer maintenance
