@@ -5,7 +5,8 @@ name: sny-cycle
 
 on:
   schedule:
-    - cron: '5,15,25,35,45,55 * * * *'   # TEMPORAIRE (preuve schedule 07/10) — à remettre à '37 6-17 * * *'
+    # TEMPORAIRE (preuve schedule 07/10) — à remettre à '37 6-17 * * *'
+    - cron: '5,15,25,35,45,55 * * * *'
   workflow_dispatch:
 
 permissions:
