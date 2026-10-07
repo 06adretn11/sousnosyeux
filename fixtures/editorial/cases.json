@@ -541,6 +541,125 @@
       ],
       "events": [],
       "claims": []
+    },
+    {
+      "case_id": "FIX-14-relaxe-appel",
+      "_titre": "Relaxe sous APPEL en cours — peut rester publiée (doctrine R5)",
+      "_expect": [
+        "R7_issue_favorable"
+      ],
+      "etablissement": "Crèche du Tilleul-Fictif",
+      "commune": "Villeneuve-Test",
+      "departement": "Testière",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "non précisé",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-08",
+      "resume_public": "Une source publique rapporte un classement sans suite.",
+      "lat": 48.2,
+      "lng": 2.2,
+      "sources": [
+        {
+          "url": "https://lequotidienfictif.test/article-7",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-09-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-05-01",
+          "event_type": "enquête",
+          "statut_apres": "enquête",
+          "libelle_public": "Une source publique rapporte l'ouverture d'une enquête.",
+          "source_url": "https://lequotidienfictif.test/article-7",
+          "is_future": false
+        },
+        {
+          "event_date": "2026-09-02",
+          "event_type": "décision",
+          "statut_apres": "relaxe / non-lieu / classement",
+          "libelle_public": "Une source publique rapporte un classement sans suite.",
+          "source_url": "https://lequotidienfictif.test/article-7",
+          "is_future": false
+        }
+      ],
+      "claims": [],
+      "etat": {
+        "statut": "relaxe / non-lieu / classement",
+        "date": "2026-09-02",
+        "type_evenement": "décision",
+        "finalite": "non_definitive",
+        "suites": [
+          "APPEL_EN_COURS"
+        ],
+        "sources": []
+      }
+    },
+    {
+      "case_id": "FIX-15-relaxe-definitive",
+      "_titre": "Relaxe DÉFINITIVE encore publiée — doctrine de retrait",
+      "_expect": [
+        "R5_relaxe_encore_publiee",
+        "R7_issue_favorable"
+      ],
+      "etablissement": "Crèche du Tilleul-Fictif",
+      "commune": "Villeneuve-Test",
+      "departement": "Testière",
+      "type_structure": "crèche",
+      "role_mis_en_cause": "personnel de crèche",
+      "type_affaire": "violences sexuelles",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
+      "statut_des_faits": "non établi",
+      "enfants_concernes_public": "non précisé",
+      "publication_status": "publiée",
+      "verified_at": "2026-09-08",
+      "resume_public": "Une source publique rapporte un classement sans suite.",
+      "lat": 48.2,
+      "lng": 2.2,
+      "sources": [
+        {
+          "url": "https://lequotidienfictif.test/article-7",
+          "media": "Le Quotidien Fictif",
+          "publication_date": "2026-09-02",
+          "source_type": "presse",
+          "is_primary": true,
+          "access_status": "ok"
+        }
+      ],
+      "events": [
+        {
+          "event_date": "2026-05-01",
+          "event_type": "enquête",
+          "statut_apres": "enquête",
+          "libelle_public": "Une source publique rapporte l'ouverture d'une enquête.",
+          "source_url": "https://lequotidienfictif.test/article-7",
+          "is_future": false
+        },
+        {
+          "event_date": "2026-09-02",
+          "event_type": "décision",
+          "statut_apres": "relaxe / non-lieu / classement",
+          "libelle_public": "Une source publique rapporte un classement sans suite.",
+          "source_url": "https://lequotidienfictif.test/article-7",
+          "is_future": false
+        }
+      ],
+      "claims": [],
+      "etat": {
+        "statut": "relaxe / non-lieu / classement",
+        "date": "2026-09-02",
+        "type_evenement": "décision",
+        "finalite": "definitive",
+        "suites": [],
+        "sources": []
+      }
     }
   ]
 }

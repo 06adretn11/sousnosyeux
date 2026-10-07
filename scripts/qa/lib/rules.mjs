@@ -322,15 +322,27 @@ export function rulePublicationInvariants(c) {
     );
   }
 
+  // DOCTRINE R5 (décision du 07/10/2026). Une relaxe / un non-lieu / un classement ne force pas le retrait tant que la
+  // procédure est VIVANTE : appel, pourvoi ou recours en cours, ou finalité explicitement non définitive (bloc `etat`).
+  // Reste signalé : (A) une issue favorable dont rien n'établit qu'elle soit susceptible de recours — non démontrée vivante ;
+  // (B) une issue explicitement DÉFINITIVE — la doctrine de retrait s'applique, à traiter selon les règles éditoriales.
   if (publiee && c.statut_judiciaire === 'relaxe / non-lieu / classement') {
-    out.push(
-      finding(
-        'R5_relaxe_encore_publiee',
-        'bloquant',
-        c.case_id,
-        'issue favorable (relaxe / non-lieu / classement) mais fiche toujours publiée — retrait requis'
-      )
-    );
+    const etat = c.etat || null;
+    const definitive = etat?.finalite === 'definitive';
+    const recours = (etat?.suites || []).some((s) => /^(APPEL|POURVOI|RECOURS)/.test(String(s)));
+    const vivante = !definitive && (recours || etat?.finalite === 'non_definitive');
+    if (!vivante) {
+      out.push(
+        finding(
+          'R5_relaxe_encore_publiee',
+          'bloquant',
+          c.case_id,
+          definitive
+            ? 'issue favorable DÉFINITIVE (relaxe / non-lieu / classement) mais fiche toujours publiée — doctrine de retrait à traiter'
+            : 'issue favorable (relaxe / non-lieu / classement) sans recours ni finalité non définitive établis — retrait à instruire'
+        )
+      );
+    }
   }
 
   if (publiee && c.statut_judiciaire === 'à qualifier') {

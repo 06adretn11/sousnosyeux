@@ -18,11 +18,25 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "1 enfant",
       "lat": 48.881824,
       "lng": 2.362885,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": "2026-07-10",
+        "type_evenement": "décision",
+        "finalite": null,
+        "suites": [],
+        "sources": [
+          {
+            "media": "CNEWS",
+            "date": "2026-07-10",
+            "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
@@ -593,6 +607,20 @@
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 43.48927686776033,
       "lng": 3.793659599142787,
+      "etat": {
+        "statut": "mise en examen",
+        "date": null,
+        "type_evenement": null,
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "ICI (France Bleu)",
+            "date": "2025-08-14",
+            "url": "https://www.ici.fr/infos/faits-divers-justice/je-suis-sans-voix-la-cour-d-appel-accepte-la-demande-de-remise-en-liberte-de-l-atsem-soupconnee-de-viols-sur-mineurs-7057086"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
@@ -648,11 +676,25 @@
       "type_structure": "collège",
       "role_mis_en_cause": "enseignant",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "1 enfant",
       "lat": 49.61464377713932,
       "lng": 3.2119830505587914,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": "2026-03-03",
+        "type_evenement": "décision",
+        "finalite": "non_definitive",
+        "suites": [],
+        "sources": [
+          {
+            "media": "France 3 Régions",
+            "date": "2026-03-03",
+            "url": "https://france3-regions.franceinfo.fr/hauts-de-france/aisne/un-enseignant-d-un-college-prive-condamne-a-24-mois-de-prison-pour-agressions-sexuelles-sur-une-eleve-de-14-ans-3309333.html"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.cnews.fr/faits-divers/2026-03-03/un-enseignant-suspecte-davoir-eu-une-relation-avec-une-eleve-de-14-ans-juge",
@@ -743,6 +785,20 @@
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 44.553337,
       "lng": 6.073336,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": "2025-11-26",
+        "type_evenement": "décision",
+        "finalite": "non_definitive",
+        "suites": [],
+        "sources": [
+          {
+            "media": "France 3 Régions",
+            "date": "2025-11-26",
+            "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/abus-sexuels-au-college-saint-joseph-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis-3256090.html"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.ledauphine.com/faits-divers-justice/2025/11/26/le-professeur-de-saint-joseph-accuse-d-abus-sexuels-pendant-dix-ans-condamne-a-de-la-prison-avec-sursis",
@@ -1038,11 +1094,25 @@
       "type_structure": "collège",
       "role_mis_en_cause": "autre",
       "type_affaire": "mixte",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 49.861719720847304,
       "lng": 0.710227189210735,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": "2025-09-17",
+        "type_evenement": "décision",
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "ICI (France Bleu)",
+            "date": "2025-09-17",
+            "url": "https://www.francebleu.fr/infos/faits-divers-justice/un-ancien-surveillant-du-college-de-saint-valery-en-caux-condamne-a-six-ans-de-prison-pour-agressions-sexuelles-7726539"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
@@ -1494,11 +1564,25 @@
       "type_structure": "périscolaire",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "viol",
-      "statut_judiciaire": "plainte",
+      "statut_judiciaire": "enquête",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "1 enfant",
       "lat": 48.852719,
       "lng": 2.39054,
+      "etat": {
+        "statut": "enquête",
+        "date": null,
+        "type_evenement": "enquête",
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "Le Parisien",
+            "date": "2026-03-27",
+            "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
@@ -1517,11 +1601,27 @@
       "type_structure": "périscolaire",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "mixte",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.851742,
       "lng": 2.386405,
+      "etat": {
+        "statut": "relaxe / non-lieu / classement",
+        "date": "2026-06-16",
+        "type_evenement": "décision",
+        "finalite": "non_definitive",
+        "suites": [
+          "APPEL_EN_COURS"
+        ],
+        "sources": [
+          {
+            "media": "franceinfo",
+            "date": "2026-06-17",
+            "url": null
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html",

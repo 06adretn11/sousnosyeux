@@ -123,7 +123,8 @@ try {
 // FR-2026-0048 / 0049 sont sous HOLD (publication à décider séparément) et ne
 // doivent PAS apparaître.
 const ATTENDUS = {
-  modifies: ['POC-09', 'POC-05', 'FR-2026-0001', 'FR-2026-0005', 'FR-2026-0027', 'FR-2026-0029', 'FR-2026-0032', 'FR-2026-0045'],
+  // Lot de synchronisation du 07/10/2026 (FR-2026-0005 exclue : voir EXPLOITATION_QUOTIDIENNE).
+  modifies: ['FR-2026-0001', 'FR-2026-0027', 'FR-2026-0029', 'FR-2026-0032', 'FR-2026-0045', 'POC-08', 'POC-09'],
   ajoutes: [], retires: [],
 };
 if (precedent) {

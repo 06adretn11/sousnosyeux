@@ -415,20 +415,29 @@ async function main() {
     assertNoInternalFields(doc, 'data/cases.json');
   }
 
-  // MISE À JOUR D'UNE SEULE AFFAIRE DÉJÀ PUBLIÉE : --modifier <case_id>. Seule cette entrée est remplacée par sa projection
-  // courante ; toutes les autres restent EXACTEMENT celles de l'artefact committé (les autres retards ne sont pas absorbés).
+  // MISE À JOUR D'UN LOT EXPLICITE D'AFFAIRES DÉJÀ PUBLIÉES : --modifier <id>[,<id>…]. Seules ces entrées sont remplacées par
+  // leur projection courante ; toutes les autres restent EXACTEMENT celles de l'artefact committé (les autres retards ne sont
+  // pas absorbés). Une affaire absente de l'artefact ou plus projetable fait refuser l'opération : un ajout ou un retrait
+  // n'est pas une modification.
   if (MODIFIER) {
     const base = publie || avant;
     if (!base) throw new Error('--modifier exige un artefact de référence (committé)');
-    const nouvelle = doc.cases.find((c) => c.case_id === MODIFIER);
-    const existante = base.cases.find((c) => c.case_id === MODIFIER);
-    if (!existante) throw new Error(`${MODIFIER} ne figure pas dans l’artefact : ce n’est pas une modification (voir --ajouter)`);
-    if (!nouvelle) throw new Error(`${MODIFIER} n’est plus projetable (retirée, sous le seuil ou sous HOLD) : refus, un retrait n’est pas une modification`);
-    const cases = base.cases.map((c) => (c.case_id === MODIFIER ? nouvelle : c));
+    const ids = MODIFIER.split(',').map((x) => x.trim()).filter(Boolean);
+    const nouvelles = new Map();
+    for (const id of ids) {
+      const nouvelle = doc.cases.find((c) => c.case_id === id);
+      if (!base.cases.some((c) => c.case_id === id)) throw new Error(`${id} ne figure pas dans l’artefact : ce n’est pas une modification (voir --ajouter)`);
+      if (!nouvelle) throw new Error(`${id} n’est plus projetable (retirée, sous le seuil ou sous HOLD) : refus, un retrait n’est pas une modification`);
+      nouvelles.set(id, nouvelle);
+    }
+    const cases = base.cases.map((c) => nouvelles.get(c.case_id) || c);
+    const changees = ids.filter((id) => JSON.stringify(base.cases.find((c) => c.case_id === id)) !== JSON.stringify(nouvelles.get(id)));
     doc = { ...doc, cases, _meta: { ...doc._meta, total_cases: cases.length } };
     assertNoInternalFields(doc, 'data/cases.json');
-    if (JSON.stringify(existante) === JSON.stringify(nouvelle)) {
-      console.log(`\n  NO_PUBLIC_CHANGE — ${MODIFIER} : l’entrée publiée est identique à la projection (0 ajout, 0 modification, 0 retrait).\n`);
+    if (!changees.length) {
+      console.log(`
+  NO_PUBLIC_CHANGE — ${ids.join(', ')} : entrées publiées identiques à la projection (0 ajout, 0 modification, 0 retrait).
+`);
       return;
     }
   }
