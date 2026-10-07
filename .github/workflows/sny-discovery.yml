@@ -5,7 +5,7 @@ name: sny-discovery
 
 on:
   schedule:
-    - cron: '11 5-16 * * *'   # une tentative par heure de 05:11 à 16:11 UTC (07:11-18:11 Paris en été) ; le garde-fou n'en laisse passer qu'une par jour
+    - cron: '*/10 * * * *'   # TEMPORAIRE (preuve schedule 07/10) : créneau toutes les 10 min, le garde-fou n'en laisse passer qu'un — à remettre à '11 5-16 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
