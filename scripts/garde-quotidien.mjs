@@ -28,8 +28,13 @@ const { sql } = connecter();
 
 if (cmd === 'verifier') {
   const [r] = await sql`select valeur from discovery_etat where cle = ${cle}`;
-  const skip = r?.valeur === aujourdhui;
-  console.log(skip ? `${nom} : déjà passé aujourd’hui (${aujourdhui}) → ce créneau ne fait rien` : `${nom} : pas encore passé aujourd’hui → ce créneau travaille`);
+  // Fenêtre de travail (UTC) : un relais livré en pleine nuit n'envoie pas de message Telegram à 3 h du matin.
+  const heure = new Date().getUTCHours();
+  const dansFenetre = heure >= 5 && heure < 19;
+  const skip = r?.valeur === aujourdhui || !dansFenetre;
+  console.log(r?.valeur === aujourdhui ? `${nom} : déjà passé aujourd’hui (${aujourdhui}) → ce créneau ne fait rien`
+    : !dansFenetre ? `${nom} : hors fenêtre de travail (05h–19h UTC) → ce créneau ne fait rien`
+      : `${nom} : pas encore passé aujourd’hui → ce créneau travaille`);
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `skip=${skip}\n`);
 } else {
   await sql`insert into discovery_etat (cle, valeur) values (${cle}, ${aujourdhui})

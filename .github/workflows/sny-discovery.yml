@@ -4,9 +4,15 @@
 name: sny-discovery
 
 on:
+  # Créneaux dans la journée : GitHub perd la grande majorité des déclenchements schedule de ce dépôt (mesuré), le garde-fou
+  # (scripts/garde-quotidien.mjs) n'en laisse passer qu'un par jour.
   schedule:
-    # TEMPORAIRE (preuve schedule 07/10) : créneau toutes les 10 min, le garde-fou n'en laisse passer qu'un — à remettre à '11 5-16 * * *'
-    - cron: '*/10 * * * *'
+    - cron: '11,41 5-16 * * *'
+  # Relais : sny-clics reçoit ses déclenchements schedule (≈ toutes les 5 h). Chaque fin réussie d'un run planifié de sny-clics
+  # est une occasion supplémentaire de faire le passage du jour — même garde-fou, même fenêtre horaire.
+  workflow_run:
+    workflows: [sny-clics]
+    types: [completed]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -24,6 +30,7 @@ concurrency:
 
 jobs:
   discovery:
+    if: ${{ github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'schedule') }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     env:
@@ -43,7 +50,7 @@ jobs:
       # (workflow_dispatch n'est pas concerné.)
       - name: 0. garde-fou quotidien
         id: garde
-        if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name != 'workflow_dispatch' }}
         run: node scripts/garde-quotidien.mjs verifier discovery
 
       # Dépôt public => logs publics : le script n'affiche que des compteurs (jamais un titre, un lieu, une URL).
@@ -62,5 +69,5 @@ jobs:
         if: ${{ (!cancelled() && !inputs.dry_run) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
       - name: Z. consigner le passage du jour
-        if: ${{ github.event_name == 'schedule' && steps.garde.outputs.skip != 'true' && success() }}
+        if: ${{ github.event_name != 'workflow_dispatch' && steps.garde.outputs.skip != 'true' && success() }}
         run: node scripts/garde-quotidien.mjs marquer discovery
