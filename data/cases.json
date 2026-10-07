@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-06"
+    "generated_at": "2026-10-07"
   },
   "cases": [
     {
@@ -1402,11 +1402,27 @@
       "type_structure": "périscolaire",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "mixte",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "relaxe / non-lieu / classement",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.860683,
       "lng": 2.370472,
+      "etat": {
+        "statut": "relaxe / non-lieu / classement",
+        "date": "2026-07-07",
+        "type_evenement": "décision",
+        "finalite": "non_definitive",
+        "suites": [
+          "APPEL_EN_COURS"
+        ],
+        "sources": [
+          {
+            "media": "franceinfo",
+            "date": "2026-07-08",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.liberation.fr/societe/education/une-chaine-de-dysfonctionnements-et-des-enfants-sans-protection-un-animateur-du-periscolaire-parisien-juge-pour-agressions-sexuelles-20251125_KYKFOAXRE5B3XM7TNWYMO6FPEI/",
