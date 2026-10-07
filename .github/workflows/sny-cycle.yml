@@ -6,6 +6,7 @@ name: sny-cycle
 on:
   schedule:
     - cron: '37 6 * * *'   # 06:37 UTC = 08:37 à Paris en été (CEST), 07:37 en hiver (CET)
+    - cron: '32 10 * * *'   # TEMPORAIRE (preuve schedule 07/10) — à retirer
   workflow_dispatch:
 
 permissions:

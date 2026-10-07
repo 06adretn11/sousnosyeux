@@ -6,6 +6,7 @@ name: sny-discovery
 on:
   schedule:
     - cron: '11 5 * * *'   # 05:11 UTC = 07:11 à Paris en été (CEST), 06:11 en hiver (CET)
+    - cron: '22 10 * * *'   # TEMPORAIRE (preuve schedule 07/10) — à retirer
   workflow_dispatch:
     inputs:
       dry_run:
