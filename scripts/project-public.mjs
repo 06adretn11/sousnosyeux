@@ -50,6 +50,7 @@ const DRY = process.argv.includes('--dry-run') || DIFF_ONLY;
 //   --coords lat,lng      avec --simuler : coordonnées prévues (la base n'en a pas encore).
 const argVal = (n) => (process.argv.includes(n) ? process.argv[process.argv.indexOf(n) + 1] : null);
 const AJOUTER = argVal('--ajouter');
+const MODIFIER = argVal('--modifier'); // met à jour UNE affaire déjà publiée, sans absorber les autres retards
 const SIMULER = process.argv.includes('--simuler');
 const COORDS = argVal('--coords');
 if (SIMULER && !DRY) { console.error('--simuler exige --diff ou --dry-run (jamais d’écriture sur une affaire non publiée)'); process.exit(2); }
@@ -412,6 +413,24 @@ async function main() {
     const cases = [...base.cases, nouvelle].sort((a, b) => a.case_id.localeCompare(b.case_id));
     doc = { ...doc, cases, _meta: { ...doc._meta, total_cases: cases.length } };
     assertNoInternalFields(doc, 'data/cases.json');
+  }
+
+  // MISE À JOUR D'UNE SEULE AFFAIRE DÉJÀ PUBLIÉE : --modifier <case_id>. Seule cette entrée est remplacée par sa projection
+  // courante ; toutes les autres restent EXACTEMENT celles de l'artefact committé (les autres retards ne sont pas absorbés).
+  if (MODIFIER) {
+    const base = publie || avant;
+    if (!base) throw new Error('--modifier exige un artefact de référence (committé)');
+    const nouvelle = doc.cases.find((c) => c.case_id === MODIFIER);
+    const existante = base.cases.find((c) => c.case_id === MODIFIER);
+    if (!existante) throw new Error(`${MODIFIER} ne figure pas dans l’artefact : ce n’est pas une modification (voir --ajouter)`);
+    if (!nouvelle) throw new Error(`${MODIFIER} n’est plus projetable (retirée, sous le seuil ou sous HOLD) : refus, un retrait n’est pas une modification`);
+    const cases = base.cases.map((c) => (c.case_id === MODIFIER ? nouvelle : c));
+    doc = { ...doc, cases, _meta: { ...doc._meta, total_cases: cases.length } };
+    assertNoInternalFields(doc, 'data/cases.json');
+    if (JSON.stringify(existante) === JSON.stringify(nouvelle)) {
+      console.log(`\n  NO_PUBLIC_CHANGE — ${MODIFIER} : l’entrée publiée est identique à la projection (0 ajout, 0 modification, 0 retrait).\n`);
+      return;
+    }
   }
 
   const d = diffMetier(avant, doc);
