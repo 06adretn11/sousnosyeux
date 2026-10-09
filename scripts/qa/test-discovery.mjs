@@ -74,19 +74,26 @@ const att = {
     case_id: 'FR-2026-0083', etablissement: 'Crèche non nommée', commune: 'Rouen', statut: 'enquête', role: 'personnel de crèche',
     sources: [{ media: 'Le Parisien', url: 'https://www.leparisien.fr/x', d: '2026-05-22' }],
     nouvelles: [{ media: 'Le Monde', url: 'https://www.lemonde.fr/y', d: '2026-05-23' }],
-    pourquoi: ['même commune : Rouen', 'Le Monde et Le Parisien reprennent les mêmes phrases (même dépêche)'], divergence: 'nombre de plaintes : 2 puis 9',
+    pourquoi: ['commune concordante : Rouen', 'Le Monde et Le Parisien reprennent les mêmes phrases (même dépêche)'], divergence: 'nombre de plaintes : 2 puis 9',
   },
 };
 m = messageDecision(att, 'ATTACH_EXISTING');
-test('rapprochement : les 4 blocs imposés', ['RAPPROCHEMENT PROPOSÉ', 'NOUVEAU SIGNAL', 'AFFAIRE SNY', 'POURQUOI LE RAPPROCHEMENT'].every((s) => m.includes(s)));
+test('rapprochement : les 4 blocs imposés', ['RAPPROCHEMENT PROPOSÉ', 'NOUVEAU SIGNAL', 'AFFAIRE EXISTANTE', 'ANALYSE', 'DÉCISION'].every((s) => m.includes(s)));
 test('rapprochement : sources historiques ET nouvelles, avec URL', m.includes('https://www.leparisien.fr/x') && m.includes('https://www.lemonde.fr/y'));
 test('rapprochement : l’identifiant de l’affaire existante', m.includes('FR-2026-0083'));
 
-for (const [reco, oui] of [['NEW_CASE_CANDIDATE', 'VALIDATE'], ['REVIEW', 'VALIDATE'], ['ATTACH_EXISTING', 'ATTACH']]) {
-  const b = boutons(reco, 'abcdef12').inline_keyboard[0];
-  test(`boutons ${reco} : ${oui} / REVIEW / REJECT, callback ≤ 64 octets`,
-    b.length === 3 && b[0].callback_data === `sny:NC:${oui}:abcdef12` && b[1].callback_data.endsWith('REVIEW:abcdef12') && b[2].callback_data.endsWith('REJECT:abcdef12')
+for (const reco of ['NEW_CASE_CANDIDATE', 'REVIEW']) {
+  const b = boutons(reco, 'abcdef12', { fiche: {} }).inline_keyboard[0];
+  test(`boutons ${reco} (sans candidat de rattachement) : VALIDATE / REVIEW / REJECT, callback ≤ 64 octets`,
+    b.length === 3 && b[0].callback_data === 'sny:NC:VALIDATE:abcdef12' && b[1].callback_data.endsWith('REVIEW:abcdef12') && b[2].callback_data.endsWith('REJECT:abcdef12')
     && b.every((x) => Buffer.byteLength(x.callback_data) <= 64));
+}
+{
+  // Avec un candidat de rattachement : l'humain choisit RAPPROCHER (ATTACH) ou CRÉER (VALIDATE), puis REVIEW / REJECT.
+  const k = boutons('ATTACH_EXISTING', 'abcdef12', att).inline_keyboard;
+  test('boutons ATTACH_EXISTING : RAPPROCHER + CRÉER, puis REVIEW + REJECT, callback ≤ 64 octets',
+    k.length === 2 && k[0][0].callback_data === 'sny:NC:ATTACH:abcdef12' && k[0][1].callback_data === 'sny:NC:VALIDATE:abcdef12'
+    && k[1][0].callback_data.endsWith('REVIEW:abcdef12') && k[1][1].callback_data.endsWith('REJECT:abcdef12') && k.flat().every((x) => Buffer.byteLength(x.callback_data) <= 64));
 }
 // Les callbacks Maintenance (sny:VALIDATE|REVIEW|REJECT:<8 hex>) ne doivent jamais être capturés par le motif Discovery.
 test('callbacks Maintenance distincts des callbacks Discovery', !/^sny:NC:/.test('sny:VALIDATE:abcdef12'));

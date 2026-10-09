@@ -17,6 +17,8 @@ import { citationPresente } from './discovery-presse.mjs';
 import { aplatir } from './capteurs.mjs';
 import { resoudre } from './resolver.mjs';
 import { comprendre } from './comprendre-source.mjs';
+import { niveauGeo, sourceCoherente, forceRapprochement } from './rapprochement-garde.mjs';
+import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
 
 export const ENUMS = {
   type_structure: ['crèche', 'maternelle', 'élémentaire', 'collège', 'lycée', 'périscolaire', 'centre de loisirs', 'internat', 'autre'],
@@ -174,11 +176,66 @@ async function infosCase(sql, case_id) {
   const [c] = await sql`
     select c.case_id, c.etablissement, c.commune, c.departement, c.type_structure::text type_structure, c.role_mis_en_cause::text role,
            c.type_affaire::text type_affaire, c.statut_judiciaire::text statut, c.publication_status::text publication,
+           c.commentaire_validation,
            exists (select 1 from reviews r where r.case_id = c.case_id and r.next_review_at is not null and r.decision <> 'retirer') as reexamen
       from cases c where c.case_id = ${case_id}`;
   if (!c) return null;
   c.sources = await sql`select media, url, publication_date::text d, is_primary from sources where case_id = ${case_id} order by publication_date`;
+  // Résumé de l'affaire existante, tel que consigné à sa création Discovery (« [Discovery-auto:xxxxxxxx] VALIDATE — … »), sinon rien.
+  const m = /^\[Discovery-auto:[0-9a-f]{8}\]\s+\w+\s+—\s+([\s\S]+)$/.exec(String(c.commentaire_validation || ''));
+  c.resume = m ? m[1].replace(/\s+/g, ' ').trim() : null;
   return c;
+}
+
+/**
+ * Bloc de comparaison « signal ↔ affaire existante » (payload.attach), honnête sur ce qui est établi et ce qui ne l'est pas.
+ *   - les sources historiques sont RELUES : une source inaccessible ou sans rapport (redirigée vers un autre article, commune
+ *     absente, thème absent) n'est jamais une preuve et n'entre pas dans la comparaison de phrases ;
+ *   - « pour » = indices établis ; « contre » = contradictions et informations manquantes ;
+ *   - « même commune » n'est affirmé que si la commune du SIGNAL concorde avec celle de l'affaire (cf. rapprochement-garde).
+ * @returns {{ bloc:object, force:'forte'|'faible'|'aucune' }}
+ */
+async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partiel }) {
+  const sources = [];
+  for (const s of k.sources.slice(0, 4)) {
+    const p = await lirePage(s.url, cache);
+    const v = sourceCoherente({ url: s.url, page: p, commune: k.commune });
+    sources.push({ media: s.media, url: s.url, d: s.d, verifiee: v.ok, motif: v.motif, ph: v.ok ? phrases(p.corps) : null });
+  }
+  const pour = [];
+  const contre = [];
+  if (geo.niveau === 'ok') pour.push(`commune concordante : ${c.commune}`);
+  else if (geo.raison) contre.push(geo.raison);
+  let memeDepeche = false;
+  for (const n of nouvelles.slice(0, 2)) {
+    const ph = phrases(n.corps);
+    for (const s of sources.filter((x) => x.verifiee)) {
+      let m = 0; for (const x of ph) if (s.ph.has(x)) m++;
+      if (m >= 3) { pour.push(`${n.media} et ${s.media} (déjà en base) reprennent les mêmes phrases (même dépêche)`); memeDepeche = true; break; }
+    }
+  }
+  for (const e of (res.evidence || []).slice(0, 2)) pour.push(String(e).replace(/^FR-\d{4}-\d{4} — /, ''));
+  for (const x of (res.conflicts || []).slice(0, 2)) contre.push(String(x).replace(/^FR-\d{4}-\d{4} — /, ''));
+  const nv = sources.filter((x) => !x.verifiee).length;
+  if (nv) contre.push(`${nv} source(s) historique(s) de l’affaire non vérifiable(s) (lien indisponible ou sans rapport) : non retenue(s) comme preuve`);
+  const maj = k.statut !== c.statut_judiciaire ? `état : « ${k.statut} » en base, « ${c.statut_judiciaire} » dans les nouveaux articles` : null;
+  if (maj) contre.push(maj);
+  if (c.ambiguite) contre.push(c.ambiguite);
+  const { force, raison } = forceRapprochement({ geo, resolution: partiel ? 'POSSIBLE_MATCH' : 'MATCH', memeDepeche });
+  if (force === 'faible' && raison && !contre.includes(raison)) contre.unshift(raison);
+  return {
+    force,
+    bloc: {
+      case_id: k.case_id, etablissement: k.etablissement, commune: k.commune, statut: k.statut, type_affaire: k.type_affaire, role: k.role,
+      resume: k.resume,
+      sources: sources.map(({ ph, ...s }) => s),
+      nouvelles: nouvelles.map((p) => ({ media: p.media, url: p.url, d: p.published })),
+      pourquoi: [...new Set(pour)].slice(0, 4),
+      contre: [...new Set(contre)].slice(0, 5),
+      divergence: [...new Set(contre)].join(' · ') || null,
+      incertitude: force === 'forte' ? 'modérée' : 'élevée',
+    },
+  };
 }
 
 const GRAVITE = { MATCH: 2, POSSIBLE_MATCH: 1, NO_MATCH: 0 };
@@ -207,7 +264,16 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   // Rapprochement : une résolution PAR page, jamais sur le texte concaténé (faux POSSIBLE_MATCH constaté).
   const parPage = lues.map((p) => resoudre({ candidate: { title: '' }, index, corps: p.corps }));
   const res = parPage.reduce((a, r) => (GRAVITE[r.resolution_status] > GRAVITE[a.resolution_status] ? r : a), parPage[0]);
-  const voisinsResolver = [...new Set(parPage.flatMap((r) => r.voisins || []))];
+  // GARDE GÉOGRAPHIQUE. Le résolveur rapproche sur des indices faibles (la commune « présente » dans les 900 premiers
+  // caractères d'une page — un menu de navigation « édition de <ville> » suffit). Aucun rapprochement n'est affirmé contre la localisation du SIGNAL
+  // (commune extraite ET retrouvée dans le corps des articles) : contradiction forte → l'affaire visée est écartée.
+  const geoDe = (id) => { const f = index.find((x) => x.case_id === id); return niveauGeo({ commune: c.commune, departement: c.departement }, { commune: f?.commune, departement: f?.departement }); };
+  const ecartes = [];
+  const voisinsResolver = [...new Set(parPage.flatMap((r) => r.voisins || []))].filter((id) => {
+    const g = geoDe(id);
+    if (g.niveau === 'bloquant') { ecartes.push({ case_id: id, raison: g.raison }); return false; }
+    return true;
+  });
   // Plusieurs rapprochements partiels : seuls comptent ceux de la MÊME commune (un « Saint-Denis » d'Ardèche ne se rapproche pas
   // d'un article parisien). Un seul reste → c'est l'affaire visée ; aucun → pas de rapprochement ; plusieurs, tous déjà
   // suivis (publiés, en réexamen, écartés) → couverture d'affaires connues, silence.
@@ -226,6 +292,10 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
       }
     }
   }
+  if (cible) {
+    const g = geoDe(cible);
+    if (g.niveau === 'bloquant') { ecartes.push({ case_id: cible, raison: g.raison }); cible = null; statutRes = 'NO_MATCH'; }
+  }
   const communeN = aplatir(c.commune);
   const voisins = index.filter((f) => aplatir(f.commune) === communeN && f.case_id !== cible)
     .map((f) => ({ case_id: f.case_id, etablissement: f.etablissement, role: f.role_mis_en_cause, statut: f.statut_judiciaire }));
@@ -241,6 +311,13 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
     unknowns: c.ambiguite ? [c.ambiguite] : [],
     independantes: indep, medias: domaines.size,
   };
+  // Réaction ou mesure d'une institution rapportée par la presse : conservée comme fait STRUCTURÉ, distinct de l'état judiciaire
+  // (jamais de transition). Libellé public tiré d'une table fermée ; la citation reste en mémoire privée.
+  const inst = detecterInstitutionnel(evidence.map((e) => e.quote));
+  if (inst) {
+    const src = evidence.find((e) => String(e.quote).replace(/\s+/g, ' ').trim() === inst.citation) || evidence[0];
+    base.institutionnel = { ...inst, url: src.url, media: src.media, published: src.published || null };
+  }
   const nomme = !!c.etablissement && !/non nomm|non pr[ée]cis/i.test(c.etablissement);
   const etab = nomme ? c.etablissement : `${c.type_structure} non nommée`;
   const cleStd = `${aplatir(c.commune)}|${aplatir(etab)}|${aplatir(c.role_mis_en_cause)}`;
@@ -266,28 +343,18 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
     if (!nouvelles.length) return { statut: 'ecarte', motif: 'connu : aucune source nouvelle', cout: ext.cout };
     const derniere = k.sources.map((s) => s.d).filter(Boolean).sort().pop() || null;
     if (!nouvelles.some((p) => p.published && (!derniere || p.published > derniere))) return { statut: 'ecarte', motif: 'connu : sources nouvelles non postérieures', cout: ext.cout };
-    // Pourquoi le rapprochement : faits vérifiables, jamais une impression.
-    const connuesLues = [];
-    for (const s of k.sources.slice(0, 3)) { const p = await lirePage(s.url, cache); if (p.ok) connuesLues.push({ ...s, ph: phrases(p.corps) }); }
-    const pourquoi = [`même commune : ${k.commune}`, ...res.evidence.slice(0, 2)];
-    for (const n of nouvelles.slice(0, 2)) {
-      const ph = phrases(n.corps);
-      for (const s of connuesLues) { let m = 0; for (const x of ph) if (s.ph.has(x)) m++; if (m >= 3) { pourquoi.push(`${n.media} et ${s.media} (déjà en base) reprennent les mêmes phrases (même dépêche)`); break; } }
-    }
-    const maj = k.statut !== c.statut_judiciaire ? `statut : « ${k.statut} » en base, « ${c.statut_judiciaire} » dans les nouveaux articles` : null;
+    // Rapprochement FORT (ATTACH proposé d'emblée) seulement si une preuve d'identité existe : « même commune » ou « même rôle »
+    // ne suffisent jamais. Sinon REVIEW : l'humain compare les deux jeux de sources et tranche (RAPPROCHER / CRÉER / REVIEW).
+    const { bloc, force } = await construireAttach({ k, c, lues, nouvelles, res, geo: geoDe(cible), cache, partiel });
     return {
-      statut: 'propose', motif: 'rattachement proposé', cout: ext.cout,
+      statut: 'propose', motif: force === 'forte' ? 'rattachement proposé' : 'rattachement à arbitrer', cout: ext.cout,
       proposition: {
-        dedup_key: `attach|${k.case_id}|${aplatir(canonique(nouvelles[0].url)).slice(-60)}`, recommendation: 'ATTACH_EXISTING', attach_case_id: k.case_id,
+        dedup_key: `attach|${k.case_id}|${aplatir(canonique(nouvelles[0].url)).slice(-60)}`,
+        recommendation: force === 'forte' ? 'ATTACH_EXISTING' : 'REVIEW', attach_case_id: k.case_id,
         payload: {
-          ...base, fiche,
-          attach: {
-            case_id: k.case_id, etablissement: k.etablissement, commune: k.commune, statut: k.statut, type_affaire: k.type_affaire, role: k.role,
-            sources: k.sources.slice(0, 6).map((s) => ({ media: s.media, url: s.url, d: s.d })),
-            nouvelles: nouvelles.map((p) => ({ media: p.media, url: p.url, d: p.published })),
-            pourquoi: [...new Set(pourquoi)].slice(0, 4),
-            divergence: [partiel ? 'rapprochement partiel — ' + ((res.conflicts || []).map((x) => x.replace(/^FR-\d{4}-\d{4} — /, '')).slice(0, 1).join('') || 'identification incomplète') : null, maj, c.ambiguite].filter(Boolean).join(' · ') || null,
-          },
+          ...base, fiche, etablissement_nomme: nomme, attach: bloc, rapprochement_ecarte: ecartes[0] || null,
+          possible_matches_sny: [{ case_id: k.case_id, etablissement: k.etablissement, role: k.role, statut: k.statut }],
+          avertissement: force === 'forte' ? c.ambiguite : 'rapprochement non démontré : ' + (bloc.contre[0] || 'identification incomplète').slice(0, 150),
         },
       },
     };
@@ -311,11 +378,34 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   const possibles = statutRes === 'NO_MATCH'
     ? voisins
     : [...(res.detail || []).filter((d) => d.rattachement !== 'NON_RATTACHABLE').map((d) => ({ case_id: d.case_id })), ...voisins];
+
+  // Une SEULE affaire voisine déjà connue (même commune concordante) : l'humain doit pouvoir COMPARER les deux jeux de sources
+  // et choisir RAPPROCHER ou CRÉER (cas du 09/10/2026 : « affaire voisine déjà connue » annoncée sans aucune de ses sources).
+  let attach = null;
+  if (recommendation === 'REVIEW' && statutRes !== 'POSSIBLE_MATCH' && voisinsResolver.length === 1) {
+    const k = await infosCase(sql, voisinsResolver[0]);
+    if (k) {
+      const connues = new Set(k.sources.map((s) => canonique(s.url)));
+      const nouvelles = lues.filter((p) => !connues.has(canonique(p.url)));
+      if (nouvelles.length) attach = { k, nouvelles };
+    }
+  }
+  if (attach) {
+    const { bloc } = await construireAttach({ k: attach.k, c, lues, nouvelles: attach.nouvelles, res, geo: geoDe(attach.k.case_id), cache, partiel: true });
+    return {
+      statut: 'propose', motif: 'rattachement à arbitrer', cout: ext.cout,
+      proposition: {
+        dedup_key: cleStd, recommendation, attach_case_id: attach.k.case_id,
+        payload: { ...base, fiche, etablissement_nomme: nomme, attach: bloc, rapprochement_ecarte: ecartes[0] || null,
+          possible_matches_sny: [{ case_id: attach.k.case_id, etablissement: attach.k.etablissement, role: attach.k.role, statut: attach.k.statut }], avertissement },
+      },
+    };
+  }
   return {
     statut: 'propose', motif: recommendation, cout: ext.cout,
     proposition: {
       dedup_key: cleStd, recommendation, attach_case_id: null,
-      payload: { ...base, fiche, etablissement_nomme: nomme, possible_matches_sny: possibles.slice(0, 4), avertissement },
+      payload: { ...base, fiche, etablissement_nomme: nomme, possible_matches_sny: possibles.slice(0, 4), avertissement, rapprochement_ecarte: ecartes[0] || null },
     },
   };
 }

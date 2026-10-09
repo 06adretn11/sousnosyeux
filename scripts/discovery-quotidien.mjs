@@ -117,7 +117,7 @@ for (const gr of grappes) gr.rep = { ...gr.rep, urls: gr.membres.flatMap((m) => 
 const anonymesEcartees = new Set((await sql`select case_id from cases where publication_status = 'retirée' and etablissement ~* 'non nomm'`).map((r) => r.case_id));
 const index = (await construireIndex(sql, {})).filter((f) => !anonymesEcartees.has(f.case_id));
 const cache = new Map();
-const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, cout: 0 };
+const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, geo_ecartes: 0, cout: 0 };
 const aEnvoyer = [];
 
 for (const g of grappes) {
@@ -135,6 +135,7 @@ for (const g of grappes) {
   cp.evalues++;
   const r = await evaluer({ sql, index, signal: s, modele: MODELE, cache });
   cp.cout += Number(r.cout?.cout_usd) || 0;
+  if (r.proposition?.payload?.rapprochement_ecarte) cp.geo_ecartes++; // rapprochement contredit par la géographie du signal (garde-fou)
   v(`  [${r.statut}] ${s.titre.slice(0, 90)} — ${r.motif}` + (r.proposition ? ` | ${r.proposition.payload.commune} · ${r.proposition.payload.etablissement || '?'} · matches: ${(r.proposition.payload.possible_matches_sny || []).map((m) => m.case_id).join(',') || r.proposition.attach_case_id || '-'} | ${r.proposition.payload.avertissement || ''}` : ''));
   if (r.statut === null) { cp.incidents++; continue; } // non consigné : repris au prochain run
   let statut = r.statut, motif = r.motif, proposalId = null;
@@ -158,7 +159,7 @@ for (const g of grappes) {
 }
 
 console.log(`signaux : ${neufs.length} jamais vus (${filtres.length} filtrés, ${candidatsNeufs.length} candidats) · ${aReexaminer.length} en attente réexaminés · ${expires.length} expirés`);
-console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s) · coût modèle ${cp.cout.toFixed(4)} $`);
+console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s), ${cp.geo_ecartes} rapprochement(s) écarté(s) (contradiction géographique) · coût modèle ${cp.cout.toFixed(4)} $`);
 if (DRY) {
   // Diagnostic privé : le dépôt est public, les logs CI ne montrent que des compteurs. Avec SNY_DIAG_NEON=1, les propositions
   // qu'un run à blanc AURAIT faites sont déposées dans `discovery_dryrun` (jamais lue par un autre script) pour relecture locale.

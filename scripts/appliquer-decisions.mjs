@@ -123,10 +123,17 @@ if (process.argv.includes('--generique')) {
   const { readFileSync } = await import('node:fs');
   const holds = new Set(JSON.parse(readFileSync(new URL('../data/publication-holds.json', import.meta.url), 'utf8')).holds.map((h) => h.case_id));
   const { classer } = await import('./lib/appliquer-contrat.mjs');
+  const { evenementDejaValide } = await import('./lib/routage-veille.mjs');
+  const { detecterInstitutionnel } = await import('./lib/evenement-institutionnel.mjs');
+  const { schemaBoucle } = await import('./lib/telegram-clics.mjs');
+  const { prevenir, prevenirUneFois, phrasePublication, esc } = await import('./lib/prevenir.mjs');
+  const S = await schemaBoucle(sql);
   const rows = await sql`
     select p.proposal_id, left(p.proposal_id::text, 8) k, p.case_id, p.analysis_action aa,
            p.statut_avant::text av, p.statut_propose::text ap, p.event_date::text ed, p.article_id,
            p.facts, p.applied_event_id, c.statut_judiciaire::text courant,
+           p.payload->>'rattachement' rat, c.etablissement, c.commune, c.publication_status::text pub,
+           (select a.publication_date::text from articles a where a.article_id = p.article_id) pd,
            e.event_type::text e_type, e.event_date::text e_date, e.statut_apres::text e_apres, e.libelle_public e_lib
       from state_proposals p
       join cases c using (case_id)
@@ -138,6 +145,54 @@ if (process.argv.includes('--generique')) {
   let auto = 0, special = 0;
   for (const p of rows) {
     const f = Array.isArray(p.facts) && p.facts.length === 1 ? p.facts[0] : null;
+
+    // --- (a) ÉVÉNEMENT INSTITUTIONNEL validé (ENRICHMENT) : réaction ou mesure d'une institution, JAMAIS une transition. ---
+    // Libellé public tiré d'une table fermée ; la citation reste en mémoire privée. Identité de l'événement : (affaire, libellé)
+    // — la même mesure, au même stade (annoncée / réalisée), rapportée par un second article, n'est pas un second événement.
+    if (!REPLAY && p.aa === 'ENRICHMENT') {
+      const inst = p.rat === 'OK' ? detecterInstitutionnel((Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || [])) : null;
+      if (inst) {
+        auto++;
+        dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | AUTO_APPLICABLE`);
+        dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
+        if (!DRY) {
+          const [deja] = await sql`select event_id from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
+          let ev = deja?.event_id ?? null;
+          if (ev) dire(`      = mesure déjà consignée (${String(ev).slice(0, 8)}) : preuve rattachée, aucun doublon`);
+          else {
+            const [r] = S.realisation
+              ? await sql`insert into case_events (case_id, event_date, event_type, statut_apres, libelle_public, article_id, realisation)
+                          values (${p.case_id}, ${p.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}, ${inst.realisation}) returning event_id`
+              : await sql`insert into case_events (case_id, event_date, event_type, statut_apres, libelle_public, article_id)
+                          values (${p.case_id}, ${p.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}) returning event_id`;
+            ev = r.event_id;
+            dire(`      + événement ${inst.event_type} → ${String(ev).slice(0, 8)}${S.realisation ? '' : ' (colonne realisation absente : migration 019 non appliquée)'}`);
+          }
+          await sql`update state_proposals set applied_event_id = ${ev} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
+          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phrasePublication(p.pub)}`);
+        }
+        continue;
+      }
+    }
+
+    // --- (b) FAIT DÉJÀ CONSIGNÉ : la même condamnation rapportée par un second article n'est ni un second événement ni une
+    // seconde transition. La preuve (cet article) est rattachée à l'événement existant ; rien d'autre n'est écrit. Valable même
+    // sous HOLD : on n'écrit rien sur `cases`. (FR-2026-0004 : fait du 15/09 validé le 25/09, deux articles « de mardi » le 09/10.)
+    if (!REPLAY && p.aa === 'STATE_CHANGE' && p.ap && !p.applied_event_id) {
+      const evs = await sql`select event_id, case_id, event_type::text event_type, event_date::text event_date, statut_apres::text statut_apres from case_events where case_id = ${p.case_id}`;
+      const deja = evenementDejaValide(evs, p.case_id, p.ap, p.ed, p.pd);
+      if (deja) {
+        auto++;
+        dire(`  ${p.k} | ${p.case_id} | ${p.av} → ${p.ap} (STATE_CHANGE) | FAIT_DEJA_CONSIGNE`);
+        dire(`      écriture prévue : preuve rattachée à l'événement ${String(deja.event_id).slice(0, 8)} (${deja.event_type} du ${String(deja.event_date).slice(0, 10)}${deja.rapproche_par_publication ? ', rapproché par la date de publication' : ''}) · aucun nouvel événement · aucune transition · aucune écriture sur la fiche`);
+        if (!DRY) {
+          await sql`update state_proposals set applied_event_id = ${deja.event_id} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
+          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nCe fait (${esc(p.ap)}) était déjà consigné : la source est rattachée à l’événement existant, sans doublon ni nouvelle transition.\n${phrasePublication(p.pub)}`);
+        }
+        continue;
+      }
+    }
+
     const non = classer(p, holds, { replay: REPLAY }).raisons;
 
     const ecriture = p.ap && f
@@ -157,6 +212,11 @@ if (process.argv.includes('--generique')) {
       await etat(p.case_id, p.ap);
       const ev = await evenement({ case_id: p.case_id, event_type: f.event_type, event_date: p.ed, statut_apres: p.ap, libelle_public: libellePublic(p.ap), article_id: p.article_id });
       await sql`update state_proposals set applied_event_id = ${ev} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
+      await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉtat judiciaire : ${esc(p.courant)} → <b>${esc(p.ap)}</b> (événement consigné).\n${phrasePublication(p.pub)}`);
+    }
+    // Un ACCEPT que l'automate ne peut PAS appliquer ne doit pas rester muet : on le dit UNE fois, avec la raison.
+    if (non.length && !DRY && !REPLAY) {
+      await prevenirUneFois(sql, { cle: p.k, resultat: 'bloquee', texte: `⚠️ <b>Décision enregistrée mais NON appliquée</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nRaison : ${esc(non.join(' ; ').slice(0, 300))}\nAucune écriture n’a été faite : à traiter à la main (ou à revoir).` });
     }
   }
   dire(`\n  ${auto} AUTO_APPLICABLE / ${special} HUMAN_OR_SPECIAL_CASE\n`);

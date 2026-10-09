@@ -542,11 +542,22 @@ export function entreeDepuisBase(row) {
 
 /**
  * Un événement HUMAINEMENT VALIDÉ couvre-t-il déjà cette proposition d'état ? Même affaire, même état
- * cible, même date d'événement ÉCRITE des deux côtés. Sans date des deux côtés on ne peut pas dire que
- * c'est le même fait : la proposition est alors conservée (jamais d'effacement par défaut).
+ * cible, même date d'événement ÉCRITE des deux côtés.
+ *
+ * Date du fait NON écrite (« condamné ce mardi », mesuré le 09/10/2026 : 2 articles du 15/09 sur FR-2026-0004, fait validé
+ * le 25/09, 2 nouvelles demandes d'arbitrage) : on s'appuie sur la date de PUBLICATION, qui ne peut pas précéder le fait.
+ * Un article publié le jour du fait validé, ou dans les 3 jours qui suivent, rapporte CE fait — à condition qu'un seul
+ * événement validé de même état tombe dans cette fenêtre : deux faits possibles → on ne tranche pas (jamais de fusion
+ * de deux faits réellement distincts au seul motif qu'ils partagent un état). Sans aucune date : la proposition est
+ * conservée (jamais d'effacement par défaut).
  */
-export function evenementDejaValide(evenements, case_id, statutPropose, dateEvenement) {
-  if (!statutPropose || !dateEvenement) return null;
-  return (evenements || []).find((e) => e.case_id === case_id && e.statut_apres === statutPropose
-    && e.event_date && String(e.event_date).slice(0, 10) === dateEvenement) || null;
+export function evenementDejaValide(evenements, case_id, statutPropose, dateEvenement, datePublication = null) {
+  if (!statutPropose) return null;
+  const memes = (evenements || []).filter((e) => e.case_id === case_id && e.statut_apres === statutPropose && e.event_date);
+  if (dateEvenement) return memes.find((e) => String(e.event_date).slice(0, 10) === dateEvenement) || null;
+  if (!datePublication) return null;
+  const pub = Date.parse(String(datePublication).slice(0, 10));
+  if (Number.isNaN(pub)) return null;
+  const proches = memes.filter((e) => { const j = (pub - Date.parse(String(e.event_date).slice(0, 10))) / 864e5; return j >= 0 && j <= 3; });
+  return proches.length === 1 ? { ...proches[0], rapproche_par_publication: true } : null;
 }

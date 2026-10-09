@@ -457,9 +457,10 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
   // Un fait DÉJÀ validé par un humain (`case_events`) n'est pas redemandé : même état cible, même date
   // écrite. Mesuré au run réel : 3 propositions « condamnation du 15/09 » sur FR-2026-0004, fait validé
   // le 25/09 (fiche sous HOLD, donc l'état global n'a pas bougé).
-  const dejaTranche = evenementDejaValide(ctx.evenements, fiche.case_id, out.statut_propose, out.EVENT_DATE);
+  const dejaTranche = evenementDejaValide(ctx.evenements, fiche.case_id, out.statut_propose, out.EVENT_DATE, article.publication_date);
   if (dejaTranche) {
-    out.review_reasons = [...(out.review_reasons || []), `DECISION_HUMAINE_EXISTANTE — ${dejaTranche.event_type} du ${String(dejaTranche.event_date).slice(0, 10)} déjà validé`];
+    out.review_reasons = [...(out.review_reasons || []), `DECISION_HUMAINE_EXISTANTE — ${dejaTranche.event_type} du ${String(dejaTranche.event_date).slice(0, 10)} déjà validé`
+      + (dejaTranche.rapproche_par_publication ? ' (date du fait non écrite : rapproché par la date de publication)' : '')];
     out.statut_propose = null; out.PROPOSED_CHANGE = 'NO_CHANGE'; out._action_modele = 'ENRICHMENT';
     F.decisions_deja_prises++;
   }

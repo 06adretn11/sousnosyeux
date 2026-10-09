@@ -44,6 +44,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
+    script: 'scripts/qa/test-boucle.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,
