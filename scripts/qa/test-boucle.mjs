@@ -16,7 +16,7 @@ import { niveauGeo, communes, sourceCoherente, forceRapprochement } from '../lib
 import { detecterInstitutionnel, libelleInstitutionnel, categorieEvenement, realisationDe, TYPES_INSTITUTIONNELS } from '../lib/evenement-institutionnel.mjs';
 import { evenementDejaValide } from '../lib/routage-veille.mjs';
 import { messageDecision, boutons } from '../lib/discovery-messages.mjs';
-import { decoderCallback, boutonValable, dernierAConfirmer, NC_VERS_DB, ACTION_NC, VERS_DB, ESSAIS_MAX } from '../lib/telegram-clics.mjs';
+import { decoderCallback, boutonValable, dernierAConfirmer, essaisDe, NC_VERS_DB, ACTION_NC, VERS_DB, ESSAIS_MAX } from '../lib/telegram-clics.mjs';
 
 let ko = 0;
 const test = (nom, cond) => { console.log(`${cond ? '  ✓' : '  ✗'} ${nom}`); if (!cond) ko++; };
@@ -45,6 +45,7 @@ test('rien reçu → rien à confirmer', dernierAConfirmer([]) === null);
 test('échec au milieu → on s’arrête AVANT lui (rejoué au passage suivant)', dernierAConfirmer([ok(10), ko1(11), ok(12)]) === 10);
 test('échec du premier → rien n’est confirmé', dernierAConfirmer([ko1(10), ok(11)]) === null);
 test(`échec répété ${ESSAIS_MAX} fois → abandonné pour ne pas bloquer la file`, dernierAConfirmer([ok(10), ko1(11, ESSAIS_MAX), ok(12)]) === 12);
+test('sans journal (migration absente) : un clic qui échoue en boucle ne bloque PAS la file (essais = maximum)', (await essaisDe(async () => [], 123)) === ESSAIS_MAX && dernierAConfirmer([ok(10), ko1(11, ESSAIS_MAX), ok(12)]) === 12);
 test('rejeu : le même lot rejoué donne le même résultat (idempotent)', dernierAConfirmer([ok(10), ok(11)]) === dernierAConfirmer([ok(10), ok(11)]));
 
 // ---------------------------------------------------------------------
@@ -148,6 +149,10 @@ inst = detecterInstitutionnel(['Un animateur a été mis à pied ou suspendu de 
 test('suspension par la municipalité co-employeur (« mis à pied ou suspendu ») : suspension réalisée, pas annoncée', inst?.event_type === 'suspension' && inst.realisation === 'réalisée');
 inst = detecterInstitutionnel(['Le maire a suspendu l’agent de ses fonctions dès la découverte des faits.']);
 test('suspension de l’agent par la collectivité : type « suspension », réalisée', inst?.event_type === 'suspension' && inst.realisation === 'réalisée');
+// Défauts relevés par la relecture indépendante du commit aaf38e8 :
+test('« l’inspection académique est saisie du dossier » : un acteur n’est PAS une mesure', detecterInstitutionnel(['L’inspection académique est saisie du dossier depuis ce matin.']) === null);
+test('« la mairie a licencié l’agent » ne produit PAS le libellé « suspendu »', detecterInstitutionnel(['La mairie a licencié l’agent concerné après la découverte des faits.'])?.libelle_public !== 'Selon la presse, l’agent concerné a été suspendu de ses fonctions.');
+test('« écarté de ses fonctions » = suspension ; « écarté de l’enquête » ne l’est pas', detecterInstitutionnel(['La mairie a écarté l’agent de ses fonctions dès lundi.'])?.event_type === 'suspension' && detecterInstitutionnel(['La mairie a écarté l’agent de l’enquête administrative interne le temps de la procédure.'])?.event_type !== 'suspension');
 test('une mesure SANS acteur institutionnel ne suffit pas (employeur privé non nommé)', detecterInstitutionnel(['L’animateur a été suspendu par son employeur le lendemain des faits.']) === null);
 test('un acteur SANS mesure ne suffit pas (le maire est choqué)', detecterInstitutionnel(['Le maire se dit choqué par ces révélations et pense aux familles concernées.']) === null);
 test('acteur et mesure doivent figurer dans la MÊME citation (pas de recoupement entre deux)', detecterInstitutionnel(['Le maire s’est exprimé devant la presse hier matin.', 'Un plan d’action doit renforcer l’encadrement des enfants.']) === null);

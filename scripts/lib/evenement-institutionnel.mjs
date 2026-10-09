@@ -23,11 +23,13 @@ export const categorieEvenement = (t) => (TYPES_INSTITUTIONNELS.includes(t) ? 'i
 // ⚠ Tous les motifs sont écrits SANS accents et appliqués sur un texte normalisé (`norm`) : en JavaScript `\b` ne reconnaît pas
 // les lettres accentuées, donc « municipalité » n'était jamais vu comme un acteur — défaut révélé par le rejeu sur l'article
 // réel d'une mairie (la fixture synthétique passait seulement grâce au mot « maire »).
-const ACTEUR = /\b(maire|mairie|municipalite|conseil municipal|collectivite|la commune|ville de|la ville|rectorat|academie|inspection academique|dsden|prefet|prefecture|education nationale|ministere|direction des services|service jeunesse|services? de la ville)\b/;
+const ACTEUR = /\b(maire|mairie|municipalite|conseil municipal|collectivite|la commune|ville de|la ville|rectorat|academie|dsden|prefet|prefecture|education nationale|ministere|direction des services|service jeunesse|services? de la ville)\b/;
 
 // Vocabulaire fermé : code → motif. `suspension_agent` s'écrit en `suspension`, le reste en `réponse_institutionnelle`.
 const MESURES = [
-  ['suspension_agent', /\b(suspendu\w*|suspension|mis(?:e)? a pied|ecarte\w*|licenci\w+|revoqu\w+)\b/],
+  // Seulement ce que le libellé « suspendu de ses fonctions » dit VRAIMENT : ni licenciement ni révocation (autre mesure, autre libellé),
+  // et « écarté » seulement s'il s'agit des fonctions (« écarté de l'enquête » n'est pas une suspension).
+  ['suspension_agent', /\b(suspendu\w*|suspension|mis(?:e)? a pied|ecarte\w*(?:\s+[^\s.]+){0,4}\s+(?:de\s+)?(?:ses|son)\s+(?:fonctions?|poste))\b/],
   ['plan_action_encadrement', /plan d'action|renforc\w+\s+(?:de\s+)?(?:l'|les\s+)?(?:encadrement|controles?|recrutements?)|renforcement\s+(?:de\s+)?(?:l')?encadrement|taux d'encadrement|binomes?|double encadrement|recrut\w+\s+(?:de\s+)?(?:nouveaux\s+)?animateurs?/],
   ['controle_inspection', /\b(inspection|inspecteurs?|audit|controle administratif|enquete administrative|mission d'inspection)\b/],
   ['fermeture_structure', /\bferm\w+\b(?=[^.]{0,60}\b(?:centre|accueil|ecole|structure|creche|periscolaire)\b)|\bfermeture\b/],

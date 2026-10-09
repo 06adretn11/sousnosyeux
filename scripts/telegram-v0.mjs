@@ -17,7 +17,7 @@
 // =====================================================================
 import { connecter } from './lib/neon.mjs';
 import { messageDecision, boutons } from './lib/discovery-messages.mjs';
-import { VERS_DB, NC_VERS_DB, ACTION_NC, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
+import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel } from './lib/evenement-institutionnel.mjs';
 
@@ -432,7 +432,7 @@ async function recevoir() {
       await clic(u.callback_query, u.update_id);
       traites.push({ update_id: u.update_id, ok: true, essais, age_h: 0 });
     } catch (e) {
-      console.error('clic non traité (sera rejoué) : ' + String(e.message).slice(0, 120));
+      console.error(`clic non traité (${essais + 1 < ESSAIS_MAX ? 'sera rejoué' : 'abandonné : essais épuisés ou journal absent'}) : ` + String(e.message).slice(0, 120));
       await journaliser(sql, { kind: 'clic_echec', update_id: u.update_id, resultat: String(e.message).slice(0, 160) });
       traites.push({ update_id: u.update_id, ok: false, essais: essais + 1, age_h: 0 });
     }

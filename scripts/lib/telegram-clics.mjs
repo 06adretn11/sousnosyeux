@@ -91,10 +91,14 @@ export async function journaliser(sql, { kind, update_id = null, cle = null, act
   } catch { return false; }
 }
 
-/** Combien de fois ce clic a-t-il déjà été tenté sans succès ? */
+/**
+ * Combien de fois ce clic a-t-il déjà été tenté sans succès ?
+ * Sans journal (migration 019 absente) on ne PEUT PAS compter : on rend ESSAIS_MAX, c'est-à-dire « ne bloque pas la file » —
+ * un clic qui échoue en boucle ne doit pas empêcher tous les suivants (comportement antérieur, signalé dans les logs).
+ */
 export async function essaisDe(sql, update_id) {
   const s = await schemaBoucle(sql);
-  if (!s.journal || update_id == null) return 0;
+  if (!s.journal || update_id == null) return ESSAIS_MAX;
   try {
     const [r] = await sql`select count(*)::int n from telegram_journal where kind = 'clic_echec' and update_id = ${update_id}`;
     return r?.n || 0;
