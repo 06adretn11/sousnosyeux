@@ -245,12 +245,16 @@ test('workflow webhook : l’entrée utilisateur ne passe JAMAIS dans un `run:` 
 test('workflow webhook : même groupe de concurrence que les autres (un seul consommateur à la fois)', /group: sny-telegram/.test(wfTel));
 
 section('9. vérification indépendante du site public');
-const attenduSite = new Map([['FR-2026-9910', { case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}, {}] }]]);
+// Forme RÉELLE de la page (web/src/pages/index.astro) : état, première source (source_url) et synthèse `etat` — pas la liste des sources.
+const ETAT = { statut: 'enquête', date: null };
+const attenduSite = new Map([['FR-2026-9910', { case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{ url: 'https://exemple.test/a' }, { url: 'https://exemple.test/b' }], etat: ETAT }]]);
 const pageSite = (cas) => `<html><body><script type="application/json" id="cases-data">${JSON.stringify(cas)}</script></body></html>`;
-test('site conforme : aucun écart', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}, {}] }]), ['FR-2026-9910'], attenduSite).length === 0);
-test('site en retard (ancien état) : écart signalé', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'plainte', sources: [{}, {}] }]), ['FR-2026-9910'], attenduSite).length === 1);
+const ligne = (o = {}) => ({ case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', source_url: 'https://exemple.test/a', etat: ETAT, ...o });
+test('site conforme : aucun écart', ecartsSite(pageSite([ligne()]), ['FR-2026-9910'], attenduSite).length === 0);
+test('site en retard (ancien état) : écart signalé', ecartsSite(pageSite([ligne({ statut_judiciaire: 'plainte' })]), ['FR-2026-9910'], attenduSite).length === 1);
 test('affaire absente du site : écart signalé', ecartsSite(pageSite([]), ['FR-2026-9910'], attenduSite)[0].includes('absente du site'));
-test('sources manquantes : écart signalé', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}] }]), ['FR-2026-9910'], attenduSite).length === 1);
+test('synthèse d’état en retard : écart signalé', ecartsSite(pageSite([ligne({ etat: { statut: 'plainte', date: null } })]), ['FR-2026-9910'], attenduSite).length === 1);
+test('première source différente : écart signalé', ecartsSite(pageSite([ligne({ source_url: 'https://exemple.test/autre' })]), ['FR-2026-9910'], attenduSite).length === 1);
 test('page sans JSON public : écart (jamais « conforme » par défaut)', ecartsSite('<html></html>', ['FR-2026-9910'], attenduSite).length === 1);
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ tous les tests passent');
