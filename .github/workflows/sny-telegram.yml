@@ -60,3 +60,7 @@ jobs:
       - name: 7. Vérifier le site public et confirmer sur Telegram
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: node scripts/verifier-site.mjs ${{ steps.projection.outputs.ids }}
+      # Jamais de perte silencieuse : le webhook a déjà répondu 200 à Telegram, qui ne rejouera pas ce clic.
+      - name: Alerter si le traitement a échoué
+        if: ${{ failure() }}
+        run: node -e "import('./scripts/lib/prevenir.mjs').then((m) => m.prevenir('⚠️ Un clic a été reçu mais le traitement a ÉCHOUÉ (run GitHub sny-telegram en erreur). Rien n’a été perdu côté Telegram : le callback complet est dans l’entrée du run. Dis-le-moi, ou re-clique.'))"

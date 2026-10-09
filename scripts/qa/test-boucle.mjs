@@ -229,11 +229,22 @@ const faux = (githubStatus = 204) => { const appels = []; const f = async (url, 
   f = faux(204); r = await worker.fetch(requete(clic()), ENV, null, f);
   const gh = f.appels.find((a) => a.url.includes('api.github.com')); const tg = f.appels.find((a) => a.url.includes('answerCallbackQuery'));
   test('clic valide : déclenche le workflow sny-telegram du bon dépôt', r.status === 200 && gh && gh.url.endsWith('/repos/org/depot/actions/workflows/sny-telegram.yml/dispatches'));
-  test('… puis accusé IMMÉDIAT « Décision reçue » (avant toute écriture en base)', tg && /Décision reçue/.test(JSON.parse(tg.body).text) && f.appels.indexOf(gh) < f.appels.indexOf(tg));
-  test('… la mise à jour transmise ne contient que le nécessaire (pas de texte, pas de profil)', (() => { const u = JSON.parse(JSON.parse(gh.body).inputs.update); return u.update_id === 7001 && u.callback_query.data === 'sny:VALIDATE:abcdef12' && !('username' in u.callback_query.from) && Object.keys(u.callback_query.message).sort().join() === 'chat,message_id'; })());
+  test('… puis accusé IMMÉDIAT « Clic reçu » — jamais « Décision enregistrée » (seul Neon peut le dire)', tg && /^Clic reçu/.test(JSON.parse(tg.body).text) && !/enregistrée/.test(JSON.parse(tg.body).text) && f.appels.indexOf(gh) < f.appels.indexOf(tg));
+  const msg = f.appels.find((a) => a.url.includes('sendMessage'));
+  test('… et trace persistante dans le chat : « Clic reçu : VALIDATE (clé) », sans contenu éditorial', msg && /Clic reçu : VALIDATE \(abcdef12\)/.test(JSON.parse(msg.body).text) && JSON.parse(msg.body).chat_id === 4242 && !/enregistrée/.test(JSON.parse(msg.body).text.split('—')[0]));
+  // Callback COMPLET transmis : identifiant de mise à jour, de callback, action + clé de proposition, utilisateur, chat, message.
+  const transmis = JSON.parse(JSON.parse(gh.body).inputs.update);
+  test('transmission COMPLÈTE du callback : update_id, id du callback, data (action + clé), utilisateur, chat, message', transmis.update_id === 7001 && transmis.callback_query.id === 'cb1' && transmis.callback_query.data === 'sny:VALIDATE:abcdef12' && transmis.callback_query.from.id === 4242 && transmis.callback_query.message.chat.id === 4242 && transmis.callback_query.message.message_id === 9);
+  test('… sans texte ni profil (pas de nom, pas d’identifiant d’affaire)', !('username' in transmis.callback_query.from) && Object.keys(transmis.callback_query.message).sort().join() === 'chat,message_id');
+  test('… et ce payload est exactement ce que `traiter` / clic() exigent (décodable, ≤ 64 octets, utilisateur et chat de l’éditeur)', Number.isInteger(transmis.update_id) && decoderCallback(transmis.callback_query.data)?.action === 'VALIDATE' && decoderCallback(transmis.callback_query.data).cle === 'abcdef12' && Buffer.byteLength(transmis.callback_query.data) <= 64 && transmis.callback_query.from.id === transmis.callback_query.message.chat.id);
+  test('l’entrée du workflow reste lisible et authentifiée : le jeton GitHub est un en-tête, jamais dans l’entrée', !JSON.stringify(JSON.parse(gh.body)).includes('gh-test') && !JSON.stringify(JSON.parse(gh.body)).includes('jeton-test'));
+  // Durabilité : tentatives avant d'abandonner
+  let n = 0; const flaky = async (url, opts) => { if (String(url).includes('api.github.com')) { n++; return new Response(null, { status: n < 3 ? 502 : 204 }); } return new Response(null, { status: 200 }); };
+  r = await worker.fetch(requete(clic()), ENV, null, flaky);
+  test('API GitHub défaillante deux fois puis rétablie : le clic est transmis (3 tentatives), 200', r.status === 200 && n === 3);
   f = faux(500); r = await worker.fetch(requete(clic()), ENV, null, f);
   const tg2 = f.appels.find((a) => a.url.includes('answerCallbackQuery'));
-  test('transmission en échec : 500 (Telegram réessaiera) et accusé « Non transmise » — jamais un faux « reçue »', r.status === 500 && /Non transmise/.test(JSON.parse(tg2.body).text) && !/reçue/.test(JSON.parse(tg2.body).text));
+  test('transmission définitivement en échec : 500 (Telegram REJOUE le clic) et accusé « NON transmis » — jamais un faux « reçu »', r.status === 500 && /NON transmis/.test(JSON.parse(tg2.body).text) && !/Clic reçu/.test(JSON.parse(tg2.body).text) && !f.appels.some((a) => a.url.includes('sendMessage')));
   r = await worker.fetch(requete(null, '', 'GET'), ENV, null, faux());
   test('une requête GET ne déclenche rien', r.status === 200);
 }

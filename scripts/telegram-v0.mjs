@@ -473,8 +473,20 @@ async function traiter() {
     const [deja] = await sql`select 1 x from telegram_journal where kind in ('clic', 'clic_ignore', 'test_recu') and update_id = ${u.update_id} limit 1`;
     if (deja) { console.log('mise à jour déjà traitée : aucune action'); return; }
   }
-  const issue = await clic(cb, u.update_id);
-  console.log(`traiter : issue ${issue}`);
+  // DURABLE : le webhook a déjà répondu 200 à Telegram, qui ne rejouera PLUS ce clic. Une panne passagère de Neon ne doit donc pas le
+  // perdre : trois tentatives (clic() est idempotent) ; si tout échoue, l'éditeur est PRÉVENU (jamais de perte silencieuse) et le job
+  // est rouge. Le callback complet reste lisible dans l'entrée du run GitHub (inputs.update) pour un rejeu ou un diagnostic.
+  let derniere;
+  for (const attenteMs of [0, 3000, 10000]) {
+    if (attenteMs) await new Promise((r) => setTimeout(r, attenteMs));
+    try {
+      const issue = await clic(cb, u.update_id);
+      console.log(`traiter : issue ${issue}`);
+      return;
+    } catch (e) { derniere = e; console.error('traiter : tentative échouée : ' + String(e.message).slice(0, 120)); }
+  }
+  await tg('sendMessage', { chat_id: ALLOWED, text: `⚠️ Ton clic (${cb.data.replace(/^sny:/, '')}) a été reçu mais NON enregistré (base indisponible). Re-clique sur le bouton, ou dis-le-moi : le détail est dans le run GitHub.` }).catch(() => {});
+  throw derniere;
 }
 
 /** Diagnostic en lecture seule : où en est la chaîne Telegram → SNY ? (aucun secret, aucun contenu éditorial) */

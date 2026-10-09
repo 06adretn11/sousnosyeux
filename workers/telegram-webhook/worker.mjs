@@ -52,23 +52,31 @@ export default {
 
     // (1) déclencher l'enregistrement + l'application (workflow existant, secrets Neon côté GitHub uniquement)
     const update = JSON.stringify({ update_id: u.update_id, callback_query: { id: cb.id, data: cb.data, from: { id: cb.from.id }, message: { message_id: cb.message.message_id, chat: { id: cb.message.chat.id } } } });
+    // Trois tentatives (0 / 0,3 / 0,9 s) : un à-coup de l'API GitHub ne doit pas coûter un clic. Si tout échoue : 500, Telegram REJOUE.
     let ok = false;
-    try {
-      const r = await fetchImpl(`https://api.github.com/repos/${env.GITHUB_REPO}/actions/workflows/sny-telegram.yml/dispatches`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'sny-telegram-webhook', 'content-type': 'application/json' },
-        body: JSON.stringify({ ref: 'main', inputs: { update } }),
-      });
-      ok = r.status === 204;
-    } catch { ok = false; }
+    for (const attente of [0, 300, 900]) {
+      if (attente) await new Promise((res) => setTimeout(res, attente));
+      try {
+        const r = await fetchImpl(`https://api.github.com/repos/${env.GITHUB_REPO}/actions/workflows/sny-telegram.yml/dispatches`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'sny-telegram-webhook', 'content-type': 'application/json' },
+          body: JSON.stringify({ ref: 'main', inputs: { update } }),
+        });
+        ok = r.status === 204;
+      } catch { ok = false; }
+      if (ok) break;
+    }
 
-    // (2) accusé IMMÉDIAT, honnête : « reçue » seulement si la transmission a réussi
-    const texte = ok ? 'Décision reçue ✓ — enregistrement en cours' : '⚠ Non transmise — Telegram va réessayer';
-    try {
-      await fetchImpl(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
-        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ callback_query_id: cb.id, text: texte }),
-      });
-    } catch { /* l'accusé ne doit pas faire échouer la réponse au webhook */ }
+    // (2) accusé IMMÉDIAT et HONNÊTE : « Clic reçu » (transmis à GitHub, DURABLE dans la file du workflow) — jamais « Décision enregistrée » :
+    // seul Neon, côté workflow, peut le dire une fois l'écriture confirmée.
+    const texte = ok ? 'Clic reçu ✓ — enregistrement en cours' : '⚠ Clic NON transmis — Telegram va réessayer';
+    const post = (methode, corps) => fetchImpl(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${methode}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(corps) });
+    try { await post('answerCallbackQuery', { callback_query_id: cb.id, text: texte }); } catch { /* l'accusé ne doit pas faire échouer la réponse au webhook */ }
+    // Trace persistante dans le chat (le toast disparaît) : action et clé seulement, aucun contenu éditorial.
+    if (ok) {
+      const [, action, cle] = /^sny:(?:NC:)?([A-Z]+):([0-9a-f]{8})$/.exec(cb.data) || [];
+      try { await post('sendMessage', { chat_id: editeur, text: `📥 Clic reçu : ${action} (${cle}). Enregistrement en cours — tu recevras la confirmation une fois la décision écrite.` }); } catch { /* idem */ }
+    }
     return new Response(ok ? 'transmis' : 'échec de transmission', { status: ok ? 200 : 500 });
   },
 };
