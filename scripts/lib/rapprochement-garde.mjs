@@ -84,9 +84,11 @@ export function sourceCoherente({ url, page, commune }) {
  * Fort = géographie compatible ET une preuve d'identité : rapprochement COMPLET du résolveur (établissement nommé, commune,
  * rôle) ou mêmes phrases qu'une source déjà vérifiée (même dépêche). « Même commune » ou « même rôle » seuls : jamais.
  */
-export function forceRapprochement({ geo, resolution, memeDepeche }) {
+export function forceRapprochement({ geo, resolution, memeDepeche, datesCommunes = [] }) {
   if (geo.niveau === 'bloquant') return { force: 'aucune', raison: geo.raison };
   if (geo.niveau !== 'ok') return { force: 'faible', raison: geo.raison };
-  if (resolution === 'MATCH' || memeDepeche) return { force: 'forte', raison: null };
+  // Preuve discriminante : un fait DATÉ cité (jour, mois, année) à la fois par la nouvelle source et par une source déjà vérifiée de
+  // l'affaire (ex. le même procès annoncé pour le même jour), dans la même commune.
+  if (resolution === 'MATCH' || memeDepeche || datesCommunes.length > 0) return { force: 'forte', raison: null };
   return { force: 'faible', raison: 'identification partielle : l’établissement, la date ou la procédure ne sont pas établis par les articles' };
 }

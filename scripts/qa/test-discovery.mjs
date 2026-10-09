@@ -66,7 +66,7 @@ test('dernier événement daté', m.includes('Dernier événement : 01/10/2026')
 test('ligne SNY + recommandation', /SNY : aucune correspondance/.test(m) && /→ VALIDATE/.test(m));
 test('pas de balise <a> (liens en clair)', !/<a /.test(m));
 m = messageDecision({ ...payload, etablissement: null, etablissement_nomme: false, avertissement: 'sources divergentes' }, 'REVIEW');
-test('structure non nommée + ambiguïté + recommandation REVIEW', /Structure non nommée/.test(m) && /⚠ sources divergentes/.test(m) && /→ REVIEW/.test(m));
+test('structure non nommée + ambiguïté + recommandation « créer en attente de preuves »', /Structure non nommée/.test(m) && /⚠ sources divergentes/.test(m) && /→ CRÉER EN ATTENTE DE PREUVES/.test(m));
 
 const att = {
   ...payload,
@@ -82,10 +82,10 @@ test('rapprochement : les 4 blocs imposés', ['RAPPROCHEMENT PROPOSÉ', 'NOUVEAU
 test('rapprochement : sources historiques ET nouvelles, avec URL', m.includes('https://www.leparisien.fr/x') && m.includes('https://www.lemonde.fr/y'));
 test('rapprochement : l’identifiant de l’affaire existante', m.includes('FR-2026-0083'));
 
-for (const reco of ['NEW_CASE_CANDIDATE', 'REVIEW']) {
+for (const [reco, creer] of [['NEW_CASE_CANDIDATE', 'VALIDATE'], ['REVIEW', 'PENDING']]) {
   const b = boutons(reco, 'abcdef12', { fiche: {} }).inline_keyboard[0];
-  test(`boutons ${reco} (sans candidat de rattachement) : VALIDATE / REVIEW / REJECT, callback ≤ 64 octets`,
-    b.length === 3 && b[0].callback_data === 'sny:NC:VALIDATE:abcdef12' && b[1].callback_data.endsWith('REVIEW:abcdef12') && b[2].callback_data.endsWith('REJECT:abcdef12')
+  test(`boutons ${reco} (sans candidat de rattachement) : ${creer} / REVIEW / REJECT, callback ≤ 64 octets`,
+    b.length === 3 && b[0].callback_data === `sny:NC:${creer}:abcdef12` && b[1].callback_data.endsWith('REVIEW:abcdef12') && b[2].callback_data.endsWith('REJECT:abcdef12')
     && b.every((x) => Buffer.byteLength(x.callback_data) <= 64));
 }
 {

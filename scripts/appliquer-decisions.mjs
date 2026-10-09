@@ -142,6 +142,34 @@ if (process.argv.includes('--generique')) {
      order by p.decided_at`;
   dire(`\n=== APPLICATION GÉNÉRIQUE${REPLAY ? ' — REPLAY (lecture seule)' : ''}${DRY ? ' (DRY-RUN)' : ''} — ${rows.length} ACCEPT${REPLAY ? '' : ' non appliqués'}\n`);
 
+  // --- (0) PROPOSITIONS DEVENUES REDONDANTES ---------------------------------------------------------------------------------
+  // Une demande encore ouverte dont le FAIT est déjà consigné (même affaire, même état, même date — ou publication à ≤ 3 jours du
+  // fait validé quand sa date n'est pas écrite) n'a plus rien à arbitrer. On la clôt SANS inventer de décision humaine : REJECT signé
+  // « système », motif DUPLICATE (convention du lot de validation #1), et l'article reste rattaché à l'événement existant
+  // (applied_event_id) : un fait, plusieurs sources. Le message Telegram déjà envoyé répondra « déjà enregistrée » à un clic tardif.
+  if (!REPLAY) {
+    const ouvertes = await sql`
+      select p.proposal_id, left(p.proposal_id::text, 8) k, p.case_id, p.statut_propose::text ap, p.event_date::text ed,
+             (select a.publication_date::text from articles a where a.article_id = p.article_id) pd
+        from state_proposals p
+       where p.decision is null and p.analysis_action = 'STATE_CHANGE' and p.statut_propose is not null
+         -- uniquement une DEMANDE OUVERTE : envoyée à l'éditeur sur Telegram. Les anciennes analyses jamais soumises ne sont pas touchées.
+         and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = p.proposal_id::text)`;
+    for (const o of ouvertes) {
+      const evs = await sql`select event_id, case_id, event_type::text event_type, event_date::text event_date, statut_apres::text statut_apres from case_events where case_id = ${o.case_id}`;
+      const deja = evenementDejaValide(evs, o.case_id, o.ap, o.ed, o.pd);
+      if (!deja) continue;
+      dire(`  ${o.k} | ${o.case_id} | REDONDANTE : même fait que l'événement ${String(deja.event_id).slice(0, 8)} → clôturée (DUPLICATE), source rattachée, aucune décision humaine inventée`);
+      if (!DRY) {
+        await sql`update state_proposals
+                     set decision = 'REJECT', decided_by = 'système (doublon du même fait, non humain)', decided_at = now(),
+                         decision_comment = ${'DUPLICATE — même fait que l\'événement ' + String(deja.event_id).slice(0, 8) + ' (' + deja.event_type + ' du ' + String(deja.event_date).slice(0, 10) + '). Source conservée et rattachée à cet événement ; aucune transition.'},
+                         applied_event_id = ${deja.event_id}
+                   where proposal_id = ${o.proposal_id} and decision is null`;
+      }
+    }
+  }
+
   let auto = 0, special = 0;
   for (const p of rows) {
     const f = Array.isArray(p.facts) && p.facts.length === 1 ? p.facts[0] : null;

@@ -16,6 +16,7 @@ import { rechercherBing, lirePage, admissible, domaine, canonique } from './preu
 import { citationPresente } from './discovery-presse.mjs';
 import { aplatir } from './capteurs.mjs';
 import { resoudre } from './resolver.mjs';
+import { datesCompletes } from './etat-affaire.mjs';
 import { comprendre } from './comprendre-source.mjs';
 import { niveauGeo, sourceCoherente, forceRapprochement } from './rapprochement-garde.mjs';
 import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
@@ -200,8 +201,15 @@ async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partie
   for (const s of k.sources.slice(0, 4)) {
     const p = await lirePage(s.url, cache);
     const v = sourceCoherente({ url: s.url, page: p, commune: k.commune });
-    sources.push({ media: s.media, url: s.url, d: s.d, verifiee: v.ok, motif: v.motif, ph: v.ok ? phrases(p.corps) : null });
+    sources.push({ media: s.media, url: s.url, d: s.d, verifiee: v.ok, motif: v.motif, ph: v.ok ? phrases(p.corps) : null,
+      dates: v.ok ? new Set(datesCompletes(p.corps)) : new Set() });
   }
+  // Dates complètes citées par la nouvelle source ET par une source VÉRIFIÉE de l'affaire — hors dates de publication (une date de
+  // bandeau ou de « publié le » ne prouve rien).
+  const dejaPubliees = new Set(sources.map((s) => s.d).filter(Boolean));
+  const datesCommunes = [...new Set(nouvelles.flatMap((n) => datesCompletes(n.corps)))]
+    .filter((d) => !dejaPubliees.has(d) && !nouvelles.some((n) => String(n.published || '').slice(0, 10) === d)
+      && sources.some((s) => s.verifiee && s.dates.has(d)));
   const pour = [];
   const contre = [];
   if (geo.niveau === 'ok') pour.push(`commune concordante : ${c.commune}`);
@@ -214,6 +222,7 @@ async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partie
       if (m >= 3) { pour.push(`${n.media} et ${s.media} (déjà en base) reprennent les mêmes phrases (même dépêche)`); memeDepeche = true; break; }
     }
   }
+  if (datesCommunes.length) pour.push(`même fait daté cité par les deux jeux de sources : ${datesCommunes.slice(0, 2).map((d) => d.split('-').reverse().join('/')).join(', ')}`);
   for (const e of (res.evidence || []).slice(0, 2)) pour.push(String(e).replace(/^FR-\d{4}-\d{4} — /, ''));
   for (const x of (res.conflicts || []).slice(0, 2)) contre.push(String(x).replace(/^FR-\d{4}-\d{4} — /, ''));
   const nv = sources.filter((x) => !x.verifiee).length;
@@ -221,14 +230,14 @@ async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partie
   const maj = k.statut !== c.statut_judiciaire ? `état : « ${k.statut} » en base, « ${c.statut_judiciaire} » dans les nouveaux articles` : null;
   if (maj) contre.push(maj);
   if (c.ambiguite) contre.push(c.ambiguite);
-  const { force, raison } = forceRapprochement({ geo, resolution: partiel ? 'POSSIBLE_MATCH' : 'MATCH', memeDepeche });
+  const { force, raison } = forceRapprochement({ geo, resolution: partiel ? 'POSSIBLE_MATCH' : 'MATCH', memeDepeche, datesCommunes });
   if (force === 'faible' && raison && !contre.includes(raison)) contre.unshift(raison);
   return {
     force,
     bloc: {
       case_id: k.case_id, etablissement: k.etablissement, commune: k.commune, statut: k.statut, type_affaire: k.type_affaire, role: k.role,
       resume: k.resume,
-      sources: sources.map(({ ph, ...s }) => s),
+      sources: sources.map(({ ph, dates, ...s }) => s),
       nouvelles: nouvelles.map((p) => ({ media: p.media, url: p.url, d: p.published })),
       pourquoi: [...new Set(pour)].slice(0, 4),
       contre: [...new Set(contre)].slice(0, 5),

@@ -1,0 +1,10 @@
+{
+  // Worker de réception des clics Telegram (voir worker.mjs). Secrets (jamais dans ce fichier), posés avec `wrangler secret put` :
+  //   TELEGRAM_BOT_TOKEN · TELEGRAM_WEBHOOK_SECRET · TELEGRAM_ALLOWED_USER_ID · GITHUB_TOKEN (Actions : écriture, ce seul dépôt)
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sny-telegram",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-05-27",
+  "workers_dev": true,
+  "vars": { "GITHUB_REPO": "06adretn11/sousnosyeux" }
+}

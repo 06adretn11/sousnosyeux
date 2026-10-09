@@ -5,10 +5,11 @@
 // Décision humaine Discovery → Neon. Applique les propositions que l'humain a TRANCHÉES (clic Telegram),
 // une seule fois (`applied_at`), jamais une proposition sans décision.
 //
-//   VALIDATE  (NEW / REVIEW)  → fiche `candidate` + sources + revue « validé »
-//   REVIEW    (NEW / REVIEW)  → fiche `candidate` + sources + revue « à corriger » avec réexamen à +30 jours :
-//                               la Maintenance la surveille (stock = publiées + réexamens planifiés) et ne
-//                               re-sollicite que sur élément matériel nouveau
+//   VALIDATE / CREATE         → fiche `candidate` + sources + revue « validé » (publiable SUR GO)
+//   CREATE_PENDING_EVIDENCE   → fiche `candidate` + sources + revue « à corriger » SEULE (réexamen à +30 jours) : le garde-fou de
+//                               publication existant la rend NON publiable ; ce qui manque est consigné dans la revue ;
+//                               la Maintenance la surveille (stock = publiées + réexamens planifiés)
+//   REVIEW (= HOLD)           → AUCUNE écriture : ni fiche, ni rattachement, ni état (la proposition reste, décision consignée)
 //   REJECT    (NEW / REVIEW)  → fiche `retirée` + revue « retirer » : mémoire du rejet, jamais re-proposée
 //   ATTACH    (RAPPROCHER)    → sources ajoutées à l'affaire existante, rapprochement consigné ; si le signal porte un
 //                               événement institutionnel (mesure d'une mairie, d'un rectorat…), il est consigné aussi
@@ -30,6 +31,7 @@ import { connecter } from './lib/neon.mjs';
 import { rattacherSources } from './lib/rattacher-sources.mjs';
 import { niveauGeo } from './lib/rapprochement-garde.mjs';
 import { schemaBoucle } from './lib/telegram-clics.mjs';
+import { preuvesDe } from './lib/preuves.mjs';
 import { prevenir, prevenirUneFois, phrasePublication, esc } from './lib/prevenir.mjs';
 
 const ECRIRE = process.argv.includes('--ecrire');
@@ -58,6 +60,17 @@ for (const r of dues) {
   const action = accepte ? (r.action ?? (r.recommendation === 'ATTACH_EXISTING' ? 'ATTACH' : 'CREATE')) : null;
   const quoi = `${r.recommendation} · ${r.decision}${action ? ' · ' + action : ''}`;
   console.log(CI ? `· ${id8} ${quoi}` : `· ${id8} ${quoi} — ${p.commune} · ${p.etablissement || p.attach?.etablissement || 'non nommé'}`);
+
+  // --- REVIEW = HOLD : n'écrit JAMAIS une fiche, un rattachement ou un état --------------------------------------------------
+  // Avant (09/10/2026) un REVIEW sur une proposition « nouvelle affaire » CRÉAIT une candidate « à corriger » : une affaire née d'un
+  // simple « je ne peux pas arbitrer » (doublon probable d'une affaire connue). Désormais : décision consignée, signal conservé
+  // (proposition et signaux intacts), intervention humaine ultérieure. « Créer en attente de preuves » est une action DISTINCTE.
+  if (r.decision === 'REVIEW_REQUIRED') {
+    console.log('  HOLD : mis de côté, aucune fiche ni rattachement écrits');
+    if (ECRIRE) await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    notees++;
+    continue;
+  }
 
   // --- rapprochement ---------------------------------------------------------
   // (a) RAPPROCHER ; (b) REVIEW / REJECT sur une proposition qui portait un candidat de rattachement.
@@ -111,8 +124,13 @@ for (const r of dues) {
   // --- nouvelle affaire ---------------------------------------------------------
   const f = p.fiche;
   const rejet = r.decision === 'REJECT';
-  const revue = rejet ? 'retirer' : r.decision === 'ACCEPT' ? 'validé' : 'à corriger';
+  // CRÉER → revue « validé » (publiable SUR GO). CRÉER EN ATTENTE DE PREUVES → revue « à corriger » SEULE : le garde-fou de
+  // publication existant (publier-affaire.mjs : « aucune revue validé d'Adrien ») la rend NON publiable, et la Maintenance la
+  // surveille (réexamen planifié). Aucun nouvel état : `candidate` + revue.
+  const enAttente = action === 'CREATE_PENDING';
+  const revue = rejet ? 'retirer' : enAttente ? 'à corriger' : 'validé';
   const pubStatus = rejet ? 'retirée' : 'candidate';
+  const manques = enAttente ? preuvesDe(p, r.recommendation).manques : [];
   const nomme = p.etablissement_nomme !== false && p.etablissement;
   const etab = nomme ? p.etablissement : `${f.type_structure} non nommée`;
   const vus = new Set();
@@ -124,7 +142,9 @@ for (const r of dues) {
   }
   if (!ECRIRE) { console.log(`  créerait ${pubStatus} · ${sources.length} source(s) · revue ${revue}`); continue; }
   const prochain = revue === 'à corriger' ? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10) : null;
-  const note = `${balise} ${r.decision === 'ACCEPT' ? 'VALIDATE' : r.decision === 'REJECT' ? 'REJECT' : 'REVIEW'} — ${p.resume}`;
+  const note = enAttente
+    ? `${balise} CREATE_PENDING_EVIDENCE — NON PUBLIABLE tant que les preuves manquent : ${manques.join(' ; ') || 'à confirmer'} — ${p.resume}`
+    : `${balise} ${rejet ? 'REJECT' : 'VALIDATE'} — ${p.resume}`;
 
   const cree = await sql`
     with nxt as (
@@ -171,7 +191,7 @@ for (const r of dues) {
         console.log(`  + événement institutionnel (${inst.mesure}, ${inst.realisation}) — état judiciaire inchangé`);
       }
     }
-    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${revue === 'à corriger' ? ', réexamen planifié à +30 jours' : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : phrasePublication('candidate')}`);
+    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +30 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : phrasePublication('candidate')}`);
   }
 }
 console.log(`appliqué : ${creees} fiche(s) créée(s), ${rattachees} rattachement(s), ${notees} décision(s) consignée(s) sans écriture de fiche, ${refusees} refusée(s)`);

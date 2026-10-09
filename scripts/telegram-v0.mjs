@@ -16,7 +16,7 @@
 // VALIDATE n'écrit que state_proposals.decision. Aucune publication, ici ni ailleurs.
 // =====================================================================
 import { connecter } from './lib/neon.mjs';
-import { messageDecision, boutons } from './lib/discovery-messages.mjs';
+import { messageDecision, boutons, modeCreation } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel } from './lib/evenement-institutionnel.mjs';
@@ -219,6 +219,9 @@ async function nouvelle(cle) {
   if (r[0].payload?.attach && !(await schemaBoucle(sql)).action) {
     throw new Error('migration 019 non appliquée : message comparatif (RAPPROCHER / CRÉER) non envoyé');
   }
+  if (modeCreation(r[0].recommendation, r[0].payload || {}) === 'PENDING' && !(await schemaBoucle(sql)).pending) {
+    throw new Error('migration 020 non appliquée : bouton « CRÉER (preuves à compléter) » indisponible, message non envoyé');
+  }
   const mid = await envoyer(messageDecision(r[0].payload, r[0].recommendation), boutons(r[0].recommendation, k, r[0].payload));
   if (!process.env.SNY_DRY) await sql`insert into telegram_envois (kind, cle, message_id) values ('decision', ${r[0].pid}, ${mid}) on conflict do nothing`;
   return mid;
@@ -239,8 +242,12 @@ async function notifierNouvelles(max = 5) {
 }
 
 /** Accusé de réception : ce qui est enregistré, ce qui vient ensuite, et ce qui ne se fait JAMAIS tout seul (publier). */
-const SUITE = '\nÉtape suivante : application en base (automatique, au prochain passage). Publication : jamais automatique — en attente de ton GO.';
-const LIBELLE_ACTION = { VALIDATE: 'VALIDER', CREATE: 'CRÉER', ATTACH: 'RAPPROCHER', REVIEW: 'REVIEW (reporté)', REJECT: 'REJETER' };
+// « Décision exécutée » arrive dans un second message (appliquée / bloquée avec motif) ; la publication d'une NOUVELLE affaire reste
+// soumise à ton GO. Par webhook l'application suit dans la minute ; par relève périodique, au prochain passage.
+const SUITE = process.env.SNY_WEBHOOK === '1'
+  ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif. Nouvelle affaire : publication jamais automatique.'
+  : '\nÉtape suivante : application en base (au prochain passage). Nouvelle affaire : publication jamais automatique.';
+const LIBELLE_ACTION = { VALIDATE: 'VALIDER', CREATE: 'CRÉER', ATTACH: 'RAPPROCHER', PENDING: 'CRÉER (preuves à compléter)', REVIEW: 'REVIEW (mis de côté, rien créé)', REJECT: 'REJETER' };
 
 async function accuser(cb, texte) {
   // La décision est déjà en base : un accusé qui échoue (clic ancien traité en différé par le job périodique)
@@ -260,7 +267,7 @@ async function clicNouvelle(cb, d, cle) {
   }
   const S = await schemaBoucle(sql);
   // Avant la migration 019, seuls les boutons « historiques » existent : ATTACH sur un rapprochement, VALIDATE sur le reste.
-  const valable = S.action ? boutonValable(d, pr.payload) : (NC_VERS_DB[d] !== 'ACCEPT' || (pr.recommendation === 'ATTACH_EXISTING') === (d === 'ATTACH'));
+  const valable = d === 'PENDING' && !S.pending ? false : S.action ? boutonValable(d, pr.payload) : (NC_VERS_DB[d] !== 'ACCEPT' || (pr.recommendation === 'ATTACH_EXISTING') === (d === 'ATTACH'));
   if (!valable) {
     console.log(`bouton non valable pour ce message sur ${cle} : aucune écriture`);
     await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'Action non valable pour ce message.' }).catch(() => {});
@@ -419,7 +426,13 @@ async function recevoir() {
   let pending = null, bot = null, webhook = false;
   try { const w = await tg('getWebhookInfo'); pending = w.pending_update_count ?? null; webhook = !!w.url; } catch { /* diagnostic seulement */ }
   try { bot = (await tg('getMe')).username ?? null; } catch { /* idem */ }
-  if (webhook) console.log('ATTENTION : un webhook est actif sur ce bot — getUpdates ne reçoit rien tant qu’il l’est');
+  if (webhook) {
+    // EXCLUSIVITÉ Telegram : avec un webhook, getUpdates échoue (409) et deux consommateurs se voleraient les clics. Les clics
+    // arrivent alors par le webhook (sny-telegram.yml → `traiter`) : ce passage ne lit rien, il le dit et laisse une trace.
+    console.log('webhook actif : les clics arrivent par le webhook (aucune lecture getUpdates) · ' + (pending ?? '?') + ' en attente chez Telegram');
+    await journaliser(sql, { kind: 'passage', resultat: 'webhook_actif', details: { pending_avant: pending, bot, webhook: true } });
+    return;
+  }
 
   const ups = await tg('getUpdates', { timeout: 0, allowed_updates: ['callback_query'] });
   const traites = [];
@@ -442,6 +455,26 @@ async function recevoir() {
   const rejoues = traites.filter((t) => dernier == null || t.update_id > dernier).length; // non confirmés : Telegram les redonnera
   await journaliser(sql, { kind: 'passage', resultat: `recus=${ups.length} clics=${n}`, details: { pending_avant: pending, bot, webhook, recus: ups.length, clics: n, confirme_jusqua: dernier, a_rejouer: rejoues } });
   console.log(`recevoir : ${n} clic(s) traité(s)` + (pending != null ? ` · ${pending} en attente chez Telegram avant lecture` : '') + (rejoues ? ` · ${rejoues} à rejouer` : ''));
+}
+
+/**
+ * Un clic reçu PAR WEBHOOK (Cloudflare Worker → repository_dispatch → sny-telegram.yml). La mise à jour arrive dans
+ * UPDATE_JSON ; l'authenticité est déjà contrôlée par le Worker (secret_token de Telegram) ET re-contrôlée ici (clic() ne
+ * traite que l'éditeur, dans SON chat). IDEMPOTENT : une mise à jour déjà journalisée n'est jamais rejouée (Telegram ré-essaie
+ * un webhook qui n'a pas répondu 200) ; la clause « decision is null » garde en plus le second clic sur la même décision.
+ */
+async function traiter() {
+  let u;
+  try { u = JSON.parse(process.env.UPDATE_JSON || ''); } catch { throw new Error('UPDATE_JSON absent ou illisible'); }
+  const cb = u?.callback_query;
+  if (!Number.isInteger(u?.update_id) || !cb || typeof cb.data !== 'string' || cb.data.length > 64) throw new Error('mise à jour invalide : rien traité');
+  const S = await schemaBoucle(sql);
+  if (S.journal) {
+    const [deja] = await sql`select 1 x from telegram_journal where kind in ('clic', 'clic_ignore', 'test_recu') and update_id = ${u.update_id} limit 1`;
+    if (deja) { console.log('mise à jour déjà traitée : aucune action'); return; }
+  }
+  const issue = await clic(cb, u.update_id);
+  console.log(`traiter : issue ${issue}`);
 }
 
 /** Diagnostic en lecture seule : où en est la chaîne Telegram → SNY ? (aucun secret, aucun contenu éditorial) */
@@ -472,6 +505,7 @@ try {
   else if (cmd === 'notifier') await notifier(Number(arg) || 10);
   else if (cmd === 'notifier-nouvelles') await notifierNouvelles(Number(arg) || 5);
   else if (cmd === 'recevoir') await recevoir();
+  else if (cmd === 'traiter') await traiter();
   else if (cmd === 'test-clic') await testClic();
   else if (cmd === 'diagnostic') await diagnostic();
   else console.error('usage : info <cle> | decision <cle> | nouvelle <cle> | poll [s] | notifier [max] | notifier-nouvelles [max] | recevoir | test-clic | diagnostic');

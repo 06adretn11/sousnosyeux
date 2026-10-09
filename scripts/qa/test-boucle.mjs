@@ -17,6 +17,10 @@ import { detecterInstitutionnel, libelleInstitutionnel, categorieEvenement, real
 import { evenementDejaValide } from '../lib/routage-veille.mjs';
 import { messageDecision, boutons } from '../lib/discovery-messages.mjs';
 import { decoderCallback, boutonValable, dernierAConfirmer, essaisDe, NC_VERS_DB, ACTION_NC, VERS_DB, ESSAIS_MAX } from '../lib/telegram-clics.mjs';
+import { preuvesDe } from '../lib/preuves.mjs';
+import { ecartsSite } from '../lib/ecarts-site.mjs';
+import worker, { egal, DATA_RE } from '../../workers/telegram-webhook/worker.mjs';
+import { readFileSync } from 'node:fs';
 
 let ko = 0;
 const test = (nom, cond) => { console.log(`${cond ? '  ✓' : '  ✗'} ${nom}`); if (!cond) ko++; };
@@ -82,7 +86,7 @@ test('identifiant, établissement, lieu, état de l’affaire existante', m.incl
 test('indices pour ET contradictions / manques + niveau d’incertitude', /Pour :/.test(m) && /Contre \/ manquant/.test(m) && /Incertitude : élevée/.test(m));
 test('les trois décisions sont proposées : RAPPROCHER, CRÉER, REVIEW', ['RAPPROCHER', 'CRÉER', 'REVIEW'].every((s) => m.includes(s)));
 const bAttache = boutons('REVIEW', 'abcdef12', cenon).inline_keyboard;
-test('boutons : RAPPROCHER et CRÉER ensemble, REVIEW et REJECT en dessous', bAttache.length === 2 && bAttache[0][0].callback_data === 'sny:NC:ATTACH:abcdef12' && bAttache[0][1].callback_data === 'sny:NC:VALIDATE:abcdef12' && bAttache[1].length === 2);
+test('boutons (candidat de rattachement, signal à confirmer) : RAPPROCHER + CRÉER (preuves à compléter), REVIEW + REJECT en dessous', bAttache.length === 2 && bAttache[0][0].callback_data === 'sny:NC:ATTACH:abcdef12' && bAttache[0][1].callback_data === 'sny:NC:PENDING:abcdef12' && bAttache[1].length === 2);
 test('« RAPPROCHER » ne promet aucun changement d’état judiciaire', /état judiciaire n’est pas modifié/.test(m));
 const ancien = messageDecision({ ...cenon, attach: { ...cenon.attach, sources: [{ media: 'Le Parisien', url: 'https://exemple.test/lp', d: '2026-05-22' }] } }, 'ATTACH_EXISTING');
 test('message ancien (sans drapeau verifiee) : sources affichées telles quelles, « RAPPROCHEMENT PROPOSÉ »', ancien.includes('https://exemple.test/lp') && ancien.includes('RAPPROCHEMENT PROPOSÉ'));
@@ -174,6 +178,80 @@ test('autre affaire / autre état : jamais fusionnés', evenementDejaValide(EV, 
 const DEUX = [...EV, { case_id: 'FR-2026-0004', event_type: 'décision', event_date: '2026-09-16', statut_apres: COND }];
 test('deux faits validés de même état dans la fenêtre : on ne fusionne PAS (jamais deux faits distincts au seul motif de l’état)', evenementDejaValide(DEUX, 'FR-2026-0004', COND, null, '2026-09-17') === null);
 test('rejeu / retry : même entrée, même résultat (idempotent)', JSON.stringify(evenementDejaValide(EV, 'FR-2026-0004', COND, null, '2026-09-15')) === JSON.stringify(evenementDejaValide(EV, 'FR-2026-0004', COND, null, '2026-09-15')));
+
+// ---------------------------------------------------------------------
+section('7. contrat des boutons — sémantique fiable, contextuelle, sans effet secondaire');
+const doc = { fiche: { crit_recoupement: true, crit_etablissement_nomme: true, crit_statut_clair: true, crit_source_fiable: true, crit_article_recent: true } };
+const peu = { fiche: { crit_recoupement: false, crit_etablissement_nomme: false, crit_statut_clair: true } };
+const acts = (kb) => kb.inline_keyboard.flat().map((b) => decoderCallback(b.callback_data).action).sort().join(',');
+test('affaire bien documentée : VALIDATE / REVIEW / REJECT seulement', acts(boutons('NEW_CASE_CANDIDATE', 'abcdef12', doc)) === 'REJECT,REVIEW,VALIDATE');
+test('affaire à preuves insuffisantes : CRÉER (preuves à compléter) / REVIEW / REJECT — jamais VALIDATE', acts(boutons('NEW_CASE_CANDIDATE', 'abcdef12', peu)) === 'PENDING,REJECT,REVIEW');
+test('signal crédible mais à confirmer (REVIEW) : preuves à compléter, pas VALIDATE', acts(boutons('REVIEW', 'abcdef12', doc)) === 'PENDING,REJECT,REVIEW');
+test('candidat de rattachement, bien documenté : RAPPROCHER + CRÉER', acts(boutons('ATTACH_EXISTING', 'abcdef12', { ...doc, attach: { case_id: 'FR-2026-9901' } })) === 'ATTACH,REJECT,REVIEW,VALIDATE');
+test('candidat de rattachement, preuves insuffisantes : RAPPROCHER + CRÉER (preuves à compléter)', acts(boutons('ATTACH_EXISTING', 'abcdef12', { ...peu, attach: { case_id: 'FR-2026-9901' } })) === 'ATTACH,PENDING,REJECT,REVIEW');
+test('jamais toutes les actions à la fois', ['NEW_CASE_CANDIDATE', 'REVIEW', 'ATTACH_EXISTING'].every((r) => [doc, peu, { ...doc, attach: { case_id: 'x' } }].every((p) => boutons(r, 'abcdef12', p).inline_keyboard.flat().length <= 4)));
+test('CREATE_PENDING_EVIDENCE : décodé, enregistre ACCEPT + action CREATE_PENDING, exige une fiche', decoderCallback('sny:NC:PENDING:abcdef12')?.action === 'PENDING' && NC_VERS_DB.PENDING === 'ACCEPT' && ACTION_NC.PENDING === 'CREATE_PENDING' && boutonValable('PENDING', doc) && !boutonValable('PENDING', {}));
+test('REVIEW (HOLD) n’enregistre AUCUNE action de création ou de rattachement', NC_VERS_DB.REVIEW === 'REVIEW_REQUIRED' && ACTION_NC.REVIEW === null && ACTION_NC.REJECT === null);
+test('tous les callbacks produits sont acceptés par le Worker (et seulement eux)', [doc, peu, { ...doc, attach: { case_id: 'x' } }].flatMap((p) => ['NEW_CASE_CANDIDATE', 'REVIEW', 'ATTACH_EXISTING'].flatMap((r) => boutons(r, 'abcdef12', p).inline_keyboard.flat())).every((b) => DATA_RE.test(b.callback_data))
+  && !DATA_RE.test('sny:NC:DELETE:abcdef12') && !DATA_RE.test('sny:VALIDATE:abcdef12;drop') && DATA_RE.test('sny:TEST:0a1b2c3d'));
+const pd = preuvesDe(peu);
+test('ce qui manque est identifié précisément (recoupement, établissement)', !pd.suffisantes && pd.manques.length === 2 && /recoupement/.test(pd.manques[0]) && /établissement/.test(pd.manques[1]));
+test('preuves complètes : aucun manque', preuvesDe(doc).suffisantes);
+const un = { fiche: { ...doc.fiche, crit_etablissement_nomme: false } };
+test('SEUIL EXISTANT (fiabilité ≥ 8, au plus un critère en défaut) : établissement non nommé seul = suffisant, la réserve est dite', preuvesDe(un).suffisantes && preuvesDe(un).fiabilite === 8 && preuvesDe(un).manques.length === 1 && acts(boutons('NEW_CASE_CANDIDATE', 'abcdef12', un)) === 'REJECT,REVIEW,VALIDATE');
+test('deux critères en défaut (fiabilité 6) = insuffisant', preuvesDe(peu).fiabilite === 6 && !preuvesDe(peu).suffisantes);
+test('la ligne de recommandation ne dit JAMAIS « VALIDATE » sous un bouton « preuves à compléter »', !/→ VALIDATE/.test(messageDecision({ ...peu, commune: 'Valmont', structure: 'périscolaire', resume: 'Selon la presse, une enquête est ouverte.', dernier_evenement: '2026-10-01', articles: [{ media: 'A', url: 'https://exemple.test/a' }], independantes: 2 }, 'NEW_CASE_CANDIDATE')));
+const mp = messageDecision({ ...peu, commune: 'Valmont', etablissement: null, structure: 'périscolaire', resume: 'Selon la presse, une enquête est ouverte.', dernier_evenement: '2026-10-01', articles: [{ media: 'A', url: 'https://exemple.test/a' }], independantes: 1 }, 'REVIEW');
+test('le message dit ce qui manque et que la candidate sera non publiable', /recoupement insuffisant/.test(mp) && /ne sera pas publiable/.test(mp));
+test('rapprochement : une même date citée par les deux jeux de sources = preuve discriminante (forte)', forceRapprochement({ geo: { niveau: 'ok' }, resolution: 'POSSIBLE_MATCH', memeDepeche: false, datesCommunes: ['2027-02-22'] }).force === 'forte');
+test('… mais jamais si la géographie est faible ou bloquante', forceRapprochement({ geo: { niveau: 'faible', raison: 'x' }, resolution: 'POSSIBLE_MATCH', datesCommunes: ['2027-02-22'] }).force === 'faible' && forceRapprochement({ geo: { niveau: 'bloquant', raison: 'x' }, resolution: 'MATCH', datesCommunes: ['2027-02-22'] }).force === 'aucune');
+
+section('8. Worker de réception (webhook Telegram) — authenticité, accusé immédiat honnête, aucun accès base');
+const ENV = { TELEGRAM_BOT_TOKEN: 'jeton-test', TELEGRAM_WEBHOOK_SECRET: 'secret-webhook-test', TELEGRAM_ALLOWED_USER_ID: '4242', GITHUB_TOKEN: 'gh-test', GITHUB_REPO: 'org/depot' };
+const clic = (over = {}) => ({ update_id: 7001, callback_query: { id: 'cb1', data: 'sny:VALIDATE:abcdef12', from: { id: 4242 }, message: { message_id: 9, chat: { id: 4242 } }, ...over } });
+const requete = (corps, secret = ENV.TELEGRAM_WEBHOOK_SECRET, methode = 'POST') => new Request('https://w.test/', { method: methode, headers: { 'X-Telegram-Bot-Api-Secret-Token': secret ?? '' }, body: methode === 'POST' ? JSON.stringify(corps) : undefined });
+const faux = (githubStatus = 204) => { const appels = []; const f = async (url, opts) => { appels.push({ url: String(url), body: opts?.body }); return new Response(null, { status: String(url).includes('api.github.com') ? githubStatus : 200 }); }; f.appels = appels; return f; };
+{
+  let f = faux(); let r = await worker.fetch(requete(clic(), 'mauvais-secret'), ENV, null, f);
+  test('mauvais secret : 403, RIEN n’est appelé', r.status === 403 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(requete(clic(), ''), ENV, null, f);
+  test('secret absent : 403, rien n’est appelé', r.status === 403 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(requete(clic({ from: { id: 999 } })), ENV, null, f);
+  test('clic d’un autre utilisateur : ignoré (200), rien n’est appelé', r.status === 200 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(requete(clic({ message: { message_id: 9, chat: { id: 999 } } })), ENV, null, f);
+  test('clic dans un autre chat : ignoré, rien n’est appelé', r.status === 200 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(requete(clic({ data: 'sny:NC:DROP:abcdef12' })), ENV, null, f);
+  test('données de bouton invalides : ignoré, rien n’est appelé', r.status === 200 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(requete({ update_id: 1, message: { text: 'bonjour' } }), ENV, null, f);
+  test('mise à jour qui n’est pas un clic : ignorée', r.status === 200 && f.appels.length === 0);
+  f = faux(); r = await worker.fetch(new Request('https://w.test/', { method: 'POST', headers: { 'X-Telegram-Bot-Api-Secret-Token': ENV.TELEGRAM_WEBHOOK_SECRET }, body: 'x'.repeat(9000) }), ENV, null, f);
+  test('corps trop gros : 413', r.status === 413 && f.appels.length === 0);
+  f = faux(204); r = await worker.fetch(requete(clic()), ENV, null, f);
+  const gh = f.appels.find((a) => a.url.includes('api.github.com')); const tg = f.appels.find((a) => a.url.includes('answerCallbackQuery'));
+  test('clic valide : déclenche le workflow sny-telegram du bon dépôt', r.status === 200 && gh && gh.url.endsWith('/repos/org/depot/actions/workflows/sny-telegram.yml/dispatches'));
+  test('… puis accusé IMMÉDIAT « Décision reçue » (avant toute écriture en base)', tg && /Décision reçue/.test(JSON.parse(tg.body).text) && f.appels.indexOf(gh) < f.appels.indexOf(tg));
+  test('… la mise à jour transmise ne contient que le nécessaire (pas de texte, pas de profil)', (() => { const u = JSON.parse(JSON.parse(gh.body).inputs.update); return u.update_id === 7001 && u.callback_query.data === 'sny:VALIDATE:abcdef12' && !('username' in u.callback_query.from) && Object.keys(u.callback_query.message).sort().join() === 'chat,message_id'; })());
+  f = faux(500); r = await worker.fetch(requete(clic()), ENV, null, f);
+  const tg2 = f.appels.find((a) => a.url.includes('answerCallbackQuery'));
+  test('transmission en échec : 500 (Telegram réessaiera) et accusé « Non transmise » — jamais un faux « reçue »', r.status === 500 && /Non transmise/.test(JSON.parse(tg2.body).text) && !/reçue/.test(JSON.parse(tg2.body).text));
+  r = await worker.fetch(requete(null, '', 'GET'), ENV, null, faux());
+  test('une requête GET ne déclenche rien', r.status === 200);
+}
+test('comparaison du secret en temps constant : égal / différent / longueurs différentes / vide', egal('abc', 'abc') && !egal('abc', 'abd') && !egal('abc', 'abcd') && !egal('', '') && !egal(undefined, 'x'));
+const srcWorker = readFileSync(new URL('../../workers/telegram-webhook/worker.mjs', import.meta.url), 'utf8');
+test('le Worker n’a AUCUN accès à la base (ni NEON, ni driver, ni SQL)', !/NEON|neondatabase|\bsql\b|postgres/i.test(srcWorker.replace(/\/\/.*$/gm, '')));
+const wfTel = readFileSync(new URL('../../.github/workflows/sny-telegram.yml', import.meta.url), 'utf8');
+test('workflow webhook : l’entrée utilisateur ne passe JAMAIS dans un `run:` (injection) — seulement par env', !/run:[^\n]*\$\{\{\s*inputs\./.test(wfTel) && /UPDATE_JSON: \$\{\{ inputs\.update \}\}/.test(wfTel));
+test('workflow webhook : même groupe de concurrence que les autres (un seul consommateur à la fois)', /group: sny-telegram/.test(wfTel));
+
+section('9. vérification indépendante du site public');
+const attenduSite = new Map([['FR-2026-9910', { case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}, {}] }]]);
+const pageSite = (cas) => `<html><body><script type="application/json" id="cases-data">${JSON.stringify(cas)}</script></body></html>`;
+test('site conforme : aucun écart', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}, {}] }]), ['FR-2026-9910'], attenduSite).length === 0);
+test('site en retard (ancien état) : écart signalé', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'plainte', sources: [{}, {}] }]), ['FR-2026-9910'], attenduSite).length === 1);
+test('affaire absente du site : écart signalé', ecartsSite(pageSite([]), ['FR-2026-9910'], attenduSite)[0].includes('absente du site'));
+test('sources manquantes : écart signalé', ecartsSite(pageSite([{ case_id: 'FR-2026-9910', statut_judiciaire: 'enquête', sources: [{}] }]), ['FR-2026-9910'], attenduSite).length === 1);
+test('page sans JSON public : écart (jamais « conforme » par défaut)', ecartsSite('<html></html>', ['FR-2026-9910'], attenduSite).length === 1);
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ tous les tests passent');
 process.exit(ko ? 1 : 0);

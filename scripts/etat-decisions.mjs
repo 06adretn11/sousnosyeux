@@ -56,6 +56,7 @@ const sp = await sql`
 for (const p of sp) {
   const l = { cle: p.k, type: 'maintenance', affaire: p.case_id, objet: p.ap ? `${p.av} → ${p.ap}` : 'événement institutionnel', choix: p.decision || '—' };
   if (!p.decision) { l.etat = 'EN ATTENTE'; l.detail = 'demande envoyée, aucun clic enregistré'; }
+  else if (p.decision === 'REVIEW_REQUIRED') { l.etat = 'HOLD'; l.detail = 'mis de côté : aucune écriture, intervention humaine ultérieure'; }
   else if (p.decision !== 'ACCEPT') { l.etat = 'APPLIQUÉE (consignée)'; l.detail = `${p.decision} : aucune écriture attendue sur la fiche`; }
   else if (p.applied_event_id) { l.etat = 'APPLIQUÉE'; l.detail = 'événement écrit / rattaché'; }
   else {
@@ -88,7 +89,8 @@ for (const n of nc) {
   const action = n.decision === 'ACCEPT' ? (actions.get(n.k) ?? (n.recommendation === 'ATTACH_EXISTING' ? 'ATTACH' : 'CREATE')) : null;
   const l = { cle: n.k, type: 'discovery', affaire: n.created_case_id || n.attach_case_id || `${p.commune}`, objet: p.attach ? 'rapprochement / création' : 'nouvelle affaire', choix: n.decision ? `${n.decision}${action ? ' · ' + action : ''}` : '—' };
   if (!n.decision) { l.etat = 'EN ATTENTE'; l.detail = 'demande envoyée, aucun clic enregistré'; }
-  else if (n.applied_at) { l.etat = 'APPLIQUÉE'; l.detail = n.created_case_id ? `fiche ${n.created_case_id} créée` : action === 'ATTACH' ? 'sources rattachées' : 'décision consignée (aucune écriture de fiche)'; }
+  else if (n.decision === 'REVIEW_REQUIRED') { l.etat = 'HOLD'; l.detail = 'mis de côté : ni création ni rattachement, intervention humaine ultérieure'; }
+  else if (n.applied_at) { l.etat = 'APPLIQUÉE'; l.detail = n.created_case_id ? `fiche ${n.created_case_id} créée${action === 'CREATE_PENDING' ? ' EN ATTENTE DE PREUVES (non publiable)' : ''}` : action === 'ATTACH' ? 'sources rattachées' : 'décision consignée (aucune écriture de fiche)'; }
   else if (action === 'ATTACH') {
     const [kc] = await sql`select commune, departement from cases where case_id = ${n.attach_case_id || p.attach?.case_id}`;
     const geo = kc ? niveauGeo({ commune: p.commune, departement: p.fiche?.departement }, { commune: kc.commune, departement: kc.departement }) : { niveau: 'bloquant', raison: 'affaire cible introuvable' };
@@ -107,5 +109,5 @@ for (const l of lignes) {
   console.log(`          publication : ${l.publication}`);
 }
 const n = (e) => lignes.filter((l) => l.etat.startsWith(e)).length;
-console.log(`\n${n('EN ATTENTE')} en attente · ${n('ENREGISTRÉE')} enregistrée(s) à appliquer · ${n('APPLIQUÉE')} appliquée(s) · ${n('BLOQUÉE')} bloquée(s)\n`);
+console.log(`\n${n('EN ATTENTE')} en attente · ${n('ENREGISTRÉE')} enregistrée(s) à appliquer · ${n('APPLIQUÉE')} appliquée(s) · ${n('BLOQUÉE')} bloquée(s) · ${n('HOLD')} en HOLD\n`);
 process.exit(0);

@@ -7,6 +7,7 @@
 // Règles : liens éditeur DIRECTS obligatoires, 1 à 3 articles, pas de longue citation, aucun détail technique.
 // Les liens sont écrits en clair (aperçu désactivé à l'envoi) : un lien non cliquable reste copiable.
 // =====================================================================
+import { preuvesDe } from './preuves.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const jj = (d) => (d ? String(d).slice(0, 10).split('-').reverse().join('/') : 'date inconnue');
@@ -32,9 +33,11 @@ export function messageDecision(p, recommendation) {
     ? 'SNY : aucune correspondance dans la base.' + (matches.length ? `\n(${matches.length} autre(s) affaire(s) SNY dans la commune, autre(s) établissement(s) : ${matches.map((v) => v.case_id).join(', ')}.)` : '')
       + (p.rapprochement_ecarte ? `\nℹ Rapprochement avec ${esc(p.rapprochement_ecarte.case_id)} écarté : ${esc(cut(p.rapprochement_ecarte.raison, 140))}.` : '')
     : `SNY : correspondance à vérifier${matches.length ? ' — ' + matches.map((v) => v.case_id).join(', ') : ''}.`;
-  const reco = recommendation === 'NEW_CASE_CANDIDATE'
-    ? `→ VALIDATE : ${p.independantes || p.medias} sources indépendantes recoupent les faits.`
-    : '→ REVIEW : signal crédible, matière à confirmer avant de valider ou rejeter.';
+  // La ligne de recommandation dit EXACTEMENT ce que le bouton proposé fera (modeCreation) : jamais « VALIDATE » sous un bouton « preuves à compléter ».
+  const pending = modeCreation(recommendation, p) === 'PENDING';
+  const reco = !pending
+    ? `→ VALIDATE : ${p.independantes || p.medias} sources indépendantes recoupent les faits${preuvesDe(p).manques.length ? ` (réserve : ${preuvesDe(p).manques.join(' ; ')})` : ''}.`
+    : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent. REVIEW : mettre de côté sans rien créer.`;
   return [
     `🆕 <b>DISCOVERY</b> · AFFAIRE POTENTIELLE · ${esc(p.commune)}`,
     '',
@@ -91,25 +94,35 @@ export function messageRapprochement(p, recommendation) {
     '',
     '<b>DÉCISION</b>',
     `🔗 RAPPROCHER : ajouter ces articles aux sources de l’affaire existante (son état judiciaire n’est pas modifié)${p.institutionnel ? ' et consigner l’événement institutionnel signalé' : ''}.`,
-    '🆕 CRÉER : ouvrir une nouvelle affaire (candidate, non publiée).',
-    '🟡 REVIEW : reporter · ⛔ REJECT : écarter.',
+    modeCreation(recommendation, p) === 'PENDING'
+      ? `⏳ CRÉER (preuves à compléter) : nouvelle affaire distincte, candidate NON publiable — manque : ${preuvesDe(p, recommendation).manques.join(' ; ') || 'à confirmer'}.`
+      : '🆕 CRÉER : nouvelle affaire distincte (candidate, non publiée).',
+    '🟡 REVIEW : mettre de côté, sans rien créer ni rattacher · ⛔ REJECT : écarter cette proposition.',
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
+/** Bouton de création proposé : CRÉER si l'affaire est suffisamment documentée, sinon CRÉER (preuves à compléter). */
+export function modeCreation(recommendation, payload) {
+  return recommendation === 'REVIEW' || !preuvesDe(payload).suffisantes ? 'PENDING' : 'CREATE';
+}
+
 /**
- * Boutons : `NC` = nouvelle-affaire (new_case_proposals). Un candidat de rattachement ⇒ RAPPROCHER et CRÉER sont offerts
- * ensemble (l'humain tranche) ; sinon VALIDATE seul, comme avant. Callbacks inchangés : sny:NC:<ACTION>:<clé>.
+ * Boutons CONTEXTUELS (`NC` = nouvelle-affaire, new_case_proposals). Callbacks : sny:NC:<ACTION>:<clé>.
+ *   candidat de rattachement   RAPPROCHER + (CRÉER | CRÉER-EN-ATTENTE-DE-PREUVES)  / REVIEW · REJECT
+ *   sinon, bien documentée     VALIDATE                                             / REVIEW · REJECT
+ *   sinon, preuves à compléter CRÉER (preuves à compléter)                          / REVIEW · REJECT
+ * REVIEW = HOLD : n'écrit rien. Jamais toutes les actions à la fois.
  */
 export function boutons(recommendation, cle, payload = null) {
   const r2 = [
     { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` },
     { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` },
   ];
+  const creer = modeCreation(recommendation, payload || {}) === 'PENDING'
+    ? { text: '⏳ CRÉER (preuves à compléter)', callback_data: `sny:NC:PENDING:${cle}` }
+    : { text: payload?.attach ? '🆕 CRÉER' : '✅ VALIDATE', callback_data: `sny:NC:VALIDATE:${cle}` };
   if (payload ? !!payload.attach : recommendation === 'ATTACH_EXISTING') {
-    return { inline_keyboard: [
-      [{ text: '🔗 RAPPROCHER', callback_data: `sny:NC:ATTACH:${cle}` }, { text: '🆕 CRÉER', callback_data: `sny:NC:VALIDATE:${cle}` }],
-      r2,
-    ] };
+    return { inline_keyboard: [[{ text: '🔗 RAPPROCHER', callback_data: `sny:NC:ATTACH:${cle}` }, creer], r2] };
   }
-  return { inline_keyboard: [[{ text: '✅ VALIDATE', callback_data: `sny:NC:VALIDATE:${cle}` }, ...r2]] };
+  return { inline_keyboard: [[creer, ...r2]] };
 }

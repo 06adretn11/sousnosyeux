@@ -1,15 +1,17 @@
-# SNY — récupération des clics Telegram + apply, toutes les 30 min (sans veille ni modèle ni coût : quelques secondes).
-# Ce n'est PAS un run Discovery/Maintenance : il ne fait que traiter une décision déjà prise par Adrien.
-# Avec le webhook actif (Worker `sny-telegram`), les clics arrivent par sny-telegram.yml : ce passage ne lit plus getUpdates
-# (`recevoir` le détecte) et sert de FILET DE SÉCURITÉ — il applique et projette toute décision déjà enregistrée.
-name: sny-clics
+# SNY — clic Telegram reçu PAR WEBHOOK (Worker Cloudflare `sny-telegram`) : enregistrer, appliquer, projeter, vérifier, confirmer.
+# Déclenché UNIQUEMENT par le Worker (authentifié par le secret du webhook Telegram). Réutilise les scripts existants.
+# sny-clics reste en filet de sécurité (application des décisions déjà enregistrées) ; il ne lit plus getUpdates quand le webhook est actif.
+name: sny-telegram
 
 on:
-  schedule:
-    - cron: '7,37 * * * *'
   workflow_dispatch:
+    inputs:
+      update:
+        description: "Mise à jour Telegram (JSON) émise par le Worker authentifié"
+        required: true
+        type: string
 
-# contents: write — seulement pour la projection publique d'une affaire DÉJÀ publiée, après QA (étapes finales ; sans effet si rien à projeter).
+# contents: write — seulement pour la projection publique d'une affaire DÉJÀ publiée (étape finale, après QA).
 permissions:
   contents: write
 
@@ -18,13 +20,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  clics:
+  clic:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+      SNY_WEBHOOK: '1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -32,19 +35,21 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - name: Recevoir les clics Telegram
-        run: node scripts/telegram-v0.mjs recevoir
-      - name: Appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
+      - name: 1. Enregistrer le clic (idempotent)
+        env:
+          UPDATE_JSON: ${{ inputs.update }}
+        run: node scripts/telegram-v0.mjs traiter
+      - name: 2. Appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
         run: node scripts/appliquer-decisions.mjs --generique
-      - name: Appliquer les décisions Discovery à Neon (jamais de publication)
+      - name: 3. Appliquer les décisions Discovery à Neon (jamais de publication)
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
-      - name: Projeter les évolutions validées d'affaires DÉJÀ publiques
+      - name: 4. Projeter les évolutions validées d'affaires DÉJÀ publiques
         id: projection
         run: node scripts/publier-evolutions.mjs
-      - name: QA avant toute publication
+      - name: 5. QA avant toute publication
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: node scripts/qa/run-all.mjs
-      - name: Publier la projection (commit sur main → build Cloudflare existant)
+      - name: 6. Publier la projection (commit sur main → build Cloudflare existant)
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: |
           git config user.name "sny-bot"
@@ -52,6 +57,6 @@ jobs:
           git add data/cases.json
           git commit -m "publication: évolution validée par l'éditeur (${{ steps.projection.outputs.ids }})"
           git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
-      - name: Vérifier le site public et confirmer sur Telegram
+      - name: 7. Vérifier le site public et confirmer sur Telegram
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: node scripts/verifier-site.mjs ${{ steps.projection.outputs.ids }}

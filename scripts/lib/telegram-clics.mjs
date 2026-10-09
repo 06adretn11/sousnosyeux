@@ -13,10 +13,12 @@
 export const VERS_DB = Object.freeze({ VALIDATE: 'ACCEPT', REVIEW: 'REVIEW_REQUIRED', REJECT: 'REJECT' });
 // Discovery : VALIDATE (nouvelle affaire) = CREATE (ancien nom, conservé pour ne casser aucun bouton déjà envoyé) ;
 // ATTACH (rapprochement). Le CHOIX est enregistré dans `action` : ce qu'un humain a décidé ne se déduit pas de la recommandation.
-export const NC_VERS_DB = Object.freeze({ VALIDATE: 'ACCEPT', CREATE: 'ACCEPT', ATTACH: 'ACCEPT', REVIEW: 'REVIEW_REQUIRED', REJECT: 'REJECT' });
-export const ACTION_NC = Object.freeze({ VALIDATE: 'CREATE', CREATE: 'CREATE', ATTACH: 'ATTACH', REVIEW: null, REJECT: null });
+// PENDING = CREATE_PENDING_EVIDENCE : nouvelle affaire crédible mais preuves insuffisantes → candidate EXPLICITEMENT non publiable
+// (revue « à corriger », jamais « validé »), avec ce qui manque. REVIEW = HOLD : n'écrit JAMAIS une fiche ni un rattachement.
+export const NC_VERS_DB = Object.freeze({ VALIDATE: 'ACCEPT', CREATE: 'ACCEPT', ATTACH: 'ACCEPT', PENDING: 'ACCEPT', REVIEW: 'REVIEW_REQUIRED', REJECT: 'REJECT' });
+export const ACTION_NC = Object.freeze({ VALIDATE: 'CREATE', CREATE: 'CREATE', ATTACH: 'ATTACH', PENDING: 'CREATE_PENDING', REVIEW: null, REJECT: null });
 
-const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|REVIEW|REJECT):([0-9a-f]{8})$/;
+const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_ETAT = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_TEST = /^sny:TEST:([0-9a-f]{8})$/;
 
@@ -38,7 +40,7 @@ export function decoderCallback(data) {
 export function boutonValable(action, payload) {
   if (action === 'REVIEW' || action === 'REJECT') return true;
   if (action === 'ATTACH') return !!payload?.attach?.case_id;
-  if (action === 'VALIDATE' || action === 'CREATE') return !!payload?.fiche;
+  if (action === 'VALIDATE' || action === 'CREATE' || action === 'PENDING') return !!payload?.fiche;
   return false;
 }
 
@@ -71,12 +73,15 @@ export async function schemaBoucle(sql) {
     const t = await sql`select table_name from information_schema.tables where table_schema = 'public' and table_name = 'telegram_journal'`;
     const c = await sql`select table_name, column_name from information_schema.columns where table_schema = 'public'
                           and ((table_name = 'new_case_proposals' and column_name = 'action') or (table_name = 'case_events' and column_name = 'realisation'))`;
+    // migration 020 : la contrainte de `action` admet-elle CREATE_PENDING ?
+    const k = await sql`select pg_get_constraintdef(oid) d from pg_constraint where conname = 'new_case_proposals_action_check'`;
     _schema = {
       journal: t.length > 0,
       action: c.some((x) => x.table_name === 'new_case_proposals'),
       realisation: c.some((x) => x.table_name === 'case_events'),
+      pending: k.some((x) => /CREATE_PENDING/.test(x.d)),
     };
-  } catch { _schema = { journal: false, action: false, realisation: false }; }
+  } catch { _schema = { journal: false, action: false, realisation: false, pending: false }; }
   return _schema;
 }
 
