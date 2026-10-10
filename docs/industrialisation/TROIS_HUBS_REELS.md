@@ -21,7 +21,7 @@ Le build par défaut (Cloudflare) ne produit aucune de ces pages. `scripts/qa/ch
 |---|---|---|
 | `data/cases.json` | fiches publiques (artefact compilé depuis Neon) | oui |
 | `data/hub-matiere/<hub>.json` | matière éditoriale sur affaires PUBLIQUES (déroulé daté, réponses, inconnues) | oui |
-| `data/hub-prive/<hub>.json` | matière sur affaires VALIDÉES/CANDIDATES non publiées (Cenon, Somme) | **ignoré** (dépôt public) |
+| `data/hub-prive/<hub>.json` | matière sur affaires VALIDÉES/CANDIDATES non publiées (affaires validées ou candidates, non publiées) | **ignoré** (dépôt public) |
 
 Toute entrée : `{date, date_nature (evenement|approximative|article|inconnue), type, acteur, texte, source{media,url,publie_le,acces}}`.
 Seule `evenement` affiche une date comme date d'événement.
