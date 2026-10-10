@@ -1,0 +1,97 @@
+---
+// Fiche d'affaire des prévisualisations territoriales.
+// Réutilise le wording partagé avec la home (etat-wording) : une seule
+// façon de dire l'état judiciaire.
+import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
+import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre } from '../lib/territoires';
+
+interface Props { c: any; detail?: boolean }
+const { c, detail = false } = Astro.props;
+
+const sourcesLibres = (c.sources ?? []).filter((s: any) => libre(s.media));
+const principale = sourcesLibres[0]
+  ? { media: sourcesLibres[0].media, date: sourcesLibres[0].publication_date ?? null, url: sourcesLibres[0].url ?? null }
+  : null;
+const phrases = phrasesEtat(c.statut_judiciaire, c.etat ?? null, sourceAffichee(c.etat ?? null, principale));
+const appel = (c.etat?.suites ?? []).includes('APPEL_EN_COURS');
+const cat = statutCat(statutCourant(c));
+const der = derniereSource(c);
+const fmt = (d: string | null) => (d ? dateLongue(d) : 'date non précisée');
+
+// Sources de l'état validé d'abord (sans doublon d'URL), puis sources de la fiche.
+const vues = new Set<string>();
+const liens: { media: string; date: string | null; url: string | null; etat: boolean }[] = [];
+for (const s of c.etat?.sources ?? []) {
+  const k = s.url ?? `${s.media}|${s.date}`;
+  if (!vues.has(k)) { vues.add(k); liens.push({ media: s.media, date: s.date ?? null, url: s.url ?? null, etat: true }); }
+}
+for (const s of sourcesLibres) {
+  if (!vues.has(s.url)) { vues.add(s.url); liens.push({ media: s.media, date: s.publication_date ?? null, url: s.url, etat: false }); }
+}
+---
+
+<article class={`fiche ${cat}`} id={c.case_id.toLowerCase()} data-statut={statutCourant(c)}>
+  <h3>{c.etablissement}</h3>
+  <p class="meta">{c.type_structure} · {c.commune}</p>
+
+  <div class="chips">
+    <span class={`chip ${cat}`}>{STATUT_LABELS[statutCourant(c)] ?? statutCourant(c)}</span>
+    {appel && <span class="chip appel">Appel en cours — décision non définitive</span>}
+    <span class="chip muted">faits {c.statut_des_faits === 'allégué' ? 'allégués' : c.statut_des_faits}</span>
+  </div>
+
+  {phrases.map((l: string) => <p class="etat">{l}</p>)}
+
+  <p class="fraicheur">
+    {c.etat
+      ? <>État validé · {c.etat.date ? `événement du ${fmt(c.etat.date)}` : 'date de l’événement non établie'}.</>
+      : <>Date de l’événement non établie.</>}
+    {der && <> Dernière source connue : {der.media}, publiée le {fmt(der.date)}{' '}<em>(la date de parution n’est pas la date des faits ni de la décision)</em>.</>}
+  </p>
+
+  {detail && (
+    <dl class="detail">
+      <dt>Nature rapportée</dt><dd>{c.type_affaire}</dd>
+      <dt>Enfants concernés</dt><dd>{c.enfants_concernes_public}</dd>
+    </dl>
+  )}
+
+  <p class="sources">
+    <span class="lbl">Sources</span>
+    {liens.map((s, i) => (
+      <>
+        {i > 0 && <span aria-hidden="true"> · </span>}
+        {s.url
+          ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${fmt(s.date)}` : ' (non datée)'} ↗</a>
+          : <span class="sans-lien">{s.media}{s.date ? `, ${fmt(s.date)}` : ''} — lien non conservé</span>}
+      </>
+    ))}
+  </p>
+</article>
+
+<style>
+  .fiche { position: relative; padding: 1.1rem 1.2rem 1rem 1.4rem; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 3px; scroll-margin-top: 80px; }
+  .fiche::before { content: ""; position: absolute; inset: 14px auto 14px 0; width: 3px; background: var(--c, var(--blue)); }
+  .fiche.red { --c: var(--red); } .fiche.blue { --c: var(--blue); }
+  .fiche.orange { --c: var(--orange); } .fiche.green { --c: var(--green); }
+  .fiche:target { outline: 2px solid var(--blue); outline-offset: 2px; }
+  h3 { margin: 0; font-size: 1.02rem; line-height: 1.25; }
+  .meta { margin: 2px 0 8px; color: var(--muted); font-size: 0.8rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip { padding: 3px 7px; font: 0.68rem var(--mono); background: #eef2f5; color: #3f5c6c; }
+  .chip.red { background: var(--red-bg); color: #9b1c28; }
+  .chip.blue { background: var(--blue-bg); color: #1e4a6b; }
+  .chip.orange { background: var(--orange-bg); color: #92500a; }
+  .chip.green { background: var(--green-bg); color: #1b4d38; }
+  .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); }
+  .chip.muted { background: #f4f4f2; color: #6b7280; }
+  .etat { margin: 0 0 6px; font-size: 0.92rem; color: #2a2a2d; }
+  .fraicheur { margin: 6px 0 8px; font-size: 0.76rem; color: var(--muted); }
+  .fraicheur em { font-style: italic; }
+  .detail { display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; margin: 8px 0; font-size: 0.82rem; }
+  .detail dt { color: var(--muted); } .detail dd { margin: 0; }
+  .sources { margin: 0; font-size: 0.78rem; line-height: 1.6; }
+  .sources .lbl { font: 0.66rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-right: 8px; }
+  .sans-lien { color: var(--muted); }
+</style>

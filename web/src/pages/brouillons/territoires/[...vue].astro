@@ -1,0 +1,79 @@
+---
+// =====================================================================
+// Prévisualisations « 3 hubs réels » — Paris 11e · Bordeaux/Gironde · Somme.
+//
+// ⛔ Même garde que les brouillons de hub : aucune page dans le build par
+//    défaut (celui déployé sur Cloudflare). Elles n'existent que via
+//    `npm run build:drafts` (SNY_DRAFTS=1), en noindex, sans lien depuis
+//    le site public.
+//
+// Une seule route pour trois expériences volontairement différentes : le
+// contenu de chaque vue vit dans son composant (components/territoires/).
+// =====================================================================
+import Layout from '../../../layouts/Layout.astro';
+import Index from '../../../components/territoires/Index.astro';
+import Paris11e from '../../../components/territoires/Paris11e.astro';
+import Bordeaux from '../../../components/territoires/Bordeaux.astro';
+import Somme from '../../../components/territoires/Somme.astro';
+
+export function getStaticPaths() {
+  const enabled = import.meta.env.SNY_DRAFTS === '1' || process.env.SNY_DRAFTS === '1';
+  if (!enabled) return [];
+  return [
+    { params: { vue: undefined }, props: { vue: 'index' } },
+    { params: { vue: 'paris-11e' }, props: { vue: 'paris-11e' } },
+    { params: { vue: 'bordeaux-gironde' }, props: { vue: 'bordeaux-gironde' } },
+    { params: { vue: 'somme' }, props: { vue: 'somme' } },
+  ];
+}
+
+const { vue } = Astro.props as { vue: string };
+const titres: Record<string, string> = {
+  'index': 'Trois territoires',
+  'paris-11e': 'Paris 11e',
+  'bordeaux-gironde': 'Bordeaux / Gironde',
+  'somme': 'Somme',
+};
+---
+
+<Layout
+  title={`[PRÉVISUALISATION] ${titres[vue]} — sousnosyeux`}
+  description="Prévisualisation non publiée d'une expérience territoriale."
+  noindex
+>
+  <div class="apercu">
+    <strong>PRÉVISUALISATION — NON PUBLIÉE</strong>
+    <span>noindex · hors build public · données : artefact public data/cases.json</span>
+    <nav>
+      <a href="/brouillons/territoires">Les trois</a>
+      <a href="/brouillons/territoires/paris-11e">Paris 11e</a>
+      <a href="/brouillons/territoires/bordeaux-gironde">Bordeaux / Gironde</a>
+      <a href="/brouillons/territoires/somme">Somme</a>
+    </nav>
+  </div>
+  {vue === 'index' && <Index />}
+  {vue === 'paris-11e' && <Paris11e />}
+  {vue === 'bordeaux-gironde' && <Bordeaux />}
+  {vue === 'somme' && <Somme />}
+</Layout>
+
+<style is:global>
+  .apercu { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; padding: 8px 20px;
+    background: #2b0a10; color: #ffd9e0; border-bottom: 3px solid var(--red);
+    font: 0.72rem/1.5 var(--mono); letter-spacing: 0.03em; }
+  .apercu strong { color: #fff; }
+  .apercu nav { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-left: auto; }
+  .apercu nav a { color: #ffd9e0; }
+  /* Habillage commun des trois vues (mêmes variables que le reste du site). */
+  .terr { max-width: 1060px; margin: 0 auto; padding: 1.4rem 1.2rem 3rem; }
+  .terr h1 { font: 700 clamp(1.7rem, 4.5vw, 2.7rem)/1.08 var(--display); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+  .terr .eyebrow { margin: 0 0 8px; color: var(--red); font: 0.72rem var(--mono); letter-spacing: 0.13em; text-transform: uppercase; }
+  .terr .lede { max-width: 760px; color: #3d3d42; font-size: 1rem; margin: 0 0 1.2rem; }
+  .terr h2 { margin: 2rem 0 0.8rem; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+    font: 400 0.76rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #6b6b72; }
+  .terr .encart { max-width: 820px; padding: 0.9rem 1.1rem; background: var(--bg-card); border-left: 3px solid var(--border);
+    color: #55555b; font-size: 0.88rem; margin: 0 0 1rem; }
+  .terr .encart.limites { border-left-color: var(--orange); }
+  .terr .encart ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+  .terr .grille { display: grid; gap: 12px; }
+</style>

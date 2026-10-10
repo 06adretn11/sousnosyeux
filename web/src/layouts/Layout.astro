@@ -3,9 +3,11 @@ interface Props {
   title: string;
   description: string;
   variant?: 'map' | 'page';
+  /** Prévisualisations : jamais indexées. Absent = comportement inchangé. */
+  noindex?: boolean;
 }
 
-const { title, description, variant = 'page' } = Astro.props;
+const { title, description, variant = 'page', noindex = false } = Astro.props;
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 
 const nav = [
@@ -26,6 +28,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
     <meta name="theme-color" content="#ffffff" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex,nofollow,noarchive" />}
     <!-- Polices B2 — DM Sans (UI) + DM Mono (chiffres/codes) + Playfair Display (titres) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

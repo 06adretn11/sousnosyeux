@@ -1,0 +1,50 @@
+---
+// Somme — territoire diffus : aucune affaire publique. Une page qui
+// assume ce vide sans le laisser passer pour une garantie.
+import { memoireCompileeLe } from '../../lib/territoires';
+import { dateLongue } from '../../lib/etat-wording';
+---
+
+<div class="terr">
+  <p class="eyebrow">Territoire diffus · Somme (80)</p>
+  <h1>Somme : aucune affaire documentée par SNY</h1>
+  <p class="lede">
+    À ce jour, SNY ne publie <strong>aucune fiche</strong> pour la Somme. Ce n’est pas un constat sur la réalité
+    des faits : c’est l’état de la mémoire de SNY, qui ne relaie que des affaires déjà rapportées par la presse
+    et validées avant publication.
+  </p>
+
+  <div class="encart limites">
+    <strong>Ne pas lire cette page comme une garantie.</strong>
+    <ul>
+      <li>« Aucune affaire sur SNY » ne veut pas dire « aucun fait » : des affaires peuvent exister sans article, ou n’avoir pas encore été repérées et validées.</li>
+      <li>SNY n’est pas exhaustif et ne cherche pas à l’être : il n’a ni accès aux procédures, ni vocation à enquêter.</li>
+      <li>Il n’y a donc ici ni carte, ni chronologie, ni chiffre : il n’y a rien à placer, dater ou compter sans l’inventer.</li>
+    </ul>
+  </div>
+
+  <h2>Ce que SNY couvre</h2>
+  <p class="lede">
+    Des affaires concernant des structures accueillant des mineurs (crèches, écoles, périscolaire…), rapportées
+    par une source de presse identifiable, avec leur état judiciaire et leurs sources, dans le respect de la
+    présomption d’innocence. <a href="/methodologie">Lire la méthodologie</a> · <a href="/">Voir la carte des affaires documentées</a>.
+  </p>
+
+  <h2>Vous connaissez un article sur une affaire dans la Somme ?</h2>
+  <p class="lede">
+    Écrivez-nous avec le lien vers l’article de presse : <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a>.
+    Il sera examiné avant toute publication ; SNY ne publie pas d’information sans source de presse.
+  </p>
+
+  <h2>Besoin d’aide ou d’un signalement</h2>
+  <p class="lede">
+    SNY n’est pas un service de signalement. Pour un enfant en danger ou en risque de l’être, le
+    <strong>119 — Allô Enfance en danger</strong> est le numéro national, gratuit et ouvert 24 h/24.
+  </p>
+
+  <p class="note">Mémoire compilée le {dateLongue(memoireCompileeLe)}.</p>
+</div>
+
+<style>
+  .note { margin: 1.4rem 0 0; color: var(--muted); font-size: 0.8rem; }
+</style>
