@@ -1,0 +1,109 @@
+# SNY — administration MANUELLE du webhook Telegram (déploiement du Worker, bascule, retour arrière), exécutée par GitHub : aucun terminal local.
+#
+#   action = deploy          déploie le Worker `sny-telegram`, pose ses secrets, vérifie qu'il refuse sans secret (403) ; NE TOUCHE PAS au bot
+#   action = status          état du webhook côté Telegram (booléens seulement)
+#   action = set-webhook     BASCULE : pose le webhook (getUpdates cesse de fonctionner) — exige confirmation = GO-WEBHOOK
+#   action = delete-webhook  RETOUR ARRIÈRE : retire le webhook, sny-clics reprend la lecture getUpdates (clics conservés 24 h par Telegram)
+#
+# SECRETS (GitHub → Settings → Secrets and variables → Actions) : CLOUDFLARE_API_TOKEN (Workers Scripts : Edit), CLOUDFLARE_ACCOUNT_ID,
+# SNY_WEBHOOK_GITHUB_TOKEN (Actions : écriture, ce seul dépôt) + TELEGRAM_BOT_TOKEN, TELEGRAM_ALLOWED_USER_ID (déjà présents).
+# Le secret du webhook n'est PAS saisi : il est dérivé (HMAC-SHA256) du jeton du bot, masqué, identique pour le Worker et pour Telegram.
+# Dépôt public ⇒ logs publics : aucune valeur n'est affichée (jetons, secret dérivé et URL du Worker sont masqués) ; seuls des codes HTTP et des booléens.
+name: sny-webhook-admin
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "deploy | status | set-webhook | delete-webhook"
+        required: true
+        type: choice
+        options: [deploy, status, set-webhook, delete-webhook]
+      confirmation:
+        description: "Pour set-webhook uniquement : saisir GO-WEBHOOK (GO explicite de l'éditeur)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  admin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+      SNY_WEBHOOK_GITHUB_TOKEN: ${{ secrets.SNY_WEBHOOK_GITHUB_TOKEN }}
+      ACTION: ${{ inputs.action }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Garde-fou — la bascule exige une confirmation explicite
+        if: ${{ inputs.action == 'set-webhook' && inputs.confirmation != 'GO-WEBHOOK' }}
+        run: |
+          echo "set-webhook refusé : confirmation absente (saisir GO-WEBHOOK)."
+          exit 1
+
+      - name: Dériver le secret du webhook (masqué)
+        run: |
+          S=$(printf 'sny-telegram-webhook-v1' | openssl dgst -sha256 -hmac "$TELEGRAM_BOT_TOKEN" -hex | awk '{print $NF}')
+          echo "::add-mask::$S"
+          echo "WEBHOOK_SECRET=$S" >> "$GITHUB_ENV"
+
+      - name: Déployer le Worker et poser ses secrets
+        if: ${{ inputs.action == 'deploy' }}
+        working-directory: workers/telegram-webhook
+        run: |
+          npx --yes wrangler@4.149.0 deploy > "$RUNNER_TEMP/deploy.log" 2>&1 || { sed -E 's#https://[^ ]*workers\.dev#[URL masquée]#g' "$RUNNER_TEMP/deploy.log" | tail -15; exit 1; }
+          echo "Worker déployé."
+          node -e "const e=process.env;process.stdout.write(JSON.stringify({TELEGRAM_BOT_TOKEN:e.TELEGRAM_BOT_TOKEN,TELEGRAM_ALLOWED_USER_ID:e.TELEGRAM_ALLOWED_USER_ID,TELEGRAM_WEBHOOK_SECRET:e.WEBHOOK_SECRET,GITHUB_TOKEN:e.SNY_WEBHOOK_GITHUB_TOKEN}))" \
+            | npx --yes wrangler@4.149.0 secret bulk > "$RUNNER_TEMP/secrets.log" 2>&1 || { echo "pose des secrets en échec"; sed -E 's#https://[^ ]*workers\.dev#[URL masquée]#g' "$RUNNER_TEMP/secrets.log" | tail -8; exit 1; }
+          echo "4 secrets posés (valeurs jamais affichées)."
+
+      - name: Retrouver l'URL du Worker (masquée)
+        if: ${{ inputs.action == 'deploy' || inputs.action == 'set-webhook' }}
+        run: |
+          SUB=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>process.stdout.write(JSON.parse(d).result?.subdomain||''))")
+          [ -n "$SUB" ] || { echo "sous-domaine workers.dev introuvable (le jeton Cloudflare a-t-il la permission Workers Scripts ?)"; exit 1; }
+          URL="https://sny-telegram.$SUB.workers.dev"
+          echo "::add-mask::$URL"
+          echo "WORKER_URL=$URL" >> "$GITHUB_ENV"
+
+      - name: Vérifier le Worker (sans activer le webhook)
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          get=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$WORKER_URL")
+          sans=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H 'content-type: application/json' -d '{"update_id":1}' "$WORKER_URL")
+          faux=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H 'X-Telegram-Bot-Api-Secret-Token: mauvais-secret' -H 'content-type: application/json' -d '{"update_id":1}' "$WORKER_URL")
+          bon=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H "X-Telegram-Bot-Api-Secret-Token: $WEBHOOK_SECRET" -H 'content-type: application/json' -d '{"update_id":1,"message":{"text":"verification"}}' "$WORKER_URL")
+          echo "GET → $get (attendu 200) · POST sans secret → $sans (403) · POST mauvais secret → $faux (403) · POST bon secret, sans clic → $bon (200, ignoré, aucun effet)"
+          [ "$get" = 200 ] && [ "$sans" = 403 ] && [ "$faux" = 403 ] && [ "$bon" = 200 ] || { echo "VÉRIFICATION EN ÉCHEC"; exit 1; }
+          echo "Worker conforme. Webhook NON activé."
+
+      - name: Poser le webhook (BASCULE — getUpdates cesse de fonctionner)
+        if: ${{ inputs.action == 'set-webhook' }}
+        run: |
+          r=$(curl -fsS --max-time 30 -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/setWebhook" \
+            --data-urlencode "url=$WORKER_URL" --data-urlencode "secret_token=$WEBHOOK_SECRET" --data-urlencode 'allowed_updates=["callback_query"]' --data-urlencode 'drop_pending_updates=false')
+          echo "$r" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);console.log('setWebhook ok =',j.ok);process.exit(j.ok?0:1)})"
+
+      - name: Retirer le webhook (RETOUR ARRIÈRE vers getUpdates)
+        if: ${{ inputs.action == 'delete-webhook' }}
+        run: |
+          r=$(curl -fsS --max-time 30 -X POST "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/deleteWebhook" --data-urlencode 'drop_pending_updates=false')
+          echo "$r" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const j=JSON.parse(d);console.log('deleteWebhook ok =',j.ok);process.exit(j.ok?0:1)})"
+
+      - name: État du webhook côté Telegram (booléens seulement)
+        if: ${{ always() && (inputs.action == 'status' || inputs.action == 'set-webhook' || inputs.action == 'delete-webhook') }}
+        run: |
+          curl -fsS --max-time 30 "https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/getWebhookInfo" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{const w=JSON.parse(d).result||{};console.log('webhook actif =',!!w.url,'· en attente =',w.pending_update_count,'· dernière erreur =',w.last_error_message||'aucune','· allowed_updates =',JSON.stringify(w.allowed_updates||[]))})"
