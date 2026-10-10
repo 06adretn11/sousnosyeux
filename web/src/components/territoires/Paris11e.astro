@@ -3,7 +3,7 @@
 // procédures à des stades différents, deux relaxes frappées d'appel,
 // et un volet institutionnel documenté. Toutes les affaires sont publiques.
 import Dossier from '../Dossier.astro';
-import Synthese from '../Synthese.astro';
+import Reperes from '../Reperes.astro';
 import Reponses from '../Reponses.astro';
 import Limites from '../Limites.astro';
 import { casesParIds, STATUT_LABELS, statutCat } from '../../lib/territoires';
@@ -27,9 +27,9 @@ for (const c of cases) {
 const etats = new Map<string, number>();
 for (const c of cases) etats.set(statutDe(c), (etats.get(statutDe(c)) ?? 0) + 1);
 
-// Dernier événement DATÉ (date d'événement, jamais date d'article) par dossier.
+// Dernière ÉTAPE PROCÉDURALE datée (date d'événement, jamais date d'article ; une mobilisation n'est pas une étape).
 const dernier = (c: any) => (D[c.case_id]?.deroule ?? [])
-  .filter((e: any) => e.date && e.date_nature === 'evenement' && e.date <= '2026-10-10')
+  .filter((e: any) => e.date && e.date_nature === 'evenement' && e.date <= '2026-10-10' && !['mobilisation', 'prise_de_parole', 'contradiction', 'contexte'].includes(e.type))
   .sort((a: any, b: any) => b.date.localeCompare(a.date))[0] ?? null;
 
 const pins = groupes.map((g) => ({
@@ -43,13 +43,11 @@ const pins = groupes.map((g) => ({
 <div class="terr">
   <p class="eyebrow">Territoire dense · Paris 11e arrondissement</p>
   <h1>Comprendre les affaires du 11e arrondissement</h1>
-  <p class="lede">
-    {cases.length} fiches publiques, {groupes.length} établissements : ce que la presse rapporte des faits, où en sont
-    les procédures, ce que les institutions ont dit et fait — et ce qui reste inconnu.
-  </p>
 
-  <h2>À retenir</h2>
-  <Synthese paragraphes={matiere.synthese} />
+
+  <Reperes r={matiere.reperes}>
+    <Reponses groupes={matiere.reponses} />
+  </Reperes>
 
   <h2>Où en sont les procédures</h2>
   <div class="resume" role="list" aria-label="États des fiches">
@@ -59,7 +57,7 @@ const pins = groupes.map((g) => ({
   </div>
   <div class="tablewrap">
     <table class="tab">
-      <thead><tr><th>Établissement</th><th>État rapporté</th><th>Dernier événement daté</th></tr></thead>
+      <thead><tr><th>Établissement</th><th>État rapporté</th><th>Dernière étape datée</th></tr></thead>
       <tbody>
         {cases.map((c) => {
           const d = dernier(c);
@@ -70,21 +68,23 @@ const pins = groupes.map((g) => ({
                 <span class={`chip ${statutCat(statutDe(c))}`}>{STATUT_LABELS[statutDe(c)] ?? statutDe(c)}</span>
                 {(c.etat?.suites ?? []).includes('APPEL_EN_COURS') && <span class="chip appel">appel</span>}
               </td>
-              <td>{d ? `${TYPE_LABELS[d.type] ?? d.type}, ${dateLongue(d.date)}` : 'aucun événement daté connu'}</td>
+              <td>{d ? `${TYPE_LABELS[d.type] ?? d.type}, ${dateLongue(d.date)}` : 'aucune étape datée connue'}</td>
             </tr>
           );
         })}
       </tbody>
     </table>
   </div>
-  <p class="note">Ordre : avancement procédural, jamais gravité. « Aucun événement daté » veut dire que les sources lues ne datent pas l’étape, pas qu’il ne s’est rien passé.</p>
+  <p class="note">Ordre : avancement procédural, jamais gravité. « Aucune étape datée » veut dire que les sources lues ne datent pas l’étape, pas qu’il ne s’est rien passé.</p>
 
-  <h2>Carte des établissements</h2>
-  <div id="carte" role="region" aria-label="Carte des établissements du 11e"></div>
-  <p class="note">
-    Un point = un établissement cité par la presse. La carte ne mesure ni l’exhaustivité, ni un risque, et ne classe
-    pas les établissements : l’absence d’un point ne signifie pas l’absence de faits.
-  </p>
+  <details class="carte-bloc" id="carte-bloc" open>
+    <summary>Carte des établissements</summary>
+    <div id="carte" role="region" aria-label="Carte des établissements du 11e"></div>
+    <p class="note">
+      Un point = un établissement cité par la presse. La carte ne mesure ni l’exhaustivité, ni un risque, et ne classe
+      pas les établissements : l’absence d’un point ne signifie pas l’absence de faits.
+    </p>
+  </details>
   <script type="application/json" id="pins-data" set:html={JSON.stringify(pins)} />
 
   <h2>Les dossiers</h2>
@@ -109,10 +109,6 @@ const pins = groupes.map((g) => ({
     ))}
   </div>
 
-  <h2>Les réponses des institutions</h2>
-  <p class="note">Ce que chaque institution a annoncé ou fait, attribué. Ces éléments ne disent rien, en eux-mêmes, de la responsabilité de qui que ce soit.</p>
-  <Reponses groupes={matiere.reponses} />
-
   <h2>Limites et inconnues</h2>
   <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
 </div>
@@ -125,7 +121,13 @@ const pins = groupes.map((g) => ({
     JSON.parse(document.getElementById('pins-data')!.textContent!);
   const COUL: Record<string, string> = { red: '#E63946', blue: '#457B9D', orange: '#D97706', green: '#2D6A4F' };
 
-  const map = new maplibregl.Map({
+  // Carte repliée par défaut sur mobile : elle ne retarde plus l'accès aux dossiers ; initialisée à l'ouverture.
+  const bloc = document.getElementById('carte-bloc') as HTMLDetailsElement;
+  if (matchMedia('(max-width: 720px)').matches) bloc.open = false;
+  let map: maplibregl.Map | null = null;
+  function initCarte() {
+  if (map) { map.resize(); return; }
+  map = new maplibregl.Map({
     container: 'carte',
     style: {
       version: 8,
@@ -155,6 +157,9 @@ const pins = groupes.map((g) => ({
     bounds.extend([p.lng, p.lat]);
   }
   map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 0 });
+  }
+  if (bloc.open) initCarte();
+  bloc.addEventListener('toggle', () => { if (bloc.open) initCarte(); });
 
   // Filtre par état : masque dossiers et groupes vides, rien d'autre.
   const boutons = [...document.querySelectorAll<HTMLButtonElement>('.filtres button')];
@@ -187,11 +192,19 @@ const pins = groupes.map((g) => ({
   .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); }
   .note { max-width: 780px; margin: 6px 0 0; color: var(--muted); font-size: 0.8rem; }
   .note.multi { padding: 8px 12px; background: var(--orange-bg); color: #6b4408; margin: 0 0 8px; }
+  .carte-bloc { margin: 0 0 0.5rem; }
+  .carte-bloc summary { cursor: pointer; font: 400 0.76rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #6b6b72; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
   #carte { height: 380px; border: 1px solid var(--border); background: #e9e9e6; }
+  .tab { font-size: 0.82rem; }
+  .tab th, .tab td { padding: 6px 9px; }
   .filtres { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .filtres button { padding: 6px 11px; border: 1px solid var(--border); background: #fff; font: 0.78rem var(--sans); cursor: pointer; }
   .filtres button[aria-pressed="true"] { background: #111; color: #fff; border-color: #111; }
   .groupe { display: grid; gap: 8px; }
   [hidden] { display: none !important; }
-  @media (max-width: 560px) { #carte { height: 300px; } }
+  @media (max-width: 560px) {
+    #carte { height: 300px; }
+    .tab th:nth-child(3), .tab td:nth-child(3) { display: none; }
+    .tab td, .tab th { padding: 5px 7px; }
+  }
 </style>

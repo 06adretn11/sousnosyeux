@@ -12,10 +12,9 @@ const { inconnues = [], recherches = [] } = Astro.props;
   <div class="encart">
     <ul>
       {inconnues.map((i) => <li>{i}</li>)}
-      <li>SNY ne documente que des affaires <strong>rapportées par la presse</strong>. Des faits peuvent exister sans article, ou dans un article que SNY n’a pas retenu : l’absence d’une fiche n’est pas l’absence de faits.</li>
-      <li>Fiches publiques compilées le {dateLongue(memoireCompileeLe)} ; aucune date de vérification humaine n’y est enregistrée. La matière de cette page a été relue le 10 octobre 2026 sur les articles cités.</li>
-      <li>Cette page n’est ni un palmarès, ni une mesure de prévalence, ni un indicateur de risque : le nombre de fiches ne dit rien de la sécurité d’un quartier, d’une commune ou d’une école.</li>
-      <li>Aucune personne mise en cause n’est nommée ; les faits sont attribués à leurs sources, sous présomption d’innocence. Une relaxe, un classement ou une mise hors de cause sont signalés avec la même attention qu’une mise en examen.</li>
+      <li>SNY ne documente que des affaires <strong>rapportées par la presse</strong> : l’absence d’une fiche n’est pas l’absence de faits.</li>
+      <li>Fiches compilées le {dateLongue(memoireCompileeLe)}, sans date de vérification humaine enregistrée ; matière de cette page relue le 10 octobre 2026 sur les articles cités.</li>
+      <li>Ni palmarès, ni mesure de prévalence, ni indicateur de risque. Personnes mises en cause non nommées ; présomption d’innocence ; relaxes et classements traités avec la même attention.</li>
     </ul>
   </div>
 

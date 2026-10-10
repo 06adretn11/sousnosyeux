@@ -25,17 +25,23 @@ export function getStaticPaths() {
     { params: { vue: 'paris-11e' }, props: { vue: 'paris-11e' } },
     { params: { vue: 'bordeaux-gironde' }, props: { vue: 'bordeaux-gironde' } },
     { params: { vue: 'somme' }, props: { vue: 'somme' } },
+    // Versions « publique » : ce qui est publiable aujourd'hui, sans la matière de revue.
+    { params: { vue: 'bordeaux-gironde-public' }, props: { vue: 'bordeaux-gironde-public' } },
+    { params: { vue: 'somme-public' }, props: { vue: 'somme-public' } },
   ];
 }
 
 const { vue } = Astro.props as { vue: string };
 // Un rendu qui contient de la matière NON PUBLIÉE (data/hub-prive/) le dit en tête de page.
 const aPrive = ['paris-11e', 'bordeaux-gironde', 'somme'].some((id) => (vue === 'index' || vue === id) && chargerHub(id).prive);
+const base = '/brouillons/territoires';
 const titres: Record<string, string> = {
   'index': 'Trois territoires',
   'paris-11e': 'Paris 11e',
   'bordeaux-gironde': 'Bordeaux / Gironde',
-  'somme': 'Somme',
+  'somme': 'Somme (revue)',
+  'bordeaux-gironde-public': 'Bordeaux / Gironde (public)',
+  'somme-public': 'Somme (public)',
 };
 ---
 
@@ -52,18 +58,22 @@ const titres: Record<string, string> = {
   )}
   <div class="apercu">
     <strong>PRÉVISUALISATION — NON PUBLIÉE</strong>
-    <span>noindex · hors build public · fiches : artefact public data/cases.json · matière : data/hub-matiere/</span>
+    <span class="apercu-detail">noindex · hors build public · fiches : data/cases.json · matière : data/hub-matiere/</span>
     <nav>
-      <a href="/brouillons/territoires">Les trois</a>
-      <a href="/brouillons/territoires/paris-11e">Paris 11e</a>
-      <a href="/brouillons/territoires/bordeaux-gironde">Bordeaux / Gironde</a>
-      <a href="/brouillons/territoires/somme">Somme</a>
+      <a href={base}>Les trois</a>
+      <a href={`${base}/paris-11e`}>Paris 11e</a>
+      <a href={`${base}/bordeaux-gironde`}>Bordeaux (revue)</a>
+      <a href={`${base}/bordeaux-gironde-public`}>Bordeaux (public)</a>
+      <a href={`${base}/somme`}>Somme (revue)</a>
+      <a href={`${base}/somme-public`}>Somme (public)</a>
     </nav>
   </div>
   {vue === 'index' && <Index />}
   {vue === 'paris-11e' && <Paris11e />}
   {vue === 'bordeaux-gironde' && <Bordeaux />}
+  {vue === 'bordeaux-gironde-public' && <Bordeaux publicOnly />}
   {vue === 'somme' && <Somme />}
+  {vue === 'somme-public' && <Somme publicOnly />}
 </Layout>
 
 <style is:global>
@@ -86,4 +96,9 @@ const titres: Record<string, string> = {
   .terr .encart.limites { border-left-color: var(--orange); }
   .terr .encart ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
   .terr .grille { display: grid; gap: 12px; }
+  @media (max-width: 600px) {
+    .apercu { padding: 6px 14px; } .apercu-detail { display: none; }
+    .apercu nav { flex-wrap: nowrap; overflow-x: auto; margin-left: 0; width: 100%; white-space: nowrap; }
+    .apercu-prive { padding: 6px 14px; font-size: 0.68rem; }
+  }
 </style>

@@ -48,6 +48,22 @@ for (const s of sourcesLibres) {
   {phrases.map((l: string) => <p class="etat">{l}</p>)}
   {d.lecture && <p class="lecture">{d.lecture}</p>}
 
+  {d.versions && (
+    <div class="versions">
+      <p class="v-titre">{d.versions.titre}</p>
+      <div class="v-cols">
+        {[d.versions.a, d.versions.b].map((v: any) => (
+          <div class="v-col">
+            <strong>{v.acteur}</strong>
+            <p>{v.texte}</p>
+            <a href={v.source.url} target="_blank" rel="noopener noreferrer">{v.source.media}, {fmt(v.source.publie_le)} ↗</a>
+          </div>
+        ))}
+      </div>
+      {d.versions.note && <p class="v-note">{d.versions.note}</p>}
+    </div>
+  )}
+
   {d.deroule?.length > 0 && (
     <>
       <h4>Déroulé</h4>
@@ -94,6 +110,14 @@ for (const s of sourcesLibres) {
   .chip.muted { background: #f4f4f2; color: #6b7280; }
   .etat { margin: 0 0 6px; font-size: 0.94rem; color: #2a2a2d; }
   .lecture { margin: 8px 0 0; padding: 8px 12px; background: #f7f7f4; border-left: 3px solid var(--border); font-size: 0.88rem; color: #3d3d42; }
+  .versions { margin: 12px 0 0; padding: 10px 12px; background: #f7f7f4; border: 1px solid var(--border); }
+  .v-titre { margin: 0 0 8px; font: 700 0.9rem var(--sans); }
+  .v-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .v-col { font-size: 0.82rem; line-height: 1.45; }
+  .v-col p { margin: 3px 0 4px; }
+  .v-col a { font-size: 0.72rem; color: var(--blue); }
+  .v-note { margin: 8px 0 0; font-size: 0.76rem; color: var(--muted); font-style: italic; }
+  @media (max-width: 640px) { .v-cols { grid-template-columns: 1fr; } }
   .inconnues { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; color: #4a4a50; }
   .inconnues li { margin: 3px 0; }
   .sources { margin: 1rem 0 0; font-size: 0.76rem; line-height: 1.6; color: var(--muted); }

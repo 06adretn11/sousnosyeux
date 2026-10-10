@@ -1,5 +1,6 @@
 ---
-// Porte d'entrée de la prévisualisation : trois expériences, trois formats.
+// Porte d'entrée de la prévisualisation : trois expériences, trois formats,
+// et pour chaque territoire à matière non publiée, la version publique seule.
 import { casesParIds } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
 
@@ -12,11 +13,14 @@ const loc = (n: number) => (n > 0 ? ` + ${n} dossier${n > 1 ? 's' : ''} non publ
 
 const cartes = [
   { href: '/brouillons/territoires/paris-11e', t: 'Paris 11e', k: 'Densité et complexité',
-    d: `${p.publiques} fiches publiques : synthèse, tableau des procédures, carte, dossiers avec déroulé daté, réponses des institutions, inconnues.` },
+    d: `${p.publiques} fiches publiques : repères, tableau des procédures, carte, dossiers avec déroulé daté, détail des réponses des institutions.`,
+    alt: null as null | { href: string; t: string } },
   { href: '/brouillons/territoires/bordeaux-gironde', t: 'Bordeaux / Gironde', k: 'Mémoire en construction',
-    d: `${b.publiques} fiche publique${loc(b.privees)} : dossiers approfondis, versions divergentes des acteurs, contexte du parquet. Pas de carte.` },
+    d: `${b.publiques} fiche publique${loc(b.privees)} : dossiers approfondis, versions divergentes des acteurs, chiffres du parquet.`,
+    alt: { href: '/brouillons/territoires/bordeaux-gironde-public', t: 'voir la version publique seule' } },
   { href: '/brouillons/territoires/somme', t: 'Somme', k: 'Territoire diffus',
-    d: `${s.publiques} fiche publique${loc(s.privees)} : une page publique qui assume le vide ; en local, la matière non validée classée par commune.` },
+    d: `${s.publiques} fiche publique${loc(s.privees)} : en revue, trois dossiers par commune, aucun éligible ; en public, une page brève qui assume le vide.`,
+    alt: { href: '/brouillons/territoires/somme-public', t: 'voir la version publique seule' } },
 ];
 ---
 
@@ -29,22 +33,27 @@ const cartes = [
   </p>
   <div class="cartes">
     {cartes.map((c) => (
-      <a class="carte" href={c.href}>
-        <span class="k">{c.k}</span>
-        <strong>{c.t}</strong>
-        <span class="d">{c.d}</span>
-      </a>
+      <div class="cellule">
+        <a class="carte" href={c.href}>
+          <span class="k">{c.k}</span>
+          <strong>{c.t}</strong>
+          <span class="d">{c.d}</span>
+        </a>
+        {c.alt && <a class="alt" href={c.alt.href}>{c.alt.t} →</a>}
+      </div>
     ))}
   </div>
 </div>
 
 <style>
   .cartes { display: grid; gap: 12px; grid-template-columns: repeat(3, 1fr); }
-  .carte { display: flex; flex-direction: column; gap: 6px; padding: 1.1rem 1.2rem; background: var(--bg-card);
+  .cellule { display: flex; flex-direction: column; gap: 6px; }
+  .carte { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 1.1rem 1.2rem; background: var(--bg-card);
     border: 1px solid var(--border); border-top: 3px solid var(--red); color: inherit; text-decoration: none; }
   .carte:hover { border-color: #111; }
   .carte strong { font: 700 1.3rem var(--display); }
   .k { font: 0.68rem var(--mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--red); }
   .d { font-size: 0.9rem; color: #55555b; }
+  .alt { font-size: 0.8rem; color: var(--blue); }
   @media (max-width: 720px) { .cartes { grid-template-columns: 1fr; } }
 </style>

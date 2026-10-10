@@ -1,74 +1,52 @@
 ---
 // Somme — territoire diffus. Public : aucune affaire validée, donc une page
-// qui le dit sans en faire une garantie. Local : la matière trouvée mais non
-// validée (data/hub-prive/somme.json), organisée par commune pour tester le
-// format « département » — jamais publiable en l'état.
+// brève qui le dit sans en faire une garantie. Revue locale : la matière
+// trouvée mais non validée (data/hub-prive/somme.json), classée par commune
+// pour tester le format « département » — jamais publiable en l'état.
 import Dossier from '../Dossier.astro';
-import Synthese from '../Synthese.astro';
+import Reperes from '../Reperes.astro';
 import Limites from '../Limites.astro';
 import { chargerHub } from '../../lib/hub-matiere';
-import { dateLongue } from '../../lib/etat-wording';
 
-const { matiere, prive } = chargerHub('somme');
+interface Props { publicOnly?: boolean }
+const { publicOnly = false } = Astro.props;
+const hub = chargerHub('somme');
+const matiere = hub.matiere;
+const prive = publicOnly ? null : hub.prive;
+
 const communes: Record<string, any[]> = {};
 if (prive) {
-  for (const id of prive.ordre_avant) {
-    const nom = prive.communes[id];
-    (communes[nom] ??= []).push({ c: prive.dossiers[id].fiche, d: prive.dossiers[id] });
-  }
+  for (const id of prive.ordre_avant) (communes[prive.communes[id]] ??= []).push({ c: prive.dossiers[id].fiche, d: prive.dossiers[id] });
 }
 ---
 
 <div class="terr">
-  <p class="eyebrow">Territoire diffus · Somme (80)</p>
-  <h1>Somme : aucune affaire documentée par SNY</h1>
-  <p class="lede">
-    SNY ne publie aujourd’hui aucune fiche pour la Somme. Ce n’est pas une garantie : c’est l’état de sa mémoire.
-  </p>
+  <p class="eyebrow">Territoire diffus · Somme (80){prive ? ' · version de revue' : ' · version publique'}</p>
+  <h1>{prive ? 'Somme : trois dossiers à décider' : 'Somme : aucune affaire documentée par SNY'}</h1>
 
-  <h2>À retenir</h2>
-  <Synthese paragraphes={matiere.synthese} />
+  <Reperes r={prive?.reperes ?? matiere.reperes} />
 
   {prive && (
     <>
       <div class="alerte-prive">
-        <strong>RENDU LOCAL — MATIÈRE NON VALIDÉE.</strong> Les dossiers ci-dessous ont été trouvés dans la presse mais
-        aucun n’est validé. Ils servent à tester le format « département par communes » ; ils ne doivent pas être publiés en l’état.
+        <strong>RENDU LOCAL — MATIÈRE NON VALIDÉE.</strong> Aucun de ces dossiers n’est validé ni publiable en l’état ;
+        ils testent le format « département par communes ».
       </div>
-
-      <h2>Matière trouvée, par commune</h2>
+      <h2>Dossiers, par commune</h2>
       {Object.entries(communes).map(([nom, items]) => (
         <section class="commune">
           <h3>{nom}</h3>
-          <div class="grille">
-            {items.map(({ c, d }) => <Dossier c={c} d={d} />)}
-          </div>
+          <div class="grille">{items.map(({ c, d }) => <Dossier c={c} d={d} />)}</div>
         </section>
       ))}
-
-      <h2>Contexte départemental</h2>
-      {prive.contexte_ajout.map((e: any) => (
-        <p class="ctx">
-          {e.texte}
-          {' '}<a href={e.source.url} target="_blank" rel="noopener noreferrer">{e.source.media}, {dateLongue(e.source.publie_le)} ↗</a>
-        </p>
-      ))}
-
-      <h2>Éléments examinés et non retenus</h2>
-      <ul class="non-retenus">
-        {prive.non_retenus.map((t: string) => <li>{t}</li>)}
-      </ul>
     </>
   )}
 
   <h2>Limites et inconnues</h2>
-  <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
+  <Limites recherches={matiere.recherches} />
 </div>
 
 <style>
-  .alerte-prive { max-width: 820px; margin: 1rem 0; padding: 0.8rem 1rem; border: 2px dashed var(--red); background: #fff5f5; font-size: 0.88rem; }
+  .alerte-prive { max-width: 820px; margin: 1.2rem 0 0; padding: 0.7rem 1rem; border: 2px dashed var(--red); background: #fff5f5; font-size: 0.85rem; }
   .commune h3 { margin: 1.2rem 0 0.6rem; font: 700 1.25rem var(--display); }
-  .ctx { max-width: 780px; font-size: 0.9rem; }
-  .non-retenus { max-width: 820px; font-size: 0.86rem; color: #4a4a50; padding-left: 1.2rem; }
-  .non-retenus li { margin: 5px 0; }
 </style>

@@ -1,0 +1,107 @@
+---
+// Niveau 1 — comprendre le territoire en ~20 secondes.
+// Un titre qui dit l'essentiel, 2-3 enseignements, 2-3 chiffres attribués,
+// les réponses institutionnelles transversales, une limite. Chaque phrase
+// garde ses sources. Le détail institutionnel complet reste un clic plus bas
+// (<slot />) : il synthétise en haut, il ne disparaît pas.
+import { dateLongue } from '../lib/etat-wording';
+
+type Src = { media: string; url: string; publie_le: string | null };
+interface Props {
+  r: {
+    titre: string;
+    points: { texte: string; sources: Src[] }[];
+    chiffres?: { valeur: string; libelle: string; source?: Src }[];
+    institutions?: { acteur: string; texte: string; sources: Src[] }[];
+    limite?: string;
+    aide?: string;
+  };
+}
+const { r } = Astro.props;
+const aDetail = Astro.slots.has('default');
+const lien = (s: Src) => `${s.media}${s.publie_le ? `, ${dateLongue(s.publie_le)}` : ''}`;
+---
+
+<section class="reperes">
+  <p class="titre">{r.titre}</p>
+
+  <ul class="points">
+    {r.points.map((p) => (
+      <li>
+        {p.texte}
+        <span class="src">{p.sources.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer" title={lien(s)}>{s.media} ↗</a>)}</span>
+      </li>
+    ))}
+  </ul>
+
+  {r.chiffres && r.chiffres.length > 0 && (
+    <div class="chiffres">
+      {r.chiffres.map((c) => (
+        <div class="chiffre">
+          <strong>{c.valeur}</strong>
+          <span>{c.libelle}{c.source && <> <a href={c.source.url} target="_blank" rel="noopener noreferrer" title={lien(c.source)}>↗</a></>}</span>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {r.institutions && r.institutions.length > 0 && (
+    <div class="inst">
+      <p class="inst-titre">Réponses institutionnelles documentées</p>
+      <ul>
+        {r.institutions.map((i) => (
+          <li>
+            <strong>{i.acteur}.</strong> {i.texte}
+            <span class="src">{i.sources.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer" title={lien(s)}>{s.media} ↗</a>)}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {r.limite && <p class="limite">{r.limite}</p>}
+  {r.aide && <p class="aide">{r.aide}</p>}
+
+  {aDetail && (
+    <details class="detail">
+      <summary>Détail et sources des réponses institutionnelles</summary>
+      <slot />
+    </details>
+  )}
+</section>
+
+<style>
+  .reperes { max-width: 860px; }
+  .titre { margin: 0 0 0.7rem; font: 700 clamp(1.05rem, 3.4vw, 1.35rem)/1.3 var(--sans); color: #1a1a1d; }
+  .points { margin: 0 0 0.9rem; padding-left: 1.1rem; font-size: 0.95rem; line-height: 1.5; color: #2a2a2d; }
+  .points li { margin: 0 0 6px; }
+  .src { display: inline; margin-left: 6px; font-size: 0.72rem; }
+  .src a { margin-right: 8px; color: var(--blue); white-space: nowrap; }
+  .chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin: 0 0 0.9rem; }
+  .chiffre { padding: 8px 10px; background: var(--bg-card); border: 1px solid var(--border); border-top: 3px solid var(--red); }
+  .chiffre strong { display: block; font: 500 1.35rem/1.1 var(--mono); }
+  .chiffre span { display: block; margin-top: 3px; font-size: 0.72rem; line-height: 1.35; color: var(--muted); }
+  .chiffre a { color: var(--blue); }
+  .inst { padding: 0.7rem 0.9rem; background: var(--bg-card); border-left: 3px solid var(--blue); margin: 0 0 0.8rem; }
+  .inst-titre { margin: 0 0 6px; font: 0.68rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .inst ul { margin: 0; padding-left: 1rem; font-size: 0.88rem; line-height: 1.45; }
+  .inst li { margin: 0 0 6px; }
+  .limite, .aide { margin: 0 0 0.6rem; font-size: 0.8rem; color: var(--muted); }
+  .aide { color: #4a4a50; }
+  @media (max-width: 560px) {
+    .titre { font-size: 1rem; margin-bottom: 0.5rem; }
+    .points { font-size: 0.86rem; line-height: 1.42; margin-bottom: 0.6rem; }
+    .points li { margin-bottom: 4px; }
+    .chiffres { grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 0.6rem; }
+    .chiffre { padding: 6px 7px; }
+    .chiffre strong { font-size: 1.05rem; }
+    .chiffre span { font-size: 0.64rem; }
+    .inst { padding: 0.5rem 0.7rem; margin-bottom: 0.5rem; }
+    .inst ul { font-size: 0.8rem; line-height: 1.38; }
+    .inst li { margin-bottom: 4px; }
+    .limite, .aide { font-size: 0.74rem; margin-bottom: 0.4rem; }
+  }
+  .detail { margin-top: 0.6rem; font-size: 0.85rem; }
+  .detail summary { cursor: pointer; color: var(--blue); font-weight: 600; }
+  .detail[open] summary { margin-bottom: 10px; }
+</style>

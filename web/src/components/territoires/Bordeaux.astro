@@ -1,38 +1,38 @@
 ---
 // Bordeaux / Gironde — mémoire en construction. Deux dossiers approfondis
-// plutôt qu'une carte : un seul est public ; le second (validé, non publié)
-// n'existe que dans un rendu local (data/hub-prive/, ignoré par Git).
+// plutôt qu'une carte. `publicOnly` = ce qui est publiable aujourd'hui ;
+// sans lui, la revue locale ajoute les dossiers validés non publiés
+// (data/hub-prive/, ignoré par Git).
 import Dossier from '../Dossier.astro';
-import Synthese from '../Synthese.astro';
+import Reperes from '../Reperes.astro';
 import Reponses from '../Reponses.astro';
 import Limites from '../Limites.astro';
 import { casesParIds } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
 
-const { matiere, prive } = chargerHub('bordeaux-gironde');
+interface Props { publicOnly?: boolean }
+const { publicOnly = false } = Astro.props;
+const hub = chargerHub('bordeaux-gironde');
+const matiere = hub.matiere;
+const prive = publicOnly ? null : hub.prive;
+
 const publics = casesParIds(matiere.ordre).map((c: any) => ({ c, d: matiere.dossiers[c.case_id], prive: false }));
 const prives = prive
   ? prive.ordre_avant.map((id: string) => ({ c: prive.dossiers[id].fiche, d: prive.dossiers[id], prive: true }))
   : [];
 const dossiers = [...prives, ...publics];
-
-const synthese = [...(prive?.synthese_ajout ?? []), ...matiere.synthese];
-const reponses = [...(prive?.reponses_ajout ?? []), ...matiere.reponses];
+const reperes = prive?.reperes ?? matiere.reperes;
 ---
 
 <div class="terr">
-  <p class="eyebrow">Mémoire en construction · Bordeaux / Gironde</p>
+  <p class="eyebrow">Mémoire en construction · Bordeaux / Gironde{prive ? ' · version de revue' : ' · version publique'}</p>
   <h1>Comprendre les affaires de Bordeaux et de la Gironde</h1>
-  <p class="lede">
-    {dossiers.length === 1
-      ? 'SNY documente publiquement une affaire sur ce territoire. Cette page la lit en profondeur, la replace dans son contexte et dit ce qui reste inconnu.'
-      : `${dossiers.length} dossiers lus en profondeur, avec leurs sources, les réponses des institutions et ce qui reste inconnu.`}
-  </p>
 
-  <h2>À retenir</h2>
-  <Synthese paragraphes={synthese} />
+  <Reperes r={reperes}>
+    <Reponses groupes={matiere.reponses} />
+  </Reperes>
 
-  <h2>Les dossiers</h2>
+  <h2>{dossiers.length > 1 ? 'Les dossiers' : 'Le dossier'}</h2>
   <div class="grille">
     {dossiers.map(({ c, d, prive: p }) => (
       <div class={p ? 'bloc-prive' : undefined}>
@@ -42,16 +42,11 @@ const reponses = [...(prive?.reponses_ajout ?? []), ...matiere.reponses];
     ))}
   </div>
 
-  <h2>Les réponses des institutions</h2>
-  <p class="note">Ce que chaque acteur a dit ou fait, attribué. Lorsque deux versions divergent, les deux sont rapportées.</p>
-  <Reponses groupes={reponses} />
-
   <h2>Limites et inconnues</h2>
-  <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
+  <Limites recherches={matiere.recherches} />
 </div>
 
 <style>
   .bloc-prive { border: 2px dashed var(--red); padding: 8px; }
   .tag-prive { margin: 0 0 8px; font: 0.7rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); }
-  .note { max-width: 780px; margin: 6px 0 12px; color: var(--muted); font-size: 0.8rem; }
 </style>

@@ -5,25 +5,32 @@
     "statut": "AUCUNE affaire publique pour la Somme. Cette matière ne contient que ce qui peut être dit sans affaire validée.",
     "verdict_interne": "Le territoire diffus n'atteint pas, en matière publique, le seuil d'un hub. Voir data/hub-prive/somme.json (local) pour la matière trouvée mais non validée."
   },
-  "synthese": [
-    {
-      "texte": "À ce jour, SNY n'a validé aucune affaire dans la Somme. Ce n'est pas un constat sur la réalité des faits : c'est l'état de la mémoire de SNY, qui ne relaie que des affaires rapportées par la presse et validées avant publication.",
-      "sources": []
-    },
-    {
-      "texte": "Des recherches ciblées ont été menées le 10 octobre 2026 dans la presse régionale et les communications d'institutions (Département, parquet d'Amiens, rectorat). Elles ont fait remonter des éléments qui n'ont pas été validés : SNY ne les affiche pas tant qu'ils ne le sont pas. Une absence de fiche ici ne dit donc ni qu'il n'y a pas de faits, ni que SNY n'en a pas cherché.",
-      "sources": []
-    }
-  ],
   "ordre": [],
   "dossiers": {},
   "reponses": [],
-  "inconnues_transversales": [
-    "Le journal local de référence (Courrier Picard) n'est pas lisible par les outils de SNY : des articles locaux ont pu échapper aux recherches.",
-    "La presse en ligne ne couvre pas tous les faits ; certains ne donnent lieu à aucun article."
-  ],
   "recherches": [
-    { "question": "Affaires dans des structures accueillant des mineurs dans la Somme (crèche, école, collège, périscolaire, foyer)", "resultat": "éléments trouvés mais non validés ; aucune affaire publiable" },
-    { "question": "Réponses des institutions (Département, parquet d'Amiens, rectorat, préfecture)", "resultat": "partiel : Département (PMI) seulement" }
-  ]
+    {
+      "question": "Affaires dans des structures accueillant des mineurs dans la Somme (crèche, école, collège, périscolaire, foyer)",
+      "resultat": "éléments trouvés mais non validés ; aucune affaire publiable"
+    },
+    {
+      "question": "Réponses des institutions (Département, parquet d'Amiens, rectorat, préfecture)",
+      "resultat": "partiel : Département (PMI) seulement"
+    }
+  ],
+  "reperes": {
+    "titre": "Aucune affaire validée dans la Somme à ce jour",
+    "points": [
+      {
+        "texte": "SNY ne relaie que des affaires rapportées par la presse et validées avant publication. L’absence de fiche n’est pas l’absence de faits.",
+        "sources": []
+      },
+      {
+        "texte": "Des éléments trouvés dans la presse régionale n’ont pas été validés : ils ne sont pas affichés.",
+        "sources": []
+      }
+    ],
+    "limite": "Le journal local de référence (Courrier Picard) et actu.fr ne sont pas lisibles par les outils de SNY : des articles ont pu échapper aux recherches.",
+    "aide": "Enfant en danger ou en risque de l’être : 119 (gratuit, 24 h/24)."
+  }
 }
