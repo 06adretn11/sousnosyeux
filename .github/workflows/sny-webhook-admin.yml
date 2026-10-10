@@ -99,7 +99,9 @@ jobs:
         if: ${{ inputs.action == 'deploy' }}
         run: |
           get=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$WORKER_URL")
-          sans=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H 'content-type: application/json' -d '{"update_id":1}' "$WORKER_URL")
+          sleep 20   # propagation de la dernière version (secrets posés juste avant)
+          sans=$(curl -s -o "$RUNNER_TEMP/sans.txt" -D "$RUNNER_TEMP/sans.hdr" -w '%{http_code}' --max-time 20 -X POST -H 'content-type: application/json' -d '{"update_id":1}' "$WORKER_URL")
+          echo "diagnostic POST sans secret : corps = « $(head -c 80 "$RUNNER_TEMP/sans.txt" | tr '\n' ' ') » · serveur = $(grep -i '^server:' "$RUNNER_TEMP/sans.hdr" | tr -d '\r')"
           faux=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H 'X-Telegram-Bot-Api-Secret-Token: mauvais-secret' -H 'content-type: application/json' -d '{"update_id":1}' "$WORKER_URL")
           bon=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 -X POST -H "X-Telegram-Bot-Api-Secret-Token: $WEBHOOK_SECRET" -H 'content-type: application/json' -d '{"update_id":1,"message":{"text":"verification"}}' "$WORKER_URL")
           echo "GET → $get (attendu 200) · POST sans secret → $sans (403) · POST mauvais secret → $faux (403) · POST bon secret, sans clic → $bon (200, ignoré, aucun effet)"
