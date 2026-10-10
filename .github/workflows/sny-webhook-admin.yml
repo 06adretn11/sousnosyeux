@@ -60,6 +60,13 @@ jobs:
           echo "::add-mask::$S"
           echo "WEBHOOK_SECRET=$S" >> "$GITHUB_ENV"
 
+      - name: Vérifier le jeton Cloudflare (statut et forme seulement, jamais la valeur)
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          T="$CLOUDFLARE_API_TOKEN"; A="$CLOUDFLARE_ACCOUNT_ID"
+          echo "jeton : ${#T} caractères · espace/saut de ligne parasite = $([[ "$T" =~ [[:space:]] ]] && echo OUI || echo non) · account id : ${#A} caractères (32 attendus) · account id hexadécimal = $([[ "$A" =~ ^[0-9a-f]{32}$ ]] && echo oui || echo NON)"
+          curl -sS --max-time 20 -H "Authorization: Bearer $T" https://api.cloudflare.com/client/v4/user/tokens/verify | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);console.log('verify : success =',j.success,'· statut =',j.result?.status||'-','· erreurs =',JSON.stringify((j.errors||[]).map(e=>e.code+' '+e.message)))}catch{console.log('réponse illisible')}})"
+
       - name: Déployer le Worker et poser ses secrets
         if: ${{ inputs.action == 'deploy' }}
         working-directory: workers/telegram-webhook
