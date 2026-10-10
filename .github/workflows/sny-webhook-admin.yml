@@ -67,6 +67,15 @@ jobs:
           echo "jeton : ${#T} caractères · espace/saut de ligne parasite = $([[ "$T" =~ [[:space:]] ]] && echo OUI || echo non) · account id : ${#A} caractères (32 attendus) · account id hexadécimal = $([[ "$A" =~ ^[0-9a-f]{32}$ ]] && echo oui || echo NON)"
           curl -sS --max-time 20 -H "Authorization: Bearer $T" https://api.cloudflare.com/client/v4/user/tokens/verify | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);console.log('verify : success =',j.success,'· statut =',j.result?.status||'-','· erreurs =',JSON.stringify((j.errors||[]).map(e=>e.code+' '+e.message)))}catch{console.log('réponse illisible')}})"
 
+      - name: Diagnostic des droits du jeton sur CE compte (codes seulement)
+        if: ${{ inputs.action == 'deploy' }}
+        run: |
+          api() { curl -sS --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4$1" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);console.log('$2 → success =',j.success,'· erreurs =',JSON.stringify((j.errors||[]).map(e=>e.code+' '+e.message)),'· résultat =',Array.isArray(j.result)?j.result.length+' élément(s)':(j.result?'objet':'vide'))}catch{console.log('$2 → réponse illisible')}})"; }
+          api "/accounts" "liste des comptes visibles"
+          api "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts" "scripts Workers de ce compte"
+          api "/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" "sous-domaine workers.dev de ce compte"
+          curl -sS --max-time 20 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts" | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>{try{const j=JSON.parse(d);console.log('account id fourni = un des comptes du jeton :',(j.result||[]).some(a=>a.id===process.env.CLOUDFLARE_ACCOUNT_ID))}catch{}})"
+
       - name: Déployer le Worker et poser ses secrets
         if: ${{ inputs.action == 'deploy' }}
         working-directory: workers/telegram-webhook
