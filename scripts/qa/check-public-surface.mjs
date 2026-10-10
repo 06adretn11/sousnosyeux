@@ -114,7 +114,7 @@ notes.push(`prototypes/ — ${protoNames.size} fichier(s), aucun dans une surfac
 
 // ── 4) brouillons de hub ───────────────────────────────────────────
 const distFiles = await walk(resolve(ROOT, 'web/dist'));
-const draftHubs = distFiles.filter((f) => /[\\/]_?hubs?[\\/]/i.test(f));
+const draftHubs = distFiles.filter((f) => /[\\/]_?hubs?[\\/]|[\\/]brouillons[\\/]/i.test(f));
 if (draftHubs.length) {
   add(
     'bloquant',

@@ -1,0 +1,69 @@
+{
+  "_meta": {
+    "hub_id": "bordeaux-gironde",
+    "redige_le": "2026-10-10",
+    "statut": "matière PUBLIABLE : affaire publique (FR-2026-0113) et déclarations institutionnelles. Les affaires validées mais non publiées vivent dans data/hub-prive/ (ignoré par Git).",
+    "methode": "chaque entrée est rattachée à un article dont le texte a été relu par script (mots-clés) avant écriture."
+  },
+  "synthese": [
+    {
+      "texte": "SNY documente aujourd'hui publiquement une affaire à Bordeaux : l'école maternelle Frida-Kahlo (quartier Belcier). Selon le parquet de Bordeaux, une enquête préliminaire est ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, à la suite de plaintes de parents ; les deux personnes visées ont été suspendues. Selon Sud Ouest, tous les mis en cause des enquêtes de l'agglomération contestent les accusations et restent présumés innocents.",
+      "sources": [{ "media": "France 3 Nouvelle-Aquitaine", "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html", "publie_le": "2026-07-02" }]
+    },
+    {
+      "texte": "Ce dossier est à lire dans un contexte plus large, que la presse décrit comme une vague de signalements dans l'agglomération depuis le scandale parisien. Le procureur de Bordeaux a indiqué à Sud Ouest que cinq enquêtes préliminaires sur des violences sexuelles en milieu scolaire ou périscolaire étaient en cours dans l'agglomération, et que son parquet avait reçu plus de 3 600 signalements concernant des mineurs en danger au 20 juin 2026, autant que sur toute l'année 2023. SNY n'en documente qu'une : ce n'est pas un recensement, et le nombre d'affaires publiées ici ne mesure rien du territoire.",
+      "sources": [{ "media": "Sud Ouest", "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php", "publie_le": "2026-07-03" }]
+    }
+  ],
+
+  "ordre": ["FR-2026-0113"],
+
+  "dossiers": {
+    "FR-2026-0113": {
+      "etat_actuel": [
+        "Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves.",
+        "Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.",
+        "L'ouverture d'une enquête ne vaut pas culpabilité."
+      ],
+      "statut_affiche": "enquête",
+      "deroule": [
+        { "date": null, "date_nature": "inconnue", "type": "signalement", "acteur": "Mairie de Bordeaux, parents", "texte": "Selon Le Figaro, les deux agents, employés à l'école maternelle Frida-Kahlo dans le quartier Belcier, ont été suspendus le jour de leur signalement. Les dates des signalements et leur ordre ne sont pas établis par les articles relus.", "source": { "media": "Le Figaro", "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701", "publie_le": "2026-07-01", "acces": "partiel" } },
+        { "date": "2026-06-30", "date_nature": "approximative", "type": "garde_a_vue", "acteur": "Police, parquet de Bordeaux", "texte": "Placés en garde à vue, les deux agents sont entendus après des perquisitions à leur domicile (« mardi 30 juin » selon France 3 ; « mercredi » selon Le Figaro). Les gardes à vue sont levées « afin de permettre l'exploitation du matériel informatique saisi », précise le parquet, qui indique que l'office anti-cybercriminalité de Bordeaux l'exploite « en toute première priorité ».", "source": { "media": "France 3 Nouvelle-Aquitaine", "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html", "publie_le": "2026-07-02", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "type": "contradiction", "acteur": "Médias", "texte": "Le nombre de plaintes de parents diffère selon les articles : cinq selon franceinfo (1er juillet), sept selon France 3, Le Figaro et Midi Libre/AFP (1er-2 juillet). Les chiffres sont ceux des sources ; SNY n'en retient aucun.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html", "publie_le": "2026-07-01", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Aucun développement postérieur au 3 juillet 2026 n'a été trouvé (mise en examen, classement, nouvelle mesure) : recherches du 10 octobre dans la presse accessible. Cela ne prouve pas qu'il n'y en a pas.",
+        "Les dates des signalements et l'ordre dans lequel les deux agents ont été visés diffèrent selon les résumés de presse et ne sont pas établis.",
+        "Le contenu de l'analyse du matériel informatique n'est pas connu."
+      ]
+    }
+  },
+
+  "reponses": [
+    {
+      "titre": "Justice",
+      "items": [
+        { "date": null, "date_nature": "article", "acteur": "Procureur de Bordeaux (Renaud Gaudeul)", "texte": "Cinq enquêtes préliminaires portant sur des violences sexuelles qui auraient été commises en milieu scolaire ou périscolaire dans l'agglomération sont en cours, confiées à l'antenne bordelaise de l'Office des mineurs ; aucune information judiciaire n'est ouverte à ce stade. Les personnes mises en cause ont été suspendues, contestent les accusations et restent présumées innocentes. Le parquet a reçu plus de 3 600 signalements concernant des mineurs en danger au 20 juin 2026.", "source": { "media": "Sud Ouest", "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php", "publie_le": "2026-07-03", "acces": "libre" } }
+      ]
+    },
+    {
+      "titre": "Ville de Bordeaux et Éducation nationale",
+      "items": [
+        { "date": null, "date_nature": "article", "acteur": "Adjointe au maire de Bordeaux", "texte": "Elle dit que « la situation n'est pas comparable » au scandale parisien : Bordeaux n'emploie pas directement les animateurs. Elle annonce un plan sur la protection de l'enfance, à venir.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html", "publie_le": "2026-07-01", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "acteur": "Mairie de Bordeaux ; rectorat", "texte": "La mairie déclare au Figaro que, « dès le moindre doute », des procédures strictes sont appliquées et que chaque alerte est « immédiatement traitée ». Le rectorat dit « suivre cette affaire avec attention » après avoir vérifié que le procureur en avait connaissance.", "source": { "media": "Le Figaro", "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701", "publie_le": "2026-07-01", "acces": "partiel" } }
+      ]
+    }
+  ],
+
+  "inconnues_transversales": [
+    "Le plan sur la protection de l'enfance annoncé par la Ville de Bordeaux n'a pas été retrouvé dans la presse accessible : son contenu et sa date ne sont pas établis.",
+    "Aucune déclaration de la préfecture ou du Département de la Gironde sur ces affaires n'a été retrouvée.",
+    "Le procureur évoque cinq enquêtes dans l'agglomération : SNY n'en documente qu'une publiquement. Les autres ne sont pas publiées ; leur absence ici n'est pas une absence de faits."
+  ],
+
+  "recherches": [
+    { "question": "Développements après juillet pour Frida-Kahlo (mise en examen, mesures, rectorat)", "resultat": "rien de postérieur au 3 juillet" },
+    { "question": "Réponses des institutions (Ville, rectorat, parquet, préfecture)", "resultat": "trouvé pour Ville, rectorat et parquet ; rien pour préfecture et Département" },
+    { "question": "Contexte territorial chiffré", "resultat": "trouvé (procureur, Sud Ouest 3 juillet)" }
+  ]
+}

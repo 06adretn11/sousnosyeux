@@ -1,0 +1,53 @@
+---
+// Déroulé d'un dossier : une entrée = un fait attribué à une source.
+// La date affichée est celle de l'ÉVÉNEMENT quand la source la donne ;
+// sinon « Date non établie » + la date de parution, jamais confondues.
+import { libelleDate, TYPE_LABELS } from '../lib/hub-matiere';
+import { dateLongue } from '../lib/etat-wording';
+
+interface Props { items: any[] }
+const { items } = Astro.props;
+const pub = (s: any) => (s?.publie_le ? dateLongue(s.publie_le) : null);
+---
+
+<ol class="chrono">
+  {items.map((e) => {
+    const sansDate = !e.date || e.date_nature === 'article' || e.date_nature === 'inconnue';
+    return (
+      <li class={`${sansDate ? 'sans-date ' : ''}t-${e.type}`}>
+        <div class="quand">{libelleDate(e.date, e.date_nature)}</div>
+        <div class="quoi">
+          <span class="type">{TYPE_LABELS[e.type] ?? e.type}</span>
+          {e.acteur && <span class="acteur">{e.acteur}</span>}
+          <p>{e.texte}</p>
+          <p class="src">
+            {e.source?.url
+              ? <a href={e.source.url} target="_blank" rel="noopener noreferrer">{e.source.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} ↗</a>
+              : <span>{e.source?.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} (lien non conservé)</span>}
+            {e.source?.acces === 'paywall' && <span class="limite"> · article réservé aux abonnés</span>}
+            {sansDate && pub(e.source) && <span class="limite"> · la source ne date pas l’événement ; elle paraît le {pub(e.source)}</span>}
+          </p>
+        </div>
+      </li>
+    );
+  })}
+</ol>
+
+<style>
+  .chrono { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--border); }
+  .chrono li { display: grid; grid-template-columns: 9.5rem 1fr; gap: 0 16px; padding: 0 0 14px 14px; position: relative; }
+  .chrono li::before { content: ""; position: absolute; left: -6px; top: 5px; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--bg-card); border: 2px solid var(--blue); }
+  .chrono li.sans-date::before { border-style: dashed; border-color: var(--muted); }
+  .chrono li.t-decision::before { border-color: var(--green); background: var(--green); }
+  .chrono li.t-appel::before { border-color: var(--orange); background: var(--orange); }
+  .quand { font: 0.74rem/1.4 var(--mono); color: #3d3d42; padding-top: 2px; }
+  .sans-date .quand { color: var(--muted); }
+  .type { display: inline-block; font: 0.64rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em;
+    color: #55555b; background: #efefec; padding: 1px 6px; margin-right: 6px; }
+  .acteur { font-size: 0.78rem; color: var(--muted); }
+  .quoi p { margin: 3px 0 0; font-size: 0.9rem; line-height: 1.5; }
+  .quoi p.src { font-size: 0.76rem; color: var(--muted); }
+  .limite { font-style: italic; }
+  @media (max-width: 600px) { .chrono li { grid-template-columns: 1fr; } .quand { margin-bottom: 2px; } }
+</style>

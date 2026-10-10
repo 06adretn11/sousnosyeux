@@ -1,50 +1,74 @@
 ---
-// Somme — territoire diffus : aucune affaire publique. Une page qui
-// assume ce vide sans le laisser passer pour une garantie.
-import { memoireCompileeLe } from '../../lib/territoires';
+// Somme — territoire diffus. Public : aucune affaire validée, donc une page
+// qui le dit sans en faire une garantie. Local : la matière trouvée mais non
+// validée (data/hub-prive/somme.json), organisée par commune pour tester le
+// format « département » — jamais publiable en l'état.
+import Dossier from '../Dossier.astro';
+import Synthese from '../Synthese.astro';
+import Limites from '../Limites.astro';
+import { chargerHub } from '../../lib/hub-matiere';
 import { dateLongue } from '../../lib/etat-wording';
+
+const { matiere, prive } = chargerHub('somme');
+const communes: Record<string, any[]> = {};
+if (prive) {
+  for (const id of prive.ordre_avant) {
+    const nom = prive.communes[id];
+    (communes[nom] ??= []).push({ c: prive.dossiers[id].fiche, d: prive.dossiers[id] });
+  }
+}
 ---
 
 <div class="terr">
   <p class="eyebrow">Territoire diffus · Somme (80)</p>
   <h1>Somme : aucune affaire documentée par SNY</h1>
   <p class="lede">
-    À ce jour, SNY ne publie <strong>aucune fiche</strong> pour la Somme. Ce n’est pas un constat sur la réalité
-    des faits : c’est l’état de la mémoire de SNY, qui ne relaie que des affaires déjà rapportées par la presse
-    et validées avant publication.
+    SNY ne publie aujourd’hui aucune fiche pour la Somme. Ce n’est pas une garantie : c’est l’état de sa mémoire.
   </p>
 
-  <div class="encart limites">
-    <strong>Ne pas lire cette page comme une garantie.</strong>
-    <ul>
-      <li>« Aucune affaire sur SNY » ne veut pas dire « aucun fait » : des affaires peuvent exister sans article, ou n’avoir pas encore été repérées et validées.</li>
-      <li>SNY n’est pas exhaustif et ne cherche pas à l’être : il n’a ni accès aux procédures, ni vocation à enquêter.</li>
-      <li>Il n’y a donc ici ni carte, ni chronologie, ni chiffre : il n’y a rien à placer, dater ou compter sans l’inventer.</li>
-    </ul>
-  </div>
+  <h2>À retenir</h2>
+  <Synthese paragraphes={matiere.synthese} />
 
-  <h2>Ce que SNY couvre</h2>
-  <p class="lede">
-    Des affaires concernant des structures accueillant des mineurs (crèches, écoles, périscolaire…), rapportées
-    par une source de presse identifiable, avec leur état judiciaire et leurs sources, dans le respect de la
-    présomption d’innocence. <a href="/methodologie">Lire la méthodologie</a> · <a href="/">Voir la carte des affaires documentées</a>.
-  </p>
+  {prive && (
+    <>
+      <div class="alerte-prive">
+        <strong>RENDU LOCAL — MATIÈRE NON VALIDÉE.</strong> Les dossiers ci-dessous ont été trouvés dans la presse mais
+        aucun n’est validé. Ils servent à tester le format « département par communes » ; ils ne doivent pas être publiés en l’état.
+      </div>
 
-  <h2>Vous connaissez un article sur une affaire dans la Somme ?</h2>
-  <p class="lede">
-    Écrivez-nous avec le lien vers l’article de presse : <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a>.
-    Il sera examiné avant toute publication ; SNY ne publie pas d’information sans source de presse.
-  </p>
+      <h2>Matière trouvée, par commune</h2>
+      {Object.entries(communes).map(([nom, items]) => (
+        <section class="commune">
+          <h3>{nom}</h3>
+          <div class="grille">
+            {items.map(({ c, d }) => <Dossier c={c} d={d} />)}
+          </div>
+        </section>
+      ))}
 
-  <h2>Besoin d’aide ou d’un signalement</h2>
-  <p class="lede">
-    SNY n’est pas un service de signalement. Pour un enfant en danger ou en risque de l’être, le
-    <strong>119 — Allô Enfance en danger</strong> est le numéro national, gratuit et ouvert 24 h/24.
-  </p>
+      <h2>Contexte départemental</h2>
+      {prive.contexte_ajout.map((e: any) => (
+        <p class="ctx">
+          {e.texte}
+          {' '}<a href={e.source.url} target="_blank" rel="noopener noreferrer">{e.source.media}, {dateLongue(e.source.publie_le)} ↗</a>
+        </p>
+      ))}
 
-  <p class="note">Mémoire compilée le {dateLongue(memoireCompileeLe)}.</p>
+      <h2>Éléments examinés et non retenus</h2>
+      <ul class="non-retenus">
+        {prive.non_retenus.map((t: string) => <li>{t}</li>)}
+      </ul>
+    </>
+  )}
+
+  <h2>Limites et inconnues</h2>
+  <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
 </div>
 
 <style>
-  .note { margin: 1.4rem 0 0; color: var(--muted); font-size: 0.8rem; }
+  .alerte-prive { max-width: 820px; margin: 1rem 0; padding: 0.8rem 1rem; border: 2px dashed var(--red); background: #fff5f5; font-size: 0.88rem; }
+  .commune h3 { margin: 1.2rem 0 0.6rem; font: 700 1.25rem var(--display); }
+  .ctx { max-width: 780px; font-size: 0.9rem; }
+  .non-retenus { max-width: 820px; font-size: 0.86rem; color: #4a4a50; padding-left: 1.2rem; }
+  .non-retenus li { margin: 5px 0; }
 </style>

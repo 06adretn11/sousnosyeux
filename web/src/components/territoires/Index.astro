@@ -1,20 +1,22 @@
 ---
 // Porte d'entrée de la prévisualisation : trois expériences, trois formats.
 import { casesParIds } from '../../lib/territoires';
+import { chargerHub } from '../../lib/hub-matiere';
 
-const nParis = casesParIds([
-  'FR-2026-0016', 'FR-2026-0023', 'PARIS-006', 'PARIS-009',
-  'POC-05', 'POC-06', 'POC-07', 'POC-08', 'POC-09',
-]).length;
-const nGironde = casesParIds(['FR-2026-0113']).length;
+const compter = (id: string) => {
+  const { matiere, prive } = chargerHub(id);
+  return { publiques: casesParIds(matiere.ordre).length, privees: prive ? Object.keys(prive.dossiers).length : 0 };
+};
+const p = compter('paris-11e'), b = compter('bordeaux-gironde'), s = compter('somme');
+const loc = (n: number) => (n > 0 ? ` + ${n} dossier${n > 1 ? 's' : ''} non publié${n > 1 ? 's' : ''} (rendu local)` : '');
 
 const cartes = [
   { href: '/brouillons/territoires/paris-11e', t: 'Paris 11e', k: 'Densité et complexité',
-    d: `${nParis} fiches publiques : carte, filtre par état, décisions datées, fiches par établissement.` },
+    d: `${p.publiques} fiches publiques : synthèse, tableau des procédures, carte, dossiers avec déroulé daté, réponses des institutions, inconnues.` },
   { href: '/brouillons/territoires/bordeaux-gironde', t: 'Bordeaux / Gironde', k: 'Mémoire en construction',
-    d: `${nGironde} fiche publique : lecture du dossier, sources, inconnues. Pas de carte.` },
+    d: `${b.publiques} fiche publique${loc(b.privees)} : dossiers approfondis, versions divergentes des acteurs, contexte du parquet. Pas de carte.` },
   { href: '/brouillons/territoires/somme', t: 'Somme', k: 'Territoire diffus',
-    d: 'Aucune fiche publique : une page qui assume le vide et refuse d’en faire une garantie.' },
+    d: `${s.publiques} fiche publique${loc(s.privees)} : une page publique qui assume le vide ; en local, la matière non validée classée par commune.` },
 ];
 ---
 
@@ -22,8 +24,8 @@ const cartes = [
   <p class="eyebrow">Prévisualisation · trois expériences territoriales</p>
   <h1>Trois formats, selon la matière</h1>
   <p class="lede">
-    Chaque page est construite à partir des seules fiches publiques de SNY, sans rien ajouter. Les nombres
-    ci-dessous décrivent la mémoire de SNY, pas la réalité des territoires : ils ne se comparent pas.
+    Chaque page s’appuie sur les fiches publiques de SNY, enrichies d’une matière éditoriale relue source par source.
+    Les nombres décrivent la mémoire de SNY, pas la réalité des territoires : ils ne se comparent pas.
   </p>
   <div class="cartes">
     {cartes.map((c) => (

@@ -1,0 +1,103 @@
+---
+// Dossier d'une affaire : état attribué, déroulé daté, inconnues, sources.
+//
+// L'état vient du wording partagé avec la home (etat-wording) SAUF si la
+// matière fournit `etat_actuel` : le wording partagé ne sait pas dire
+// « renvoyé, audience fixée » (son « procès » dit « un procès s'est tenu »).
+// Une phrase écrite et sourcée vaut mieux qu'une phrase fausse.
+import Chronologie from './Chronologie.astro';
+import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
+import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre } from '../lib/territoires';
+
+interface Props { c: any; d?: any; titre?: string }
+const { c, d = {}, titre } = Astro.props;
+
+const sourcesLibres = (c.sources ?? []).filter((s: any) => libre(s.media));
+const principale = sourcesLibres[0]
+  ? { media: sourcesLibres[0].media, date: sourcesLibres[0].publication_date ?? null, url: sourcesLibres[0].url ?? null }
+  : null;
+const phrases: string[] = d.etat_actuel ?? phrasesEtat(c.statut_judiciaire, c.etat ?? null, sourceAffichee(c.etat ?? null, principale));
+const appel = (c.etat?.suites ?? []).includes('APPEL_EN_COURS') || d.appel === true;
+const statut = d.statut_affiche ?? statutCourant(c);
+const cat = statutCat(d.statut_cat ?? statut);
+const der = derniereSource(c);
+const fmt = (x: string | null) => (x ? dateLongue(x) : 'date non précisée');
+
+const vues = new Set<string>();
+const liens: { media: string; date: string | null; url: string | null }[] = [];
+for (const s of c.etat?.sources ?? []) {
+  const k = s.url ?? `${s.media}|${s.date}`;
+  if (!vues.has(k)) { vues.add(k); liens.push({ media: s.media, date: s.date ?? null, url: s.url ?? null }); }
+}
+for (const s of sourcesLibres) {
+  if (!vues.has(s.url)) { vues.add(s.url); liens.push({ media: s.media, date: s.publication_date ?? null, url: s.url }); }
+}
+---
+
+<article class={`dossier ${cat}`} id={c.case_id.toLowerCase()} data-statut={statut}>
+  <header>
+    <h3>{titre ?? c.etablissement}</h3>
+    <p class="meta">{c.type_structure} · {c.commune}</p>
+    <div class="chips">
+      <span class={`chip ${cat}`}>{d.statut_libelle ?? STATUT_LABELS[statut] ?? statut}</span>
+      {appel && <span class="chip appel">Appel — décision non définitive</span>}
+      <span class="chip muted">faits {c.statut_des_faits === 'allégué' ? 'allégués' : c.statut_des_faits}</span>
+    </div>
+  </header>
+
+  {phrases.map((l: string) => <p class="etat">{l}</p>)}
+  {d.lecture && <p class="lecture">{d.lecture}</p>}
+
+  {d.deroule?.length > 0 && (
+    <>
+      <h4>Déroulé</h4>
+      <Chronologie items={d.deroule} />
+    </>
+  )}
+
+  {d.inconnues?.length > 0 && (
+    <>
+      <h4>Ce que l’on ne sait pas</h4>
+      <ul class="inconnues">{d.inconnues.map((i: string) => <li>{i}</li>)}</ul>
+    </>
+  )}
+
+  <p class="sources">
+    <span class="lbl">Sources de la fiche</span>
+    {liens.map((s, i) => (
+      <>
+        {i > 0 && <span aria-hidden="true"> · </span>}
+        {s.url
+          ? <a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${fmt(s.date)}` : ' (non datée)'} ↗</a>
+          : <span class="sans-lien">{s.media}{s.date ? `, ${fmt(s.date)}` : ''} — lien non conservé</span>}
+      </>
+    ))}
+    {der && <span class="fraicheur"> · dernière source de la fiche : {der.media}, parue le {fmt(der.date)} (date de parution, pas d’événement)</span>}
+  </p>
+</article>
+
+<style>
+  .dossier { position: relative; padding: 1.2rem 1.3rem 1.1rem 1.5rem; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: 3px; scroll-margin-top: 80px; }
+  .dossier::before { content: ""; position: absolute; inset: 14px auto 14px 0; width: 3px; background: var(--c, var(--blue)); }
+  .dossier.red { --c: var(--red); } .dossier.blue { --c: var(--blue); }
+  .dossier.orange { --c: var(--orange); } .dossier.green { --c: var(--green); }
+  .dossier:target { outline: 2px solid var(--blue); outline-offset: 2px; }
+  h3 { margin: 0; font: 700 1.12rem/1.25 var(--sans); }
+  h4 { margin: 1.1rem 0 0.5rem; font: 400 0.7rem var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: #6b6b72; }
+  .meta { margin: 2px 0 8px; color: var(--muted); font-size: 0.8rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip { padding: 3px 7px; font: 0.68rem var(--mono); background: #eef2f5; color: #3f5c6c; }
+  .chip.red { background: var(--red-bg); color: #9b1c28; } .chip.blue { background: var(--blue-bg); color: #1e4a6b; }
+  .chip.orange { background: var(--orange-bg); color: #92500a; } .chip.green { background: var(--green-bg); color: #1b4d38; }
+  .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); }
+  .chip.muted { background: #f4f4f2; color: #6b7280; }
+  .etat { margin: 0 0 6px; font-size: 0.94rem; color: #2a2a2d; }
+  .lecture { margin: 8px 0 0; padding: 8px 12px; background: #f7f7f4; border-left: 3px solid var(--border); font-size: 0.88rem; color: #3d3d42; }
+  .inconnues { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; color: #4a4a50; }
+  .inconnues li { margin: 3px 0; }
+  .sources { margin: 1rem 0 0; font-size: 0.76rem; line-height: 1.6; color: var(--muted); }
+  .sources a { color: var(--blue); }
+  .sources .lbl { font: 0.64rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; margin-right: 8px; }
+  .fraicheur { font-style: italic; }
+</style>

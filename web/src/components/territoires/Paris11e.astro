@@ -1,83 +1,95 @@
 ---
 // Paris 11e — densité et complexité : plusieurs établissements, plusieurs
-// procédures, deux décisions de relaxe frappées d'appel.
-import FicheAffaire from '../FicheAffaire.astro';
-import { casesParIds, memoireCompileeLe, STATUT_LABELS, statutCat, statutCourant } from '../../lib/territoires';
+// procédures à des stades différents, deux relaxes frappées d'appel,
+// et un volet institutionnel documenté. Toutes les affaires sont publiques.
+import Dossier from '../Dossier.astro';
+import Synthese from '../Synthese.astro';
+import Reponses from '../Reponses.astro';
+import Limites from '../Limites.astro';
+import { casesParIds, STATUT_LABELS, statutCat } from '../../lib/territoires';
+import { chargerHub, libelleDate, TYPE_LABELS } from '../../lib/hub-matiere';
 import { dateLongue } from '../../lib/etat-wording';
 
-// Sélection explicite : les 9 fiches publiques du 11e arrondissement.
-const cases = casesParIds([
-  'FR-2026-0016', 'FR-2026-0023', 'PARIS-006', 'PARIS-009',
-  'POC-05', 'POC-06', 'POC-07', 'POC-08', 'POC-09',
-]);
+const { matiere } = chargerHub('paris-11e');
+const cases = casesParIds(matiere.ordre);
+const D = matiere.dossiers;
+const statutDe = (c: any) => D[c.case_id]?.statut_affiche ?? c.etat?.statut ?? c.statut_judiciaire;
 
-// Un établissement = un point sur la carte (clé : coordonnées).
+// Un établissement = un point sur la carte (clé : coordonnées), ordre = avancement procédural.
+const groupes: any[][] = [];
 const parLieu = new Map<string, any[]>();
 for (const c of cases) {
   const k = `${c.lat},${c.lng}`;
-  parLieu.set(k, [...(parLieu.get(k) ?? []), c]);
+  if (!parLieu.has(k)) { const g: any[] = []; parLieu.set(k, g); groupes.push(g); }
+  parLieu.get(k)!.push(c);
 }
-const groupes = [...parLieu.values()].sort((a, b) =>
-  a[0].etablissement.localeCompare(b[0].etablissement, 'fr'));
 
 const etats = new Map<string, number>();
-for (const c of cases) etats.set(statutCourant(c), (etats.get(statutCourant(c)) ?? 0) + 1);
+for (const c of cases) etats.set(statutDe(c), (etats.get(statutDe(c)) ?? 0) + 1);
 
-// Décisions DATÉES (date de l'événement, pas de l'article) — les seules qu'on peut ordonner.
-const datees = cases.filter((c) => c.etat?.date)
-  .sort((a, b) => b.etat.date.localeCompare(a.etat.date));
+// Dernier événement DATÉ (date d'événement, jamais date d'article) par dossier.
+const dernier = (c: any) => (D[c.case_id]?.deroule ?? [])
+  .filter((e: any) => e.date && e.date_nature === 'evenement' && e.date <= '2026-10-10')
+  .sort((a: any, b: any) => b.date.localeCompare(a.date))[0] ?? null;
 
 const pins = groupes.map((g) => ({
   id: g[0].case_id.toLowerCase(),
   nom: g[0].etablissement.replace(/^École maternelle /, 'Maternelle '),
   lat: g[0].lat, lng: g[0].lng,
-  cat: statutCat(statutCourant(g[0])),
-  fiches: g.length,
+  cat: statutCat(statutDe(g[0])),
 }));
 ---
 
 <div class="terr">
   <p class="eyebrow">Territoire dense · Paris 11e arrondissement</p>
-  <h1>Affaires rapportées par la presse — Paris 11e</h1>
+  <h1>Comprendre les affaires du 11e arrondissement</h1>
   <p class="lede">
-    {cases.length} fiches publiques, {groupes.length} établissements. Chaque fiche dit où en est la procédure
-    selon la presse, avec ses sources. Deux décisions de relaxe, frappées d’appel, y figurent au même
-    rang que les mises en examen.
+    {cases.length} fiches publiques, {groupes.length} établissements : ce que la presse rapporte des faits, où en sont
+    les procédures, ce que les institutions ont dit et fait — et ce qui reste inconnu.
   </p>
 
+  <h2>À retenir</h2>
+  <Synthese paragraphes={matiere.synthese} />
+
+  <h2>Où en sont les procédures</h2>
   <div class="resume" role="list" aria-label="États des fiches">
     {[...etats.entries()].map(([s, n]) => (
       <span role="listitem" class={`pill ${statutCat(s)}`}><strong>{n}</strong> {STATUT_LABELS[s] ?? s}</span>
     ))}
   </div>
-
-  {datees.length > 0 && (
-    <>
-      <h2>Décisions récentes datées</h2>
-      <ul class="evol">
-        {datees.map((c) => (
-          <li>
-            <a href={`#${c.case_id.toLowerCase()}`}>{c.etablissement}</a> —
-            {STATUT_LABELS[c.etat.statut] ?? c.etat.statut} le {dateLongue(c.etat.date)}
-            {(c.etat.suites ?? []).includes('APPEL_EN_COURS') && ' · appel en cours, décision non définitive'}.
-          </li>
-        ))}
-      </ul>
-      <p class="note">Seules ces décisions ont une date d’événement établie ; pour les autres fiches, la date de l’étape n’est pas connue de SNY.</p>
-    </>
-  )}
+  <div class="tablewrap">
+    <table class="tab">
+      <thead><tr><th>Établissement</th><th>État rapporté</th><th>Dernier événement daté</th></tr></thead>
+      <tbody>
+        {cases.map((c) => {
+          const d = dernier(c);
+          return (
+            <tr>
+              <td><a href={`#${c.case_id.toLowerCase()}`}>{c.etablissement}</a></td>
+              <td>
+                <span class={`chip ${statutCat(statutDe(c))}`}>{STATUT_LABELS[statutDe(c)] ?? statutDe(c)}</span>
+                {(c.etat?.suites ?? []).includes('APPEL_EN_COURS') && <span class="chip appel">appel</span>}
+              </td>
+              <td>{d ? `${TYPE_LABELS[d.type] ?? d.type}, ${dateLongue(d.date)}` : 'aucun événement daté connu'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Ordre : avancement procédural, jamais gravité. « Aucun événement daté » veut dire que les sources lues ne datent pas l’étape, pas qu’il ne s’est rien passé.</p>
 
   <h2>Carte des établissements</h2>
   <div id="carte" role="region" aria-label="Carte des établissements du 11e"></div>
   <p class="note">
-    Un point = un établissement cité par la presse. La carte ne mesure ni l’exhaustivité, ni un risque, et ne
-    classe pas les établissements : l’absence d’un point ne signifie pas l’absence de faits.
+    Un point = un établissement cité par la presse. La carte ne mesure ni l’exhaustivité, ni un risque, et ne classe
+    pas les établissements : l’absence d’un point ne signifie pas l’absence de faits.
   </p>
   <script type="application/json" id="pins-data" set:html={JSON.stringify(pins)} />
 
-  <h2>Les fiches</h2>
+  <h2>Les dossiers</h2>
   <div class="filtres" role="group" aria-label="Filtrer par état">
-    <button type="button" data-f="" aria-pressed="true">Toutes ({cases.length})</button>
+    <button type="button" data-f="" aria-pressed="true">Tous ({cases.length})</button>
     {[...etats.entries()].map(([s, n]) => (
       <button type="button" data-f={s} aria-pressed="false">{STATUT_LABELS[s] ?? s} ({n})</button>
     ))}
@@ -88,33 +100,28 @@ const pins = groupes.map((g) => ({
       <section class="groupe">
         {g.length > 1 && (
           <p class="note multi">
-            Deux fiches existent pour cet établissement, issues de sources différentes.
-            SNY n’a pas établi s’il s’agit d’une seule procédure ou de deux : elles sont comptées comme
-            {' '}{g.length} fiches mais un seul établissement.
+            Deux fiches existent pour cet établissement. Les sources lues ne permettent pas d’établir s’il s’agit d’une
+            seule procédure ou de deux : elles sont comptées comme {g.length} fiches mais un seul établissement.
           </p>
         )}
-        {g.map((c) => <FicheAffaire c={c} detail />)}
+        {g.map((c) => <Dossier c={c} d={D[c.case_id]} />)}
       </section>
     ))}
   </div>
 
-  <h2>Limites de cette couverture</h2>
-  <div class="encart limites">
-    <ul>
-      <li>SNY ne documente que des affaires <strong>rapportées par la presse en ligne</strong> : des faits peuvent exister sans article, ou dans un article que SNY n’a pas retenu.</li>
-      <li>Mémoire compilée le {dateLongue(memoireCompileeLe)}. Aucune date de vérification humaine n’est enregistrée sur ces fiches : un fait postérieur à leur dernière source peut manquer.</li>
-      <li>Cette page n’est ni un palmarès, ni une mesure de prévalence : le nombre de fiches ne dit rien de la sécurité d’un quartier ou d’une école.</li>
-      <li>Aucune personne mise en cause n’est nommée ; les faits sont attribués à leurs sources, sous présomption d’innocence.</li>
-    </ul>
-  </div>
-  <p class="note">Une erreur, une relaxe, un classement ou une évolution à signaler ? <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a></p>
+  <h2>Les réponses des institutions</h2>
+  <p class="note">Ce que chaque institution a annoncé ou fait, attribué. Ces éléments ne disent rien, en eux-mêmes, de la responsabilité de qui que ce soit.</p>
+  <Reponses groupes={matiere.reponses} />
+
+  <h2>Limites et inconnues</h2>
+  <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
 </div>
 
 <script>
   import maplibregl from 'maplibre-gl';
   import 'maplibre-gl/dist/maplibre-gl.css';
 
-  const pins: { id: string; nom: string; lat: number; lng: number; cat: string; fiches: number }[] =
+  const pins: { id: string; nom: string; lat: number; lng: number; cat: string }[] =
     JSON.parse(document.getElementById('pins-data')!.textContent!);
   const COUL: Record<string, string> = { red: '#E63946', blue: '#457B9D', orange: '#D97706', green: '#2D6A4F' };
 
@@ -136,12 +143,12 @@ const pins = groupes.map((g) => ({
   for (const p of pins) {
     const el = document.createElement('button');
     el.type = 'button';
-    el.setAttribute('aria-label', `${p.nom} — voir la fiche`);
+    el.setAttribute('aria-label', `${p.nom} — voir le dossier`);
     el.style.cssText = `width:18px;height:18px;border-radius:50%;border:2px solid #fff;cursor:pointer;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.4);background:${COUL[p.cat]}`;
     const pop = new maplibregl.Popup({ offset: 12, closeButton: false });
     const box = document.createElement('div');
     const t = document.createElement('strong'); t.textContent = p.nom;
-    const a = document.createElement('a'); a.href = `#${p.id}`; a.textContent = 'Voir la fiche ↓';
+    const a = document.createElement('a'); a.href = `#${p.id}`; a.textContent = 'Voir le dossier ↓';
     a.style.cssText = 'display:block;margin-top:4px;font-size:.85rem';
     box.append(t, a); pop.setDOMContent(box);
     new maplibregl.Marker({ element: el }).setLngLat([p.lng, p.lat]).setPopup(pop).addTo(map);
@@ -149,28 +156,35 @@ const pins = groupes.map((g) => ({
   }
   map.fitBounds(bounds, { padding: 50, maxZoom: 15, duration: 0 });
 
-  // Filtre par état : masque fiches et groupes vides, rien d'autre.
+  // Filtre par état : masque dossiers et groupes vides, rien d'autre.
   const boutons = [...document.querySelectorAll<HTMLButtonElement>('.filtres button')];
-  const fiches = [...document.querySelectorAll<HTMLElement>('#liste .fiche')];
+  const fiches = [...document.querySelectorAll<HTMLElement>('#liste .dossier')];
   const groupes = [...document.querySelectorAll<HTMLElement>('#liste .groupe')];
   for (const b of boutons) {
     b.addEventListener('click', () => {
       const f = b.dataset.f ?? '';
       boutons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       fiches.forEach((el) => { el.hidden = f !== '' && el.dataset.statut !== f; });
-      groupes.forEach((g) => { g.hidden = [...g.querySelectorAll<HTMLElement>('.fiche')].every((el) => el.hidden); });
+      groupes.forEach((g) => { g.hidden = [...g.querySelectorAll<HTMLElement>('.dossier')].every((el) => el.hidden); });
     });
   }
 </script>
 
 <style>
-  .resume { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 0.5rem; }
+  .resume { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
   .pill { padding: 5px 10px; font-size: 0.84rem; background: #eef2f5; }
   .pill strong { font: 500 1.05rem var(--mono); margin-right: 4px; }
   .pill.red { background: var(--red-bg); } .pill.blue { background: var(--blue-bg); }
   .pill.orange { background: var(--orange-bg); } .pill.green { background: var(--green-bg); }
-  .evol { margin: 0 0 6px; padding-left: 1.1rem; font-size: 0.92rem; }
-  .evol li { margin: 4px 0; }
+  .tablewrap { overflow-x: auto; }
+  .tab { width: 100%; max-width: 900px; border-collapse: collapse; background: var(--bg-card); font-size: 0.88rem; }
+  .tab th, .tab td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .tab th { font: 0.68rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .tab a { color: var(--blue); }
+  .chip { display: inline-block; padding: 2px 7px; margin-right: 4px; font: 0.68rem var(--mono); background: #eef2f5; color: #3f5c6c; }
+  .chip.red { background: var(--red-bg); color: #9b1c28; } .chip.blue { background: var(--blue-bg); color: #1e4a6b; }
+  .chip.orange { background: var(--orange-bg); color: #92500a; } .chip.green { background: var(--green-bg); color: #1b4d38; }
+  .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); }
   .note { max-width: 780px; margin: 6px 0 0; color: var(--muted); font-size: 0.8rem; }
   .note.multi { padding: 8px 12px; background: var(--orange-bg); color: #6b4408; margin: 0 0 8px; }
   #carte { height: 380px; border: 1px solid var(--border); background: #e9e9e6; }

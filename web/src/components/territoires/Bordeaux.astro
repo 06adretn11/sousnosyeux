@@ -1,66 +1,57 @@
 ---
-// Bordeaux / Gironde — mémoire en construction : une seule affaire publique.
-// Pas de carte (un point ne ferait pas une carte), pas de chronologie
-// inventée : on lit le dossier, ses sources et ses inconnues.
-import FicheAffaire from '../FicheAffaire.astro';
-import { casesParIds, memoireCompileeLe, derniereSource } from '../../lib/territoires';
-import { dateLongue } from '../../lib/etat-wording';
+// Bordeaux / Gironde — mémoire en construction. Deux dossiers approfondis
+// plutôt qu'une carte : un seul est public ; le second (validé, non publié)
+// n'existe que dans un rendu local (data/hub-prive/, ignoré par Git).
+import Dossier from '../Dossier.astro';
+import Synthese from '../Synthese.astro';
+import Reponses from '../Reponses.astro';
+import Limites from '../Limites.astro';
+import { casesParIds } from '../../lib/territoires';
+import { chargerHub } from '../../lib/hub-matiere';
 
-// Sélection explicite. Les autres éléments de la Gironde ne sont PAS publics
-// et n'ont aucune place ici (candidates, affaire sous HOLD).
-const [c] = casesParIds(['FR-2026-0113']);
-const der = derniereSource(c);
-const memeJour = new Set(c.sources.map((s: any) => s.publication_date)).size === 1;
+const { matiere, prive } = chargerHub('bordeaux-gironde');
+const publics = casesParIds(matiere.ordre).map((c: any) => ({ c, d: matiere.dossiers[c.case_id], prive: false }));
+const prives = prive
+  ? prive.ordre_avant.map((id: string) => ({ c: prive.dossiers[id].fiche, d: prive.dossiers[id], prive: true }))
+  : [];
+const dossiers = [...prives, ...publics];
+
+const synthese = [...(prive?.synthese_ajout ?? []), ...matiere.synthese];
+const reponses = [...(prive?.reponses_ajout ?? []), ...matiere.reponses];
 ---
 
 <div class="terr">
   <p class="eyebrow">Mémoire en construction · Bordeaux / Gironde</p>
-  <h1>Affaires rapportées par la presse — Bordeaux et Gironde</h1>
+  <h1>Comprendre les affaires de Bordeaux et de la Gironde</h1>
   <p class="lede">
-    SNY documente aujourd’hui <strong>une seule affaire</strong> sur ce territoire. D’autres éléments peuvent
-    être en cours de vérification avant publication : tant qu’ils ne sont pas validés, SNY ne les affiche pas.
-    Cette page présente donc un dossier, avec ses sources et ses inconnues.
+    {dossiers.length === 1
+      ? 'SNY documente publiquement une affaire sur ce territoire. Cette page la lit en profondeur, la replace dans son contexte et dit ce qui reste inconnu.'
+      : `${dossiers.length} dossiers lus en profondeur, avec leurs sources, les réponses des institutions et ce qui reste inconnu.`}
   </p>
 
-  <h2>Le dossier</h2>
-  <FicheAffaire c={c} detail />
+  <h2>À retenir</h2>
+  <Synthese paragraphes={synthese} />
 
-  <h2>Ce que les sources permettent de dire — et de ne pas dire</h2>
-  <div class="deux">
-    <div class="encart">
-      <strong>Rapporté</strong>
-      <ul>
-        <li>Selon les {c.sources.length} médias cités ({c.sources.map((s: any) => s.media).join(', ')}), le parquet de Bordeaux a ouvert une enquête à la suite de plaintes pour des faits de nature sexuelle dans une école maternelle de Bordeaux.</li>
-        <li>Les trois articles connus de SNY sont {memeJour ? `tous publiés le ${dateLongue(c.sources[0].publication_date)}` : 'publiés à des dates différentes'}.</li>
-        <li>Les faits sont qualifiés d’<em>allégués</em> : aucune décision judiciaire n’est rapportée.</li>
-      </ul>
-    </div>
-    <div class="encart limites">
-      <strong>Inconnu de SNY</strong>
-      <ul>
-        <li>La date des faits et celle de l’ouverture de l’enquête.</li>
-        <li>L’existence d’une mise en examen, d’un classement ou de toute autre suite.</li>
-        <li>Tout événement postérieur à la dernière source connue
-          {der && <> ({der.media}, publiée le {dateLongue(der.date!)})</>}. SNY n’a connaissance d’aucun article plus récent ; ce n’est pas une preuve qu’il ne s’est rien passé.</li>
-      </ul>
-    </div>
+  <h2>Les dossiers</h2>
+  <div class="grille">
+    {dossiers.map(({ c, d, prive: p }) => (
+      <div class={p ? 'bloc-prive' : undefined}>
+        {p && <p class="tag-prive">NON PUBLIÉ — validé par l’éditeur, en attente de GO · rendu local</p>}
+        <Dossier c={c} d={d} />
+      </div>
+    ))}
   </div>
 
-  <h2>Limites de cette couverture</h2>
-  <div class="encart limites">
-    <ul>
-      <li>Une fiche ne fait pas un territoire : l’absence d’autres affaires ici ne dit rien de la réalité des faits en Gironde, seulement de ce que SNY a validé.</li>
-      <li>Mémoire compilée le {dateLongue(memoireCompileeLe)}. Aucune date de vérification humaine n’est enregistrée sur cette fiche.</li>
-      <li>Cette page n’est ni un palmarès ni une mesure de prévalence ; elle ne se compare pas à celle d’un autre territoire.</li>
-      <li>Aucune personne mise en cause n’est nommée ; présomption d’innocence.</li>
-    </ul>
-  </div>
-  <p class="note">Une information sourcée à ajouter, une correction ? <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a></p>
+  <h2>Les réponses des institutions</h2>
+  <p class="note">Ce que chaque acteur a dit ou fait, attribué. Lorsque deux versions divergent, les deux sont rapportées.</p>
+  <Reponses groupes={reponses} />
+
+  <h2>Limites et inconnues</h2>
+  <Limites inconnues={matiere.inconnues_transversales} recherches={matiere.recherches} />
 </div>
 
 <style>
-  .deux { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; max-width: 1000px; }
-  .deux .encart { max-width: none; margin: 0; }
-  .note { max-width: 780px; margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; }
-  @media (max-width: 720px) { .deux { grid-template-columns: 1fr; } }
+  .bloc-prive { border: 2px dashed var(--red); padding: 8px; }
+  .tag-prive { margin: 0 0 8px; font: 0.7rem var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); }
+  .note { max-width: 780px; margin: 6px 0 12px; color: var(--muted); font-size: 0.8rem; }
 </style>

@@ -56,3 +56,6 @@ web/.claude/
 # --- Maintenance des affaires connues : sorties generees (MAINTENANCE_LOOP_2) ---
 data/maintenance-archive/
 data/maintenance-funnel.json
+
+# Matière éditoriale sur affaires validées NON publiées : le dépôt est public, jamais de commit.
+data/hub-prive/

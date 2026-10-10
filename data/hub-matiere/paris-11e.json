@@ -1,0 +1,242 @@
+{
+  "_meta": {
+    "hub_id": "paris-11e",
+    "redige_le": "2026-10-10",
+    "statut": "matière éditoriale — affaires toutes PUBLIQUES (artefact data/cases.json)",
+    "methode": "chaque entrée est rattachée à un article dont le texte a été relu par script (mots-clés) avant écriture ; les paroles sont attribuées ; une date d'événement n'est affichée que si l'article la donne (date_nature = evenement).",
+    "ordre": "avancement procédural, jamais gravité"
+  },
+  "synthese": [
+    {
+      "texte": "Neuf fiches, huit établissements du 11e arrondissement. Elles s'inscrivent dans un ensemble que la presse appelle « scandale du périscolaire » : selon le parquet de Paris (France 3, 31 août 2026), 203 enquêtes concernent 184 écoles à l'échelle de Paris. Ce chiffre ne porte pas sur le 11e seul, et une enquête ouverte n'est pas une culpabilité.",
+      "sources": [{ "media": "France 3 Paris Île-de-France", "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html", "publie_le": "2026-08-31" }]
+    },
+    {
+      "texte": "Les procédures du 11e en sont à des stades très différents : deux jugements rendus, deux mises en examen, cinq fiches au stade de la plainte ou de l'enquête. Aucune condamnation pour des faits visant des enfants ne figure parmi les fiches du 11e.",
+      "sources": []
+    },
+    {
+      "texte": "Les deux jugements rendus sont deux relaxes, que le parquet de Paris a contestées en appel. Elles ne disent pas la même chose. À l'école Titon, le tribunal a jugé le comportement « inapproprié » mais non constitutif d'une infraction. À l'école Alphonse-Baudin, il a retenu un « doute sérieux » sur les faits visant des enfants, tout en condamnant l'animateur pour harcèlement sexuel sur deux collègues. Des familles se sont mobilisées contre ces décisions (rassemblement du 9 juillet devant l'école Alphonse-Baudin).",
+      "sources": [
+        { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html", "publie_le": "2026-06-17" },
+        { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html", "publie_le": "2026-07-07" }
+      ]
+    },
+    {
+      "texte": "Les réponses des institutions (suspensions, plaintes de la Ville, plan d'action, commission indépendante, commission d'enquête du Sénat) sont rapportées plus bas, attribuées à ceux qui les ont annoncées. SNY ne juge pas leur efficacité et ne tire aucune conclusion de la succession des dates.",
+      "sources": []
+    }
+  ],
+
+  "ordre": ["POC-05", "POC-09", "POC-07", "POC-06", "FR-2026-0023", "PARIS-009", "PARIS-006", "POC-08", "FR-2026-0016"],
+
+  "dossiers": {
+    "POC-05": {
+      "etat_actuel": [
+        "Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute sérieux ».",
+        "Le même jugement l'a en revanche condamné à huit mois de prison avec sursis pour harcèlement sexuel sur deux collègues.",
+        "Le parquet de Paris a fait appel de la relaxe le 8 juillet : elle n'est pas définitive et la procédure se poursuit."
+      ],
+      "appel": true,
+      "lecture": "Le jugement contient deux décisions distinctes : une relaxe pour les faits visant des enfants, une condamnation pour des faits visant des collègues. Parler seulement de « relaxe » est incomplet ; parler de « condamnation » serait faux pour les faits visant les enfants.",
+      "deroule": [
+        { "date": "2025-04-09", "date_nature": "evenement", "type": "signalement", "acteur": "Directeur de l'école", "texte": "Le directeur transmet une « information préoccupante » à propos du comportement d'un animateur, après l'inquiétude de parents. L'animateur est suspendu dès le 9 avril.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": "2025-04-11", "date_nature": "evenement", "type": "plainte", "acteur": "Parents", "texte": "Un courrier d'autres parents ayant déposé plainte est joint à la procédure. Le parquet des mineurs saisit la brigade de protection des mineurs.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": "2025-06", "date_nature": "approximative", "type": "garde_a_vue", "acteur": "Police judiciaire", "texte": "L'animateur est placé en garde à vue fin juin.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": "2026-05-26", "date_nature": "evenement", "type": "audience", "acteur": "Tribunal correctionnel de Paris", "texte": "Le procès se tient ; les faits poursuivis couvrent la période de septembre 2024 à avril 2025. Le ministère public requiert trois ans de prison dont un an ferme sous bracelet électronique. Le prévenu nie en bloc ; il reconnaît seulement un manque de distance avec les enfants.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html", "publie_le": "2026-05-26", "acces": "libre" } },
+        { "date": "2026-07-07", "date_nature": "evenement", "type": "decision", "acteur": "Tribunal correctionnel de Paris", "texte": "Relaxe pour les agressions sexuelles sur mineurs. Condamnation à huit mois de prison avec sursis pour harcèlement sexuel sur deux collègues, avec obligation de soins.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html", "publie_le": "2026-07-07", "acces": "libre" } },
+        { "date": "2026-07-08", "date_nature": "evenement", "type": "appel", "acteur": "Parquet de Paris", "texte": "Le parquet annonce faire appel de la relaxe. L'appel ne porte que sur une partie des enfants concernés par le procès. Le ministre de la Justice écrit sur X que cette décision est conforme à ses instructions de politique pénale « de la plus grande fermeté ».", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html", "publie_le": "2026-07-09", "acces": "libre" } },
+        { "date": "2026-07-09", "date_nature": "evenement", "type": "mobilisation", "acteur": "Parents, collectif #MeTooEcole", "texte": "Une centaine de parents se réunissent devant l'école pour contester la relaxe ; des familles de l'école Titon sont venues les soutenir, ainsi que des conseillers de Paris. La cofondatrice du collectif #MeTooEcole critique la manière dont le tribunal a interprété les auditions des enfants.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html", "publie_le": null, "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Date de l'audience d'appel : non trouvée au 10 octobre 2026 (recherches dans franceinfo, ICI, France 3).",
+        "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
+        "Le nombre d'enfants concernés diffère selon les articles (procès, calendrier du parquet) : SNY ne le reprend pas.",
+        "Une constitution de partie civile d'associations est évoquée ailleurs ; elle n'est pas confirmée par les articles relus."
+      ]
+    },
+
+    "POC-09": {
+      "etat_actuel": [
+        "Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur le 16 juin 2026. Le harcèlement sexuel n'a pas été retenu et, pour les agressions sexuelles, l'infraction « n'apparaît pas caractérisée, faute d'indication exacte du geste reproché ».",
+        "Le tribunal a toutefois jugé certains comportements « inappropriés » dans le contexte scolaire.",
+        "Le parquet de Paris a annoncé faire appel le 17 juin : la relaxe n'est pas définitive."
+      ],
+      "appel": true,
+      "deroule": [
+        { "date": "2024-10", "date_nature": "approximative", "type": "mesure_etablissement", "acteur": "Employeur", "texte": "L'animateur est suspendu de l'école à la suite de plaintes de plusieurs parents.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html", "publie_le": "2026-06-17", "acces": "libre" } },
+        { "date": "2026-05-05", "date_nature": "evenement", "type": "audience", "acteur": "Tribunal correctionnel de Paris", "texte": "Audience à huis clos. Le parquet requiert dix-huit mois de prison avec sursis.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html", "publie_le": "2026-06-17", "acces": "libre" } },
+        { "date": "2026-06-16", "date_nature": "evenement", "type": "decision", "acteur": "Tribunal correctionnel de Paris", "texte": "Relaxe. Pour le harcèlement, les gestes affectueux et surnoms relevés ne relevaient pas, selon le jugement, d'une volonté de dégrader les conditions de vie des élèves ; pour les agressions sexuelles, l'infraction n'est pas caractérisée.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html", "publie_le": "2026-06-17", "acces": "libre" } },
+        { "date": "2026-06-17", "date_nature": "evenement", "type": "appel", "acteur": "Parquet de Paris", "texte": "Le parquet indique faire appel de la relaxe. Les familles expriment, selon ICI, leur colère et leur incompréhension.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140", "publie_le": "2026-06-17", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Date de l'audience d'appel : non trouvée au 10 octobre 2026.",
+        "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
+        "La source d'état enregistrée par SNY (franceinfo, 17 juin) n'a pas de lien conservé ; l'article relu ci-dessus la remplace."
+      ]
+    },
+
+    "POC-07": {
+      "etat_actuel": [
+        "Selon ICI (12 mai 2026), l'animateur a été mis en examen le 30 avril pour des « gestes de nature sexuelle » et placé en détention provisoire.",
+        "Une mise en examen n'est pas une condamnation : l'information judiciaire se poursuit."
+      ],
+      "statut_affiche": "mise en examen",
+      "deroule": [
+        { "date": "2025-11", "date_nature": "approximative", "type": "plainte", "acteur": "Mère d'une élève", "texte": "Une première plainte est déposée ; l'animateur est suspendu après cette plainte.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366", "publie_le": "2026-05-12", "acces": "libre" } },
+        { "date": null, "date_nature": "inconnue", "type": "signalement", "acteur": "Brigade de protection des mineurs", "texte": "Depuis le début de 2026, deux autres signalements visent le même animateur. Six employés de l'école sont entendus par la brigade.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366", "publie_le": "2026-05-12", "acces": "libre" } },
+        { "date": "2026-04-28", "date_nature": "evenement", "type": "garde_a_vue", "acteur": "Police judiciaire", "texte": "L'animateur est interpellé.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366", "publie_le": "2026-05-12", "acces": "libre" } },
+        { "date": "2026-04-30", "date_nature": "evenement", "type": "mise_en_examen", "acteur": "Justice", "texte": "Mise en examen et placement en détention provisoire. La presse l'apprend le 12 mai.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366", "publie_le": "2026-05-12", "acces": "libre" } },
+        { "date": null, "date_nature": "inconnue", "type": "mesure_etablissement", "acteur": "Employeur", "texte": "Dans la même école, le responsable d'une équipe d'animateurs est lui aussi suspendu, après une plainte pour attouchement sexuel visant un enfant.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366", "publie_le": "2026-05-12", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Aucune suite postérieure à mai 2026 n'a été trouvée (clôture d'instruction, remise en liberté, recours).",
+        "Le lien procédural entre la procédure visant l'animateur et celle visant le responsable d'équipe n'est pas précisé.",
+        "La date de la décision de mise en examen est donnée par un seul article (ICI)."
+      ]
+    },
+
+    "POC-06": {
+      "etat_actuel": [
+        "Selon une dépêche AFP reprise par La Minute (7 février 2026), un animateur de l'école a été mis en examen le 6 février pour agression sexuelle sur mineur, exhibition sexuelle et corruption de mineur, et placé sous contrôle judiciaire, avec l'interdiction d'entrer en contact avec les victimes.",
+        "Une mise en examen n'est pas une condamnation."
+      ],
+      "statut_affiche": "mise en examen",
+      "deroule": [
+        { "date": null, "date_nature": "article", "type": "mesure_etablissement", "acteur": "Ville de Paris", "texte": "Trois animateurs de l'école sont suspendus depuis la rentrée, après des soupçons de faits à caractère sexuel (agression sexuelle, exhibition). La mairie dépose plainte et met en place des permanences d'écoute et un suivi psychologique pour les familles et les enfants.", "source": { "media": "France 3 Paris Île-de-France", "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/agression-sexuelle-exhibition-trois-animateurs-d-ecole-maternelle-suspendus-a-paris-apres-des-soupcons-de-faits-a-caractere-sexuel-3234806.html", "publie_le": "2025-10-17", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "type": "plainte", "acteur": "Mère d'une élève, avocat Arié Alimi", "texte": "Une plainte pour viol aggravé avec constitution de partie civile, destinée à faire désigner un juge d'instruction, est annoncée à l'AFP le 13 novembre par l'avocat de la mère d'une élève, contre un animateur de la Ville.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": null, "date_nature": "inconnue", "type": "contradiction", "acteur": "Mère d'une élève ; Ville de Paris", "texte": "Selon le récit d'une mère rapporté par franceinfo, près de deux semaines se sont écoulées entre le signalement à la direction du périscolaire et l'information des parents. La Ville affirme, elle, que les agents visés ont été retirés du terrain et suspendus dès la connaissance des alertes. Les deux versions sont rapportées ; SNY ne les tranche pas.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": "2026-02-06", "date_nature": "evenement", "type": "mise_en_examen", "acteur": "Parquet de Paris (via AFP)", "texte": "Un animateur est mis en examen et placé sous contrôle judiciaire, conformément aux réquisitions du parquet.", "source": { "media": "La Minute (dépêche AFP)", "url": "https://laminute.info/2026/02/07/paris-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-sur-mineur/", "publie_le": "2026-02-07", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Trois animateurs ont été suspendus : les articles relus ne disent pas si l'animateur mis en examen est celui visé par la plainte pour viol aggravé.",
+        "Les qualifications diffèrent selon les sources (viol aggravé dans la plainte, agression sexuelle et exhibition dans la mise en examen).",
+        "Aucune suite postérieure à février 2026 n'a été trouvée."
+      ]
+    },
+
+    "FR-2026-0023": {
+      "etat_actuel": [
+        "Selon 20 minutes (8 décembre 2025), la mère d'une élève de maternelle a déposé plainte un samedi pour agression sexuelle et violences sur mineur contre un animateur de l'école de la rue Faidherbe. Le parquet de Paris n'avait pas pu confirmer l'information ; selon une source policière citée par le journal, une enquête préliminaire était ouverte.",
+        "Le dépôt d'une plainte ne vaut pas culpabilité."
+      ],
+      "statut_affiche": "enquête",
+      "deroule": [
+        { "date": "2025-11", "date_nature": "approximative", "type": "mesure_etablissement", "acteur": "Ville de Paris", "texte": "Selon 20 minutes, deux animateurs de l'école avaient déjà été suspendus en novembre, l'un après un signalement pour des faits d'agression sexuelle.", "source": { "media": "20 minutes", "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle", "publie_le": "2025-12-08", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "type": "plainte", "acteur": "Mère d'une élève", "texte": "Nouvelle plainte déposée « samedi » (le samedi précédant l'article du lundi 8 décembre). Les parents disent avoir constaté un changement de comportement de l'enfant depuis la rentrée.", "source": { "media": "20 minutes", "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle", "publie_le": "2025-12-08", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Ouverture officielle d'une enquête : non confirmée par le parquet dans l'article ; elle repose sur une source policière.",
+        "Aucune suite postérieure à décembre 2025 n'a été trouvée.",
+        "La plainte vise-t-elle l'un des deux animateurs déjà suspendus ? Les articles lus ne le disent pas."
+      ]
+    },
+
+    "PARIS-009": {
+      "etat_actuel": [
+        "Selon Le Parisien (20 novembre 2025), une deuxième animatrice a été suspendue à l'école Faidherbe « à la suite de violences ». SNY n'a pu lire que le titre de l'article : la nature précise des faits et les suites ne sont pas établies."
+      ],
+      "statut_affiche": "enquête",
+      "lecture": "La fiche porte l'état « enquête ». Le titre de l'article parle d'une suspension ; il ne permet pas de confirmer à lui seul qu'une enquête a été ouverte. À revoir avant publication d'un hub.",
+      "inconnues": [
+        "Corps de l'article inaccessible : nature des « violences », identité de l'établissement exact (rue Faidherbe) et éventuelle procédure non établies.",
+        "Rien ne permet d'établir que cette fiche et la précédente décrivent une même procédure ou deux procédures distinctes : elles sont comptées séparément, sous un seul établissement."
+      ]
+    },
+
+    "PARIS-006": {
+      "etat_actuel": [
+        "Selon franceinfo, une plainte pour « viol aggravé », avec constitution de partie civile, a été déposée le lundi 17 novembre 2025 par la mère d'un enfant contre un animateur de la Ville à l'école maternelle Parmentier.",
+        "Le dépôt d'une plainte ne vaut pas culpabilité."
+      ],
+      "deroule": [
+        { "date": "2025-07-18", "date_nature": "evenement", "type": "signalement", "acteur": "Famille d'un enfant", "texte": "Après des propos inquiétants d'un enfant, sa famille prévient les autorités. L'animateur, intervenant dans les centres de loisirs des maternelles Roquette et Parmentier, est suspendu à titre conservatoire. La Ville envoie un mail aux parents des élèves concernés sans préciser la nature de la plainte.", "source": { "media": "ICI (France Bleu)", "url": "https://www.ici.fr/infos/faits-divers-justice/info-ici-paris-idf-un-animateur-soupconne-de-violences-sexuelles-sur-mineur-dans-le-11eme-arrondissement-de-paris-8633975", "publie_le": "2025-08-01", "acces": "libre" } },
+        { "date": "2025-11-17", "date_nature": "evenement", "type": "plainte", "acteur": "Mère d'un enfant", "texte": "Plainte pour « viol aggravé » avec constitution de partie civile, qui vise à faire désigner un juge d'instruction.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/une-plainte-pour-viol-aggrave-deposee-a-paris-contre-un-animateur-dans-une-ecole-maternelle-la-deuxieme-en-quelques-jours_7623686.html", "publie_le": "2025-11-18", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Aucune suite postérieure à novembre 2025 n'a été trouvée (information judiciaire, mise en examen, classement).",
+        "Les centres de loisirs concernés sont ceux de deux maternelles (Roquette et Parmentier) ; la fiche n'en porte qu'une."
+      ]
+    },
+
+    "POC-08": {
+      "etat_actuel": [
+        "Selon Le Parisien (27 mars 2026), un animateur périscolaire a été suspendu après des accusations de viol visant un enfant de l'école maternelle Voltaire (11e). Une enquête a été ouverte et confiée à la brigade de protection des mineurs.",
+        "L'ouverture d'une enquête ne vaut pas culpabilité."
+      ],
+      "deroule": [
+        { "date": "2026-03-20", "date_nature": "evenement", "type": "fait_rapporte", "acteur": "Parents, directrice de l'école", "texte": "Faits présumés un vendredi, le 20 mars selon Orange. Alertés par les mots de leur enfant, les parents contactent la directrice, qui procède à un signalement ; l'animateur est immédiatement suspendu.", "source": { "media": "Le Parisien", "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php", "publie_le": "2026-03-27", "acces": "libre" } },
+        { "date": null, "date_nature": "inconnue", "type": "plainte", "acteur": "Mère de l'enfant", "texte": "Quelques jours après les faits présumés, la mère dépose plainte au commissariat du 11e arrondissement. L'enquête est confiée à la brigade de protection des mineurs.", "source": { "media": "Le Parisien", "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php", "publie_le": "2026-03-27", "acces": "libre" } }
+      ],
+      "inconnues": [
+        "Aucune suite postérieure à mars 2026 n'a été trouvée.",
+        "La date d'ouverture de l'enquête n'est pas précisée."
+      ]
+    },
+
+    "FR-2026-0016": {
+      "etat_actuel": [
+        "Selon Le Parisien (20 mars 2026), une plainte pour viol et plusieurs signalements pour des faits à caractère sexuel visent un éducateur de jeunes enfants de la crèche Lagon des Ours (11e), rattachée à l'association ABC Puériculture.",
+        "Le dépôt d'une plainte ne vaut pas culpabilité."
+      ],
+      "deroule": [
+        { "date": "2023-02", "date_nature": "evenement", "type": "signalement", "acteur": "Parents, direction de la crèche", "texte": "Des parents alertent la direction après des propos de leur enfant. L'éducateur est suspendu et une enquête interne est diligentée ; elle se solde par sa réintégration.", "source": { "media": "Le Parisien", "url": "https://www.leparisien.fr/faits-divers/au-debut-on-nose-pas-y-croire-a-paris-un-educateur-de-creche-soupconne-de-violences-sexuelles-sur-des-enfants-20-03-2026-PFHIH4MIMRAIDHPXTDZJ2DN3BQ.php", "publie_le": "2026-03-20", "acces": "partiel" } },
+        { "date": "2025-12", "date_nature": "approximative", "type": "mesure_etablissement", "acteur": "Direction de la crèche", "texte": "Les parents sont convoqués à une « réunion exceptionnelle », justifiée dans un mail par « la divulgation partielle d'éléments liés à une affaire datant de 2023 ». L'année de la réunion (« le 2 décembre ») est déduite de la chronologie de l'article.", "source": { "media": "Le Parisien", "url": "https://www.leparisien.fr/faits-divers/au-debut-on-nose-pas-y-croire-a-paris-un-educateur-de-creche-soupconne-de-violences-sexuelles-sur-des-enfants-20-03-2026-PFHIH4MIMRAIDHPXTDZJ2DN3BQ.php", "publie_le": "2026-03-20", "acces": "partiel" } },
+        { "date": null, "date_nature": "article", "type": "plainte", "acteur": "Parents", "texte": "Une plainte pour viol et plusieurs signalements sont déposés contre l'éducateur ; des parents témoignent.", "source": { "media": "Le Parisien", "url": "https://www.leparisien.fr/faits-divers/au-debut-on-nose-pas-y-croire-a-paris-un-educateur-de-creche-soupconne-de-violences-sexuelles-sur-des-enfants-20-03-2026-PFHIH4MIMRAIDHPXTDZJ2DN3BQ.php", "publie_le": "2026-03-20", "acces": "partiel" } }
+      ],
+      "inconnues": [
+        "Article réservé aux abonnés après le début : la date de la plainte, la situation actuelle de l'éducateur et la réaction de l'association ne sont pas établies.",
+        "Aucune suite judiciaire connue."
+      ]
+    }
+  },
+
+  "reponses": [
+    {
+      "titre": "Justice",
+      "items": [
+        { "date": "2026-05-22", "date_nature": "evenement", "acteur": "Parquet de Paris", "texte": "État des lieux : trois informations judiciaires ouvertes et cinq procès déjà audiencés, principalement dans des écoles des 11e, 15e et 20e arrondissements.", "source": { "media": "France 3 Paris Île-de-France", "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html", "publie_le": "2026-05-22", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "acteur": "Parquet de Paris", "texte": "Bilan rapporté par France 3 : 203 enquêtes ouvertes concernant 184 écoles (134 maternelles, 50 élémentaires), sans compter les crèches ; 47 enquêtes classées sans suite ; six affaires renvoyées devant un tribunal, autant en instruction. Trois procès ont eu lieu : deux relaxes et une condamnation à 18 mois avec sursis ; tous les animateurs seront rejugés en appel. Chiffres de tout Paris, pas du 11e.", "source": { "media": "France 3 Paris Île-de-France", "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html", "publie_le": "2026-08-31", "acces": "libre" } }
+      ]
+    },
+    {
+      "titre": "Ville de Paris et mairie du 11e",
+      "items": [
+        { "date": "2025-04-30", "date_nature": "evenement", "acteur": "Ville de Paris, mairie du 11e", "texte": "La Ville suspend un deuxième animateur d'une maternelle du 11e pour « faits graves » ; trois animatrices sont retirées du terrain pour comportements inappropriés. La brigade de protection des mineurs enquête après des plaintes de familles et la mairie du 11e organise deux réunions d'échange avec elles. L'article ne nomme pas l'école.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/france/ile-de-france/la-mairie-de-paris-suspend-un-nouvel-animateur-dans-une-ecole-maternelle-du-11e-arrondissement-pour-faits-graves_7220178.html", "publie_le": "2025-04-30", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "acteur": "Maire du 11e (François Vauglin) ; Ville de Paris", "texte": "Le maire du 11e assure à l'AFP que des enquêtes administratives ont été diligentées et que le recrutement a été renforcé (vérification du fichier des auteurs d'infractions sexuelles et du casier). Selon la Ville, 30 animateurs ont été suspendus depuis le début de 2025, dont 16 pour des suspicions à caractère sexuel.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": "2026-04-14", "date_nature": "evenement", "acteur": "Ville de Paris (Conseil de Paris)", "texte": "Adoption d'un plan d'action contre les violences faites aux enfants, en six axes : notamment formation massive des agents, recrutement, encadrement et contrôle renforcés, prise en charge des victimes, cellule d'écoute pour les parents, création d'un service municipal d'agrément et de contrôle, « école parisienne du périscolaire » à la rentrée 2026 et convention citoyenne. Ce sont des annonces : SNY n'évalue pas leur mise en œuvre.", "source": { "media": "paris.fr", "url": "https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461", "publie_le": "2026-04-14", "acces": "libre" } },
+        { "date": "2026-06-09", "date_nature": "evenement", "acteur": "Maire de Paris (Emmanuel Grégoire)", "texte": "La Ville annonce 132 animateurs suspendus depuis le 1er janvier 2026, dont 52 pour suspicion de violences sexuelles ou sexistes, sur environ 14 000 animateurs ; ce total était de 78 en avril. Une commission d'enquête indépendante, présidée par Antoine Garapon, ancien juge des enfants, aura « carte blanche ». Chiffres de tout Paris.", "source": { "media": "TIME France", "url": "https://www.timefrance.fr/societe/periscolaire-a-paris-de-nouveaux-animateurs-suspendus-une-commission-denquete-bientot-lancee/", "publie_le": "2026-06-10", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "acteur": "Maire du 11e (David Belliard)", "texte": "Interrogé par franceinfo, le maire du 11e dit que ce dossier occupe plus de la moitié du temps de son mandat, car il a fallu mettre en place de nouvelles procédures.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/j-attends-des-excuses-de-la-maire-anne-hidalgo-et-emmanuel-gregoire-attendus-au-tournant-devant-le-senat-sur-les-violences-dans-le-periscolaire_8191685.html", "publie_le": "2026-09-15", "acces": "libre" } }
+      ]
+    },
+    {
+      "titre": "Parlement",
+      "items": [
+        { "date": null, "date_nature": "article", "acteur": "Sénat (commission d'enquête)", "texte": "Lancée en juin 2026 avec la sénatrice Agnès Evren pour rapporteure. Dans une audition publiée le 8 octobre, elle entend le DRH et l'ancienne secrétaire générale de la Ville : le DRH présente des excuses pour des propos sur les signalements et affirme que les animateurs visés pour violences sexuelles sont « systématiquement suspendus » ; l'ancienne secrétaire générale affirme que les recommandations d'un rapport de l'inspection générale de 2015 ont été mises en œuvre. Conclusions non publiées au 10 octobre.", "source": { "media": "Public Sénat", "url": "https://www.publicsenat.fr/emission/100-senat/violences-dans-le-periscolaire-parisien-audition-des-services-de-la-ville-e79", "publie_le": "2026-10-08", "acces": "libre" } }
+      ]
+    },
+    {
+      "titre": "Familles, avocats, syndicats, associations",
+      "items": [
+        { "date": null, "date_nature": "article", "acteur": "Avocat de familles (Arié Alimi)", "texte": "Il dénonce à l'AFP « une opacité complète » de la municipalité et des services d'enquête, qui ne tiendraient pas les parents informés. Position d'un avocat de parties civiles, rapportée telle quelle.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html", "publie_le": "2025-11-14", "acces": "libre" } },
+        { "date": null, "date_nature": "article", "acteur": "Syndicats d'animateurs", "texte": "Appel à la grève jusqu'au 16 juin 2026, après une mobilisation du 11 au 22 mai qui avait perturbé près de 400 écoles. Ils demandent des créations de postes dans une filière en « sous-effectif » et dénoncent un « climat de suspicion généralisée ». Position syndicale, pas un fait établi.", "source": { "media": "franceinfo", "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-les-animateurs-de-nouveau-appeles-a-faire-greve-jusqu-au-16-juin_8050382.html", "publie_le": "2026-06-08", "acces": "libre" } },
+        { "date": null, "date_nature": "inconnue", "acteur": "Innocence en Danger", "texte": "L'association tient un dossier public de suivi des affaires du périscolaire parisien, qui recense notamment les écoles Voltaire, Titon et Alphonse-Baudin.", "source": { "media": "Innocence en Danger", "url": "https://www.innocenceendanger.org/dossier-periscolaire", "publie_le": null, "acces": "libre" } }
+      ]
+    }
+  ],
+
+  "inconnues_transversales": [
+    "Éducation nationale (rectorat, DASEN de Paris) : aucune déclaration propre à ces écoles n'a été retrouvée dans les articles accessibles. Cela ne prouve pas qu'il n'y en a pas.",
+    "Conclusions de la commission indépendante de la Ville et de la commission d'enquête du Sénat : non publiées au 10 octobre 2026.",
+    "Dates des audiences d'appel (Titon, Alphonse-Baudin) : non trouvées.",
+    "Une constitution de partie civile de l'association L'Enfant Bleu est évoquée dans d'autres sources ; le communiqué (PDF) n'a pas pu être relu : elle n'est donc pas reprise.",
+    "Deux articles évoquent des antécédents d'un animateur et son maintien en poste (école Bullourde) ; ils n'ont pas pu être relus en entier : SNY ne les reprend pas et n'en tire aucune conclusion sur la responsabilité de la Ville."
+  ],
+
+  "recherches": [
+    { "question": "État le plus récent de chacune des procédures du 11e", "resultat": "trouvé pour Titon, Baudin, Servan, Bullourde ; rien de postérieur pour Parmentier, Voltaire, Faidherbe, Lagon des Ours" },
+    { "question": "Réponses des institutions (Ville, mairie du 11e, parquet, Sénat, Éducation nationale)", "resultat": "trouvé sauf Éducation nationale" },
+    { "question": "Mobilisation (parents, avocats, syndicats, associations)", "resultat": "trouvé" },
+    { "question": "Évolutions favorables aux personnes mises en cause", "resultat": "deux relaxes motivées, contestations de la défense, classements sans suite (chiffre parisien)" }
+  ]
+}

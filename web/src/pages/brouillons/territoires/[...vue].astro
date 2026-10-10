@@ -15,6 +15,7 @@ import Index from '../../../components/territoires/Index.astro';
 import Paris11e from '../../../components/territoires/Paris11e.astro';
 import Bordeaux from '../../../components/territoires/Bordeaux.astro';
 import Somme from '../../../components/territoires/Somme.astro';
+import { chargerHub } from '../../../lib/hub-matiere';
 
 export function getStaticPaths() {
   const enabled = import.meta.env.SNY_DRAFTS === '1' || process.env.SNY_DRAFTS === '1';
@@ -28,6 +29,8 @@ export function getStaticPaths() {
 }
 
 const { vue } = Astro.props as { vue: string };
+// Un rendu qui contient de la matière NON PUBLIÉE (data/hub-prive/) le dit en tête de page.
+const aPrive = ['paris-11e', 'bordeaux-gironde', 'somme'].some((id) => (vue === 'index' || vue === id) && chargerHub(id).prive);
 const titres: Record<string, string> = {
   'index': 'Trois territoires',
   'paris-11e': 'Paris 11e',
@@ -41,9 +44,15 @@ const titres: Record<string, string> = {
   description="Prévisualisation non publiée d'une expérience territoriale."
   noindex
 >
+  {aPrive && (
+    <div class="apercu-prive">
+      ⛔ RENDU LOCAL — CE RENDU CONTIENT DE LA MATIÈRE NON PUBLIÉE (data/hub-prive/, ignoré par Git).
+      Ne jamais le déployer ni le partager : <code>noindex</code> n’est pas un mécanisme de confidentialité.
+    </div>
+  )}
   <div class="apercu">
     <strong>PRÉVISUALISATION — NON PUBLIÉE</strong>
-    <span>noindex · hors build public · données : artefact public data/cases.json</span>
+    <span>noindex · hors build public · fiches : artefact public data/cases.json · matière : data/hub-matiere/</span>
     <nav>
       <a href="/brouillons/territoires">Les trois</a>
       <a href="/brouillons/territoires/paris-11e">Paris 11e</a>
@@ -62,6 +71,7 @@ const titres: Record<string, string> = {
     background: #2b0a10; color: #ffd9e0; border-bottom: 3px solid var(--red);
     font: 0.72rem/1.5 var(--mono); letter-spacing: 0.03em; }
   .apercu strong { color: #fff; }
+  .apercu-prive { padding: 10px 20px; background: #b00020; color: #fff; font: 600 0.78rem/1.5 var(--mono); }
   .apercu nav { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-left: auto; }
   .apercu nav a { color: #ffd9e0; }
   /* Habillage commun des trois vues (mêmes variables que le reste du site). */
