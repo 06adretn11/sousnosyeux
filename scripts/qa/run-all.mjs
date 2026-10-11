@@ -39,6 +39,16 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Wording « procès » — audience annoncée ≠ procès tenu',
+    script: 'scripts/qa/test-wording-proces.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Lexique du filtre — « agressée sexuellement » reconnu, « violent » ne déclenche pas « viol »',
+    script: 'scripts/qa/test-lexique.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Discovery quotidien — vérification des extractions, familles de dépêches, messages Telegram',
     script: 'scripts/qa/test-discovery.mjs',
     bloquant: true,
