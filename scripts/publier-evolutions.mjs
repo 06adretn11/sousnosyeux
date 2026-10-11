@@ -19,6 +19,8 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { connecter } from './lib/neon.mjs';
+import { classerProjection, texteConflit } from './lib/classer-projection.mjs';
+import { prevenirUneFois } from './lib/prevenir.mjs';
 
 const DRY = process.argv.includes('--dry-run');
 const ID = /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/;
@@ -40,8 +42,25 @@ const changees = [];
 for (const id of ids) {
   if (DRY) { console.log(`· ${id} (à blanc)`); continue; }
   const avant = empreinte();
+  const dansArtefact = JSON.parse(readFileSync('data/cases.json', 'utf8')).cases.some((c) => c.case_id === id);
+  if (classerProjection({ dansArtefact }) === 'EN_ATTENTE') {
+    console.log(`· ${id} : publiée en base, pas encore dans l’artefact public — rien à modifier (sa publication reste un acte distinct)`);
+    continue;
+  }
+  let erreur = null;
   try { execFileSync(process.execPath, ['scripts/project-public.mjs', '--modifier', id], { stdio: 'pipe' }); }
-  catch (e) { console.error(`· ${id} : projection refusée (${String(e.stderr || e.message).split('\n')[0].slice(0, 120)})`); process.exitCode = 1; continue; }
+  catch (e) { erreur = String(e.stderr || e.message); }
+  if (erreur) {
+    if (classerProjection({ dansArtefact, erreur }) === 'CONFLIT') {
+      // Jamais de retrait silencieux ni d'échec du job : le conflit est dit, l'arbitrage demandé (une seule fois).
+      console.error(`· ${id} : CONFLIT — figure sur le site mais n’est plus projetable ; arbitrage humain demandé, rien retiré`);
+      await prevenirUneFois(sql, { cle: `projection-conflit:${id}`, resultat: 'CONFLIT', texte: texteConflit(id) });
+    } else {
+      console.error(`· ${id} : projection en erreur technique (${erreur.split('\n').find((l) => /Error/.test(l))?.slice(0, 120) || 'voir le run'})`);
+      process.exitCode = 1;
+    }
+    continue;
+  }
   const change = empreinte() !== avant;
   console.log(`· ${id} : ${change ? 'entrée publique MISE À JOUR' : 'inchangée (NO_PUBLIC_CHANGE ou affaire gelée par HOLD)'}`);
   if (change) changees.push(id);

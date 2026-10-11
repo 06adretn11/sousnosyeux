@@ -69,6 +69,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Projection des évolutions — affaire absente de l’artefact ≠ échec ; non projetable sur le site = conflit à arbitrer',
+    script: 'scripts/qa/test-classer-projection.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,
