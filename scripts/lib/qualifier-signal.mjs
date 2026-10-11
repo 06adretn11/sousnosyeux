@@ -173,7 +173,7 @@ export function independantes(pages) {
 }
 
 // --- rapprochement et décision ------------------------------------------
-async function infosCase(sql, case_id) {
+export async function infosCase(sql, case_id) {
   const [c] = await sql`
     select c.case_id, c.etablissement, c.commune, c.departement, c.type_structure::text type_structure, c.role_mis_en_cause::text role,
            c.type_affaire::text type_affaire, c.statut_judiciaire::text statut, c.publication_status::text publication,
@@ -196,7 +196,7 @@ async function infosCase(sql, case_id) {
  *   - « même commune » n'est affirmé que si la commune du SIGNAL concorde avec celle de l'affaire (cf. rapprochement-garde).
  * @returns {{ bloc:object, force:'forte'|'faible'|'aucune' }}
  */
-async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partiel }) {
+export async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partiel }) {
   const sources = [];
   for (const s of k.sources.slice(0, 4)) {
     const p = await lirePage(s.url, cache);
@@ -223,8 +223,18 @@ async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partie
     }
   }
   if (datesCommunes.length) pour.push(`même fait daté cité par les deux jeux de sources : ${datesCommunes.slice(0, 2).map((d) => d.split('-').reverse().join('/')).join(', ')}`);
-  for (const e of (res.evidence || []).slice(0, 2)) pour.push(String(e).replace(/^FR-\d{4}-\d{4} — /, ''));
-  for (const x of (res.conflicts || []).slice(0, 2)) contre.push(String(x).replace(/^FR-\d{4}-\d{4} — /, ''));
+  // Le résolveur parle de TOUTES ses candidates : seules les lignes de CETTE affaire (ou sans identifiant) lui sont attribuées.
+  // Sans ce filtre, le manque d'une autre candidate (« établissement non retrouvé » d'une affaire nantaise) apparaissait
+  // comme un contre-argument contre l'affaire visée.
+  const ID = /^((?:FR-\d{4}|PARIS|POC)-\d+) — /;
+  const deLaCible = (l) => { const m = ID.exec(String(l)); return !m || m[1] === k.case_id; };
+  // Départage par les sources et la chronologie : les candidates de la MÊME commune écartées sont ce que l'humain veut savoir.
+  const ville = (s) => aplatir(s || '').split(/[^a-z]+/).filter(Boolean)[0] || '';
+  for (const v of (res.departage?.verdicts || []).filter((x) => x.verdict === 'exclue' && ville(x.commune) === ville(k.commune))) {
+    pour.push(`${v.case_id} (${v.commune}) écartée : ${v.raison}`);
+  }
+  for (const e of (res.evidence || []).filter(deLaCible).slice(0, 3)) pour.push(String(e).replace(ID, ''));
+  for (const x of (res.conflicts || []).filter(deLaCible).slice(0, 2)) contre.push(String(x).replace(ID, ''));
   const nv = sources.filter((x) => !x.verifiee).length;
   if (nv) contre.push(`${nv} source(s) historique(s) de l’affaire non vérifiable(s) (lien indisponible ou sans rapport) : non retenue(s) comme preuve`);
   const maj = k.statut !== c.statut_judiciaire ? `état : « ${k.statut} » en base, « ${c.statut_judiciaire} » dans les nouveaux articles` : null;
@@ -239,7 +249,7 @@ async function construireAttach({ k, c, lues, nouvelles, res, geo, cache, partie
       resume: k.resume,
       sources: sources.map(({ ph, dates, ...s }) => s),
       nouvelles: nouvelles.map((p) => ({ media: p.media, url: p.url, d: p.published })),
-      pourquoi: [...new Set(pour)].slice(0, 4),
+      pourquoi: [...new Set(pour)].slice(0, 5),
       contre: [...new Set(contre)].slice(0, 5),
       divergence: [...new Set(contre)].join(' · ') || null,
       incertitude: force === 'forte' ? 'modérée' : 'élevée',

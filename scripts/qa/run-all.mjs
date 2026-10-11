@@ -59,6 +59,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Résolveur — départage par les sources et la chronologie (plusieurs candidates ≠ ambiguïté tant qu’on ne les a pas comparées)',
+    script: 'scripts/qa/test-departage.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

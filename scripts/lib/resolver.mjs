@@ -28,9 +28,9 @@
 // et sa suite de tests — et se contente d'arbitrer entre ses verdicts.
 // =====================================================================
 
-import { rattacher } from './etat-affaire.mjs';
+import { rattacher, datesCompletes } from './etat-affaire.mjs';
 
-export const RESOLVER_VERSION = 'resolver-0.1.0';
+export const RESOLVER_VERSION = 'resolver-0.2.0';
 export const STATUTS = Object.freeze(['MATCH', 'POSSIBLE_MATCH', 'NO_MATCH']);
 
 /**
@@ -51,13 +51,19 @@ export async function construireIndex(sql, candidate = {}) {
   // `departement` du corpus est un libellé ('Paris', 'Somme'), pas un code.
   const libelles = codes.map((c) => CODE_VERS_LIBELLE[c]).filter(Boolean);
 
+  // `sources_dates` : dates de publication des sources de l'affaire (texte ISO, colonne `date` — pas de décalage de fuseau).
+  // Elles alimentent le départage chronologique ; une affaire sans source reste simplement « indéterminée ».
   if (!libelles.length && !communes.length) {
     return sql`select case_id, etablissement, commune, departement,
-                      role_mis_en_cause::text, statut_judiciaire::text
+                      role_mis_en_cause::text, statut_judiciaire::text,
+                      coalesce((select json_agg(s.publication_date::text order by s.publication_date)
+                                from sources s where s.case_id = cases.case_id and s.publication_date is not null), '[]'::json) as sources_dates
                from cases`;
   }
   return sql`select case_id, etablissement, commune, departement,
-                    role_mis_en_cause::text, statut_judiciaire::text
+                    role_mis_en_cause::text, statut_judiciaire::text,
+                    coalesce((select json_agg(s.publication_date::text order by s.publication_date)
+                              from sources s where s.case_id = cases.case_id and s.publication_date is not null), '[]'::json) as sources_dates
              from cases
              where departement = any(${libelles})
                 or commune = any(${communes})`;
@@ -134,6 +140,75 @@ function examiner(fiche, texte) {
   return { ...strict, voisin: true };
 }
 
+// ---------------------------------------------------------------------
+// DÉPARTAGE PAR LES SOURCES ET LA CHRONOLOGIE
+//
+// Plusieurs candidates « partielles » ne sont pas une ambiguïté tant qu'on n'a pas regardé ce que l'on sait d'elles.
+// Cas fondateur (11/10/2026) : un article sur une affaire ouverte en février 2026 sortait 11 candidates, dont une affaire
+// de 2022 et une de 2023 — leurs propres sources sont antérieures au début de l'affaire décrite : elles ne peuvent pas
+// être la même. Le message disait « ambiguïté » et tronquait la liste, la bonne affaire (déjà en base) en tête de rien.
+//
+// Règle (déterministe, aucun réseau) : l'article dit quand l'affaire a COMMENCÉ (plainte, signalement, révélation).
+// Une affaire dont la source la plus récente est antérieure à ce début de plus de MARGE_JOURS jours ne peut pas être
+// celle-là. Rien d'autre n'est exclu : sans date de source ou sans début daté, l'affaire reste candidate (« indéterminée »).
+// Exclure n'est jamais rattacher : un survivant unique reste un POSSIBLE_MATCH soumis à un humain.
+// ---------------------------------------------------------------------
+export const MARGE_JOURS = 30;
+
+const MOIS_NUM = { janvier: 1, février: 2, fevrier: 2, mars: 3, avril: 4, mai: 5, juin: 6, juillet: 7, août: 8, aout: 8, septembre: 9, octobre: 10, novembre: 11, décembre: 12, decembre: 12 };
+// Verbes/noms qui posent le COMMENCEMENT d'une affaire…
+const RE_ORIGINE = /(affaire\s+(?:a\s+|avait\s+)?(?:d[ée]but|[ée]clat|r[ée]v[ée]l)|\b(?:d[ée]p[ôo]t de plaintes?|plaintes? (?:avai(?:en)?t [ée]t[ée] |ont [ée]t[ée] |est |sont )?d[ée]pos[ée]e?s?|signalement)\b)/i;
+// … sauf quand la phrase parle d'un développement (nouvelle plainte, supplétif, audience, jugement, appel) : sa date n'est pas le début.
+const RE_DEVELOPPEMENT = /(nouvell|nouveaux|suppl[ée]tif|seconde?\b|deuxi[èe]me|autres? plaintes?|audience|d[ée]lib[ée]r|jugement|condamn|relax|requis|renvoy|appel|proc[èe]s)/i;
+
+const jours = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
+
+/** Date la plus ancienne d'une phrase : jour complet, sinon mois + année, sinon année seule (borne basse). */
+function datePhrase(p) {
+  const completes = datesCompletes(p);
+  if (completes.length) return [...completes].sort()[0];
+  const mm = [...p.matchAll(new RegExp('\\b(' + Object.keys(MOIS_NUM).join('|') + ')\\s+(20\\d{2})\\b', 'gi'))]
+    .map((m) => `${m[2]}-${String(MOIS_NUM[m[1].toLowerCase()]).padStart(2, '0')}-01`).sort();
+  if (mm.length) return mm[0];
+  const an = [...p.matchAll(/\b(20\d{2})\b/g)].map((m) => `${m[1]}-01-01`).sort();
+  return an[0] || null;
+}
+
+/**
+ * Début de l'affaire décrit par un article : la plus ancienne date portée par une phrase « d'origine ».
+ * @returns {{date:string, phrase:string}|null}
+ */
+export function dateOrigine(texte) {
+  const trouvees = [];
+  for (const p of String(texte || '').split(/(?<=[.!?])\s+|\n+/)) {
+    if (!RE_ORIGINE.test(p) || RE_DEVELOPPEMENT.test(p)) continue;
+    const date = datePhrase(p);
+    if (date) trouvees.push({ date, phrase: p.replace(/\s+/g, ' ').trim().slice(0, 160) });
+  }
+  return trouvees.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))[0] || null;
+}
+
+/**
+ * Examen chronologique d'une affaire contre le début de l'affaire décrite.
+ * @returns {{case_id:string, verdict:'exclue'|'compatible'|'indeterminee', raison:string}}
+ */
+export function departager(fiche, origine) {
+  const ds = (fiche.sources_dates || []).filter(Boolean).map(String).sort();
+  if (!origine) return { case_id: fiche.case_id, verdict: 'indeterminee', raison: 'aucun début d’affaire daté dans l’article' };
+  if (!ds.length) return { case_id: fiche.case_id, verdict: 'indeterminee', raison: 'aucune source datée enregistrée pour cette affaire' };
+  const derniere = ds[ds.length - 1];
+  if (jours(derniere, origine.date) > MARGE_JOURS) {
+    return {
+      case_id: fiche.case_id, verdict: 'exclue',
+      raison: `sa source la plus récente (${derniere}) est antérieure au début de l’affaire décrite (${origine.date})`,
+    };
+  }
+  return {
+    case_id: fiche.case_id, verdict: 'compatible',
+    raison: `chronologie compatible : sources du ${ds[0]} au ${derniere}, début de l’affaire décrite ${origine.date}`,
+  };
+}
+
 /**
  * Résout un candidat contre un index d'affaires connues.
  *
@@ -170,8 +245,29 @@ export function resoudre({ candidate, index, corps, arbitrages = null }) {
     });
   }
 
+  // --- 1 bis. Départage par les sources et la chronologie ----------------
+  // Une candidate « douteuse » dont les sources sont antérieures au début de l'affaire décrite est écartée. Une candidate
+  // « OK » ne l'est que si plusieurs « OK » se disputent l'article (invariant Faidherbe : c'est là que la chronologie sert) —
+  // jamais une affaire seule à se rattacher pleinement.
+  const origine = dateOrigine(texte);
+  const enLice = examens.filter((e) => !arb.separate.has(e.case_id) && (e.rattachement === 'OK' || e.rattachement === 'DOUTEUX'));
+  const nbOk = enLice.filter((e) => e.rattachement === 'OK').length;
+  const verdicts = enLice.map((e) => ({ ...departager(e.fiche, origine), commune: e.fiche.commune, rattachement: e.rattachement }));
+  const exclues = verdicts.filter((v) => v.verdict === 'exclue' && (v.rattachement === 'DOUTEUX' || nbOk > 1));
+  const idsExclus = new Set(exclues.map((v) => v.case_id));
+  const okExclues = exclues.filter((v) => v.rattachement === 'OK');
+  // Les exclues ressortent « non rattachables » : les appelants (qualifier-signal) ne les listent plus comme candidates.
+  const vus = examens.map((e) => (idsExclus.has(e.case_id) ? { ...e, rattachement: 'NON_RATTACHABLE', voisin: false } : e));
+  const dp = exclues.length ? { departage: { origine, verdicts: verdicts.map(({ rattachement, ...v }) => v) } } : {};
+  // Chaque ligne de preuve reste PROPRE à son affaire (préfixe « <id> — ») : un appelant qui retient une cible ne doit pas
+  // hériter des indices ou des manques d'une autre candidate. Les exclusions, elles, sont dans `departage` (et la ligne NO_MATCH).
+  const chrono = (ids) => (exclues.length
+    ? verdicts.filter((v) => ids.includes(v.case_id) && v.verdict === 'compatible').map((v) => `${v.case_id} — ${v.raison}`)
+    : []);
+  const noteExclusions = exclues.map((v) => `${v.case_id} écartée par la chronologie : ${v.raison}`);
+
   // Les affaires écartées par un humain sortent de la délibération.
-  const retenus = examens.filter((e) => !arb.separate.has(e.case_id));
+  const retenus = examens.filter((e) => !arb.separate.has(e.case_id) && !idsExclus.has(e.case_id));
   const ecartes = examens.filter((e) => arb.separate.has(e.case_id));
 
   const ok = retenus.filter((e) => e.rattachement === 'OK');
@@ -186,14 +282,14 @@ export function resoudre({ candidate, index, corps, arbitrages = null }) {
     return sortie({
       resolution_status: 'POSSIBLE_MATCH',
       matched_case_id: null,
-      evidence: [...noteArbitrage, ...ok.flatMap((e) => e.signaux.map((s) => `${e.case_id} — ${s}`))],
+      evidence: [...noteArbitrage, ...ok.flatMap((e) => e.signaux.map((s) => `${e.case_id} — ${s}`)), ...chrono(ok.map((e) => e.case_id))],
       conflicts: [
         `${ok.length} affaires se rattachent également bien : ${ok.map((e) => e.case_id).join(', ')}`,
         'même établissement n’implique pas même affaire (invariant Faidherbe)',
       ],
       requires_human_review: true,
       reason: 'ambiguïté réelle entre plusieurs affaires connues — aucune fusion automatique',
-      examens, t0,
+      examens: vus, t0, ...dp,
     });
   }
 
@@ -202,18 +298,23 @@ export function resoudre({ candidate, index, corps, arbitrages = null }) {
     const gagnant = ok[0];
     // Un DOUTEUX concurrent partageant l'établissement reste une alerte.
     const concurrents = douteux.filter((e) => e.signaux.some((s) => s.startsWith('établissement')));
+    // Un survivant unique APRÈS exclusion chronologique de rivales « OK » est une déduction, pas un rattachement plein :
+    // POSSIBLE_MATCH, soumis à un humain (jamais de fusion automatique issue d'un départage).
+    const parDepartage = okExclues.length > 0;
     return sortie({
-      resolution_status: 'MATCH',
+      resolution_status: parDepartage ? 'POSSIBLE_MATCH' : 'MATCH',
       matched_case_id: gagnant.case_id,
-      evidence: [...noteArbitrage, ...gagnant.signaux],
+      evidence: [...noteArbitrage, ...gagnant.signaux, ...chrono([gagnant.case_id])],
       conflicts: concurrents.length
         ? [`affaire(s) proche(s) non exclue(s) : ${concurrents.map((e) => e.case_id).join(', ')}`]
         : [],
-      requires_human_review: concurrents.length > 0,
-      reason: concurrents.length
-        ? 'un seul rattachement complet, mais une affaire voisine partage l’établissement'
-        : 'établissement, commune et rôle concordent pour une seule affaire',
-      examens, t0,
+      requires_human_review: concurrents.length > 0 || parDepartage,
+      reason: parDepartage
+        ? 'une seule affaire reste compatible après examen des sources et de la chronologie — à confirmer par un humain'
+        : concurrents.length
+          ? 'un seul rattachement complet, mais une affaire voisine partage l’établissement'
+          : 'établissement, commune et rôle concordent pour une seule affaire',
+      examens: vus, t0, ...dp,
     });
   }
 
@@ -222,11 +323,13 @@ export function resoudre({ candidate, index, corps, arbitrages = null }) {
     return sortie({
       resolution_status: 'POSSIBLE_MATCH',
       matched_case_id: douteux.length === 1 ? douteux[0].case_id : null,
-      evidence: [...noteArbitrage, ...douteux.flatMap((e) => e.signaux.map((s) => `${e.case_id} — ${s}`))],
+      evidence: [...noteArbitrage, ...douteux.flatMap((e) => e.signaux.map((s) => `${e.case_id} — ${s}`)), ...chrono(douteux.map((e) => e.case_id))],
       conflicts: douteux.flatMap((e) => e.manquants.map((m) => `${e.case_id} — ${m}`)),
       requires_human_review: true,
-      reason: 'rattachement partiel : des éléments d’identification manquent',
-      examens, t0,
+      reason: exclues.length && douteux.length === 1
+        ? 'une seule affaire reste compatible après examen des sources et de la chronologie ; des éléments d’identification manquent'
+        : 'rattachement partiel : des éléments d’identification manquent',
+      examens: vus, t0, ...dp,
     });
   }
 
@@ -234,13 +337,13 @@ export function resoudre({ candidate, index, corps, arbitrages = null }) {
   return sortie({
     resolution_status: 'NO_MATCH',
     matched_case_id: null,
-    evidence: noteArbitrage,
+    evidence: [...noteArbitrage, ...noteExclusions],
     conflicts: [],
     requires_human_review: false,
     reason: index.length
       ? `aucune des ${index.length} affaires examinées ne se rattache`
       : 'index vide : aucune affaire connue sur ce territoire',
-    examens, t0,
+    examens: vus, t0, ...dp,
   });
 }
 
