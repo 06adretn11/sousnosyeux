@@ -3,11 +3,11 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 55,
+    "total_cases": 56,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-07"
+    "generated_at": "2026-10-11"
   },
   "cases": [
     {
@@ -1266,6 +1266,50 @@
           "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
           "media": "Sud Ouest",
           "publication_date": "2026-09-29",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0115",
+      "etablissement": "Centre de loisirs municipal de Tarnos",
+      "commune": "Tarnos",
+      "departement": "Landes",
+      "type_structure": "centre de loisirs",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 43.52979,
+      "lng": -1.4611,
+      "sources": [
+        {
+          "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-07-06",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+          "media": "La Dépêche",
+          "publication_date": "2026-09-04",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
+          "media": "La Montagne (AFP)",
+          "publication_date": "2026-07-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+          "media": "ici",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         }
