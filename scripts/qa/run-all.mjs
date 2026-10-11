@@ -64,6 +64,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Alerte de clic — une erreur secondaire après une application réussie n’est pas l’échec de la décision',
+    script: 'scripts/qa/test-alerte-clic.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

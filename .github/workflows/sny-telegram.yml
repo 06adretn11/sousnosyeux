@@ -36,20 +36,25 @@ jobs:
           cache: npm
       - run: npm ci
       - name: 1. Enregistrer le clic (idempotent)
+        id: enregistrer
         env:
           UPDATE_JSON: ${{ inputs.update }}
         run: node scripts/telegram-v0.mjs traiter
       - name: 2. Appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
+        id: simples
         run: node scripts/appliquer-decisions.mjs --generique
       - name: 3. Appliquer les décisions Discovery à Neon (jamais de publication)
+        id: discovery
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
       - name: 4. Projeter les évolutions validées d'affaires DÉJÀ publiques
         id: projection
         run: node scripts/publier-evolutions.mjs
       - name: 5. QA avant toute publication
+        id: qa
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: node scripts/qa/run-all.mjs
       - name: 6. Publier la projection (commit sur main → build Cloudflare existant)
+        id: publier
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: |
           git config user.name "sny-bot"
@@ -58,10 +63,18 @@ jobs:
           git commit -m "publication: évolution validée par l'éditeur (${{ steps.projection.outputs.ids }})"
           git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
       - name: 7. Vérifier le site public et confirmer sur Telegram
+        id: verifier
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: node scripts/verifier-site.mjs ${{ steps.projection.outputs.ids }}
       # Jamais de perte silencieuse : le webhook a déjà répondu 200 à Telegram, qui ne rejouera pas ce clic.
       - name: Alerter si le traitement a échoué
         if: ${{ failure() }}
-        run: |
-          node -e "import('./scripts/lib/prevenir.mjs').then((m) => m.prevenir('⚠️ Un clic a été reçu mais le traitement a ÉCHOUÉ (run GitHub sny-telegram en erreur). Le callback complet est conservé dans l’entrée du run. Dis-le-moi, ou re-clique.'))"
+        env:
+          OUTCOME_enregistrer: ${{ steps.enregistrer.outcome }}
+          OUTCOME_simples: ${{ steps.simples.outcome }}
+          OUTCOME_discovery: ${{ steps.discovery.outcome }}
+          OUTCOME_projection: ${{ steps.projection.outcome }}
+          OUTCOME_qa: ${{ steps.qa.outcome }}
+          OUTCOME_publier: ${{ steps.publier.outcome }}
+          OUTCOME_verifier: ${{ steps.verifier.outcome }}
+        run: node scripts/alerte-clic.mjs
