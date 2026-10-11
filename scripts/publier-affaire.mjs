@@ -26,6 +26,7 @@ const ECRIRE = A.includes('--ecrire');
 const GO = val('--go');
 const COORDS = val('--coords');
 const COORDS_SOURCE = val('--coords-source');
+const GEOCODE_SOURCE = val('--geocode-source'); // précision du point (cases.geocode_source) : ban-commune | centroid-arr ; absent = adresse précise
 if (!id) { console.error('usage : publier-affaire.mjs <case_id> [--coords lat,lng --coords-source …] [--ecrire --go "…"]'); process.exit(2); }
 if (ECRIRE && !GO) { console.error('--ecrire exige --go "<GO explicite d’Adrien>" : sans GO consigné, aucune publication'); process.exit(2); }
 
@@ -52,6 +53,7 @@ if (COORDS) {
   lat = la; lng = ln;
 }
 if (lat === null || lng === null) refus.push('aucune coordonnée : le front n’afficherait pas la fiche');
+if (GEOCODE_SOURCE && !['ban-commune', 'centroid-arr'].includes(GEOCODE_SOURCE)) refus.push('--geocode-source inconnu');
 if (COORDS && !COORDS_SOURCE) refus.push('--coords exige --coords-source (origine traçable des coordonnées)');
 
 console.log(`${id} — ${c.etablissement} (${c.commune})`);
@@ -63,7 +65,7 @@ if (!ECRIRE) { console.log('\nplan seulement (aucune écriture)'); process.exit(
 const note = `[Publication ${new Date().toISOString().slice(0, 10)}] GO d'Adrien : « ${GO} »` + (COORDS ? ` · coordonnées ${lat},${lng} (${COORDS_SOURCE})` : '');
 const r = await sql`
   with maj as (
-    update cases set publication_status = 'publiée', lat = ${lat}, lng = ${lng}
+    update cases set publication_status = 'publiée', lat = ${lat}, lng = ${lng}, geocode_source = coalesce(${GEOCODE_SOURCE}, geocode_source)
      where case_id = ${id} and publication_status = 'candidate'
     returning case_id)
   insert into reviews (case_id, reviewed_by, decision, comment)

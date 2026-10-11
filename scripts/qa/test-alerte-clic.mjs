@@ -26,5 +26,7 @@ test('étape métier annulée/sautée → jamais présentée comme appliquée', 
 test('publication échouée → « le site n’a pas été mis à jour »', /le site n’a pas été mis à jour/.test(classerEchecClic({ enregistrer: 'success', simples: 'success', discovery: 'success', projection: 'success', qa: 'success', publier: 'failure' }).texte));
 test('vérification échouée → publication faite, à contrôler', /publication a eu lieu/.test(classerEchecClic({ enregistrer: 'success', simples: 'success', discovery: 'success', projection: 'success', qa: 'success', publier: 'success', verifier: 'failure' }).texte));
 
+const r = classerEchecClic({ enregistrer: 'success', simples: 'success', discovery: 'success', projection: 'success', reconcile: 'failure' });
+test('… réconciliation : décision appliquée, réessai automatique annoncé', r.decisionAppliquee === true && /réconciliation de la publication/.test(r.texte) && /prochain passage/.test(r.texte) && !/ÉCHOUÉ/.test(r.texte));
 console.log(ko ? `\n  ❌ ${ko} échec(s)\n` : '\n  ✅ tous les tests passent\n');
 process.exit(ko ? 1 : 0);

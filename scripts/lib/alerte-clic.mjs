@@ -17,6 +17,8 @@ const SECONDAIRES = {
   projection: ['projection des évolutions d’affaires déjà publiques', 'le site public n’a pas été modifié ; QA, publication et vérification n’ont pas tourné'],
   qa: ['QA avant publication', 'rien n’a été publié sur le site'],
   publier: ['publication de la projection', 'le site n’a pas été mis à jour'],
+  reconcile: ['réconciliation de la publication', 'aucune nouvelle affaire n’a été publiée par ce passage ; elle sera réessayée au prochain passage, sans nouvelle validation'],
+  controle: ['contrôle du site servi', 'une affaire annoncée n’est pas encore (ou plus) conforme sur le site ; réessayé au prochain passage'],
   verifier: ['vérification du site public', 'la publication a eu lieu mais le site public n’a pas pu être vérifié : à contrôler'],
 };
 

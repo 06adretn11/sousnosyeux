@@ -2,6 +2,6 @@
 import { classerEchecClic } from './lib/alerte-clic.mjs';
 import { prevenir } from './lib/prevenir.mjs';
 
-const cles = ['enregistrer', 'simples', 'discovery', 'projection', 'qa', 'publier', 'verifier'];
+const cles = ['enregistrer', 'simples', 'discovery', 'projection', 'qa', 'publier', 'verifier', 'reconcile', 'controle'];
 const outcomes = Object.fromEntries(cles.map((k) => [k, process.env['OUTCOME_' + k]]));
 await prevenir(classerEchecClic(outcomes).texte);

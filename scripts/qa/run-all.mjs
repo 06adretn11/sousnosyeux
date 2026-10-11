@@ -74,6 +74,16 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Publication autonome — garde-fous (HOLD, REVIEW, à corriger, doublon, sources) et point de carte jamais inventé',
+    script: 'scripts/qa/test-publication.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Publication autonome — intégration (GO → publication ; HOLD/sans GO/arriéré → rien ; concurrence ; build en échec ; workflows)',
+    script: 'scripts/qa/test-publication-autonome.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

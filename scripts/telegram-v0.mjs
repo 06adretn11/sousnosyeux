@@ -245,8 +245,8 @@ async function notifierNouvelles(max = 5) {
 // « Décision exécutée » arrive dans un second message (appliquée / bloquée avec motif) ; la publication d'une NOUVELLE affaire reste
 // soumise à ton GO. Par webhook l'application suit dans la minute ; par relève périodique, au prochain passage.
 const SUITE = process.env.SNY_WEBHOOK === '1'
-  ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif. Nouvelle affaire : publication jamais automatique.'
-  : '\nÉtape suivante : application en base (au prochain passage). Nouvelle affaire : publication jamais automatique.';
+  ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif. Nouvelle affaire : publication automatique après garde-fous, tu recevras « Publié et vérifié » ou la raison du blocage.'
+  : '\nÉtape suivante : application en base (au prochain passage). Nouvelle affaire : publication automatique après garde-fous, tu recevras « Publié et vérifié » ou la raison du blocage.';
 const LIBELLE_ACTION = { VALIDATE: 'VALIDER', CREATE: 'CRÉER', ATTACH: 'RAPPROCHER', PENDING: 'CRÉER (preuves à compléter)', REVIEW: 'REVIEW (mis de côté, rien créé)', REJECT: 'REJETER' };
 
 async function accuser(cb, texte) {

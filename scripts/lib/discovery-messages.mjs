@@ -96,7 +96,7 @@ export function messageRapprochement(p, recommendation) {
     `🔗 RAPPROCHER : ajouter ces articles aux sources de l’affaire existante (son état judiciaire n’est pas modifié)${p.institutionnel ? ' et consigner l’événement institutionnel signalé' : ''}.`,
     modeCreation(recommendation, p) === 'PENDING'
       ? `⏳ CRÉER (preuves à compléter) : nouvelle affaire distincte, candidate NON publiable — manque : ${preuvesDe(p, recommendation).manques.join(' ; ') || 'à confirmer'}.`
-      : '🆕 CRÉER : nouvelle affaire distincte (candidate, non publiée).',
+      : '🆕 CRÉER : nouvelle affaire distincte (candidate ; publiée automatiquement et vérifiée sur le site si les garde-fous passent).',
     '🟡 REVIEW : mettre de côté, sans rien créer ni rattacher · ⛔ REJECT : écarter cette proposition.',
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }

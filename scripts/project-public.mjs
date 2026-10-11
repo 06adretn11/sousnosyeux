@@ -108,7 +108,7 @@ export async function projeter(sql) {
            statut_judiciaire::text as statut_judiciaire,
            statut_des_faits::text  as statut_des_faits,
            enfants_concernes_public::text as enfants_concernes_public,
-           lat, lng
+           lat, lng, geocode_source
       from cases
      where (publication_status = 'publiée' and fiabilite_info_10 >= ${SEUIL})
         or case_id = ${SIMULER ? AJOUTER : ''}
@@ -299,11 +299,11 @@ function construire(cases, sources, etats, etablissements, holds, avant) {
         const etat = synthetiserEtat(etats.filter((e) => e.case_id === c.case_id), c.case_id);
         const etabs = etablissements.filter((e) => e.case_id === c.case_id)
           .map(({ etablissement, commune, role }) => ({ etablissement, commune, role }));
-        return {
-          ...projectCase({ ...c, lat: nombre(c.lat), lng: nombre(c.lng),
-            ...(etat ? { etat } : {}), ...(etabs.length > 1 ? { etablissements: etabs } : {}) }),
-          sources: parCas[c.case_id] || [],
-        };
+        const projete = projectCase({ ...c, lat: nombre(c.lat), lng: nombre(c.lng),
+          ...(etat ? { etat } : {}), ...(etabs.length > 1 ? { etablissements: etabs } : {}) });
+        // Précision d'un point approximatif (migration 021) : émise seulement quand elle existe — les entrées d'origine ne changent pas.
+        if (projete.geocode_source === null || projete.geocode_source === undefined) delete projete.geocode_source;
+        return { ...projete, sources: parCas[c.case_id] || [] };
       }),
       // les gelées reprennent leur entrée publiée telle quelle
       ...gelees.map((c) => dejaPublie.get(c.case_id)),
@@ -395,22 +395,29 @@ async function main() {
   const { gelees } = construit;
 
   if (AJOUTER) {
+    // --ajouter <id>[,<id>…] : un LOT d'ajouts calculé en UNE fois depuis l'artefact committé. Appeler l'option id par id ferait que
+    // chaque appel repartirait du committé et écraserait l'ajout précédent. Une affaire non projetable est ignorée (dite) dans un lot,
+    // et fait échouer l'appel quand elle est seule ; les autres entrées restent EXACTEMENT celles du committé.
     const base = publie || avant;
-    const nouvelle = doc.cases.find((c) => c.case_id === AJOUTER);
     if (!base) throw new Error('--ajouter exige un artefact de référence (committé)');
-    if (!nouvelle) throw new Error(`${AJOUTER} n’est pas projetable : non publiée en base, sous le seuil ${SEUIL}, ou sous HOLD`);
-    const existante = base.cases.find((c) => c.case_id === AJOUTER);
-    if (existante) {
-      // Idempotence : déjà publiée et identique à la projection → rien à faire, aucune seconde insertion.
-      if (JSON.stringify(existante) === JSON.stringify(nouvelle)) {
-        console.log(`\n  NO_PUBLIC_CHANGE — ${AJOUTER} déjà publiée, entrée identique à la projection (0 insertion, 0 modification).\n`);
-        return;
+    const ids = AJOUTER.split(',').map((x) => x.trim()).filter(Boolean);
+    const ajouts = [];
+    for (const id of ids) {
+      const nouvelle = doc.cases.find((c) => c.case_id === id);
+      const refuser = (m) => { if (ids.length === 1) throw new Error(m); console.log(`  ! ${m} — ignorée`); };
+      if (!nouvelle) { refuser(`${id} n’est pas projetable : non publiée en base, sous le seuil ${SEUIL}, ou sous HOLD`); continue; }
+      const existante = base.cases.find((c) => c.case_id === id);
+      if (existante) {
+        // Idempotence : déjà publiée et identique à la projection → rien à faire, aucune seconde insertion.
+        if (JSON.stringify(existante) === JSON.stringify(nouvelle)) { console.log(`  = ${id} déjà publiée, entrée identique à la projection (0 insertion).`); continue; }
+        refuser(`${id} figure déjà dans l’artefact avec un contenu différent de la projection : ce n’est plus un ajout`); continue;
       }
-      throw new Error(`${AJOUTER} figure déjà dans l’artefact avec un contenu différent de la projection : ce n’est plus un ajout`);
+      if (typeof nouvelle.lat !== 'number' || typeof nouvelle.lng !== 'number') { refuser(`${id} n’a pas de coordonnées : le front ne l’afficherait pas`); continue; }
+      ajouts.push(nouvelle);
     }
-    if (typeof nouvelle.lat !== 'number' || typeof nouvelle.lng !== 'number') throw new Error(`${AJOUTER} n’a pas de coordonnées : le front ne l’afficherait pas`);
+    if (!ajouts.length) { console.log(`\n  NO_PUBLIC_CHANGE — aucun ajout (0 insertion, 0 modification).\n`); return; }
     // Les autres entrées sont reprises TELLES QUELLES de l'artefact committé.
-    const cases = [...base.cases, nouvelle].sort((a, b) => a.case_id.localeCompare(b.case_id));
+    const cases = [...base.cases, ...ajouts].sort((a, b) => a.case_id.localeCompare(b.case_id));
     doc = { ...doc, cases, _meta: { ...doc._meta, total_cases: cases.length } };
     assertNoInternalFields(doc, 'data/cases.json');
   }
@@ -428,6 +435,9 @@ async function main() {
       const nouvelle = doc.cases.find((c) => c.case_id === id);
       if (!base.cases.some((c) => c.case_id === id)) throw new Error(`${id} ne figure pas dans l’artefact : ce n’est pas une modification (voir --ajouter)`);
       if (!nouvelle) throw new Error(`${id} n’est plus projetable (retirée, sous le seuil ou sous HOLD) : refus, un retrait n’est pas une modification`);
+      // Le marquage « localisation approximative » n'est émis que pour les NOUVELLES entrées : une entrée déjà en ligne ne change pas
+      // d'elle-même (modifier l'affichage d'une fiche publiée est une décision de l'éditeur, pas un effet de bord d'une mise à jour).
+      if (!('geocode_source' in base.cases.find((c) => c.case_id === id))) delete nouvelle.geocode_source;
       nouvelles.set(id, nouvelle);
     }
     const cases = base.cases.map((c) => nouvelles.get(c.case_id) || c);

@@ -49,23 +49,53 @@ jobs:
       - name: 4. Projeter les évolutions validées d'affaires DÉJÀ publiques
         id: projection
         run: node scripts/publier-evolutions.mjs
-      - name: 5. QA avant toute publication
-        id: qa
-        if: ${{ steps.projection.outputs.change == 'true' }}
-        run: node scripts/qa/run-all.mjs
-      - name: 6. Publier la projection (commit sur main → build Cloudflare existant)
-        id: publier
+      # Chaque projection repart de l'artefact COMMITÉ (HEAD) : valider l'étape précédente en local (sans pousser) évite qu'elle soit écrasée.
+      - name: 4b. Valider localement les évolutions (commit local, rien n'est poussé)
         if: ${{ steps.projection.outputs.change == 'true' }}
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
           git add data/cases.json
-          git commit -m "publication: évolution validée par l'éditeur (${{ steps.projection.outputs.ids }})"
+          git commit -m "publication: évolution validée par l'éditeur ($PROJ_IDS)"
+        env:
+          PROJ_IDS: ${{ steps.projection.outputs.ids }}
+      # Décision VALIDATE/CREATE postérieure à l'activation → garde-fous (HOLD, retrait, fiabilité, sources, doublon) → statut Neon →
+      # project-public --ajouter (lot). Une affaire bloquée n'empêche jamais les autres ; rejouable à chaque passage (états recalculés).
+      - name: 5. Réconcilier la publication (affaires validées → site)
+        id: reconcile
+        env:
+          SNY_PUBLICATION_DEPUIS: '2026-10-11T14:19:00Z'
+        run: node scripts/reconcilier-publication.mjs --ecrire
+      - name: 6. QA avant toute publication
+        id: qa
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
+        run: node scripts/qa/run-all.mjs
+      - name: 7. Publier la projection (commit sur main → build Cloudflare existant)
+        id: publier
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
+        run: |
+          git config user.name "sny-bot"
+          git config user.email "sny-bot@users.noreply.github.com"
+          if [ "$RECON_CHANGE" = "true" ]; then
+            git add data/cases.json
+            git commit -m "publication: affaire(s) validée(s) par l'éditeur ($RECON_IDS)"
+          fi
           git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
-      - name: 7. Vérifier le site public et confirmer sur Telegram
+        env:
+          RECON_CHANGE: ${{ steps.reconcile.outputs.change }}
+          RECON_IDS: ${{ steps.reconcile.outputs.ids }}
+      - name: 8. Vérifier le site public et confirmer sur Telegram
         id: verifier
-        if: ${{ steps.projection.outputs.change == 'true' }}
-        run: node scripts/verifier-site.mjs ${{ steps.projection.outputs.ids }}
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
+        run: node scripts/verifier-site.mjs $(echo "$PROJ_IDS,$RECON_IDS" | tr ',' ' ')
+        env:
+          PROJ_IDS: ${{ steps.projection.outputs.ids }}
+          RECON_IDS: ${{ steps.reconcile.outputs.ids }}
+      # Le site SERVI est la preuve : tout ce que l'artefact annonce doit y être. Sinon le job est rouge et le passage suivant réessaie.
+      - name: 9. Contrôler le site réellement servi
+        id: controle
+        if: ${{ !cancelled() }}
+        run: node scripts/reconcilier-publication.mjs --site
       # Jamais de perte silencieuse : le webhook a déjà répondu 200 à Telegram, qui ne rejouera pas ce clic.
       - name: Alerter si le traitement a échoué
         if: ${{ failure() }}
@@ -77,4 +107,6 @@ jobs:
           OUTCOME_qa: ${{ steps.qa.outcome }}
           OUTCOME_publier: ${{ steps.publier.outcome }}
           OUTCOME_verifier: ${{ steps.verifier.outcome }}
+          OUTCOME_reconcile: ${{ steps.reconcile.outcome }}
+          OUTCOME_controle: ${{ steps.controle.outcome }}
         run: node scripts/alerte-clic.mjs
