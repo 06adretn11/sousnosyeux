@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 56,
+    "total_cases": 57,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1308,6 +1308,50 @@
         },
         {
           "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+          "media": "ici",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0133",
+      "etablissement": "centre de loisirs de Rots",
+      "commune": "Rots",
+      "departement": "Calvados",
+      "type_structure": "autre",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 49.225399,
+      "lng": -0.490016,
+      "sources": [
+        {
+          "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+          "media": "France Info",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+          "media": "Ouest-France",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
           "media": "ici",
           "publication_date": "2026-10-07",
           "source_type": "presse",
