@@ -1,0 +1,224 @@
+---
+// Vision produit SNY — ACTUEL → CIBLE. Page de REVUE (noindex, build SNY_DRAFTS uniquement) : aucune donnée privée,
+// que des affaires publiques et des sources déjà relues. Un export autonome est copié dans tools/vision-sny-cible.html.
+export function getStaticPaths() {
+  const enabled = import.meta.env.SNY_DRAFTS === '1' || process.env.SNY_DRAFTS === '1';
+  return enabled ? [{ params: { p: undefined } }] : [];
+}
+---
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>[REVUE] SNY actuel → SNY cible</title>
+  <style is:global>
+    :root { --ink:#151517; --muted:#6b6b72; --paper:#f7f7f4; --card:#fff; --line:#e5e5e3; --red:#e63946; --blue:#457b9d; --green:#2d6a4f; --orange:#d97706; --grey:#9ca3af;
+      --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --mono: "DM Mono", ui-monospace, Consolas, monospace; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:15px/1.5 var(--sans); }
+    main { max-width:1180px; margin:0 auto; padding:1.2rem 1.1rem 4rem; }
+    h1 { font:700 clamp(1.6rem,4vw,2.4rem)/1.1 Georgia,serif; margin:.2rem 0 .4rem; letter-spacing:-.02em; }
+    h2 { margin:2.4rem 0 .7rem; padding-bottom:6px; border-bottom:1px solid var(--line); font:400 .76rem var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+    h3 { margin:0 0 .3rem; font-size:1rem; }
+    .banner { background:#2b0a10; color:#ffd9e0; padding:8px 16px; font:.72rem var(--mono); }
+    .lede { max-width:820px; color:#3d3d42; }
+    .legend { display:flex; flex-wrap:wrap; gap:8px; margin:.8rem 0; }
+    .chip { display:inline-block; padding:2px 8px; font:.68rem var(--mono); text-transform:uppercase; letter-spacing:.05em; border-radius:2px; color:#fff; white-space:nowrap; }
+    .s-ok { background:var(--green); } .s-part { background:var(--orange); } .s-abs { background:var(--grey); } .s-hyp { background:#fff; color:var(--blue); border:1px dashed var(--blue); }
+    .parcours { display:grid; gap:10px; }
+    .ligne { display:grid; grid-template-columns: 2.2rem 1fr 1.6rem 1fr 7rem; gap:10px; align-items:stretch; }
+    .num { font:500 1.3rem var(--mono); color:var(--red); padding-top:6px; }
+    .box { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--c, var(--grey)); padding:.6rem .8rem; font-size:.86rem; }
+    .box.ok { --c:var(--green); } .box.part { --c:var(--orange); } .box.abs { --c:var(--grey); } .box.hyp { --c:var(--blue); border-style:dashed; }
+    .box p { margin:.3rem 0 0; } .box .ex { color:var(--muted); font-size:.78rem; }
+    .arrow { display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--muted); }
+    .effort { font:.7rem var(--mono); color:var(--muted); display:flex; align-items:center; justify-content:center; text-align:center; }
+    @media (max-width:860px) { .ligne { grid-template-columns:1fr; } .arrow { transform:rotate(90deg); height:1.2rem; } .effort { justify-content:flex-start; } }
+    .head { display:grid; grid-template-columns: 2.2rem 1fr 1.6rem 1fr 7rem; gap:10px; font:.7rem var(--mono); text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:4px; }
+    @media (max-width:860px) { .head { display:none; } }
+    .flow { width:100%; height:auto; background:var(--card); border:1px solid var(--line); }
+    .wire { display:grid; grid-template-columns: 1fr 15rem; gap:0 18px; align-items:stretch; }
+    .wire .bloc { background:var(--card); border:1px solid #cfcfca; padding:.7rem .9rem; margin-bottom:8px; font-size:.86rem; }
+    .wire .bloc.ok { border-left:5px solid var(--green); } .wire .bloc.part { border-left:5px solid var(--orange); } .wire .bloc.abs { border-left:5px solid var(--grey); background:#fafaf8; }
+    .wire .bloc.hyp { border:2px dashed var(--blue); }
+    .wire .bloc h3 { display:flex; justify-content:space-between; gap:8px; align-items:baseline; font-size:.92rem; }
+    .wire .note { font-size:.75rem; color:var(--muted); margin-bottom:8px; padding-top:.7rem; }
+    .tiles { display:flex; gap:6px; margin:.4rem 0; } .tile { flex:1; padding:6px 8px; border:1px solid var(--line); border-top:3px solid var(--red); font-size:.72rem; color:var(--muted); } .tile b { display:block; font:500 1.05rem var(--mono); color:var(--ink); }
+    .tl { margin:.4rem 0 0; padding-left:1rem; border-left:2px solid var(--line); font-size:.8rem; } .tl li { list-style:none; margin:.25rem 0; position:relative; } .tl li::before { content:""; position:absolute; left:-1.34rem; top:.35rem; width:8px; height:8px; border-radius:50%; background:#fff; border:2px solid var(--blue); }
+    .tl .ann::before { border-style:dashed; border-color:var(--orange); }
+    @media (max-width:860px) { .wire { grid-template-columns:1fr; } }
+    table { width:100%; border-collapse:collapse; background:var(--card); font-size:.84rem; }
+    th, td { text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { font:.68rem var(--mono); text-transform:uppercase; letter-spacing:.08em; color:var(--muted); background:#f1f1ee; }
+    .cartes { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(380px,1fr)); }
+    .carte { background:var(--card); border:1px solid var(--line); border-top:3px solid var(--red); padding:.8rem 1rem; }
+    dl { margin:.5rem 0 0; display:grid; grid-template-columns:8.5rem 1fr; gap:4px 10px; font-size:.82rem; } dt { font:.66rem/1.7 var(--mono); text-transform:uppercase; letter-spacing:.05em; color:var(--muted); } dd { margin:0; }
+    @media (max-width:560px) { dl { grid-template-columns:1fr; gap:1px; } dd { margin-bottom:5px; } .cartes { grid-template-columns:1fr; } }
+    pre { background:#111; color:#e8e8e8; padding:.8rem 1rem; overflow:auto; font:.74rem/1.5 var(--mono); border-radius:3px; }
+    .ex-reels { display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); }
+    .ex { background:var(--card); border:1px solid var(--line); padding:.7rem .9rem; font-size:.82rem; }
+    .ex small { color:var(--muted); display:block; margin-top:4px; } .ex a { color:var(--blue); }
+    .tag-annonce { color:var(--orange); font:.66rem var(--mono); } .tag-doc { color:var(--green); font:.66rem var(--mono); } .tag-pos { color:var(--blue); font:.66rem var(--mono); }
+  </style>
+</head>
+<body>
+<div class="banner">REVUE LOCALE — noindex — vision produit, pas une page publique · matière : affaires publiques et sources relues uniquement</div>
+<main>
+  <p style="margin:0;font:.72rem var(--mono);letter-spacing:.13em;color:var(--red);text-transform:uppercase">Vision produit · 11 octobre 2026</p>
+  <h1>SNY actuel → SNY cible</h1>
+  <p class="lede">Aujourd’hui SNY répond à « <em>où y a-t-il une affaire, et où en est-elle ?</em> ». La cible répond aussi à « <em>que s’est-il passé autour, qui a réagi, qu’a-t-on fait, et puis-je le vérifier ?</em> ». Les trois Hubs ont démontré le milieu du parcours ; il manque les paroles collectives et les contributions.</p>
+  <div class="legend">
+    <span><span class="chip s-ok">démontré</span> existe et a été vérifié sur des pages réelles</span>
+    <span><span class="chip s-part">incomplet</span> existe mais couvre peu ou n’est pas relié</span>
+    <span><span class="chip s-abs">absent</span> aucune page ni donnée structurée</span>
+    <span><span class="chip s-hyp">hypothèse</span> idée produit non validée auprès de lecteurs</span>
+  </div>
+
+  <h2>1 · Le parcours en un coup d’œil</h2>
+  <svg class="flow" viewBox="0 0 1100 150" role="img" aria-label="Parcours citoyen en huit étapes, coloré selon l'état actuel">
+    <defs><marker id="a" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9ca3af"/></marker></defs>
+    <g font-family="DM Sans, sans-serif" font-size="12" text-anchor="middle">
+      <g><rect x="10" y="40" width="118" height="64" fill="#fff" stroke="#2d6a4f" stroke-width="3"/><text x="69" y="64" font-weight="700">1 · Home</text><text x="69" y="82">carte + fiches</text><text x="69" y="124" fill="#2d6a4f" font-size="10">DÉMONTRÉ</text></g>
+      <g><rect x="148" y="40" width="118" height="64" fill="#fff" stroke="#d97706" stroke-width="3"/><text x="207" y="64" font-weight="700">2 · Hub</text><text x="207" y="82">territoire</text><text x="207" y="124" fill="#d97706" font-size="10">INCOMPLET (non lié)</text></g>
+      <g><rect x="286" y="40" width="118" height="64" fill="#fff" stroke="#d97706" stroke-width="3"/><text x="345" y="64" font-weight="700">3 · Déroulé</text><text x="345" y="82">13 fiches sur 55</text><text x="345" y="124" fill="#d97706" font-size="10">INCOMPLET</text></g>
+      <g><rect x="424" y="40" width="118" height="64" fill="#fff" stroke="#d97706" stroke-width="3"/><text x="483" y="64" font-weight="700">4 · Institutions</text><text x="483" y="82">dans le temps</text><text x="483" y="124" fill="#d97706" font-size="10">INCOMPLET</text></g>
+      <g><rect x="562" y="40" width="118" height="64" fill="#fafaf8" stroke="#9ca3af" stroke-width="3" stroke-dasharray="5 3"/><text x="621" y="64" font-weight="700">5 · Associations</text><text x="621" y="82">mobilisations</text><text x="621" y="124" fill="#6b6b72" font-size="10">ABSENT</text></g>
+      <g><rect x="700" y="40" width="118" height="64" fill="#fafaf8" stroke="#9ca3af" stroke-width="3" stroke-dasharray="5 3"/><text x="759" y="64" font-weight="700">6 · Parents</text><text x="759" y="82">communauté</text><text x="759" y="124" fill="#6b6b72" font-size="10">ABSENT</text></g>
+      <g><rect x="838" y="40" width="118" height="64" fill="#fff" stroke="#2d6a4f" stroke-width="3"/><text x="897" y="64" font-weight="700">7 · Preuves</text><text x="897" y="82">sources, dates</text><text x="897" y="124" fill="#2d6a4f" font-size="10">DÉMONTRÉ</text></g>
+      <g><rect x="976" y="40" width="118" height="64" fill="#fff" stroke="#457b9d" stroke-width="3" stroke-dasharray="5 3"/><text x="1035" y="64" font-weight="700">8 · Signaler</text><text x="1035" y="82">erreur / info</text><text x="1035" y="124" fill="#457b9d" font-size="10">HYPOTHÈSE (mailto)</text></g>
+      <g stroke="#9ca3af" stroke-width="2" marker-end="url(#a)"><line x1="130" y1="72" x2="146" y2="72"/><line x1="268" y1="72" x2="284" y2="72"/><line x1="406" y1="72" x2="422" y2="72"/><line x1="544" y1="72" x2="560" y2="72"/><line x1="682" y1="72" x2="698" y2="72"/><line x1="820" y1="72" x2="836" y2="72"/><line x1="958" y1="72" x2="974" y2="72"/></g>
+    </g>
+  </svg>
+
+  <h2>2 · Les huit parcours : actuel, cible, effort</h2>
+  <div class="head"><span></span><span>SNY actuel</span><span></span><span>SNY cible</span><span>Effort</span></div>
+  <div class="parcours">
+    <div class="ligne"><span class="num">1</span>
+      <div class="box ok"><span class="chip s-ok">démontré</span><h3>Découvrir une affaire sur la Home</h3><p>Carte MapLibre, pins par état, fiche avec wording partagé, filtres.</p><p class="ex">54 fiches publiques (55 avec Cenon).</p></div><span class="arrow">→</span>
+      <div class="box part"><span class="chip s-part">incomplet</span><h3>…et savoir qu’un Hub existe</h3><p>Lien « Comprendre ce territoire » depuis la fiche ; entrée « Territoires » dans la navigation (préparée, non en ligne).</p></div><span class="effort">S<br/>un lien par fiche</span></div>
+    <div class="ligne"><span class="num">2</span>
+      <div class="box part"><span class="chip s-part">incomplet</span><h3>Comprendre son territoire</h3><p>Trois Hubs construits (Paris 11e, Bordeaux/Gironde, Hautes-Alpes), vus en prévisualisation ; publication en attente.</p><p class="ex">Titre, chapeau, chiffres avec portée, réponses publiques nommées.</p></div><span class="arrow">→</span>
+      <div class="box ok"><span class="chip s-ok">démontré (format)</span><h3>Un Hub par territoire à matière suffisante</h3><p>Même méthode, formats différents (carte à Paris, deux versions à Bordeaux, jugements dans les Hautes-Alpes). Pas de Hub sans affaire validée (Somme).</p></div><span class="effort">M<br/>≈ 1-2 h de relecture par territoire</span></div>
+    <div class="ligne"><span class="num">3</span>
+      <div class="box part"><span class="chip s-part">incomplet</span><h3>Explorer le déroulé d’une affaire</h3><p>Déroulé daté et sourcé, date d’événement ≠ date d’article, inconnues explicites.</p><p class="ex">Seulement les 13 fiches des trois Hubs sur 55.</p></div><span class="arrow">→</span>
+      <div class="box part"><span class="chip s-part">à étendre</span><h3>Déroulé pour toute fiche qui en a la matière</h3><p>Priorité aux fiches dont l’état a changé (appel, relaxe) : c’est là que l’écart avec la Home est le plus grand.</p></div><span class="effort">L<br/>manuel aujourd’hui</span></div>
+    <div class="ligne"><span class="num">4</span>
+      <div class="box part"><span class="chip s-part">incomplet</span><h3>Réponses des institutions</h3><p>Transversales dans le Hub, propres à l’affaire dans le dossier ; versions divergentes (Cenon).</p><p class="ex">Pas de suivi « annoncé → réalisé » ni de mise à jour.</p></div><span class="arrow">→</span>
+      <div class="box part"><span class="chip s-part">à structurer</span><h3>Réponse institutionnelle dans le temps</h3><p>Frise : déclaration → mesure annoncée → action documentée → suite. Chaque étape étiquetée annoncé / documenté.</p></div><span class="effort">M<br/>donnée existe, rendu à faire</span></div>
+    <div class="ligne"><span class="num">5</span>
+      <div class="box abs"><span class="chip s-abs">absent</span><h3>Mobilisations associatives</h3><p>Aucun bloc. Matière trouvée au détour : syndicats, rassemblement annoncé, dossier public d’une association.</p></div><span class="arrow">→</span>
+      <div class="box hyp"><span class="chip s-hyp">hypothèse</span><h3>Vie associative documentée</h3><p>Communiqués, prises de position, constitutions de partie civile — jamais de simple adhésion à une cause.</p></div><span class="effort">M<br/>validation humaine</span></div>
+    <div class="ligne"><span class="num">6</span>
+      <div class="box abs"><span class="chip s-abs">absent</span><h3>Parents et communauté</h3><p>Aucun bloc. Matière réelle : rassemblement de parents à Paris, réunion publique à Cenon.</p></div><span class="arrow">→</span>
+      <div class="box hyp"><span class="chip s-hyp">hypothèse</span><h3>Réactions collectives documentées</h3><p>Réunions, rassemblements, démarches et revendications — attribuées, sans témoignage privé ni détail identifiant un mineur.</p></div><span class="effort">M-L<br/>risque éditorial élevé</span></div>
+    <div class="ligne"><span class="num">7</span>
+      <div class="box ok"><span class="chip s-ok">démontré</span><h3>Remonter aux preuves</h3><p>Lien direct sur chaque entrée, accès (libre / abonnés) signalé, sources relues sur texte brut, inconnues.</p></div><span class="arrow">→</span>
+      <div class="box part"><span class="chip s-part">à consolider</span><h3>Preuve vérifiable dans la durée</h3><p>Liens morts, archivage, date de dernière relecture visible par entrée.</p></div><span class="effort">S-M</span></div>
+    <div class="ligne"><span class="num">8</span>
+      <div class="box part"><span class="chip s-part">incomplet</span><h3>Signaler une erreur</h3><p>Adresse e-mail de contact et droit de réponse (mailto). La table <code>contributions</code> existe en base, vide.</p></div><span class="arrow">→</span>
+      <div class="box hyp"><span class="chip s-hyp">hypothèse</span><h3>Signalement structuré (source, erreur, info nouvelle)</h3><p>À évaluer d’abord par l’usage du mailto : combien de retours, de quelle qualité ?</p></div><span class="effort">M<br/>modération humaine obligatoire</span></div>
+  </div>
+
+  <h2>3 · La page Hub cible, bloc par bloc</h2>
+  <div class="wire">
+    <div>
+      <div class="bloc ok"><h3>A. Titre éditorial + chapeau <span class="chip s-ok">démontré</span></h3>Une phrase singulière, deux à trois phrases de contexte, chaque affirmation sourcée.</div>
+      <div class="bloc ok"><h3>B. Repères <span class="chip s-ok">démontré</span></h3>Deux ou trois chiffres, chacun avec sa portée.
+        <div class="tiles"><div class="tile"><b>203</b>enquêtes · PARIS ENTIER</div><div class="tile"><b>5</b>enquêtes · AGGLOMÉRATION</div><div class="tile"><b>2</b>relaxes · 11e</div></div></div>
+      <div class="bloc part"><h3>C. Réponse institutionnelle dans le temps <span class="chip s-part">à structurer</span></h3>Frise courte, deux états visibles.
+        <ul class="tl"><li><span class="tag-doc">DOCUMENTÉ</span> 31 août — adjointe à l’enfance : « la grande cause du mandat », contrôles d’honorabilité en cours</li><li class="ann"><span class="tag-annonce">ANNONCÉ</span> juillet — plan municipal présenté par le maire : aucun bilan de mise en œuvre trouvé</li></ul></div>
+      <div class="bloc hyp"><h3>D. Vie associative <span class="chip s-hyp">hypothèse</span></h3>Communiqués et prises de position attribués. <em>Peut être vide : « aucune prise de parole retrouvée » est une information.</em></div>
+      <div class="bloc hyp"><h3>E. Parents et communauté <span class="chip s-hyp">hypothèse</span></h3>Réunions, rassemblements, revendications, et réponse reçue. <em>Aucun témoignage privé.</em></div>
+      <div class="bloc ok"><h3>F. Accès aux dossiers <span class="chip s-ok">démontré</span></h3>Tableau d’états, carte quand elle apprend quelque chose, filtre.</div>
+      <div class="bloc ok"><h3>G. Dossiers : déroulé, jugement, versions, inconnues <span class="chip s-ok">démontré</span></h3>Le cœur du produit, déjà là.</div>
+      <div class="bloc part"><h3>H. Preuves, limites, dernière relecture <span class="chip s-part">à consolider</span></h3>Ce que nous avons cherché, ce qui manque, date visible par bloc.</div>
+      <div class="bloc hyp"><h3>I. Signaler une erreur ou une source <span class="chip s-hyp">hypothèse</span></h3>Lien simple d’abord (mailto), formulaire seulement si le volume le justifie.</div>
+    </div>
+    <div>
+      <p class="note">Premier écran (mobile 375 px) : A + B + deux prises de parole de C, puis accès F. Les blocs D et E n’apparaissent que s’ils ont de la matière relue : un bloc vide n’est pas affiché, mais la limite est écrite en H.</p>
+      <p class="note"><b>Règle d’échelle</b> : tout chiffre porte une portée (commune, agglomération, ville entière, département). <b>Règle de statut</b> : chaque entrée dit si elle est documentée, annoncée, alléguée ou une position.</p>
+    </div>
+  </div>
+
+  <h2>4 · Les quatre blocs manquants</h2>
+  <div class="cartes">
+    <div class="carte"><h3>Vie associative</h3><dl>
+      <dt>Question</dt><dd>Qui, hors institutions, s’est exprimé ou a agi, et en quoi cela change-t-il la compréhension du dossier ?</dd>
+      <dt>Valeur</dt><dd>Montre la dimension collective (partie civile, communiqué, dossier de suivi) que la fiche ne porte pas.</dd>
+      <dt>Sources admissibles</dt><dd>Site officiel de l’association, communiqué, presse qui le relaie. Pas de post isolé.</dd>
+      <dt>Preuve</dt><dd>Document daté et attribuable ; pour une partie civile : citée par la presse ou le tribunal.</dd>
+      <dt>Risque</dt><dd>Faire passer une position pour un fait ; créditer une association d’une action annoncée.</dd>
+      <dt>Place</dt><dd>Bloc D du Hub ; mention dans le dossier si propre à l’affaire.</dd>
+      <dt>Manque à Neon</dt><dd>Acteur (organisation + rôle) ; événement territorial sans <code>case_id</code> ; statut documenté / annoncé / position.</dd>
+      <dt>Validation</dt><dd>Oui, avant publication.</dd></dl></div>
+    <div class="carte"><h3>Parents et communauté</h3><dl>
+      <dt>Question</dt><dd>Comment les familles ont-elles réagi collectivement, que demandent-elles, qu’a-t-on répondu ?</dd>
+      <dt>Valeur</dt><dd>Donne le sens vécu du territoire ; relie une demande à une réponse institutionnelle.</dd>
+      <dt>Sources admissibles</dt><dd>Compte rendu de presse d’une réunion ou d’un rassemblement ; communiqué d’un collectif identifiable.</dd>
+      <dt>Preuve</dt><dd>Événement daté, lieu, ordre de grandeur attribué (« près de 200 personnes, selon Sud Ouest »).</dd>
+      <dt>Risque</dt><dd>Très élevé : témoignage privé, identification d’un mineur ou d’une famille, rumeur. Aucune citation non anonymisée par la source.</dd>
+      <dt>Place</dt><dd>Bloc E ; la demande et la réponse sont placées face à face.</dd>
+      <dt>Manque à Neon</dt><dd>Type d’événement « mobilisation » existe ; manque l’échelle territoriale et le champ « demande / réponse ».</dd>
+      <dt>Validation</dt><dd>Oui, systématique.</dd></dl></div>
+    <div class="carte"><h3>Réponse institutionnelle dans le temps</h3><dl>
+      <dt>Question</dt><dd>Qu’a dit l’institution, qu’a-t-elle annoncé, et qu’est-ce qui est documenté comme fait ?</dd>
+      <dt>Valeur</dt><dd>Évite de créditer une promesse comme un résultat ; montre l’évolution.</dd>
+      <dt>Sources admissibles</dt><dd>Communiqué officiel, déclaration citée par la presse, délibération.</dd>
+      <dt>Preuve</dt><dd>Une entrée par étape, datée ; le statut « documenté » exige une trace d’exécution, pas une annonce.</dd>
+      <dt>Risque</dt><dd>Annonce lue comme mise en œuvre ; inférer une responsabilité d’une succession de dates.</dd>
+      <dt>Place</dt><dd>Bloc C (frise courte) + détail repliable existant.</dd>
+      <dt>Manque à Neon</dt><dd>Type « réponse institutionnelle » existe ; manquent le statut documenté/annoncé et le lien vers l’étape suivante.</dd>
+      <dt>Validation</dt><dd>Oui pour « documenté » ; non pour une citation attribuée.</dd></dl></div>
+    <div class="carte"><h3>Contributions citoyennes</h3><dl>
+      <dt>Question</dt><dd>Puis-je signaler une erreur, une source ou une évolution ?</dd>
+      <dt>Valeur</dt><dd>Corrige plus vite ; élargit la couverture ; première trace de l’usage réel.</dd>
+      <dt>Sources admissibles</dt><dd>Un lien vers un article ou un document public. Pas de récit personnel.</dd>
+      <dt>Preuve</dt><dd>Le lien : toute contribution est vérifiée comme une source ordinaire.</dd>
+      <dt>Risque</dt><dd>Accusations, doxxing, données de mineurs, spam.</dd>
+      <dt>Place</dt><dd>Bloc I, en pied de Hub et de dossier.</dd>
+      <dt>Manque à Neon</dt><dd>Table <code>contributions</code> présente, vide ; aucune modération.</dd>
+      <dt>Validation</dt><dd>Oui, toujours. <b>Hypothèse à tester par le mailto avant tout formulaire.</b></dd></dl></div>
+  </div>
+
+  <h2>5 · Tester les blocs sur la matière déjà collectée</h2>
+  <div class="ex-reels">
+    <div class="ex"><b>Paris — parents (E)</b><br/>Le 9 juillet 2026, une centaine de parents se réunissent devant l’école Alphonse-Baudin pour contester la relaxe ; des familles de l’école Titon et des conseillers de Paris sont présents.<small><span class="tag-doc">DOCUMENTÉ</span> · franceinfo, 9-10 juillet · <a href="https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html" target="_blank" rel="noopener noreferrer">article ↗</a></small></div>
+    <div class="ex"><b>Paris — associatif (D)</b><br/>La cofondatrice du collectif #MeTooEcole critique la manière dont le tribunal a interprété les auditions d’enfants.<small><span class="tag-pos">POSITION</span> · même article. Un communiqué d’association de protection de l’enfance cité ailleurs n’a pas pu être relu : non repris.</small></div>
+    <div class="ex"><b>Paris — syndicats (D)</b><br/>Appel à la grève jusqu’au 16 juin 2026 après une mobilisation du 11 au 22 mai ayant perturbé près de 400 écoles ; ils dénoncent un « climat de suspicion généralisée ».<small><span class="tag-pos">POSITION</span> · franceinfo, 8 juin · <a href="https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-les-animateurs-de-nouveau-appeles-a-faire-greve-jusqu-au-16-juin_8050382.html" target="_blank" rel="noopener noreferrer">article ↗</a></small></div>
+    <div class="ex"><b>Bordeaux — réponse dans le temps (C)</b><br/>~9 juillet : le maire de Bordeaux présente un « plan de lutte contre les violences faites aux enfants » (contrôles d’honorabilité en premier volet). 31 août : l’adjointe en charge de l’enfance en fait « la grande cause du mandat » et dit travailler à sécuriser les recrutements « même si nous n’avons pas l’autorisation de consulter tous les fichiers ».<small><span class="tag-annonce">ANNONCÉ</span> puis <span class="tag-annonce">ANNONCÉ</span> · aucun bilan de mise en œuvre trouvé · <a href="https://www.lefigaro.fr/bordeaux/apres-l-affaire-lyhanna-bordeaux-lance-un-plan-de-lutte-contre-les-violences-en-milieu-scolaire-et-periscolaire-20260709" target="_blank" rel="noopener noreferrer">Le Figaro ↗</a> · <a href="https://www.sudouest.fr/gironde/bordeaux/rentree-scolaire-a-bordeaux-l-ecole-doit-etre-un-lieu-de-confiance-et-de-protection-30395856.php" target="_blank" rel="noopener noreferrer">Sud Ouest ↗</a></small></div>
+    <div class="ex"><b>Cenon — parents (E)</b><br/>Le 29 septembre, réunion publique d’information organisée par le maire ; près de 200 personnes, des représentants de l’Éducation nationale et du nouveau délégataire. Le maire se dit « en colère » que les personnels du périscolaire échappent au certificat d’honorabilité.<small><span class="tag-doc">DOCUMENTÉ</span> (réunion, affluence) · <span class="tag-pos">POSITION</span> (colère) · <a href="https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php" target="_blank" rel="noopener noreferrer">Sud Ouest ↗</a></small></div>
+    <div class="ex"><b>Bordeaux — associatif (D)</b><br/>Le 4 juillet, rassemblement place de la Victoire « à l’appel de la mobilisation nationale portée par Mouv’Enfants et la Fondation des femmes ».<small><span class="tag-annonce">ANNONCÉ</span> seulement (pas de compte rendu) ; mobilisation nationale, non spécifique aux affaires locales · <a href="https://www.sudouest.fr/gironde/bordeaux/bordeaux-un-appel-au-rassemblement-samedi-contre-les-violences-sexistes-et-sexuelles-29760487.php" target="_blank" rel="noopener noreferrer">Sud Ouest ↗</a></small></div>
+    <div class="ex"><b>Hautes-Alpes — réponse dans le temps (C)</b><br/>Cellule d’écoute à Saint-Joseph : absente mi-mai 2025, annoncée sous conditions le 17 mai (« on mettra les dispositifs nécessaires »), documentée comme ouverte le 21 juin avec une fréquentation « assez faible », sans date d’ouverture.<small><span class="tag-annonce">ANNONCÉ</span> → <span class="tag-doc">DOCUMENTÉ</span> · aucun suivi après · <a href="https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html" target="_blank" rel="noopener noreferrer">BFM DICI ↗</a></small></div>
+    <div class="ex"><b>Hautes-Alpes — associatif et parents (D, E)</b><br/><b>Aucune association, collectif de victimes, syndicat ni association de parents retrouvé</b> dans les sources accessibles ; seulement des réactions anonymes de parents (France 3, 17 mai 2025).<small>Un bloc vide honnête : « aucune prise de parole retrouvée » est une information, pas un défaut du territoire.</small></div>
+  </div>
+
+  <h2>6 · Gaps : valeur, données, fiabilité, effort</h2>
+  <table>
+    <thead><tr><th>Bloc / parcours</th><th>Valeur citoyenne</th><th>Données disponibles</th><th>Fiabilité</th><th>Effort</th></tr></thead>
+    <tbody>
+      <tr><td>Lien Home → Hub</td><td>Élevée : relie fiche et contexte</td><td>Complètes (hub_id par fiche)</td><td>Haute</td><td>S</td></tr>
+      <tr><td>Déroulé étendu aux fiches publiques</td><td>Élevée : corrige les états incomplets (relaxe partielle)</td><td>Presse libre, relecture manuelle</td><td>Haute si relue</td><td>L</td></tr>
+      <tr><td>Réponse institutionnelle dans le temps</td><td>Élevée : distingue annonce et fait</td><td>Déjà collectées (Paris, Bordeaux, Hautes-Alpes)</td><td>Moyenne : beaucoup d’annonces, peu de bilans</td><td>M</td></tr>
+      <tr><td>Vie associative</td><td>Moyenne : dépend du territoire</td><td>Éparses ; aucune sur les Hautes-Alpes</td><td>Variable</td><td>M</td></tr>
+      <tr><td>Parents et communauté</td><td>Élevée mais sensible</td><td>Comptes rendus de réunions (Paris, Cenon)</td><td>Moyenne ; risque éditorial élevé</td><td>M-L</td></tr>
+      <tr><td>Contributions citoyennes</td><td>Inconnue (à mesurer)</td><td>Table vide</td><td>—</td><td>M (avec modération)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>7 · Contrat minimal des nouveaux contenus</h2>
+  <p class="lede">Pas de nouvelle structure : on réutilise l’« entrée » déjà employée dans les Hubs (<code>data/hub-matiere/*.json</code>) et on ajoute <b>trois champs</b>. Rien n’est migré vers Neon tant qu’un bloc n’est pas validé par l’usage.</p>
+<pre>{`{
+  "bloc": "institution | association | communaute",          // NOUVEAU : où l'afficher
+  "statut": "documente | annonce | allegation | position",   // NOUVEAU : ce que dit la source, jamais plus
+  "portee": "commune | agglomeration | ville | departement", // NOUVEAU : échelle exacte
+  "date": "2026-07-09", "date_nature": "evenement | approximative | article | inconnue",
+  "acteur": "Jean-François Egron, maire de Cenon",           // nom + fonction si établis
+  "texte": "…paraphrase attribuée…",
+  "source": { "media": "Sud Ouest", "url": "…", "publie_le": "2026-09-30", "acces": "libre | paywall" }
+}`}</pre>
+  <p>Règles : (1) <b>un « documenté » exige une trace d’exécution</b>, une annonce reste « annonce » ; (2) aucun témoignage privé, aucun détail identifiant un mineur ou une famille ; (3) une <b>validation humaine</b> avant publication ; (4) un bloc sans matière n’est pas affiché mais sa limite est écrite ; (5) pas de capteur tant que le format n’est pas validé par des lecteurs.</p>
+</main>
+</body>
+</html>
