@@ -259,70 +259,49 @@
     }
   ],
   "reperes": {
-    "titre": "Deux dossiers approfondis : Frida-Kahlo (enquête) et Cenon (procès annoncé)",
-    "points": [
-      {
-        "texte": "Frida-Kahlo : enquête préliminaire après des plaintes de parents ; deux agents suspendus ; aucune mise en examen rapportée.",
-        "sources": [
-          {
-            "media": "France 3 Nouvelle-Aquitaine",
-            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
-            "publie_le": "2026-07-02"
-          }
-        ]
-      },
-      {
-        "texte": "Cenon : animateur renvoyé devant le tribunal (audience le 22 février 2027), sous contrôle judiciaire ; second animateur hors de cause ; une seconde plainte annoncée.",
-        "sources": [
-          {
-            "media": "France 3 Nouvelle-Aquitaine",
-            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
-            "publie_le": "2026-09-21"
-          },
-          {
-            "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
-            "publie_le": "2026-09-30"
-          }
-        ]
-      },
-      {
-        "texte": "Dans les deux, la question de l’employeur est posée par les acteurs eux-mêmes (adjointe de Bordeaux ; maire de Cenon et Les Francas), sans conclusion de SNY.",
-        "sources": [
-          {
-            "media": "franceinfo",
-            "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
-            "publie_le": "2026-07-01"
-          },
-          {
-            "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
-            "publie_le": "2026-10-08"
-          }
-        ]
-      }
-    ],
+    "titre": "À Bordeaux et à Cenon, les institutions parlent avant tout jugement",
     "chiffres": [
       {
-        "valeur": "2",
-        "libelle": "affaires documentées par SNY",
-        "portee": "SNY"
-      },
-      {
         "valeur": "5",
-        "libelle": "enquêtes préliminaires en cours dans l’agglomération, selon le procureur",
+        "libelle": "enquêtes préliminaires en cours dans l’agglomération, selon le procureur (3 juillet)",
         "portee": "agglomération",
         "source": {
           "media": "Sud Ouest",
           "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
           "publie_le": "2026-07-03"
         }
+      },
+      {
+        "valeur": "2",
+        "libelle": "affaires documentées par SNY : Frida-Kahlo et Cenon, deux des cinq enquêtes citées",
+        "portee": "SNY"
+      },
+      {
+        "valeur": "22 fév. 2027",
+        "libelle": "audience annoncée à Cenon (aucun jugement rendu)",
+        "portee": "Cenon",
+        "source": {
+          "media": "France 3 Nouvelle-Aquitaine",
+          "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+          "publie_le": "2026-09-21"
+        }
       }
     ],
     "institutions": [
       {
-        "acteur": "Jean-François Egron, maire de Cenon",
-        "texte": "Se constitue partie civile, annonce un renforcement des contrôles, réunit les parents le 29 septembre ; reproche aux Francas de ne pas lui avoir transmis des documents. Version contraire de l’association : voir le dossier.",
+        "acteur": "Renaud Gaudeul, procureur de la République de Bordeaux (3 juillet)",
+        "texte": "Confirme cinq enquêtes préliminaires sur des violences sexuelles en milieu scolaire ou périscolaire dans l’agglomération et parle d’« une explosion du nombre de signalements » de mineurs en danger, tous motifs confondus.",
+        "sources": [
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
+            "publie_le": "2026-07-03"
+          }
+        ]
+      },
+      {
+        "acteur": "Jean-François Egron, maire de Cenon (29 septembre – 8 octobre)",
+        "texte": "Se constitue partie civile et annonce un renforcement des contrôles ; selon Sud Ouest, il reproche aux Francas de ne pas lui avoir transmis certains documents ; l’association donne une autre version, détaillée dans le dossier.",
         "sources": [
           {
             "media": "ICI Gironde",
@@ -335,30 +314,9 @@
             "publie_le": "2026-10-08"
           }
         ]
-      },
-      {
-        "acteur": "Renaud Gaudeul, procureur de la République de Bordeaux",
-        "texte": "Cinq enquêtes préliminaires en cours dans l’agglomération (3 juillet) ; son parquet a reçu plus de 3 600 signalements de mineurs en danger au 20 juin, tous motifs confondus : ce ne sont pas des affaires.",
-        "sources": [
-          {
-            "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
-            "publie_le": "2026-07-03"
-          }
-        ]
-      },
-      {
-        "acteur": "Une adjointe au maire de Bordeaux (non nommée)",
-        "texte": "« La situation n’est pas comparable » à Paris, la Ville n’employant pas directement les animateurs ; un plan de protection de l’enfance est annoncé (1er juillet).",
-        "sources": [
-          {
-            "media": "franceinfo",
-            "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
-            "publie_le": "2026-07-01"
-          }
-        ]
       }
     ],
-    "limite": "Préfecture et Département : aucune déclaration retrouvée. Les autres enquêtes de l’agglomération ne sont pas documentées par SNY : leur absence ici n’est pas une absence de faits."
+    "limite": "Les signalements, les enquêtes et les affaires SNY sont trois choses différentes : seules deux affaires sont documentées ici, et l’absence des autres n’est pas une absence de faits.",
+    "chapeau": "Aucune des deux affaires n’est jugée : ce sont d’abord des responsables publics qui s’expriment. Le procureur de Bordeaux fait état de cinq enquêtes préliminaires dans l’agglomération, la Ville de Bordeaux se démarque de la situation parisienne en rappelant qu’elle n’emploie pas directement les animateurs, et à Cenon la mairie et l’association employeuse donnent deux versions sur la transmission des informations."
   }
 }

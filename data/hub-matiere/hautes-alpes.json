@@ -6,61 +6,40 @@
     "methode": "chaque entrée relue sur le texte brut de l'article (BFM DICI, France 3, Le Figaro, 20 Minutes, Alpes 1) ; Le Dauphiné, payant, n'est cité que pour ce que dit son titre."
   },
   "reperes": {
-    "titre": "Deux affaires jugées : ce que les tribunaux ont retenu, et ce qu’ils ont écarté",
-    "chapeau": "Dans ce département peu peuplé, SNY documente deux affaires, toutes deux jugées en première instance par le tribunal de Gap. Elles ne racontent pas une vague de signalements : elles montrent comment une accusation devient, ou non, une condamnation.",
-    "points": [
-      {
-        "texte": "Collège-lycée Saint-Joseph (Gap) : sur huit faits poursuivis, le tribunal ne retient que des « atteintes sexuelles par autorité » et relaxe pour le reste, faute « d’investigations et d’éléments ». Trois ans avec sursis, quand le parquet en demandait cinq dont une partie ferme.",
-        "sources": [
-          {
-            "media": "BFM DICI",
-            "url": "https://www.bfmtv.com/bfm-dici/atteintes-sexuelles-au-college-lycee-saint-joseph-a-gap-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis_AN-202511260744.html",
-            "publie_le": "2025-11-26"
-          }
-        ]
-      },
-      {
-        "texte": "Collège Simone-Veil (La Bâtie-Neuve) : un enseignant condamné à trois mois avec sursis probatoire et à une interdiction d’exercer auprès de mineurs ; il contestait les faits.",
-        "sources": [
-          {
-            "media": "Alpes 1",
-            "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
-            "publie_le": "2026-02-20"
-          }
-        ]
-      },
-      {
-        "texte": "Aucun appel n’est rapporté par la presse pour l’une ou l’autre affaire : SNY ne sait pas si ces jugements sont devenus définitifs.",
-        "sources": []
-      }
-    ],
+    "titre": "À Gap, deux jugements restent en deçà des réquisitions, dont l’un avec une relaxe partielle",
+    "chapeau": "Deux affaires indépendantes, jugées à trois mois d’intervalle par le tribunal de Gap, rappellent qu’une poursuite n’est pas un jugement : à Saint-Joseph, une relaxe partielle — pas totale —, et à La Bâtie-Neuve une peine inférieure aux réquisitions. À Saint-Joseph, l’évêque, l’enseignement catholique et la procureure ont pris la parole pendant l’enquête.",
     "chiffres": [
       {
-        "valeur": "2",
-        "libelle": "affaires documentées, jugées à Gap",
-        "portee": "SNY"
-      },
-      {
-        "valeur": "8 → 1",
-        "libelle": "faits poursuivis à Saint-Joseph → une seule qualification retenue (atteintes sexuelles par autorité)",
+        "valeur": "5 ans → 3 ans",
+        "libelle": "Saint-Joseph : requis (dont 2 avec sursis) → prononcé, avec sursis",
         "portee": "Saint-Joseph",
         "source": {
-          "media": "BFM DICI",
-          "url": "https://www.bfmtv.com/bfm-dici/faits-divers/violences-sexuelles-a-saint-joseph-a-gap-le-professeur-sera-juge-le-3-novembre_AN-202510090347.html",
-          "publie_le": "2025-10-09"
+          "media": "France 3 Provence-Alpes",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/gap/abus-sexuels-au-college-saint-joseph-j-ai-toujours-joue-a-la-console-avec-des-eleves-5-ans-de-prison-requis-contre-le-professeur-3244135.html",
+          "publie_le": "2025-11-04"
         }
+      },
+      {
+        "valeur": "10 → 3 mois",
+        "libelle": "La Bâtie-Neuve : requis avec sursis → prononcé, avec sursis probatoire",
+        "portee": "La Bâtie-Neuve",
+        "source": {
+          "media": "Alpes 1",
+          "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
+          "publie_le": "2026-02-20"
+        }
+      },
+      {
+        "valeur": "0",
+        "libelle": "appel rapporté par la presse — sans que cela dise si les jugements sont définitifs",
+        "portee": "2 affaires"
       }
     ],
     "institutions": [
       {
-        "acteur": "Marion Lozac’hmeur, procureure de la République de Gap",
-        "texte": "Confirme en mai 2025 une enquête ouverte depuis la mi-avril pour corruption de mineurs (Saint-Joseph) ; explique en juin sa durée par la dispersion géographique des personnes à entendre ; salue ensuite « une enquête remarquable ».",
+        "acteur": "Marion Lozac’hmeur, procureure de la République de Gap (juin 2025)",
+        "texte": "Sur l’enquête de Saint-Joseph : « La distance géographique des personnes que nous voulons entendre fait que cela prend du temps » ; le parquet est « parfaitement mobilisé ».",
         "sources": [
-          {
-            "media": "BFM DICI",
-            "url": "https://www.bfmtv.com/bfm-dici/gap-un-professeur-de-l-etablissement-saint-joseph-suspendu-apres-des-temoignages-d-agressions-sexuelles_AN-202505160442.html",
-            "publie_le": "2025-05-16"
-          },
           {
             "media": "BFM DICI",
             "url": "https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html",
@@ -69,8 +48,8 @@
         ]
       },
       {
-        "acteur": "Mgr Xavier Malle, évêque de Gap et d’Embrun ; Sébastien Dey, directeur interdiocésain de l’enseignement catholique",
-        "texte": "Disent avoir informé la communauté éducative et les familles ; « un souci absolu qu’il n’y ait plus de silence » ; une cellule d’écoute est ouverte, peu fréquentée selon la direction.",
+        "acteur": "Mgr Xavier Malle, évêque de Gap, et Sébastien Dey, enseignement catholique (mai 2025)",
+        "texte": "Disent avoir informé les familles et vouloir qu’il n’y ait « plus de silence » ; une cellule d’écoute est ouverte, peu fréquentée selon la direction.",
         "sources": [
           {
             "media": "BFM DICI",
@@ -85,7 +64,7 @@
         ]
       }
     ],
-    "limite": "Rectorat d’Aix-Marseille, mairie de Gap, Département : aucune prise de parole retrouvée. Une autre affaire jugée en 2026 dans le département n’est pas documentée par SNY : son absence ici n’est pas une absence de faits.",
+    "limite": "Ces deux dossiers n’ont pas de lien entre eux : ils ne disent rien d’un phénomène départemental. Rectorat, mairie de Gap et Département : aucune prise de parole retrouvée.",
     "aide": null
   },
   "ordre": [

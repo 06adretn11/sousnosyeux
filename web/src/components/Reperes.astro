@@ -11,7 +11,7 @@ interface Props {
   r: {
     titre: string;
     chapeau?: string;
-    points: { texte: string; sources: Src[] }[];
+    points?: { texte: string; sources: Src[] }[];
     chiffres?: { valeur: string; libelle: string; portee?: string; source?: Src }[];
     institutions?: { acteur: string; texte: string; sources: Src[] }[];
     limite?: string;
@@ -27,14 +27,14 @@ const lien = (s: Src) => `${s.media}${s.publie_le ? `, ${dateLongue(s.publie_le)
   <p class="titre">{r.titre}</p>
   {r.chapeau && <p class="chapeau">{r.chapeau}</p>}
 
-  <ul class="points">
+  {r.points && r.points.length > 0 && <ul class="points">
     {r.points.map((p) => (
       <li>
         {p.texte}
         <span class="src">{p.sources.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer" title={lien(s)}>{s.media} ↗</a>)}</span>
       </li>
     ))}
-  </ul>
+  </ul>}
 
   {r.chiffres && r.chiffres.length > 0 && (
     <div class="chiffres">

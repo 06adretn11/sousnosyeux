@@ -697,40 +697,28 @@
     }
   ],
   "reperes": {
-    "titre": "Deux relaxes en appel, deux mises en examen, cinq dossiers sans suite connue",
-    "points": [
+    "titre": "Neuf affaires indépendantes dans le 11e, et une réponse publique qui a pris l’ampleur de tout Paris",
+    "chiffres": [
       {
-        "texte": "Deux jugements, deux relaxes, toutes deux en appel. Titon : comportement jugé « inapproprié » mais non délictuel. Alphonse-Baudin : « doute sérieux » sur les faits visant des enfants ; condamnation distincte pour harcèlement sexuel sur deux collègues.",
-        "sources": [
-          {
-            "media": "franceinfo",
-            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
-            "publie_le": "2026-06-17"
-          },
-          {
-            "media": "franceinfo",
-            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
-            "publie_le": "2026-07-07"
-          }
-        ]
+        "valeur": "203",
+        "libelle": "enquêtes ouvertes par le parquet, au 31 août",
+        "portee": "Paris entier",
+        "source": {
+          "media": "France 3 Paris Île-de-France",
+          "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html",
+          "publie_le": "2026-08-31"
+        }
       },
       {
-        "texte": "Deux mises en examen (Bullourde, Servan). Les cinq autres fiches s’arrêtent à la plainte ou à l’enquête.",
-        "sources": [
-          {
-            "media": "La Minute (AFP)",
-            "url": "https://laminute.info/2026/02/07/paris-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-sur-mineur/",
-            "publie_le": "2026-02-07"
-          },
-          {
-            "media": "ICI (France Bleu)",
-            "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
-            "publie_le": "2026-05-12"
-          }
-        ]
-      }
-    ],
-    "chiffres": [
+        "valeur": "78 → 132",
+        "libelle": "animateurs suspendus depuis janvier 2026, entre avril et le 9 juin ; au 9 juin, 52 l’étaient pour suspicion de violences sexuelles ou sexistes",
+        "portee": "Paris entier",
+        "source": {
+          "media": "TIME France",
+          "url": "https://www.timefrance.fr/societe/periscolaire-a-paris-de-nouveaux-animateurs-suspendus-une-commission-denquete-bientot-lancee/",
+          "publie_le": "2026-06-10"
+        }
+      },
       {
         "valeur": "2",
         "libelle": "relaxes dans le 11e, toutes deux frappées d’appel",
@@ -740,59 +728,28 @@
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
           "publie_le": "2026-06-17"
         }
-      },
-      {
-        "valeur": "203",
-        "libelle": "enquêtes ouvertes par le parquet au 31 août",
-        "portee": "Paris entier",
-        "source": {
-          "media": "France 3 Paris Île-de-France",
-          "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html",
-          "publie_le": "2026-08-31"
-        }
-      },
-      {
-        "valeur": "132",
-        "libelle": "animateurs suspendus depuis janvier au 9 juin, dont 52 pour suspicion de violences sexuelles ou sexistes",
-        "portee": "Paris entier",
-        "source": {
-          "media": "TIME France",
-          "url": "https://www.timefrance.fr/societe/periscolaire-a-paris-de-nouveaux-animateurs-suspendus-une-commission-denquete-bientot-lancee/",
-          "publie_le": "2026-06-10"
-        }
       }
     ],
     "institutions": [
       {
-        "acteur": "Ville de Paris",
-        "texte": "132 animateurs suspendus au 9 juin, dont 52 pour suspicion de violences sexuelles ou sexistes (Paris entier) ; plan d’action en six axes ; commission indépendante.",
+        "acteur": "Emmanuel Grégoire, maire de Paris (9 juin 2026)",
+        "texte": "Annonce une commission d’enquête indépendante présidée par Antoine Garapon, ancien juge des enfants, avec « carte blanche » pour analyser la gestion du périscolaire depuis la réforme de 2013 ; elle fait suite à un plan d’action adopté en avril.",
         "sources": [
-          {
-            "media": "paris.fr",
-            "url": "https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461",
-            "publie_le": "2026-04-14"
-          },
           {
             "media": "TIME France",
             "url": "https://www.timefrance.fr/societe/periscolaire-a-paris-de-nouveaux-animateurs-suspendus-une-commission-denquete-bientot-lancee/",
             "publie_le": "2026-06-10"
-          }
-        ]
-      },
-      {
-        "acteur": "Parquet de Paris",
-        "texte": "Au 31 août : trois procès tenus (deux relaxes, une condamnation), tous rejugés en appel.",
-        "sources": [
+          },
           {
-            "media": "France 3 Paris Île-de-France",
-            "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html",
-            "publie_le": "2026-08-31"
+            "media": "paris.fr",
+            "url": "https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461",
+            "publie_le": "2026-04-14"
           }
         ]
       },
       {
-        "acteur": "Sénat",
-        "texte": "Commission d’enquête lancée en juin ; conclusions non publiées.",
+        "acteur": "Sénat (juin 2026 ; audition de la Ville publiée le 8 octobre)",
+        "texte": "Une commission d’enquête, dont la sénatrice Agnès Evren est rapporteure, entend la Ville : son DRH s’excuse pour des propos tenus sur les signalements. Conclusions non publiées.",
         "sources": [
           {
             "media": "Public Sénat",
@@ -802,7 +759,7 @@
         ]
       }
     ],
-    "limite": "Ces chiffres décrivent la médiatisation et la réponse publique, pas la fréquence des faits dans le 11e : SNY ne documente que ce que la presse rapporte. Éducation nationale : aucune déclaration propre à ces écoles retrouvée.",
-    "chapeau": "Depuis l’été 2025, la presse rapporte une série d’affaires dans des écoles et une crèche du 11e. Leur médiatisation a ouvert un débat parisien sur le périscolaire, auquel la Ville, la justice et le Sénat ont répondu."
+    "limite": "Ces chiffres décrivent la réponse publique, pas la fréquence des faits dans le 11e : ils concernent Paris entier et SNY ne documente que ce que la presse rapporte. Éducation nationale : aucune déclaration propre à ces écoles retrouvée.",
+    "chapeau": "Depuis l’été 2025, la presse rapporte neuf affaires distinctes dans des écoles et une crèche du 11e : ce ne sont pas les épisodes d’une même procédure. Elles s’inscrivent dans un débat parisien auquel les pouvoirs publics ont répondu par étapes — suspensions d’animateurs dès 2025, plan d’action en avril 2026, commission indépendante annoncée en juin, enquête du Sénat."
   }
 }
