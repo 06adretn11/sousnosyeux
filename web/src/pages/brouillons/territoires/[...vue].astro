@@ -15,6 +15,7 @@ import Index from '../../../components/territoires/Index.astro';
 import Paris11e from '../../../components/territoires/Paris11e.astro';
 import Bordeaux from '../../../components/territoires/Bordeaux.astro';
 import Somme from '../../../components/territoires/Somme.astro';
+import HautesAlpes from '../../../components/territoires/HautesAlpes.astro';
 import { chargerHub } from '../../../lib/hub-matiere';
 
 export function getStaticPaths() {
@@ -24,23 +25,23 @@ export function getStaticPaths() {
     { params: { vue: undefined }, props: { vue: 'index' } },
     { params: { vue: 'paris-11e' }, props: { vue: 'paris-11e' } },
     { params: { vue: 'bordeaux-gironde' }, props: { vue: 'bordeaux-gironde' } },
+    { params: { vue: 'hautes-alpes' }, props: { vue: 'hautes-alpes' } },
     { params: { vue: 'somme' }, props: { vue: 'somme' } },
     // Versions « publique » : ce qui est publiable aujourd'hui, sans la matière de revue.
-    { params: { vue: 'bordeaux-gironde-public' }, props: { vue: 'bordeaux-gironde-public' } },
     { params: { vue: 'somme-public' }, props: { vue: 'somme-public' } },
   ];
 }
 
 const { vue } = Astro.props as { vue: string };
 // Un rendu qui contient de la matière NON PUBLIÉE (data/hub-prive/) le dit en tête de page.
-const aPrive = ['paris-11e', 'bordeaux-gironde', 'somme'].some((id) => (vue === 'index' || vue === id) && chargerHub(id).prive);
+const aPrive = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'somme'].some((id) => (vue === 'index' || vue === id) && chargerHub(id).prive);
 const base = '/brouillons/territoires';
 const titres: Record<string, string> = {
   'index': 'Trois territoires',
   'paris-11e': 'Paris 11e',
   'bordeaux-gironde': 'Bordeaux / Gironde',
+  'hautes-alpes': 'Hautes-Alpes',
   'somme': 'Somme (revue)',
-  'bordeaux-gironde-public': 'Bordeaux / Gironde (public)',
   'somme-public': 'Somme (public)',
 };
 ---
@@ -62,8 +63,8 @@ const titres: Record<string, string> = {
     <nav>
       <a href={base}>Les trois</a>
       <a href={`${base}/paris-11e`}>Paris 11e</a>
-      <a href={`${base}/bordeaux-gironde`}>Bordeaux (revue)</a>
-      <a href={`${base}/bordeaux-gironde-public`}>Bordeaux (public)</a>
+      <a href={`${base}/bordeaux-gironde`}>Bordeaux</a>
+      <a href={`${base}/hautes-alpes`}>Hautes-Alpes</a>
       <a href={`${base}/somme`}>Somme (revue)</a>
       <a href={`${base}/somme-public`}>Somme (public)</a>
     </nav>
@@ -71,7 +72,7 @@ const titres: Record<string, string> = {
   {vue === 'index' && <Index />}
   {vue === 'paris-11e' && <Paris11e />}
   {vue === 'bordeaux-gironde' && <Bordeaux />}
-  {vue === 'bordeaux-gironde-public' && <Bordeaux publicOnly />}
+  {vue === 'hautes-alpes' && <HautesAlpes />}
   {vue === 'somme' && <Somme />}
   {vue === 'somme-public' && <Somme publicOnly />}
 </Layout>

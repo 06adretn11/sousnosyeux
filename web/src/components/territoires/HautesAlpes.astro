@@ -1,0 +1,67 @@
+---
+// Hautes-Alpes — territoire peu dense : deux affaires, toutes deux JUGÉES.
+// La valeur n'est pas dans le nombre mais dans la lecture des jugements :
+// ce qui était poursuivi, requis, retenu, écarté. Pas de carte (deux points
+// éloignés n'apprennent rien) ; un bloc « lire les jugements » propre à ce Hub.
+import Dossier from '../Dossier.astro';
+import Reperes from '../Reperes.astro';
+import Reponses from '../Reponses.astro';
+import Limites from '../Limites.astro';
+import { casesParIds } from '../../lib/territoires';
+import { chargerHub } from '../../lib/hub-matiere';
+
+const { matiere } = chargerHub('hautes-alpes');
+const cases = casesParIds(matiere.ordre);
+const D = matiere.dossiers;
+const LIGNES: [string, string][] = [['poursuivi', 'Poursuivi'], ['requis', 'Requis par le parquet'], ['retenu', 'Retenu par le tribunal'], ['ecarte', 'Écarté'], ['defense', 'Défense'], ['appel', 'Appel']];
+---
+
+<div class="terr">
+  <p class="eyebrow">Territoire peu dense · Hautes-Alpes (05)</p>
+  <h1>Comprendre les affaires des Hautes-Alpes</h1>
+
+  <Reperes r={matiere.reperes}>
+    <Reponses groupes={matiere.reponses} />
+  </Reperes>
+
+  <h2>Lire les jugements</h2>
+  <div class="jugements">
+    {cases.map((c) => (
+      <section class="jug">
+        <h3><a href={`#${c.case_id.toLowerCase()}`}>{c.etablissement}</a> <span>· {c.commune}</span></h3>
+        <dl>
+          {LIGNES.map(([k, l]) => (
+            <>
+              <dt class={`k-${k}`}>{l}</dt>
+              <dd class={`k-${k}`}>{D[c.case_id].jugement[k]}</dd>
+            </>
+          ))}
+        </dl>
+      </section>
+    ))}
+  </div>
+  <p class="note">Les jugements eux-mêmes ne sont pas publics : ce tableau reprend ce que la presse en rapporte, attribué dans chaque dossier.</p>
+
+  <h2>Les dossiers</h2>
+  <div class="grille">
+    {cases.map((c) => <Dossier c={c} d={D[c.case_id]} />)}
+  </div>
+
+  <h2>Limites et inconnues</h2>
+  <Limites recherches={matiere.recherches} />
+</div>
+
+<style>
+  .jugements { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .jug { background: var(--bg-card); border: 1px solid var(--border); padding: 0.9rem 1rem; }
+  .jug h3 { margin: 0 0 8px; font: 700 1rem var(--sans); }
+  .jug h3 a { color: inherit; }
+  .jug h3 span { font-weight: 400; color: var(--muted); font-size: 0.85rem; }
+  dl { margin: 0; display: grid; grid-template-columns: 9.5rem 1fr; gap: 6px 12px; font-size: 0.86rem; line-height: 1.45; }
+  dt { font: 0.68rem/1.6 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  dd { margin: 0; }
+  dd.k-retenu { font-weight: 600; }
+  dt.k-ecarte, dd.k-ecarte { color: var(--green); }
+  .note { max-width: 780px; margin: 8px 0 0; color: var(--muted); font-size: 0.8rem; }
+  @media (max-width: 560px) { dl { grid-template-columns: 1fr; gap: 1px; } dd { margin-bottom: 6px; } }
+</style>

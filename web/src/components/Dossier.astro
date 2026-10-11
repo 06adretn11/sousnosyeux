@@ -41,7 +41,7 @@ for (const s of sourcesLibres) {
     <div class="chips">
       <span class={`chip ${cat}`}>{d.statut_libelle ?? STATUT_LABELS[statut] ?? statut}</span>
       {appel && <span class="chip appel">Appel — décision non définitive</span>}
-      <span class="chip muted">faits {c.statut_des_faits === 'allégué' ? 'allégués' : c.statut_des_faits}</span>
+      <span class="chip muted">{d.faits_libelle ?? (c.statut_des_faits === 'allégué' ? 'faits allégués' : c.statut_des_faits)}</span>
     </div>
   </header>
 

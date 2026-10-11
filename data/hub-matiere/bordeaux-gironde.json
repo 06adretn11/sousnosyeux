@@ -2,10 +2,11 @@
   "_meta": {
     "hub_id": "bordeaux-gironde",
     "redige_le": "2026-10-10",
-    "statut": "matière PUBLIABLE : affaire publique (FR-2026-0113) et déclarations institutionnelles. Les affaires validées mais non publiées vivent dans data/hub-prive/ (ignoré par Git).",
+    "statut": "matière PUBLIABLE : FR-2026-0113 (publiée) et FR-2026-0114 (publication autorisée le 11/10/2026, publiée dans Neon, projection d40cffa en attente de mise en ligne).",
     "methode": "chaque entrée est rattachée à un article dont le texte a été relu par script (mots-clés) avant écriture."
   },
   "ordre": [
+    "FR-2026-0114",
     "FR-2026-0113"
   ],
   "dossiers": {
@@ -62,6 +63,125 @@
         "Les dates des signalements et l'ordre dans lequel les deux agents ont été visés diffèrent selon les résumés de presse et ne sont pas établis.",
         "Le contenu de l'analyse du matériel informatique n'est pas connu."
       ]
+    },
+    "FR-2026-0114": {
+      "etat_actuel": [
+        "Selon Sud Ouest, France 3 et ICI, l'animateur visé est renvoyé devant le tribunal correctionnel de Bordeaux ; l'audience est fixée au 22 février 2027. Il est poursuivi pour agression sexuelle sur mineur et détention d'images pédopornographiques, et placé sous contrôle judiciaire strict depuis le 26 août 2026.",
+        "Il n'a pas été jugé : il est présumé innocent. Une seconde famille a annoncé avoir déposé plainte contre le même animateur ; cette plainte n'a donné lieu à aucune décision connue.",
+        "Le second animateur placé en garde à vue dans la même affaire a été mis hors de cause : la procédure le concernant a été classée sans suite."
+      ],
+      "statut_affiche": "procès",
+      "statut_libelle": "Renvoyé devant le tribunal — audience à venir",
+      "statut_cat": "enquête",
+      "lecture": "« Procès » désigne ici un renvoi : l'audience n'a pas encore eu lieu.",
+      "deroule": [
+        {
+          "date": "2026-06-10",
+          "date_nature": "evenement",
+          "type": "plainte",
+          "acteur": "Une enfant de maternelle et sa famille",
+          "texte": "Une enfant de maternelle se rend avec sa famille au commissariat de Bordeaux pour dénoncer des attouchements sexuels, indique le parquet de Bordeaux à ICI. Deux animateurs des centres de loisirs de Cenon sont soupçonnés ; tous deux sont suspendus. L'association employeuse affirme (selon Sud Ouest) les avoir écartés à titre conservatoire le jour même.",
+          "source": {
+            "media": "ICI Gironde",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+            "publie_le": "2026-09-19",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-06-11",
+          "date_nature": "evenement",
+          "type": "garde_a_vue",
+          "acteur": "Police, parquet de Bordeaux",
+          "texte": "Les deux animateurs sont placés en garde à vue ; les policiers saisissent du matériel informatique. Rien n'est trouvé chez le plus jeune, dont la procédure est classée sans suite. Chez le plus âgé, des fichiers pédopornographiques sont retrouvés, téléchargés en 2012, selon ICI.",
+          "source": {
+            "media": "France 3 Nouvelle-Aquitaine",
+            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+            "publie_le": "2026-09-21",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-08-26",
+          "date_nature": "evenement",
+          "type": "garde_a_vue",
+          "acteur": "Parquet de Bordeaux",
+          "texte": "L'animateur est replacé en garde à vue puis déféré le jour même devant le parquet « dans le cadre d'une procédure de comparution par procès-verbal » : il n'y a pas eu de mise en examen. Il est placé sous contrôle judiciaire, avec interdiction de se rendre à Cenon, d'entrer en contact avec la victime présumée et sa famille et d'exercer une activité impliquant des enfants.",
+          "source": {
+            "media": "France 3 Nouvelle-Aquitaine",
+            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+            "publie_le": "2026-09-21",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-09-05",
+          "date_nature": "evenement",
+          "type": "mobilisation",
+          "acteur": "actuBordeaux ; parents ; mairie de Cenon",
+          "texte": "Le placement sous contrôle judiciaire est révélé par actuBordeaux et, selon ICI, inquiète les parents. La mairie se constitue partie civile et met en place une adresse mail d’écoute (ICI) ; le maire annonce un renforcement des contrôles (France 3). Elle justifie son silence initial par le secret de l’enquête.",
+          "source": {
+            "media": "ICI Gironde",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+            "publie_le": "2026-09-19",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-09-29",
+          "date_nature": "evenement",
+          "type": "mobilisation",
+          "acteur": "Mairie de Cenon ; parents",
+          "texte": "Réunion d'information des parents organisée par le maire de Cenon. Les parents d'un autre enfant y annoncent avoir déposé plainte il y a deux semaines contre le même animateur, pour des attouchements de nature sexuelle au printemps 2026 dans le cadre périscolaire, à l'école voisine Anatole-France. Le délégataire du périscolaire (Les Francas) a changé pour 2026-2027, « sans lien avec l’affaire » selon ICI.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+            "publie_le": "2026-09-30",
+            "acces": "partiel"
+          }
+        },
+        {
+          "date": "2027-02-22",
+          "date_nature": "evenement",
+          "type": "audience",
+          "acteur": "Tribunal correctionnel de Bordeaux",
+          "texte": "Date fixée pour l'audience (événement futur, présomption d'innocence). Elle ne concerne, d'après Sud Ouest, que la première plainte.",
+          "source": {
+            "media": "France 3 Nouvelle-Aquitaine",
+            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+            "publie_le": "2026-09-21",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "La deuxième plainte : ni sa date exacte, ni son traitement par le parquet ne sont connus ; elle est rapportée par Sud Ouest d'après l'annonce des parents.",
+        "Les mesures de la préfecture / des services de l'État (contrôle des accueils collectifs de mineurs) : aucune déclaration retrouvée.",
+        "Le sort administratif de l'animateur (licenciement, rupture) n'est pas établi par les articles relus.",
+        "Aucune mise en examen : la procédure est une comparution par procès-verbal ; la fiche et certains titres de presse parlent de « mis en cause » ou de « mis en examen » à tort."
+      ],
+      "versions": {
+        "titre": "Deux versions sur la transmission des informations",
+        "a": {
+          "acteur": "Jean-François Egron, maire de Cenon",
+          "texte": "Il reproche à l’association Les Francas, employeuse de l’animateur, de ne pas lui avoir transmis des documents demandés, comme les lieux où il avait exercé en ville depuis plus de dix ans.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08"
+          }
+        },
+        "b": {
+          "acteur": "Odile Rapeau, présidente des Francas de Gironde (communiqué)",
+          "texte": "Elles disent avoir écarté les salariés concernés à titre conservatoire le jour de la connaissance des faits, sans que le maire ait eu à l’exiger ; que l’animateur, embauché en 2013 par une autre association, avait fait l’objet des contrôles réglementaires ; et que les documents seront transmis « dans un cadre juridiquement sécurisé ». Elles regrettent de ne pas avoir été invitées à la réunion publique.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08"
+          }
+        },
+        "note": "SNY rapporte les deux positions ; aucun article relu ne permet de les départager."
+      }
     }
   },
   "reponses": [
@@ -139,10 +259,10 @@
     }
   ],
   "reperes": {
-    "titre": "Une affaire publique, dans un contexte plus large que la mémoire de SNY",
+    "titre": "Deux dossiers approfondis : Frida-Kahlo (enquête) et Cenon (procès annoncé)",
     "points": [
       {
-        "texte": "Frida-Kahlo : enquête préliminaire du parquet après des plaintes de parents ; deux agents suspendus ; aucune mise en examen rapportée.",
+        "texte": "Frida-Kahlo : enquête préliminaire après des plaintes de parents ; deux agents suspendus ; aucune mise en examen rapportée.",
         "sources": [
           {
             "media": "France 3 Nouvelle-Aquitaine",
@@ -152,20 +272,40 @@
         ]
       },
       {
-        "texte": "Le procureur de Bordeaux indique que cinq enquêtes préliminaires sur des violences sexuelles en milieu scolaire ou périscolaire sont en cours dans l’agglomération ; SNY n’en documente publiquement qu’une.",
+        "texte": "Cenon : animateur renvoyé devant le tribunal (audience le 22 février 2027), sous contrôle judiciaire ; second animateur hors de cause ; une seconde plainte annoncée.",
         "sources": [
           {
+            "media": "France 3 Nouvelle-Aquitaine",
+            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+            "publie_le": "2026-09-21"
+          },
+          {
             "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
-            "publie_le": "2026-07-03"
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+            "publie_le": "2026-09-30"
+          }
+        ]
+      },
+      {
+        "texte": "Dans les deux, la question de l’employeur est posée par les acteurs eux-mêmes (adjointe de Bordeaux ; maire de Cenon et Les Francas), sans conclusion de SNY.",
+        "sources": [
+          {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
+            "publie_le": "2026-07-01"
+          },
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08"
           }
         ]
       }
     ],
     "chiffres": [
       {
-        "valeur": "1",
-        "libelle": "affaire publique documentée par SNY",
+        "valeur": "2",
+        "libelle": "affaires documentées par SNY",
         "portee": "SNY"
       },
       {
@@ -180,6 +320,22 @@
       }
     ],
     "institutions": [
+      {
+        "acteur": "Jean-François Egron, maire de Cenon",
+        "texte": "Se constitue partie civile, annonce un renforcement des contrôles, réunit les parents le 29 septembre ; reproche aux Francas de ne pas lui avoir transmis des documents. Version contraire de l’association : voir le dossier.",
+        "sources": [
+          {
+            "media": "ICI Gironde",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+            "publie_le": "2026-09-19"
+          },
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08"
+          }
+        ]
+      },
       {
         "acteur": "Renaud Gaudeul, procureur de la République de Bordeaux",
         "texte": "Cinq enquêtes préliminaires en cours dans l’agglomération (3 juillet) ; son parquet a reçu plus de 3 600 signalements de mineurs en danger au 20 juin, tous motifs confondus : ce ne sont pas des affaires.",
@@ -201,19 +357,8 @@
             "publie_le": "2026-07-01"
           }
         ]
-      },
-      {
-        "acteur": "Mairie et rectorat de Bordeaux",
-        "texte": "La mairie dit traiter « immédiatement » chaque alerte ; le rectorat dit « suivre cette affaire avec attention » après avoir vérifié que le procureur était informé (1er juillet).",
-        "sources": [
-          {
-            "media": "Le Figaro",
-            "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
-            "publie_le": "2026-07-01"
-          }
-        ]
       }
     ],
-    "limite": "Contenu du plan de la Ville, préfecture, Département : rien de public retrouvé."
+    "limite": "Préfecture et Département : aucune déclaration retrouvée. Les autres enquêtes de l’agglomération ne sont pas documentées par SNY : leur absence ici n’est pas une absence de faits."
   }
 }
