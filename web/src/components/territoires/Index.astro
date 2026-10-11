@@ -4,6 +4,8 @@
 import { casesParIds } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
 
+interface Props { base?: string; publique?: boolean }
+const { base = '/brouillons/territoires', publique = false } = Astro.props;
 const compter = (id: string) => {
   const { matiere, prive } = chargerHub(id);
   return { publiques: casesParIds(matiere.ordre).length, privees: prive ? Object.keys(prive.dossiers).length : 0 };
@@ -12,21 +14,21 @@ const p = compter('paris-11e'), b = compter('bordeaux-gironde'), h = compter('ha
 const loc = (n: number) => (n > 0 ? ` + ${n} dossier${n > 1 ? 's' : ''} non publié${n > 1 ? 's' : ''} (rendu local)` : '');
 
 const cartes = [
-  { href: '/brouillons/territoires/paris-11e', t: 'Paris 11e', k: 'Densité et complexité',
+  { href: `${base}/paris-11e`, t: 'Paris 11e', k: 'Densité et complexité',
     d: `${p.publiques} fiches publiques : repères, tableau des procédures, carte, dossiers avec déroulé daté, détail des réponses des institutions.`,
     alt: null as null | { href: string; t: string } },
-  { href: '/brouillons/territoires/bordeaux-gironde', t: 'Bordeaux / Gironde', k: 'Densité intermédiaire',
+  { href: `${base}/bordeaux-gironde`, t: 'Bordeaux / Gironde', k: 'Densité intermédiaire',
     d: `${b.publiques} affaires (Frida-Kahlo, Cenon) : dossiers approfondis, procureur et élus nommés, versions divergentes mairie / association.`,
     alt: null },
-  { href: '/brouillons/territoires/hautes-alpes', t: 'Hautes-Alpes', k: 'Territoire peu dense',
+  { href: `${base}/hautes-alpes`, t: 'Hautes-Alpes', k: 'Territoire peu dense',
     d: `${h.publiques} affaires, toutes deux jugées : lire ce que les tribunaux ont retenu et écarté, réponses du parquet et de l’enseignement catholique.`,
-    alt: { href: '/brouillons/territoires/somme', t: 'Somme : prototype écarté (aucune affaire validée) →' } },
+    alt: publique ? null : { href: `${base}/somme`, t: 'Somme : prototype écarté (aucune affaire validée) →' } },
 ];
 ---
 
 <div class="terr">
-  <p class="eyebrow">Prévisualisation · trois expériences territoriales</p>
-  <h1>Trois formats, selon la matière</h1>
+  <p class="eyebrow">{publique ? 'Territoires' : 'Prévisualisation · trois expériences territoriales'}</p>
+  <h1>{publique ? 'Comprendre les affaires par territoire' : 'Trois formats, selon la matière'}</h1>
   <p class="lede">
     Chaque page s’appuie sur les fiches publiques de SNY, enrichies d’une matière éditoriale relue source par source.
     Les nombres décrivent la mémoire de SNY, pas la réalité des territoires : ils ne se comparent pas.

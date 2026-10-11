@@ -1,0 +1,11 @@
+---
+// Territoires — page d'entrée publique. Aucune donnée privée : chaque Hub ne lit que data/hub-matiere/ et data/cases.json.
+import Layout from '../../layouts/Layout.astro';
+import Habillage from '../../components/territoires/Habillage.astro';
+import Index from '../../components/territoires/Index.astro';
+---
+
+<Layout title="Territoires — sousnosyeux" description="Comprendre les affaires signalées territoire par territoire : déroulés sourcés, réponses des institutions, limites de la couverture.">
+  <Habillage />
+  <Index base="/territoires" publique />
+</Layout>

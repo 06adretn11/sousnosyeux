@@ -12,12 +12,13 @@ const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 
 const nav = [
   { href: '/', label: 'Carte', cta: false },
+  { href: '/territoires', label: 'Territoires', cta: false },
   { href: '/methodologie', label: 'Méthodologie', cta: false },
   { href: '/mentions-legales', label: 'Mentions légales', cta: false },
   { href: 'mailto:contact@sousnosyeux.org', label: 'Nous contacter', cta: true },
 ];
 
-const isActive = (href: string) => (href === '/' ? path === '/' : path === href);
+const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
 ---
 
 <!doctype html>
@@ -52,6 +53,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
                 n.href === '/mentions-legales' ? 'nav-mentions'
                 : n.href === '/' ? 'nav-carte'
                 : n.href === '/methodologie' ? 'nav-methodo'
+                : n.href === '/territoires' ? 'nav-methodo'
                 : undefined;
               return (
                 <li class={liClass}>
@@ -76,6 +78,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href)
       <div class="footer-inner">
         <div class="footer-brand">sousnosyeux · carte citoyenne</div>
         <div class="footer-links">
+          <a href="/territoires">Territoires</a>
           <a href="/methodologie">Méthodologie</a>
           <a href="/mentions-legales">Mentions légales</a>
           <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a>

@@ -1,0 +1,26 @@
+---
+// Hubs territoriaux PUBLICS (V1) : Paris 11e, Bordeaux / Gironde, Hautes-Alpes.
+// Ils ne lisent que des affaires présentes dans data/cases.json (artefact public) et la matière éditoriale
+// versionnée data/hub-matiere/. La Somme et toute matière de revue restent sous /brouillons (build SNY_DRAFTS).
+import Layout from '../../layouts/Layout.astro';
+import Habillage from '../../components/territoires/Habillage.astro';
+import Paris11e from '../../components/territoires/Paris11e.astro';
+import Bordeaux from '../../components/territoires/Bordeaux.astro';
+import HautesAlpes from '../../components/territoires/HautesAlpes.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { hub: 'paris-11e' }, props: { hub: 'paris-11e', titre: 'Paris 11e', description: 'Neuf affaires rapportées par la presse dans le 11e arrondissement de Paris : déroulés, décisions, et réponses publiques parisiennes.' } },
+    { params: { hub: 'bordeaux-gironde' }, props: { hub: 'bordeaux-gironde', titre: 'Bordeaux / Gironde', description: 'Frida-Kahlo et Cenon : déroulés sourcés, déclarations du procureur et des élus, versions divergentes.' } },
+    { params: { hub: 'hautes-alpes' }, props: { hub: 'hautes-alpes', titre: 'Hautes-Alpes', description: 'Deux affaires jugées à Gap : ce qui était poursuivi, requis, retenu et écarté, et la réponse des institutions.' } },
+  ];
+}
+const { hub, titre, description } = Astro.props as { hub: string; titre: string; description: string };
+---
+
+<Layout title={`${titre} — territoires — sousnosyeux`} {description}>
+  <Habillage />
+  {hub === 'paris-11e' && <Paris11e />}
+  {hub === 'bordeaux-gironde' && <Bordeaux />}
+  {hub === 'hautes-alpes' && <HautesAlpes />}
+</Layout>

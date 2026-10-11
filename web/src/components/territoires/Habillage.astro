@@ -1,0 +1,18 @@
+---
+// Habillage commun des vues territoriales (revue ET publiques) : mêmes variables que le reste du site.
+---
+
+<style is:global>
+  /* Habillage commun des trois vues (mêmes variables que le reste du site). */
+  .terr { max-width: 1060px; margin: 0 auto; padding: 1.4rem 1.2rem 3rem; }
+  .terr h1 { font: 700 clamp(1.7rem, 4.5vw, 2.7rem)/1.08 var(--display); letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+  .terr .eyebrow { margin: 0 0 8px; color: var(--red); font: 0.72rem var(--mono); letter-spacing: 0.13em; text-transform: uppercase; }
+  .terr .lede { max-width: 760px; color: #3d3d42; font-size: 1rem; margin: 0 0 1.2rem; }
+  .terr h2 { margin: 2rem 0 0.8rem; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+    font: 400 0.76rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #6b6b72; }
+  .terr .encart { max-width: 820px; padding: 0.9rem 1.1rem; background: var(--bg-card); border-left: 3px solid var(--border);
+    color: #55555b; font-size: 0.88rem; margin: 0 0 1rem; }
+  .terr .encart.limites { border-left-color: var(--orange); }
+  .terr .encart ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+  .terr .grille { display: grid; gap: 12px; }
+</style>
