@@ -88,7 +88,9 @@ export const STRUCTURES = [
 export const FAITS = [
   'violence', 'violences', 'maltraitance', 'maltraitances', 'sevices', 'brutalite',
   'agression sexuelle', 'agressions sexuelles', 'attouchement', 'attouchements',
-  'viol', 'viols', 'inceste', 'pedocriminalite', 'pedophilie', 'pedocriminel',
+  'viol', 'viols', 'viole', 'violee', 'violees', 'violes', 'violeur', 'violeurs', 'violer',
+  'agressee sexuellement', 'agresse sexuellement', 'agressees sexuellement', 'agresses sexuellement',
+  'inceste', 'pedocriminalite', 'pedophilie', 'pedocriminel',
   'corruption de mineur', 'atteinte sexuelle', 'exhibition',
   'pedopornographie', 'images pedopornographiques',
   'harcelement', 'coups', 'gifle', 'gifles', 'humiliation', 'humiliations',
@@ -107,9 +109,13 @@ export const FAITS = [
 /** Faits graves — suffisent avec une mention de mineur, sans structure (recall). */
 export const FAITS_GRAVES = [
   'agression sexuelle', 'agressions sexuelles', 'attouchement', 'attouchements',
-  'viol', 'viols', 'inceste', 'pedocriminalite', 'pedophilie', 'pedocriminel',
+  'viol', 'viols', 'viole', 'violee', 'violees', 'violes', 'violeur', 'violeurs', 'violer',
+  'agressee sexuellement', 'agresse sexuellement', 'agressees sexuellement', 'agresses sexuellement',
+  'inceste', 'pedocriminalite', 'pedophilie', 'pedocriminel',
   'corruption de mineur', 'atteinte sexuelle', 'pedopornographie', 'images pedopornographiques',
   'maltraitance', 'maltraitances', 'sevices', 'violences sur', 'violence sur',
+  // « violences sexuelles » n'était reconnu QUE par accident (la sous-chaîne « viol ») : on le nomme.
+  'violences sexuelles', 'violence sexuelle',
 ];
 
 /** Mentions de mineurs. */
@@ -171,9 +177,15 @@ export function detecterTerritoire(texte, flux = {}) {
 // ---------------------------------------------------------------------
 // 5. FILTRE DÉTERMINISTE — recall d'abord (A3)
 // ---------------------------------------------------------------------
+// Ces termes ne se cherchent QUE comme mots entiers : « viol » est un préfixe de « violent »
+// (constaté : « Un violent accident… » déclenchait « viol »). Les dérivés utiles (violée,
+// violeur…) sont listés explicitement dans FAITS : le recall reste, la sous-chaîne disparaît.
+const MOTS_ENTIERS = new Set(['viol', 'viols', 'viole', 'violee', 'violees', 'violes', 'violeur', 'violeurs', 'violer']);
+const motEntier = (t, m) => new RegExp(`(?<![a-z])${m}(?![a-z])`).test(t);
+
 function trouver(texte, lexique) {
   const t = aplatir(texte);
-  return lexique.filter((m) => t.includes(m));
+  return lexique.filter((m) => (MOTS_ENTIERS.has(m) ? motEntier(t, m) : t.includes(m)));
 }
 
 export function filtrer({ title = '', excerpt = '' }) {

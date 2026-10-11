@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 54,
+    "total_cases": 55,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1222,6 +1222,50 @@
           "url": "https://www.midilibre.fr/2026/07/01/horreur-a-lecole-maternelle-un-atsem-et-un-animateur-periscolaire-vises-par-sept-plaintes-pour-violences-sexuelles-sur-mineurs-13448091.php",
           "media": "Midi Libre (AFP)",
           "publication_date": "2026-07-01",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0114",
+      "etablissement": "Centre de loisirs de Cenon (école Michelet)",
+      "commune": "Cenon",
+      "departement": "Gironde",
+      "type_structure": "centre de loisirs",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 44.84904363751512,
+      "lng": -0.5051735295913962,
+      "sources": [
+        {
+          "url": "https://actu.fr/nouvelle-aquitaine/cenon_33119/animateur-periscolaire-accuse-d-agression-sexuelle-a-cenon-des-fichiers-pedopornographiques-retrouves-chez-lui_64816986.html",
+          "media": "actu.fr",
+          "publication_date": "2026-09-21",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ouest-france.fr/societe/justice/images-pedopornographiques-un-animateur-periscolaire-de-gironde-soupconne-dagression-sexuelle-sur-une-enfant-de-4-ans-763fea5e-b5bc-11f1-8815-214ab2555576",
+          "media": "Ouest-France",
+          "publication_date": "2026-09-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-10-08",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-09-29",
           "source_type": "presse",
           "is_primary": false
         }

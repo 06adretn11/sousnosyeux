@@ -50,7 +50,12 @@ const CLAUSE: Record<string, (quand: string) => string> = {
   'plainte': (q) => `une plainte a été déposée${q}`,
   'enquête': (q) => `une enquête a été ouverte${q}`,
   'mise en examen': (q) => `une mise en examen a été prononcée${q}`,
-  'procès': (q) => `un procès s'est tenu${q}`,
+  // « Procès » recouvre un renvoi (audience ANNONCÉE) comme un procès déjà tenu. Seul un événement
+  // validé et daté (q renseigné) établit qu'il a eu lieu ; sans date, on ne l'affirme pas :
+  // « un procès s'est tenu » serait faux pour une audience fixée au 22 février 2027 (Cenon).
+  'procès': (q) => (q
+    ? `un procès s'est tenu${q}`
+    : `l'affaire est au stade du procès (audience annoncée ou déjà tenue)`),
   'condamnation non définitive': (q) => `une condamnation non définitive a été prononcée${q}`,
   'condamnation définitive': (q) => `une condamnation définitive a été prononcée${q}`,
   'relaxe / non-lieu / classement': (q) => `une relaxe, un non-lieu ou un classement a été prononcé${q}`,
@@ -67,7 +72,7 @@ const MENTION: Record<string, string> = {
   'plainte': 'Le dépôt d’une plainte ne vaut pas culpabilité.',
   'enquête': 'L’ouverture d’une enquête ne vaut pas culpabilité.',
   'mise en examen': 'La mise en examen ne vaut pas culpabilité.',
-  'procès': 'La tenue d’un procès ne vaut pas culpabilité.',
+  'procès': 'La tenue d’un procès, comme un renvoi devant le tribunal, ne vaut pas culpabilité.',
 };
 
 /**
