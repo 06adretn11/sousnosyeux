@@ -71,8 +71,20 @@
         {
           "date": null,
           "date_nature": "article",
-          "acteur": "Procureur de Bordeaux (Renaud Gaudeul)",
-          "texte": "Cinq enquêtes préliminaires portant sur des violences sexuelles qui auraient été commises en milieu scolaire ou périscolaire dans l'agglomération sont en cours, confiées à l'antenne bordelaise de l'Office des mineurs ; aucune information judiciaire n'est ouverte à ce stade. Les personnes mises en cause ont été suspendues, contestent les accusations et restent présumées innocentes. Le parquet a reçu plus de 3 600 signalements concernant des mineurs en danger au 20 juin 2026.",
+          "acteur": "Renaud Gaudeul, procureur de la République de Bordeaux",
+          "texte": "Il parle d’« une explosion du nombre de signalements concernant des mineurs en danger » et confirme cinq enquêtes préliminaires, portant sur des violences sexuelles qui auraient été commises en milieu scolaire ou périscolaire dans l’agglomération. Plus de 3 600 signalements reçus au 20 juin 2026, soit autant que sur toute l’année 2023 (tous motifs : ce ne sont pas des affaires).",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
+            "publie_le": "2026-07-03",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "acteur": "Sud Ouest (propos du journal, non attribués au procureur)",
+          "texte": "Le journal écrit que les investigations sont confiées à l’antenne bordelaise de l’Office des mineurs, dans le cadre d’enquêtes préliminaires, et qu’aucune information judiciaire n’est ouverte à ce stade ; que les personnes mises en cause ont été suspendues par précaution et qu’elles contestent les accusations.",
           "source": {
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
@@ -88,8 +100,8 @@
         {
           "date": null,
           "date_nature": "article",
-          "acteur": "Adjointe au maire de Bordeaux",
-          "texte": "Elle dit que « la situation n'est pas comparable » au scandale parisien : Bordeaux n'emploie pas directement les animateurs. Elle annonce un plan sur la protection de l'enfance, à venir.",
+          "acteur": "Une adjointe au maire de Bordeaux (non nommée par l’article)",
+          "texte": "Elle juge la situation « non comparable » au scandale parisien : Bordeaux n’emploie pas directement les animateurs. Elle va « bientôt présenter un plan sur la protection de l’enfance » (franceinfo, qui reprend la révélation d’ICI Gironde).",
           "source": {
             "media": "franceinfo",
             "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
@@ -140,7 +152,7 @@
         ]
       },
       {
-        "texte": "Selon le procureur, cinq enquêtes préliminaires en milieu scolaire ou périscolaire sont en cours dans l’agglomération ; SNY n’en documente qu’une.",
+        "texte": "Le procureur de Bordeaux indique que cinq enquêtes préliminaires sur des violences sexuelles en milieu scolaire ou périscolaire sont en cours dans l’agglomération ; SNY n’en documente publiquement qu’une.",
         "sources": [
           {
             "media": "Sud Ouest",
@@ -153,11 +165,13 @@
     "chiffres": [
       {
         "valeur": "1",
-        "libelle": "affaire publique documentée par SNY"
+        "libelle": "affaire publique documentée par SNY",
+        "portee": "SNY"
       },
       {
         "valeur": "5",
-        "libelle": "enquêtes en cours dans l’agglomération (procureur, 3 juillet)",
+        "libelle": "enquêtes préliminaires en cours dans l’agglomération, selon le procureur",
+        "portee": "agglomération",
         "source": {
           "media": "Sud Ouest",
           "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
@@ -167,8 +181,19 @@
     ],
     "institutions": [
       {
-        "acteur": "Ville de Bordeaux",
-        "texte": "Une adjointe juge la situation « non comparable » à Paris et annonce un plan de protection de l’enfance, à venir.",
+        "acteur": "Renaud Gaudeul, procureur de la République de Bordeaux",
+        "texte": "Cinq enquêtes préliminaires en cours dans l’agglomération (3 juillet) ; son parquet a reçu plus de 3 600 signalements de mineurs en danger au 20 juin, tous motifs confondus : ce ne sont pas des affaires.",
+        "sources": [
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
+            "publie_le": "2026-07-03"
+          }
+        ]
+      },
+      {
+        "acteur": "Une adjointe au maire de Bordeaux (non nommée)",
+        "texte": "« La situation n’est pas comparable » à Paris, la Ville n’employant pas directement les animateurs ; un plan de protection de l’enfance est annoncé (1er juillet).",
         "sources": [
           {
             "media": "franceinfo",
@@ -178,24 +203,13 @@
         ]
       },
       {
-        "acteur": "Rectorat",
-        "texte": "« Suivre cette affaire avec attention » ; a vérifié que le procureur était informé.",
+        "acteur": "Mairie et rectorat de Bordeaux",
+        "texte": "La mairie dit traiter « immédiatement » chaque alerte ; le rectorat dit « suivre cette affaire avec attention » après avoir vérifié que le procureur était informé (1er juillet).",
         "sources": [
           {
             "media": "Le Figaro",
             "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
             "publie_le": "2026-07-01"
-          }
-        ]
-      },
-      {
-        "acteur": "Parquet de Bordeaux",
-        "texte": "Enquêtes confiées à l’Office des mineurs ; aucune information judiciaire ouverte (3 juillet).",
-        "sources": [
-          {
-            "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/faits-divers/plaintes-pour-des-violences-sexuelles-dans-le-scolaire-et-le-periscolaire-a-bordeaux-cinq-enquetes-en-cours-dans-un-contexte-d-explosion-des-signalements-29744395.php",
-            "publie_le": "2026-07-03"
           }
         ]
       }

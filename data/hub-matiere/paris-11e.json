@@ -732,20 +732,33 @@
     ],
     "chiffres": [
       {
-        "valeur": "9 · 8",
-        "libelle": "fiches · établissements"
-      },
-      {
         "valeur": "2",
-        "libelle": "relaxes, toutes en appel"
+        "libelle": "relaxes dans le 11e, toutes deux frappées d’appel",
+        "portee": "11e",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+          "publie_le": "2026-06-17"
+        }
       },
       {
         "valeur": "203",
-        "libelle": "enquêtes ouvertes (parquet, 31 août) — Paris entier",
+        "libelle": "enquêtes ouvertes par le parquet au 31 août",
+        "portee": "Paris entier",
         "source": {
           "media": "France 3 Paris Île-de-France",
           "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/violences-dans-le-periscolaire-a-paris-203-enquetes-actuellement-ouvertes-par-le-parquet-de-paris-3408983.html",
           "publie_le": "2026-08-31"
+        }
+      },
+      {
+        "valeur": "132",
+        "libelle": "animateurs suspendus depuis janvier au 9 juin, dont 52 pour suspicion de violences sexuelles ou sexistes",
+        "portee": "Paris entier",
+        "source": {
+          "media": "TIME France",
+          "url": "https://www.timefrance.fr/societe/periscolaire-a-paris-de-nouveaux-animateurs-suspendus-une-commission-denquete-bientot-lancee/",
+          "publie_le": "2026-06-10"
         }
       }
     ],
@@ -789,6 +802,7 @@
         ]
       }
     ],
-    "limite": "Éducation nationale : aucune déclaration propre à ces écoles retrouvée. Presse seulement : ni exhaustif, ni comparatif."
+    "limite": "Ces chiffres décrivent la médiatisation et la réponse publique, pas la fréquence des faits dans le 11e : SNY ne documente que ce que la presse rapporte. Éducation nationale : aucune déclaration propre à ces écoles retrouvée.",
+    "chapeau": "Depuis l’été 2025, la presse rapporte une série d’affaires dans des écoles et une crèche du 11e. Leur médiatisation a ouvert un débat parisien sur le périscolaire, auquel la Ville, la justice et le Sénat ont répondu."
   }
 }
