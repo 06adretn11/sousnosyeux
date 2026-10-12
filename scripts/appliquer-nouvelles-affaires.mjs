@@ -33,7 +33,7 @@ import { niveauGeo } from './lib/rapprochement-garde.mjs';
 import { schemaBoucle } from './lib/telegram-clics.mjs';
 import { preuvesDe } from './lib/preuves.mjs';
 import { prevenir, prevenirUneFois, phrasePublication, esc } from './lib/prevenir.mjs';
-import { argsPublierAffaire } from './lib/proposition-publication.mjs';
+import { argsPublierAffaire, motifRefus } from './lib/proposition-publication.mjs';
 import { execFileSync } from 'node:child_process';
 
 const ECRIRE = process.argv.includes('--ecrire');
@@ -96,10 +96,17 @@ for (const r of dues) {
       const args = argsPublierAffaire({ case_id: cid, id8, dbLat: kc?.lat, dbLng: kc?.lng, loc: p.publication.localisation, date: new Date().toISOString().slice(0, 10) });
       execFileSync(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
     } catch (e) {
-      const motif = String(e.stderr || e.message).split('\n').filter((l) => /^\s*·|REFUS|aucune localisation/.test(l)).map((l) => l.replace(/^\s*·\s*/, '').trim()).join(' ; ').slice(0, 300) || 'contrôle de publication refusé';
+      const { motif, definitif } = motifRefus(e.stderr || e.message);
       console.log(`  REFUS : ${motif}`);
       refusees++;
       await prevenirUneFois(sql, { cle: id8, resultat: 'refus_publication', texte: `⚠️ <b>Publication NON effectuée</b> — ${esc(cid)} (${id8})\n${esc(motif)}\nRien n’a été publié ; l’affaire reste candidate.` });
+      // Garde-fou permanent : la décision de l'éditeur reste TRACÉE (ACCEPT, decided_by/at) et le refus est consigné ; plus de nouvelle tentative.
+      if (definitif && ECRIRE) {
+        await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${' · publication refusée par les contrôles : ' + motif}, 500)
+                   where proposal_id = ${r.pid}::uuid and applied_at is null`;
+        console.log('  refus DÉFINITIF consigné : aucune nouvelle tentative');
+        refusees--; notees++;
+      }
       continue;
     }
     await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;

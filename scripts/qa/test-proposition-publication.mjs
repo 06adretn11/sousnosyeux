@@ -3,7 +3,7 @@
 // jamais de coordonnée inventée ; jamais « publié » avant le site servi. Aucun réseau, aucune base.
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { localisationDe, payloadPublication, argsPublierAffaire, cleDedup } from '../lib/proposition-publication.mjs';
+import { localisationDe, payloadPublication, argsPublierAffaire, cleDedup, motifRefus } from '../lib/proposition-publication.mjs';
 import { messagePublication, boutons } from '../lib/discovery-messages.mjs';
 import { boutonValable, decoderCallback } from '../lib/telegram-clics.mjs';
 import { REVUE_GO_PUBLICATION } from '../lib/publication-gates.mjs';
@@ -95,6 +95,25 @@ t('REJECT : revue « à corriger » (jamais « retirer », jamais de suppression
 t('idempotence : l’application ne retient que applied_at is null ; publier-affaire ne touche que les candidates', () => {
   assert.ok(/applied_at is null/.test(src('scripts/appliquer-nouvelles-affaires.mjs')));
   assert.ok(/publication_status = 'candidate'/.test(src('scripts/publier-affaire.mjs')));
+});
+
+// --- refus permanent : tracé, jamais retenté ; message lisible --------------------------------------------------------------------------------
+const SORTIE_REELLE = ['FR-2026-0129 — X (Y)', '  AVANT : publication_status = candidate', '', 'REFUS — 2 garde-fou(s) :', '  · fiabilité 4 < 8', '  · aucune revue « validé » d’Adrien'].join('\n');
+t('refus de contrôle (sortie réelle du 12/10) → motif propre, sans « : ; » ni en-tête, et DÉFINITIF', () => {
+  const r = motifRefus(SORTIE_REELLE);
+  assert.equal(r.motif, 'fiabilité 4 < 8 ; aucune revue « validé » d’Adrien');
+  assert.equal(r.definitif, true);
+});
+t('erreur technique (réseau, base) → NON définitif : réessayée au passage suivant', () => {
+  assert.equal(motifRefus('TypeError: fetch failed').definitif, false);
+  assert.equal(motifRefus('').definitif, false);
+});
+t('aucune localisation fiable → définitif, motif lisible', () => assert.deepEqual(motifRefus('Error: aucune localisation fiable : publication refusée'), { definitif: true, motif: 'aucune localisation fiable' }));
+t('refus définitif : applied_at posé et motif AJOUTÉ à decision_comment — la décision (ACCEPT, decided_by/at) n’est jamais effacée', () => {
+  const s = src('scripts/appliquer-nouvelles-affaires.mjs');
+  const bloc = s.slice(s.indexOf('if (definitif && ECRIRE)'), s.indexOf('continue;', s.indexOf('if (definitif && ECRIRE)')));
+  assert.ok(/applied_at = now\(\)/.test(bloc) && /decision_comment = left\(coalesce\(decision_comment/.test(bloc));
+  assert.ok(!/decision\s*=|decided_by\s*=|decided_at\s*=|delete from/i.test(bloc));
 });
 
 // --- « publié » seulement après le site servi ---------------------------------------------------------------------------------------------

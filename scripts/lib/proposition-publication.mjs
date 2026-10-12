@@ -54,3 +54,18 @@ export function argsPublierAffaire({ case_id, id8, dbLat, dbLng, loc, date }) {
   }
   return args;
 }
+
+/**
+ * Lecture d'un échec de publier-affaire.mjs. `definitif` : un garde-fou (« REFUS — … ») est une décision DÉTERMINISTE de ses contrôles
+ * (fiabilité, revue, HOLD, retrait, coordonnées) : inutile de la retenter à chaque passage. Toute autre erreur (réseau, base) reste réessayée.
+ * `motif` : les seules raisons, sans l'en-tête « REFUS — n garde-fou(s) ».
+ */
+export function motifRefus(sortie) {
+  const lignes = String(sortie || '').split('\n');
+  const raisons = lignes.filter((l) => /^\s*·\s/.test(l)).map((l) => l.replace(/^\s*·\s*/, '').trim());
+  const sansLocalisation = lignes.some((l) => /aucune localisation fiable/.test(l));
+  return {
+    definitif: lignes.some((l) => /^REFUS\b/.test(l.trim())) || sansLocalisation,
+    motif: (raisons.length ? raisons.join(' ; ') : sansLocalisation ? 'aucune localisation fiable' : 'contrôle de publication refusé').slice(0, 300),
+  };
+}
