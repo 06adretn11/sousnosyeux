@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 57,
+    "total_cases": 58,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1311,6 +1311,44 @@
           "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
           "media": "ici",
           "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0117",
+      "etablissement": "École Paul-Gauguin (périscolaire)",
+      "commune": "Saint-Aubin-d'Aubigné",
+      "departement": "Ille-et-Vilaine",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 48.25683,
+      "lng": -1.598083,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+          "media": "La Croix (AFP)",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+          "media": "Ouest-France",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.rennes-infos-autrement.fr/saint-aubin-daubigne-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineures/",
+          "media": "Rennes Infos Autrement",
+          "publication_date": "2026-09-22",
           "source_type": "presse",
           "is_primary": false
         }
