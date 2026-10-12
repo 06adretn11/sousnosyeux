@@ -1,0 +1,208 @@
+{
+  "_meta": {
+    "projection": "evenements-v0",
+    "note": "Compilé depuis Neon (case_events) par scripts/project-evenements.mjs. Ne pas éditer à la main."
+  },
+  "affaires": {
+    "FR-2026-0001": [
+      {
+        "event_id": "a85574bb-c8c9-47fa-b5fe-70f688b3441b",
+        "date": "2026-07-10",
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Condamnation à 18 mois de prison avec sursis par le tribunal correctionnel de Paris.",
+        "source": {
+          "media": "CNEWS",
+          "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+          "publie_le": "2026-07-10"
+        }
+      }
+    ],
+    "FR-2026-0004": [
+      {
+        "event_id": "deefe35b-ca3b-4823-99c0-59e594a947f4",
+        "date": "2026-09-15",
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Condamnation d’un ancien animateur à cinq ans de prison, dont quatre avec sursis, par le tribunal correctionnel de Paris. Fait validé ; l’état global de la fiche reste inchangé tant que la granularité de l’affaire n’est pas tranchée.",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/scandale-des-violences-sexuelles-dans-le-periscolaire-un-animateur-d-une-ecole-du-15e-arrondissement-de-paris-condamne-a-un-an-de-prison-ferme_8193590.html",
+          "publie_le": "2026-09-15"
+        }
+      }
+    ],
+    "FR-2026-0005": [
+      {
+        "event_id": "54946f38-6f58-4631-a904-a07ea92545ce",
+        "date": "2026-05-22",
+        "type": "mise_en_examen",
+        "statut": "mise en examen",
+        "libelle": "Deux animateurs mis en examen pour des faits à caractère sexuel et placés en détention provisoire. L’enquête vise un service périscolaire commun à trois écoles du 7e arrondissement.",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+          "publie_le": "2026-05-22"
+        }
+      }
+    ],
+    "FR-2026-0027": [
+      {
+        "event_id": "46766808-26d3-4f0b-bf28-7018fb43110f",
+        "date": "2025-08-14",
+        "type": "mesure_procédurale",
+        "statut": "mise en examen",
+        "libelle": "Remise en liberté sous contrôle judiciaire ordonnée par la cour d’appel de Montpellier. La mise en examen est maintenue : l’état de l’affaire ne change pas.",
+        "source": {
+          "media": "ICI (France Bleu)",
+          "url": "https://www.ici.fr/infos/faits-divers-justice/je-suis-sans-voix-la-cour-d-appel-accepte-la-demande-de-remise-en-liberte-de-l-atsem-soupconnee-de-viols-sur-mineurs-7057086",
+          "publie_le": "2025-08-14"
+        }
+      }
+    ],
+    "FR-2026-0029": [
+      {
+        "event_id": "af0cc266-d05c-4000-8f2e-ae3353488f18",
+        "date": "2026-03-03",
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Condamnation à 24 mois de prison, dont 18 avec sursis probatoire. Délai d’appel de dix jours ouvert à la date de la source.",
+        "source": {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/hauts-de-france/aisne/un-enseignant-d-un-college-prive-condamne-a-24-mois-de-prison-pour-agressions-sexuelles-sur-une-eleve-de-14-ans-3309333.html",
+          "publie_le": "2026-03-03"
+        }
+      },
+      {
+        "event_id": "ea180a79-59da-481d-9e92-8230323c64f9",
+        "date": "2026-03-03",
+        "type": "suspension",
+        "statut": null,
+        "libelle": "Selon la presse, l’agent concerné a été suspendu de ses fonctions.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "ici",
+          "url": "https://www.ici.fr/hauts-de-france/aisne-02/chauny",
+          "publie_le": "2025-06-30"
+        }
+      }
+    ],
+    "FR-2026-0032": [
+      {
+        "event_id": "ac09f217-bd7c-4602-82b4-9eef1f0d087f",
+        "date": "2025-11-26",
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Condamnation à trois ans de prison avec sursis par le tribunal correctionnel de Gap. Périmètre exact des chefs retenus non établi par cette source.",
+        "source": {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/abus-sexuels-au-college-saint-joseph-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis-3256090.html",
+          "publie_le": "2025-11-26"
+        }
+      }
+    ],
+    "FR-2026-0045": [
+      {
+        "event_id": "453ea571-4512-4965-9d63-0391f59271e2",
+        "date": "2025-09-17",
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Condamnation à six ans de prison ferme par le tribunal correctionnel de Rouen.",
+        "source": {
+          "media": "ICI (France Bleu)",
+          "url": "https://www.francebleu.fr/infos/faits-divers-justice/un-ancien-surveillant-du-college-de-saint-valery-en-caux-condamne-a-six-ans-de-prison-pour-agressions-sexuelles-7726539",
+          "publie_le": "2025-09-17"
+        }
+      }
+    ],
+    "FR-2026-0115": [
+      {
+        "event_id": "8fda8846-9ee4-4579-a876-58f49d517288",
+        "date": null,
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, la collectivité a annoncé un plan d’action pour renforcer l’encadrement des enfants.",
+        "realisation": "annoncée",
+        "source": null
+      }
+    ],
+    "POC-05": [
+      {
+        "event_id": "bf3e73ae-05f3-422a-ad50-246e164a3cff",
+        "date": "2026-07-07",
+        "type": "décision",
+        "statut": "relaxe / non-lieu / classement",
+        "libelle": "Relaxe prononcée par le tribunal correctionnel des chefs d’agressions sexuelles sur mineurs.",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+          "publie_le": "2026-07-08"
+        }
+      },
+      {
+        "event_id": "7ac3dda2-520f-4c1b-9041-e2ebb9cfded6",
+        "date": "2026-07-08",
+        "type": "voie_de_recours",
+        "statut": "relaxe / non-lieu / classement",
+        "libelle": "Appel du parquet de Paris contre la relaxe. La décision n’est pas définitive.",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+          "publie_le": "2026-07-08"
+        }
+      },
+      {
+        "event_id": "7498ffc8-61aa-459a-9301-323503eea27a",
+        "date": "2026-07-09",
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Rassemblement d’environ une centaine de parents devant l’école pour contester la relaxe.",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+          "publie_le": "2026-07-08"
+        }
+      }
+    ],
+    "POC-08": [
+      {
+        "event_id": "89d4b062-0915-4e74-a353-5ac3aa4cdbdb",
+        "date": null,
+        "type": "enquête",
+        "statut": "enquête",
+        "libelle": "Enquête ouverte et confiée à la brigade de protection des mineurs, à la suite d’une plainte. Date d’ouverture non établie par cette source.",
+        "source": {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
+          "publie_le": "2026-03-27"
+        }
+      }
+    ],
+    "POC-09": [
+      {
+        "event_id": "40822595-4ee6-49a9-90ed-f00625514e9d",
+        "date": "2026-06-16",
+        "type": "décision",
+        "statut": "relaxe / non-lieu / classement",
+        "libelle": "Une source publique rapporte une relaxe.",
+        "source": {
+          "media": "franceinfo",
+          "url": null,
+          "publie_le": "2026-06-17"
+        }
+      },
+      {
+        "event_id": "134bb5ef-c0bf-4423-b666-d1aac04bdcf5",
+        "date": null,
+        "type": "voie_de_recours",
+        "statut": "relaxe / non-lieu / classement",
+        "libelle": "Appel du parquet de Paris contre la relaxe. La décision n’est pas définitive. Date de l’appel non établie par cette source (« ce mercredi »).",
+        "source": {
+          "media": "ICI (France Bleu)",
+          "url": "https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-un-animateur-poursuivi-pour-agressions-sexuelles-sur-mineurs-relaxe-par-la-justice-2893920",
+          "publie_le": "2026-06-16"
+        }
+      }
+    ]
+  }
+}

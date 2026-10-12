@@ -1,0 +1,21 @@
+---
+// ⛔ BROUILLON — fiches individuelles en REVUE. Aucune page dans le build par défaut (SNY_DRAFTS ≠ 1) : rien n'est déployé sans GO d'Adrien.
+//   Revue locale : npm run build:drafts  puis  astro preview. Jamais indexées.
+// La liste est EXPLICITE : deux fiches, jamais « toutes les affaires ».
+import Layout from '../../../layouts/Layout.astro';
+import Fiche from '../../../components/Fiche.astro';
+import { ficheDe } from '../../../lib/fiche';
+import { chargerHub } from '../../../lib/hub-matiere';
+
+export function getStaticPaths() {
+  const actif = import.meta.env.SNY_DRAFTS === '1' || process.env.SNY_DRAFTS === '1';
+  return actif ? ['POC-09', 'FR-2026-0042'].map((id) => ({ params: { id: id.toLowerCase() }, props: { id } })) : [];
+}
+const { id } = Astro.props as { id: string };
+const { c, hub } = ficheDe(id);
+const verifieLe = chargerHub(hub?.id ?? 'isoles').matiere._meta.redige_le;
+---
+
+<Layout title={`${c.etablissement}, ${c.commune} — fiche — sousnosyeux`} description={`Fiche de l'affaire : ${c.etablissement}, ${c.commune}. Déroulé daté et sourcé, réactions attribuées, ce que l'on ne sait pas.`} noindex>
+  <Fiche {id} {verifieLe} />
+</Layout>

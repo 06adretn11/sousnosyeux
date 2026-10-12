@@ -89,6 +89,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Fiches individuelles — une seule mémoire (liens d’événements, réactions attribuées, rien de privé)',
+    script: 'scripts/qa/test-fiches.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

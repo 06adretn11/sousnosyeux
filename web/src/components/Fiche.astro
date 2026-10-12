@@ -1,0 +1,119 @@
+---
+// Fiche affaire — COMPRENDRE. Même mémoire que la Home (cases.json) et le Hub (dossier), à une profondeur de lecture de plus.
+// Chaque bloc n'apparaît que si la matière existe : pas de bloc vide, pas de texte artificiel.
+import Chronologie from './Chronologie.astro';
+import { ficheDe } from '../lib/fiche';
+import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
+import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
+import { libelleDate } from '../lib/hub-matiere';
+
+interface Props { id: string; verifieLe: string }
+const { id, verifieLe } = Astro.props;
+const { c, hub, d, deroule } = ficheDe(id);
+
+const statut = d.statut_affiche ?? statutCourant(c);
+const cat = statutCat(statut);
+const appel = (c.etat?.suites ?? []).includes('APPEL_EN_COURS') || d.appel === true;
+const lib = (x: string | null) => (x ? dateLongue(x) : null);
+const principale = (c.sources ?? []).filter((s: any) => libre(s.media))[0];
+const etat: string[] = d.etat_actuel ?? phrasesEtat(c.statut_judiciaire, c.etat ?? null, sourceAffichee(c.etat ?? null, principale ? { media: principale.media, date: principale.publication_date ?? null, url: principale.url ?? null } : null));
+const publiables = (d.reactions ?? []).filter((r: any) => ['PAROLE_ETABLIE', 'POSITION_ATTRIBUEE'].includes(r.validation));
+const reactions = publiables.filter((r: any) => r.portee === 'affaire');
+const VALID: Record<string, string> = { PAROLE_ETABLIE: 'Parole établie', POSITION_ATTRIBUEE: 'Position attribuée' };
+
+// Sources : celles de la fiche Neon + celles que le déroulé cite, dédoublonnées par URL, chacune une seule fois.
+const vues = new Set<string>();
+const sources: { media: string; date: string | null; url: string; nouvelle: boolean }[] = [];
+const dansFiche = new Set((c.sources ?? []).map((s: any) => s.url));
+const ajoute = (s: any, date: string | null) => {
+  if (!s?.url || vues.has(s.url) || !libre(s.media)) return;
+  vues.add(s.url); sources.push({ media: s.media, date, url: s.url, nouvelle: !dansFiche.has(s.url) });
+};
+for (const s of c.sources ?? []) ajoute(s, s.publication_date ?? null);
+for (const e of deroule) ajoute(e.source, e.source?.publie_le ?? null);
+for (const r of publiables) ajoute(r.source, r.source?.publie_le ?? null);
+---
+
+<article class={`fiche ${cat}`}>
+  <nav class="fil" aria-label="Fil d’Ariane">
+    <a href="/">Carte</a> <span aria-hidden="true">›</span>
+    {hub ? <a href={hub.url}>{hub.titre}</a> : <a href="/territoires">Territoires</a>} <span aria-hidden="true">›</span>
+    <span>Fiche</span>
+  </nav>
+  <p class="eyebrow">Fiche affaire · comprendre</p>
+  <h1>{c.etablissement}</h1>
+  <p class="meta">{c.type_structure} · {c.commune}</p>
+  <div class="chips">
+    <span class={`chip ${cat}`}>{d.statut_libelle ?? STATUT_LABELS[statut] ?? statut}</span>
+    {appel && <span class="chip appel">Appel — décision non définitive</span>}
+    <span class="chip muted">{c.statut_des_faits === 'allégué' ? 'faits allégués' : c.statut_des_faits}</span>
+  </div>
+
+  <h2>Où en est l’affaire</h2>
+  {etat.map((l) => <p class="etat">{l}</p>)}
+
+  {d.faits && (<><h2>Les faits, tels que rapportés</h2><p class="etat">{d.faits}</p></>)}
+
+  {deroule.length > 0 && (<><h2>Déroulé</h2><Chronologie items={deroule} /></>)}
+
+  {reactions.length > 0 && (
+    <>
+      <h2>Réactions directement liées</h2>
+      <p class="note">Une prise de parole établie n’établit pas son contenu : chaque propos reste attribué.</p>
+      <ul class="reactions">
+        {reactions.map((r: any) => (
+          <li>
+            <p class="qui"><strong>{r.acteur}</strong>{r.qualite ? ` — ${r.qualite}` : ''} <span class="badge">{VALID[r.validation]}</span> <span class="quand">{libelleDate(r.date, r.date_nature)}</span></p>
+            <p>{r.resume}</p>
+            {r.contenu_attribue?.map((q: string) => <blockquote>« {q} »</blockquote>)}
+            <p class="src"><a href={r.source.url} target="_blank" rel="noopener noreferrer">{r.source.media}, {lib(r.source.publie_le)} ↗</a></p>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  {d.inconnues?.length > 0 && (
+    <>
+      <h2>Ce que l’on ne sait pas</h2>
+      <ul class="inconnues">{d.inconnues.map((i: string) => <li>{i}</li>)}</ul>
+    </>
+  )}
+
+  <h2>Sources</h2>
+  <ul class="sources">
+    {sources.map((s) => (
+      <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${lib(s.date)}` : ''} ↗</a>{s.nouvelle && <span class="limite"> — lue pour cette fiche, pas encore rattachée à l’affaire dans la mémoire</span>}</li>
+    ))}
+  </ul>
+  <p class="verif">Dernière vérification de cette fiche : {lib(d.verifie_le ?? verifieLe)}. Les dates sont celles des événements quand la source les donne ; sinon la date de parution est indiquée comme telle.</p>
+  {hub && <p class="verif">Cette affaire fait aussi partie du territoire <a href={`${hub.url}#${c.case_id.toLowerCase()}`}>{hub.titre}</a>, où elle est replacée parmi les autres affaires et les réponses institutionnelles.</p>}
+  <p class="verif"><a href="/">← Retour à la carte</a></p>
+</article>
+
+<style>
+  .fiche { max-width: 760px; margin: 0 auto; padding: 1.2rem 1.1rem 3rem; --c: var(--blue); }
+  .fiche.red { --c: var(--red); } .fiche.orange { --c: var(--orange); } .fiche.green { --c: var(--green); }
+  .fil { font: 0.74rem var(--mono); color: var(--muted); margin-bottom: 0.8rem; }
+  .fil a { color: var(--blue); }
+  .eyebrow { margin: 0 0 6px; color: var(--red); font: 0.72rem var(--mono); letter-spacing: 0.13em; text-transform: uppercase; }
+  h1 { margin: 0 0 4px; font: 700 clamp(1.6rem, 5vw, 2.3rem)/1.12 var(--display); letter-spacing: -0.02em; }
+  .meta { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .chip { padding: 3px 8px; font: 0.7rem var(--mono); background: #eef2f5; color: #3f5c6c; border-left: 3px solid var(--c); }
+  .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); }
+  .chip.muted { background: #f4f4f2; color: #6b7280; border-left-color: var(--border); }
+  h2 { margin: 1.8rem 0 0.7rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); font: 400 0.76rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #6b6b72; }
+  .etat { margin: 0 0 8px; font-size: 1rem; line-height: 1.55; color: #2a2a2d; }
+  .note { font-size: 0.82rem; color: var(--muted); margin: 0 0 8px; }
+  .reactions { list-style: none; margin: 0; padding: 0; }
+  .reactions li { padding: 10px 14px; margin: 0 0 10px; background: var(--bg-card); border-left: 3px solid var(--border); }
+  .reactions p { margin: 3px 0; font-size: 0.9rem; line-height: 1.5; }
+  .qui .badge { margin-left: 6px; padding: 1px 6px; font: 0.64rem var(--mono); background: #efefec; text-transform: uppercase; letter-spacing: 0.06em; }
+  .qui .quand { margin-left: 6px; font: 0.72rem var(--mono); color: var(--muted); }
+  blockquote { margin: 6px 0; padding: 4px 12px; border-left: 3px solid var(--blue); background: #f7f7f4; font-size: 0.9rem; }
+  .src { font-size: 0.76rem; color: var(--muted); } .src a, .sources a, .verif a { color: var(--blue); }
+  .inconnues, .sources { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: #4a4a50; } .inconnues li, .sources li { margin: 4px 0; }
+  .limite { font-style: italic; color: var(--muted); font-size: 0.78rem; }
+  .verif { margin: 1rem 0 0; font-size: 0.78rem; color: var(--muted); }
+</style>

@@ -148,6 +148,19 @@
           }
         },
         {
+          "date": null,
+          "date_nature": "inconnue",
+          "type": "enquete",
+          "acteur": "Brigade de protection des mineurs",
+          "texte": "L'enquête est confiée à la brigade des mineurs ; l'animateur est placé sous contrôle judiciaire dans l'attente de son procès.",
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+            "publie_le": "2026-06-17",
+            "acces": "libre"
+          }
+        },
+        {
           "date": "2026-05-05",
           "date_nature": "evenement",
           "type": "audience",
@@ -171,7 +184,8 @@
             "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
             "publie_le": "2026-06-17",
             "acces": "libre"
-          }
+          },
+          "event_id": "40822595-4ee6-49a9-90ed-f00625514e9d"
         },
         {
           "date": "2026-06-17",
@@ -184,14 +198,60 @@
             "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140",
             "publie_le": "2026-06-17",
             "acces": "libre"
-          }
+          },
+          "event_id": "134bb5ef-c0bf-4423-b666-d1aac04bdcf5"
         }
       ],
       "inconnues": [
         "Date de l'audience d'appel : non trouvée au 10 octobre 2026.",
         "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
-        "La source d'état enregistrée par SNY (franceinfo, 17 juin) n'a pas de lien conservé ; l'article relu ci-dessus la remplace."
-      ]
+        "La source d'état enregistrée par SNY (franceinfo, 17 juin) n'a pas de lien conservé ; l'article relu ci-dessus la remplace.",
+        "Position de la Ville de Paris ou du rectorat sur ce jugement précis : aucune déclaration retrouvée dans les articles consultés (le ministre de l'Éducation nationale a, lui, refusé de commenter)."
+      ],
+      "faits": "Selon l'accusation rapportée par franceinfo, un animateur du périscolaire de l'école Titon était poursuivi pour harcèlement sexuel sur plusieurs élèves de CM2 et pour agressions sexuelles sur certaines d'entre elles. Il avait été suspendu en octobre 2024 après des plaintes de plusieurs parents. Ces faits sont allégués ; la décision de relaxe n'est pas définitive.",
+      "reactions": [
+        {
+          "acteur": "Ministre de l'Éducation nationale",
+          "qualite": "Edouard Geffray",
+          "acte": "declaration",
+          "date": "2026-06-17",
+          "date_nature": "evenement",
+          "portee": "affaire",
+          "validation": "PAROLE_ETABLIE",
+          "resume": "Invité de franceinfo, il n'a pas souhaité commenter le jugement.",
+          "contenu_attribue": [
+            "La justice, elle passe au regard d'un droit pénal et les décisions sont susceptibles de faire l'objet d'un recours, c'est le parquet qui décidera"
+          ],
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+            "publie_le": "2026-06-17",
+            "acces": "libre"
+          }
+        },
+        {
+          "acteur": "Parents parties civiles",
+          "qualite": "communiqué relayé par ELLE",
+          "acte": "communique",
+          "date": "2026-06-18",
+          "date_nature": "evenement",
+          "portee": "affaire",
+          "validation": "POSITION_ATTRIBUEE",
+          "resume": "Dans un communiqué, des parents parties civiles saluent l'appel du parquet et contestent le jugement. Leur appréciation du jugement est la leur : elle n'établit pas son contenu.",
+          "contenu_attribue": [
+            "un profond soulagement",
+            "fondé sur des erreurs factuelles"
+          ],
+          "source": {
+            "media": "ELLE (via portail Free)",
+            "url": "https://portail.free.fr/actualites/societe/periscolaire-a-paris-la-relaxe-de-lanimateur-de-lecole-titon-indigne-les-parents-le-parquet-fait-appel/",
+            "publie_le": "2026-06-18",
+            "acces": "libre"
+          }
+        }
+      ],
+      "suivre_neon": true,
+      "verifie_le": "2026-10-12"
     },
     "POC-07": {
       "etat_actuel": [
@@ -665,6 +725,18 @@
             "media": "Innocence en Danger",
             "url": "https://www.innocenceendanger.org/dossier-periscolaire",
             "publie_le": null,
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-06-18",
+          "date_nature": "evenement",
+          "acteur": "Parents et habitants (rassemblement devant l'école Saint-Dominique, 7e)",
+          "texte": "Plusieurs centaines de personnes se rassemblent deux jours après la relaxe de l'animateur de l'école Titon pour dénoncer l'inaction des pouvoirs publics, rapporte ELLE d'après Le Parisien. Mobilisation d'ensemble sur le périscolaire parisien.",
+          "source": {
+            "media": "ELLE (via portail Free)",
+            "url": "https://portail.free.fr/actualites/societe/periscolaire-a-paris-la-relaxe-de-lanimateur-de-lecole-titon-indigne-les-parents-le-parquet-fait-appel/",
+            "publie_le": "2026-06-18",
             "acces": "libre"
           }
         }

@@ -8,10 +8,13 @@
 import Chronologie from './Chronologie.astro';
 import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
 import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre } from '../lib/territoires';
+import { derouleCommun } from '../lib/fiche';
 
 interface Props { c: any; d?: any; titre?: string }
 const { c, d = {}, titre } = Astro.props;
 
+// Déroulé COMMUN (Hub + fiche) : entrées du dossier alignées sur les événements validés de Neon (lib/fiche.ts).
+const { items: deroule } = derouleCommun(c.case_id, d);
 const sourcesLibres = (c.sources ?? []).filter((s: any) => libre(s.media));
 const principale = sourcesLibres[0]
   ? { media: sourcesLibres[0].media, date: sourcesLibres[0].publication_date ?? null, url: sourcesLibres[0].url ?? null }
@@ -64,10 +67,10 @@ for (const s of sourcesLibres) {
     </div>
   )}
 
-  {d.deroule?.length > 0 && (
+  {deroule.length > 0 && (
     <>
       <h4>Déroulé</h4>
-      <Chronologie items={d.deroule} />
+      <Chronologie items={deroule} />
     </>
   )}
 
