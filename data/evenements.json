@@ -1,7 +1,7 @@
 {
   "_meta": {
     "projection": "evenements-v0",
-    "note": "Compilé depuis Neon (case_events) par scripts/project-evenements.mjs. Ne pas éditer à la main."
+    "note": "Compilé depuis Neon (case_events, reviews) par scripts/project-evenements.mjs. Ne pas éditer à la main."
   },
   "affaires": {
     "FR-2026-0001": [
@@ -204,5 +204,6 @@
         }
       }
     ]
-  }
+  },
+  "fiches_approuvees": {}
 }

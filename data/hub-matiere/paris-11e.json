@@ -192,7 +192,7 @@
           "date_nature": "evenement",
           "type": "appel",
           "acteur": "Parquet de Paris",
-          "texte": "Le parquet indique faire appel de la relaxe. Les familles expriment, selon ICI, leur colère et leur incompréhension.",
+          "texte": "Le parquet de Paris annonce faire appel de la relaxe le mercredi soir, soit le 17 juin (jugement rendu « mardi 16 juin », selon franceinfo et ICI). Les familles expriment, selon ICI, leur colère et leur incompréhension.",
           "source": {
             "media": "ICI (France Bleu)",
             "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140",
@@ -251,7 +251,11 @@
         }
       ],
       "suivre_neon": true,
-      "verifie_le": "2026-10-12"
+      "verifie_le": "2026-10-12",
+      "apercu_types": [
+        "decision",
+        "appel"
+      ]
     },
     "POC-07": {
       "etat_actuel": [

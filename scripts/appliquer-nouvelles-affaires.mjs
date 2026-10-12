@@ -74,6 +74,35 @@ for (const r of dues) {
     continue;
   }
 
+  // --- FICHE INDIVIDUELLE (proposition « APPROUVER LA FICHE ») -------------------------------------------------------------------
+  // APPROUVER = GO éditorial de la PAGE, jamais publication de l'affaire (elle doit déjà être publique). Écrit : les sources lues pour la
+  // fiche sont rattachées à l'affaire (lib/rattacher-sources, idempotent) + une revue « [Fiche approuvée] » portant l'empreinte du dossier.
+  // La page devient publique par la chaîne existante (project-evenements → QA → commit → build → vérification du site). REJECT : page écartée.
+  if (p.page) {
+    const cid = p.page.case_id;
+    const clore = (note) => sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${note}, 500)
+                              where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    if (!accepte) { console.log('  fiche refusée : page écartée, affaire inchangée'); if (ECRIRE) await clore(' · fiche refusée'); notees++; continue; }
+    const [kc] = await sql`select publication_status::text ps from cases where case_id = ${cid}`;
+    if (kc?.ps !== 'publiée') {
+      console.log('  REFUS DÉFINITIF : l’affaire n’est pas publique, aucune fiche approuvée');
+      if (ECRIRE) await clore(' · approbation refusée : affaire non publique');
+      notees++; continue;
+    }
+    const srcs = (p.page.sources_a_rattacher || []).map((s) => ({ url: s.url, media: s.media, d: s.d || null }));
+    if (!ECRIRE) { console.log(`  approuverait la fiche ${cid} (empreinte ${p.page.hash}) + ${srcs.length} source(s) à rattacher`); continue; }
+    const o = await rattacherSources(sql, { case_id: cid, sources: srcs, par: 'Adrien (Telegram, fiche)', balise: `[Fiche-sources:${id8}]`,
+      commentaire: 'Sources lues pour la fiche individuelle, rattachées avec l’approbation de la page. Aucun changement d’état.' });
+    const [dejaApp] = await sql`select 1 x from reviews where case_id = ${cid} and comment like ${'[Fiche approuvée ' + id8 + ']%'}`;
+    if (!dejaApp) await sql`insert into reviews (case_id, reviewed_by, decision, comment) values (${cid}, 'Adrien (Telegram, fiche)', 'validé', ${`[Fiche approuvée ${id8}] ${cid} hash=${p.page.hash}`})`;
+    await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    console.log(`  fiche ${cid} approuvée (${o.ajoutees ?? 0} source(s) rattachée(s))`);
+    await prevenir(`📄 <b>Fiche approuvée</b> — ${esc(cid)} (${id8})
+Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée. Projection, QA, déploiement et vérification du site suivent ; « publiée et vérifiée » n’est annoncé qu’après lecture du site servi.`);
+    publiees++;
+    continue;
+  }
+
   // --- PUBLICATION d'une candidate (proposition « PUBLIER ? ») ---------------------------------------------------------------
   // PUBLIER = GO éditorial explicite : exécuté par publier-affaire.mjs (SES contrôles, SA transaction, SA revue « GO d'Adrien ») — aucune
   // seconde logique SQL ici. REJECT = refus de publier : revue « à corriger », l'affaire est CONSERVÉE. REVIEW (HOLD) est traité plus haut.

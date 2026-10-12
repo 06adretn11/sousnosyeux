@@ -11,7 +11,8 @@
 // Un même fait enregistré deux fois (type + date + statut) ne compte qu'une fois, le plus ancien fait foi (même règle que la synthèse d'état).
 // `rectification` n'est jamais un fait à afficher.
 // =====================================================================
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, appendFileSync } from 'node:fs';
+import { dossierFiche, hashDossier, ficheApprouvee } from './lib/fiche-page.mjs';
 import { connecter } from './lib/neon.mjs';
 
 const DIFF = process.argv.includes('--diff');
@@ -39,12 +40,29 @@ for (const l of lignes) {
     source: l.media ? { media: l.media, url: l.url, publie_le: l.publie_le } : null,
   });
 }
-const doc = { _meta: { projection: 'evenements-v0', note: 'Compilé depuis Neon (case_events) par scripts/project-evenements.mjs. Ne pas éditer à la main.' }, affaires: parAffaire };
+// Fiches individuelles APPROUVÉES (revue « [Fiche approuvée] » d'Adrien) : publiques seulement si l'empreinte approuvée est celle du dossier
+// ACTUEL (le dossier a changé depuis → plus publique jusqu'à une nouvelle approbation : échec fermé).
+const revues = await sql`select case_id, reviewed_by, decision::text decision, comment from reviews where case_id = any(${ids}) and comment like '[Fiche approuvée %' order by reviewed_at`;
+const fiches = {};
+for (const id of new Set(revues.map((r) => r.case_id))) {
+  const h = ficheApprouvee(revues.filter((r) => r.case_id === id), id);
+  const dossier = dossierFiche(id);
+  if (h && dossier && hashDossier(dossier.d) === h) fiches[id] = { hash: h };
+  else if (h) console.log(`· ${id} : fiche approuvée mais dossier modifié depuis (empreinte différente) — NON publique, nouvelle approbation requise`);
+}
+const doc = { _meta: { projection: 'evenements-v0', note: 'Compilé depuis Neon (case_events, reviews) par scripts/project-evenements.mjs. Ne pas éditer à la main.' }, affaires: parAffaire, fiches_approuvees: fiches };
 const texte = JSON.stringify(doc, null, 2) + '\n';
 const avant = existsSync(CHEMIN) ? readFileSync(CHEMIN, 'utf8') : '';
 const n = Object.values(parAffaire).reduce((s, l) => s + l.length, 0);
 console.log(`${n} événement(s) validé(s) sur ${Object.keys(parAffaire).length} affaire(s) publique(s)`);
-if (avant === texte) { console.log('NO_PUBLIC_CHANGE — data/evenements.json déjà conforme à Neon'); process.exit(0); }
-if (DIFF) { console.log('écart avec le fichier committé (rien écrit)'); process.exit(0); }
+// Pages concernées : fiches nouvellement approuvées + fiches publiques dont un événement a changé (à vérifier sur le site servi).
+const ancien = avant ? JSON.parse(avant) : { affaires: {}, fiches_approuvees: {} };
+const concernees = Object.keys(fiches).filter((id) => !ancien.fiches_approuvees?.[id] || JSON.stringify(ancien.affaires?.[id] ?? []) !== JSON.stringify(parAffaire[id] ?? []));
+const sortie = (change) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `change=${change}
+fiches=${concernees.join(',')}
+`); };
+if (avant === texte) { console.log('NO_PUBLIC_CHANGE — data/evenements.json déjà conforme à Neon'); sortie(false); process.exit(0); }
+if (DIFF) { console.log('écart avec le fichier committé (rien écrit) · pages concernées : ' + (concernees.join(', ') || 'aucune')); process.exit(0); }
 writeFileSync(CHEMIN, texte, 'utf8');
+sortie(true);
 console.log('✅ écrit : data/evenements.json');

@@ -1,0 +1,34 @@
+// Diagnostic territorial — le diagnostic ÉVOLUE avec la mémoire, et ne fait pas de bruit.
+import assert from 'node:assert/strict';
+import { diagnostiquer, instantane, messageDiagnostic } from '../lib/diagnostic-territoire.mjs';
+
+const T = (o = {}) => ({ hub: 'bordeaux-gironde', publiques: ['FR-2026-0113', 'FR-2026-0114'], horsHub: [], candidatesValidees: 0, reviewNonPublic: 0, evenements: 3, reactions: 0, sources: 8, ...o });
+let n = 0; const t = (nom, f) => { f(); n++; console.log(`  ✓ ${nom}`); };
+
+t('premier passage : base de référence, jamais de notification', () => assert.equal(diagnostiquer(T({ horsHub: ['FR-2026-0113'] }), null).significatif, false));
+t('Frida-Kahlo AVANT intégration (publique, absente du Hub) → INTEGRER_HUB', () => {
+  const e = T({ horsHub: ['FR-2026-0113'] }); const d = diagnostiquer(e, instantane(T()));
+  assert.equal(d.decision, 'INTEGRER_HUB'); assert.equal(d.significatif, true); assert.match(d.pourquoi[0], /FR-2026-0113/);
+});
+t('Frida-Kahlo APRÈS intégration, rien d’autre → NO_ACTION, aucune notification', () => { const d = diagnostiquer(T(), instantane(T())); assert.equal(d.decision, 'NO_ACTION'); assert.equal(d.significatif, false); });
+t('Cenon : publication d’une affaire du périmètre (+1 publique) → ENRICHIR_HUB', () => {
+  const avant = instantane(T({ publiques: ['FR-2026-0113'], candidatesValidees: 1, sources: 4 }));
+  const d = diagnostiquer(T(), avant); assert.equal(d.decision, 'ENRICHIR_HUB'); assert.equal(d.significatif, true); assert.ok(d.pourquoi.some((p) => /affaire\(s\) publique/.test(p)));
+});
+t('réaction institutionnelle SANS changement d’état judiciaire (+1 événement/réaction) → ENRICHIR_HUB', () => {
+  const d = diagnostiquer(T({ evenements: 4, reactions: 1 }), instantane(T()));
+  assert.equal(d.decision, 'ENRICHIR_HUB'); assert.ok(d.pourquoi.some((p) => /réaction/.test(p)));
+});
+t('Hub sans Hub-cible : 3 affaires publiques → PROPOSER_NOUVEAU_HUB, notifié seulement quand le territoire bouge', () => {
+  const e = { hub: null, publiques: ['a', 'b', 'c'], horsHub: [], candidatesValidees: 0, reviewNonPublic: 0, evenements: 1, reactions: 0, sources: 6 };
+  assert.equal(diagnostiquer(e, null).decision, 'PROPOSER_NOUVEAU_HUB');
+  assert.equal(diagnostiquer(e, instantane(e)).significatif, false);
+  assert.equal(diagnostiquer({ ...e, publiques: ['a', 'b', 'c', 'd'], sources: 8 }, instantane(e)).significatif, true);
+});
+t('moins de 3 affaires, aucun Hub → NO_ACTION', () => assert.equal(diagnostiquer({ hub: null, publiques: ['a', 'b'], horsHub: [], candidatesValidees: 0, reviewNonPublic: 0, evenements: 0, reactions: 0, sources: 2 }, null).decision, 'NO_ACTION'));
+t('REVIEW non publique en plus dans un Hub à jour → REVIEW', () => assert.equal(diagnostiquer(T({ reviewNonPublic: 1 }), instantane(T())).decision, 'REVIEW'));
+t('le message dit pourquoi maintenant, la décision attendue, et que rien n’est publié', () => {
+  const e = T({ horsHub: ['FR-2026-0113'] }); const m = messageDiagnostic('bordeaux-gironde', e, diagnostiquer(e, instantane(T())));
+  assert.match(m, /Pourquoi maintenant/); assert.match(m, /Décision attendue/); assert.match(m, /Rien n’est publié automatiquement/);
+});
+console.log(`\n${n} contrôles diagnostic territorial : OK`);

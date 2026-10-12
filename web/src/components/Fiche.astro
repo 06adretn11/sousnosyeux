@@ -2,7 +2,7 @@
 // Fiche affaire — COMPRENDRE. Même mémoire que la Home (cases.json) et le Hub (dossier), à une profondeur de lecture de plus.
 // Chaque bloc n'apparaît que si la matière existe : pas de bloc vide, pas de texte artificiel.
 import Chronologie from './Chronologie.astro';
-import { ficheDe } from '../lib/fiche';
+import { ficheDe, evenementsDe } from '../lib/fiche';
 import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
 import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
 import { libelleDate } from '../lib/hub-matiere';
@@ -34,7 +34,7 @@ for (const e of deroule) ajoute(e.source, e.source?.publie_le ?? null);
 for (const r of publiables) ajoute(r.source, r.source?.publie_le ?? null);
 ---
 
-<article class={`fiche ${cat}`}>
+<article class={`fiche ${cat}`} data-fiche={id} data-evenements={evenementsDe(id).length}>
   <nav class="fil" aria-label="Fil d’Ariane">
     <a href="/">Carte</a> <span aria-hidden="true">›</span>
     {hub ? <a href={hub.url}>{hub.titre}</a> : <a href="/territoires">Territoires</a>} <span aria-hidden="true">›</span>
@@ -87,7 +87,7 @@ for (const r of publiables) ajoute(r.source, r.source?.publie_le ?? null);
     ))}
   </ul>
   <p class="verif">Dernière vérification de cette fiche : {lib(d.verifie_le ?? verifieLe)}. Les dates sont celles des événements quand la source les donne ; sinon la date de parution est indiquée comme telle.</p>
-  {hub && <p class="verif">Cette affaire fait aussi partie du territoire <a href={`${hub.url}#${c.case_id.toLowerCase()}`}>{hub.titre}</a>, où elle est replacée parmi les autres affaires et les réponses institutionnelles.</p>}
+  {hub && <p class="verif">Contexte territorial : <a href={`${hub.url}#${c.case_id.toLowerCase()}`}>{hub.titre}</a> — cette affaire y est replacée parmi les autres affaires et les réponses publiques.</p>}
   <p class="verif"><a href="/">← Retour à la carte</a></p>
 </article>
 

@@ -52,7 +52,32 @@ export function messagePublication(p) {
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
+/** FICHE INDIVIDUELLE À APPROUVER : une page (pas l'affaire) ; APPROUVER = GO éditorial de la PAGE uniquement. */
+export function messageFiche(p) {
+  const x = p.page;
+  return [
+    `📄 <b>FICHE INDIVIDUELLE À APPROUVER</b> · ${esc(x.case_id)}`,
+    '',
+    `<b>${esc(p.etablissement)}</b> · ${esc(p.commune)}`,
+    `État judiciaire : « ${esc(x.statut_judiciaire)} » (l’affaire est déjà publique)`,
+    ...(x.resume || []).map((l) => '\n' + esc(cut(l, 280))),
+    '',
+    '<b>Éléments nouveaux</b> : ' + (x.nouveautes || []).map(esc).join(' · '),
+    ...trois(x.sources_directes, 4).map(lien),
+    x.sources_a_rattacher?.length ? `🔗 ${x.sources_a_rattacher.length} source(s) lue(s) pour la fiche seront rattachées à l’affaire dans la mémoire (APPROUVER vaut aussi cet accord).` : '',
+    '<b>Inconnues</b> : ' + (x.inconnues || []).map((i) => esc(cut(i, 120))).join(' · '),
+    '',
+    `👁 Aperçu : ${esc(x.preview_url)}`,
+    '<b>Diff de publication</b> :',
+    ...(x.diff_public || []).map((l) => '• ' + esc(l)),
+    '',
+    '✅ APPROUVER = GO éditorial de la PAGE (enregistré, puis projection, QA, déploiement, vérification du site servi). Ce n’est pas la publication de l’affaire.',
+    '🟡 REVIEW : rien publié · ⛔ REJECT : page écartée, l’affaire reste publique.',
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
 export function messageDecision(p, recommendation) {
+  if (p.page) return messageFiche(p);
   if (p.publication) return messagePublication(p);
   // Un candidat de rattachement (payload.attach) → message COMPARATIF, quelle que soit la recommandation : c'est l'humain qui tranche.
   if (p.attach || recommendation === 'ATTACH_EXISTING') return messageRapprochement(p, recommendation);
@@ -143,6 +168,7 @@ export function modeCreation(recommendation, payload) {
  * REVIEW = HOLD : n'écrit rien. Jamais toutes les actions à la fois.
  */
 export function boutons(recommendation, cle, payload = null) {
+  if (payload?.page) return { inline_keyboard: [[{ text: '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   const r2 = [
     { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` },
     { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` },

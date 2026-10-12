@@ -65,6 +65,14 @@ const LIBELLES = {
   },
 };
 
+// PRISE DE PAROLE (hors mesure) : « X a déclaré Y » n'établit pas Y. Libellé fermé, sans annoncée/réalisée (realisation NULL).
+const DECLARATIONS = [
+  ['declaration_employeur', /association[^.]{0,80}responsabilites? d'employeur|responsabilites? d'employeur[^.]{0,80}gestionnaire/],
+];
+const LIBELLES_DECLARATION = {
+  declaration_employeur: 'Selon la presse, l’employeur de l’agent concerné a publié un communiqué par lequel il affirme avoir assumé ses responsabilités d’employeur. Position de l’employeur, non vérifiée par ailleurs.',
+};
+
 export function libelleInstitutionnel(mesure, realisation) {
   return LIBELLES[mesure]?.[realisation] || null;
 }
@@ -87,6 +95,8 @@ export function detecterInstitutionnel(citations) {
   for (const brut of citations || []) {
     const c = String(brut || '').replace(/\s+/g, ' ').trim();
     const n = norm(c);
+    const decl = c.length >= 25 ? DECLARATIONS.find(([, m]) => m.test(n)) : null;
+    if (decl) return { event_type: 'réponse_institutionnelle', mesure: decl[0], realisation: null, libelle_public: LIBELLES_DECLARATION[decl[0]], citation: c };
     if (c.length < 25 || !ACTEUR.test(n)) continue;
     for (const [mesure, motif] of MESURES) {
       if (!motif.test(n)) continue;

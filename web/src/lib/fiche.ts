@@ -25,6 +25,9 @@ const TYPE_NEON: Record<string, string> = {
   suspension: 'mesure_etablissement', 'mesure_procédurale': 'decision', 'réponse_institutionnelle': 'mesure_collectivite', mobilisation: 'mobilisation',
 };
 const holds = new Set((holdsDoc as any).holds.map((h: any) => h.case_id));
+/** Fiches individuelles APPROUVÉES (revue Telegram) et dont l'empreinte est celle du dossier actuel : seules celles-ci ont une page publique. */
+export const fichesApprouvees = (): string[] => Object.keys((evenementsDoc as any).fiches_approuvees ?? {});
+export const fichePubliee = (id: string): boolean => fichesApprouvees().includes(id);
 export const evenementsDe = (id: string): any[] => (evenementsDoc as any).affaires[id] ?? [];
 
 /** Dossier éditorial d'une affaire : celui de son hub, sinon celui des affaires isolées (même forme). */
