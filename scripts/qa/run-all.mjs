@@ -84,6 +84,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Telegram PUBLIER — GO explicite via publier-affaire, REJECT conserve, REVIEW ne publie rien, localisation jamais inventée',
+    script: 'scripts/qa/test-proposition-publication.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

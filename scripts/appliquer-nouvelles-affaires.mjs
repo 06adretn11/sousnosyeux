@@ -33,6 +33,8 @@ import { niveauGeo } from './lib/rapprochement-garde.mjs';
 import { schemaBoucle } from './lib/telegram-clics.mjs';
 import { preuvesDe } from './lib/preuves.mjs';
 import { prevenir, prevenirUneFois, phrasePublication, esc } from './lib/prevenir.mjs';
+import { argsPublierAffaire } from './lib/proposition-publication.mjs';
+import { execFileSync } from 'node:child_process';
 
 const ECRIRE = process.argv.includes('--ecrire');
 const CI = !!process.env.CI;
@@ -50,7 +52,7 @@ const dues = S.action
        where decision is not null and applied_at is null order by created_at`;
 console.log(`${dues.length} décision(s) à appliquer${ECRIRE ? '' : ' (à blanc : aucune écriture)'}`);
 
-let creees = 0, rattachees = 0, notees = 0, refusees = 0;
+let creees = 0, rattachees = 0, notees = 0, refusees = 0, publiees = 0;
 for (const r of dues) {
   const p = r.payload;
   const id8 = r.pid.slice(0, 8);
@@ -69,6 +71,41 @@ for (const r of dues) {
     console.log('  HOLD : mis de côté, aucune fiche ni rattachement écrits');
     if (ECRIRE) await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
     notees++;
+    continue;
+  }
+
+  // --- PUBLICATION d'une candidate (proposition « PUBLIER ? ») ---------------------------------------------------------------
+  // PUBLIER = GO éditorial explicite : exécuté par publier-affaire.mjs (SES contrôles, SA transaction, SA revue « GO d'Adrien ») — aucune
+  // seconde logique SQL ici. REJECT = refus de publier : revue « à corriger », l'affaire est CONSERVÉE. REVIEW (HOLD) est traité plus haut.
+  // La suite (projection, QA, push, build, vérification du site) est le travail du réconciliateur ; « publié » n'est annoncé que par verifier-site.
+  if (p.publication) {
+    const cid = p.publication.case_id;
+    if (!accepte) {
+      console.log('  refus de publier : revue « à corriger » consignée, affaire conservée');
+      if (ECRIRE) {
+        await sql`insert into reviews (case_id, reviewed_by, decision, comment)
+                  values (${cid}, 'Adrien (Telegram, publication)', 'à corriger', ${`[Publication refusée ${id8}] Proposition de publication refusée par l'éditeur : la fiche reste candidate (non supprimée).`})`;
+        await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
+      }
+      notees++;
+      continue;
+    }
+    const [kc] = await sql`select lat, lng from cases where case_id = ${cid}`;
+    if (!ECRIRE) { console.log('  publierait via publier-affaire.mjs (GO Telegram)'); continue; }
+    try {
+      const args = argsPublierAffaire({ case_id: cid, id8, dbLat: kc?.lat, dbLng: kc?.lng, loc: p.publication.localisation, date: new Date().toISOString().slice(0, 10) });
+      execFileSync(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
+    } catch (e) {
+      const motif = String(e.stderr || e.message).split('\n').filter((l) => /^\s*·|REFUS|aucune localisation/.test(l)).map((l) => l.replace(/^\s*·\s*/, '').trim()).join(' ; ').slice(0, 300) || 'contrôle de publication refusé';
+      console.log(`  REFUS : ${motif}`);
+      refusees++;
+      await prevenirUneFois(sql, { cle: id8, resultat: 'refus_publication', texte: `⚠️ <b>Publication NON effectuée</b> — ${esc(cid)} (${id8})\n${esc(motif)}\nRien n’a été publié ; l’affaire reste candidate.` });
+      continue;
+    }
+    await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    console.log('  GO publication appliqué (publier-affaire)');
+    await prevenir(`🗳 <b>GO publication appliqué</b> — ${esc(cid)} (${id8})\nAutorisation enregistrée en base : l’affaire n’est PAS encore visible. Projection, QA, déploiement et vérification du site suivent ; « Publié et vérifié » ne sera annoncé qu’après lecture du site servi.`);
+    publiees++;
     continue;
   }
 
@@ -194,5 +231,5 @@ for (const r of dues) {
     await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +30 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : phrasePublication('candidate')}`);
   }
 }
-console.log(`appliqué : ${creees} fiche(s) créée(s), ${rattachees} rattachement(s), ${notees} décision(s) consignée(s) sans écriture de fiche, ${refusees} refusée(s)`);
+console.log(`appliqué : ${creees} fiche(s) créée(s), ${rattachees} rattachement(s), ${notees} décision(s) consignée(s) sans écriture de fiche, ${refusees} refusée(s) · ${publiees} GO publication appliqué(s)`);
 process.exit(0);

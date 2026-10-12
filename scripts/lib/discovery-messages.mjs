@@ -24,7 +24,36 @@ function trois(articles, n = 3) {
   return (articles || []).filter((a) => /^https?:\/\//.test(a.url || '') && !vus.has(a.media) && vus.add(a.media)).slice(0, n);
 }
 
+/** PROPOSITION DE PUBLICATION d'une candidate examinée : synthèse (établissement, commune, état, preuves, sources, localisation). */
+export function messagePublication(p) {
+  const x = p.publication;
+  const c = x.criteres || {};
+  const ok = (b) => (b ? '✓' : '✗');
+  const loc = x.localisation;
+  const ligneLoc = !loc ? '📍 ⚠ Aucune localisation fiable : publication impossible tant qu’un point documenté n’est pas fourni.'
+    : loc.type === 'approximative' ? '📍 Localisation APPROXIMATIVE : centre de la commune (API Adresse). La carte affichera « Localisation approximative » ; ce n’est pas l’adresse de l’établissement.'
+      : '📍 Localisation documentée (coordonnées déjà enregistrées pour cette fiche).';
+  return [
+    `📢 <b>PUBLICATION</b> · PROPOSITION · ${esc(x.case_id)}`,
+    '',
+    `<b>${esc(p.etablissement || 'Structure non nommée')}</b> · ${esc(p.commune)}`,
+    `État judiciaire : « ${esc(x.statut_judiciaire)} » · fiabilité ${esc(x.fiabilite)}/10 · ${(x.sources || []).length} source(s)`,
+    p.resume ? '\n' + esc(cut(p.resume, 300)) : '',
+    '',
+    `Preuves : source fiable ${ok(c.source_fiable)} · article récent ${ok(c.article_recent)} · établissement nommé ${ok(c.etablissement_nomme)} · statut clair ${ok(c.statut_clair)} · recoupement ${ok(c.recoupement)}`,
+    ...trois(x.sources).map(lien),
+    ligneLoc,
+    x.bloque ? `\n⛔ Non publiable : ${esc(cut(x.bloque, 200))}` : '\nContrôles passés : HOLD, retrait, fiabilité, sources, doublon.',
+    '',
+    x.publiable
+      ? '📢 PUBLIER = GO éditorial explicite, enregistré : publication, projection, QA, déploiement, puis vérification du site. « Publié et vérifié » n’est annoncé qu’après lecture du site servi.'
+      : 'PUBLIER indisponible : REVIEW ou REJECT seulement.',
+    '🟡 REVIEW : rien publié, mis de côté · ⛔ REJECT : refus de publier, l’affaire est conservée (candidate).',
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
 export function messageDecision(p, recommendation) {
+  if (p.publication) return messagePublication(p);
   // Un candidat de rattachement (payload.attach) → message COMPARATIF, quelle que soit la recommandation : c'est l'humain qui tranche.
   if (p.attach || recommendation === 'ATTACH_EXISTING') return messageRapprochement(p, recommendation);
   const nomme = p.etablissement_nomme !== false && p.etablissement;
@@ -118,6 +147,11 @@ export function boutons(recommendation, cle, payload = null) {
     { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` },
     { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` },
   ];
+  // Proposition de PUBLICATION : PUBLIER (callback VALIDATE : le Worker n'est pas modifié) seulement si examinée ET localisée.
+  if (payload?.publication) {
+    const publier = { text: '📢 PUBLIER', callback_data: `sny:NC:VALIDATE:${cle}` };
+    return { inline_keyboard: [payload.publication.publiable ? [publier, ...r2] : r2] };
+  }
   const creer = modeCreation(recommendation, payload || {}) === 'PENDING'
     ? { text: '⏳ CRÉER (preuves à compléter)', callback_data: `sny:NC:PENDING:${cle}` }
     : { text: payload?.attach ? '🆕 CRÉER' : '✅ VALIDATE', callback_data: `sny:NC:VALIDATE:${cle}` };

@@ -39,6 +39,8 @@ export function decoderCallback(data) {
  */
 export function boutonValable(action, payload) {
   if (action === 'REVIEW' || action === 'REJECT') return true;
+  // Proposition de PUBLICATION : seul « PUBLIER » (callback VALIDATE) est positif, et seulement si elle est publiable. Ni rattachement ni création.
+  if (payload?.publication) return action === 'VALIDATE' && payload.publication.publiable === true;
   if (action === 'ATTACH') return !!payload?.attach?.case_id;
   if (action === 'VALIDATE' || action === 'CREATE' || action === 'PENDING') return !!payload?.fiche;
   return false;
