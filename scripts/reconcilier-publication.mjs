@@ -1,24 +1,27 @@
 #!/usr/bin/env node
 // =====================================================================
-// scripts/reconcilier-publication.mjs — une affaire VALIDÉE par l'éditeur ne reste jamais silencieusement hors du site.
+// scripts/reconcilier-publication.mjs — exécute, sans intervention manuelle, la SUITE d'une publication DÉJÀ AUTORISÉE.
 //
 //   node scripts/reconcilier-publication.mjs                  # plan : état de chaque affaire, AUCUNE écriture
-//   node scripts/reconcilier-publication.mjs --ecrire         # publie (Neon) et projette (data/cases.json) ce qui est READY
+//   node scripts/reconcilier-publication.mjs --ecrire         # projette (data/cases.json) ce qui est autorisé et pas encore dans l'artefact
 //   node scripts/reconcilier-publication.mjs --site           # + compare l'artefact au site RÉELLEMENT servi (exit 1 si PENDING_DEPLOYMENT)
-//   options : --ids a,b (se limite à ces affaires : sélection, jamais une liste de rattrapage) · --max N (défaut 5 : plafond d'affaires publiées par passage ; le reste reste READY et passe au suivant)
+//   options : --ids a,b (sélection, jamais une liste de rattrapage) · --max N (défaut 5 : plafond d'affaires projetées par passage)
 //
-// C'est la SOUDURE entre ce qui existe déjà — pas un nouveau système :
-//   décision humaine (reviews, écrites par appliquer-nouvelles-affaires / Decision Pack)
-//     → garde-fous (lib/publication-gates.mjs = HOLD, fiabilité, statut, sources, doublon…)
-//     → point de carte (lib/geocoder-commune.mjs, centre de commune, JAMAIS inventé, marqué « approximatif »)
-//     → publier-affaire.mjs (statut Neon `publiée`, revue de GO consignée)   [existant]
-//     → project-public.mjs --ajouter <id> (n'ajoute QUE cette entrée à l'artefact)   [existant]
-//     → QA + commit + vérification du site : étapes du workflow (sny-telegram, sny-clics)   [existants]
+// CONTRAT (jamais d'autorisation implicite) :
+//   CREATE / VALIDATE Discovery → candidate dans Neon, JAMAIS publiée.   CREATE_PENDING_EVIDENCE → candidate non publiable.
+//   ATTACH → rattachement, aucune autorisation de publier.               REVIEW / HOLD → aucune publication.
+//   GO PUBLICATION = l'acte EXISTANT de publier-affaire.mjs --go : il bascule la fiche en `publiée` ET consigne la revue
+//   « [Publication AAAA-MM-JJ] GO d'Adrien : … » (reviewed_by « Adrien … ») dans la même instruction. Ce script ne publie JAMAIS une
+//   candidate et n'écrit JAMAIS de GO : il exécute ce qui suit un GO.
 //
-// ÉTATS (recalculés à chaque passage depuis Neon + artefact + site : aucun état à stocker, donc rejouable sans effet de bord) :
-//   READY               validée, garde-fous passés, point de carte disponible → sera publiée
-//   BLOCKED             une raison explicite et réessayable (la raison disparaît → le passage suivant publie, sans nouvelle validation)
-//   NEEDS_PROJECTION    `publiée` dans Neon mais absente de l'artefact (push échoué, QA refusée, passage interrompu) → reprojetée
+//   GO publication (Neon `publiée`) → [ce script] projection ciblée (project-public --ajouter, lot) → QA → commit → push → build
+//   Cloudflare → vérification du site servi : étapes du workflow (sny-telegram, sny-clics).
+//
+// ÉTATS (recalculés à chaque passage depuis Neon + artefact + site : rien à stocker, rejouable sans effet de bord) :
+//   AWAITING_GO         candidate validée et éligible : EXAMINÉE, attend un GO publication explicite (aucune action)
+//   BLOCKED             candidate (ou publiée) bloquée, raison explicite ; n'empêche jamais les autres
+//   NEEDS_PROJECTION    `publiée` avec GO publication explicite mais absente de l'artefact (push échoué, QA refusée) → reprojetée
+//   NO_GO               `publiée` en base SANS GO publication explicite (postérieur à SNY_PUBLICATION_DEPUIS) → jamais projetée
 //   PENDING_DEPLOYMENT  dans l'artefact mais pas (ou pas à l'identique) sur le site servi
 //   PUBLISHED_VERIFIED  dans l'artefact ET conforme sur le site servi
 //   HOLD                gelée : aucune nouvelle exposition, aucun retrait
@@ -30,7 +33,6 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
 import { etatPublication } from './lib/publication-gates.mjs';
-import { geocoderCommune } from './lib/geocoder-commune.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
 
 const A = process.argv.slice(2);
@@ -67,18 +69,6 @@ for (const c of cases) {
   if (e) etats.set(c.case_id, e);
 }
 
-// --- 2. point de carte des READY sans coordonnées (centre de commune, jamais inventé) ------------------------------------------
-for (const c of cases.filter((x) => etats.get(x.case_id)?.etat === 'READY')) {
-  if (c.lat !== null && c.lng !== null) { etats.get(c.case_id).geo = null; continue; }
-  try {
-    const g = await geocoderCommune(c.commune, c.departement);
-    if (g) etats.get(c.case_id).geo = g;
-    else etats.set(c.case_id, { alerter: true, etat: 'BLOCKED', raisons: ['localisation non établie de façon fiable (commune ambiguë, composée ou inconnue) : aucun point inventé'] });
-  } catch {
-    etats.set(c.case_id, { etat: 'BLOCKED', raisons: ['service de géocodage injoignable : réessayé au prochain passage'] });
-  }
-}
-
 // --- 3. site réellement servi --------------------------------------------------------------------------------------------------
 let enAttenteSite = [];
 let siteVerifie = new Set();
@@ -105,50 +95,22 @@ const comptes = {};
 for (const [id, e] of etats) {
   comptes[e.etat] = (comptes[e.etat] || 0) + 1;
   const montrer = !['IN_ARTEFACT', 'PUBLISHED_VERIFIED'].includes(e.etat);
-  if (montrer) console.log(`· ${id.padEnd(13)} ${e.etat.padEnd(20)}${e.raisons.join(' ; ')}${e.geo ? ` [point ${e.geo.source}]` : ''}${nom(id)}`);
+  if (montrer) console.log(`· ${id.padEnd(13)} ${e.etat.padEnd(20)}${e.raisons.join(' ; ')}${nom(id)}`);
 }
-console.log(`états : ${Object.entries(comptes).map(([k, v]) => `${k}=${v}`).join(' · ') || 'aucune affaire validée en attente'}`);
+console.log(`états : ${Object.entries(comptes).map(([k, v]) => `${k}=${v}`).join(' · ') || 'rien à signaler'}`);
 
-// --- 4b. une affaire validée mais BLOQUÉE ne reste pas silencieuse : un message Telegram, une seule fois par raison -----------------------
-if (ECRIRE && !IDS) {
-  const { prevenirUneFois, esc } = await import('./lib/prevenir.mjs');
-  const { createHash } = await import('node:crypto');
-  for (const [id, e] of etats) {
-    if (e.etat !== 'BLOCKED' || !e.alerter) continue;
-    const h = createHash('sha256').update(e.raisons.join('|')).digest('hex').slice(0, 8);
-    const texte = ['⏸ <b>Validée mais NON publiée</b> — ' + esc(id), ...e.raisons.map(esc), 'Réessayé à chaque passage : dès que la raison disparaît, la publication suit sans nouvelle validation.'].join('\n');
-    await prevenirUneFois(sql, { cle: `pub:${id}`, resultat: `bloquee:${h}`, texte });
-  }
-}
-
-// --- 5. publication ----------------------------------------------------------------------------------------------------------
+// --- 5. projection de ce qui est déjà publié avec GO ---------------------------------------------------------------------------
 const ajoutees = [];
 const refusees = [];
 if (ECRIRE) {
-  const prets = [...etats].filter(([id, e]) => e.etat === 'READY' && (!IDS || IDS.has(id))).map(([id]) => id);
   const reprojeter = [...etats].filter(([id, e]) => e.etat === 'NEEDS_PROJECTION' && (!IDS || IDS.has(id))).map(([id]) => id);
-  const lot = [...prets, ...reprojeter].slice(0, MAX);
-  if (prets.length + reprojeter.length > lot.length) console.log(`plafond ${MAX} atteint : ${prets.length + reprojeter.length - lot.length} affaire(s) reste(nt) READY pour le passage suivant`);
+  const lot = reprojeter.slice(0, MAX);
+  if (reprojeter.length > lot.length) console.log(`plafond ${MAX} atteint : ${reprojeter.length - lot.length} affaire(s) restent à projeter au passage suivant`);
   const avantTexte = readFileSync('data/cases.json', 'utf8');
   const node = (args) => execFileSync(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
   const raison = (err) => String(err.stderr || err.message).split('\n').find((l) => l.trim() && !/Warning|trace-warnings/.test(l)) || 'échec';
-  const enBase = []; // publiées (ou déjà publiées) dans Neon : à projeter EN UN SEUL lot (project-public repart du committé à chaque appel)
-  for (const id of lot) {
-    const e = etats.get(id);
-    try {
-      if (e.etat === 'READY') {
-        const date = new Date().toISOString().slice(0, 10);
-        const args = ['scripts/publier-affaire.mjs', id, '--ecrire', '--go', `Publication automatique SNY ${date} : décision humaine de validation déjà consignée, garde-fous et contrôles passés (aucun second GO)`];
-        if (e.geo) args.push('--coords', `${e.geo.lat},${e.geo.lng}`, '--coords-source', `API Adresse (BAN), centre de commune, ${date}`, '--geocode-source', e.geo.source);
-        node(args);
-        console.log(`✅ ${id} : publiée dans Neon`);
-      }
-      enBase.push(id);
-    } catch (err) {
-      refusees.push(id);
-      console.error(`❌ ${id} : ${raison(err)}`);
-    }
-  }
+  const enBase = []; // à projeter EN UN SEUL lot (project-public repart du committé à chaque appel)
+  enBase.push(...lot); // déjà `publiée` dans Neon sur GO explicite : rien à écrire en base ici
   if (enBase.length) {
     try { console.log(node(['scripts/project-public.mjs', '--ajouter', enBase.join(',')]).split('\n').filter((l) => /^\s+[!=]|NO_PUBLIC_CHANGE|écrit/.test(l)).join('\n')); ajoutees.push(...enBase); }
     catch (err) { refusees.push(...enBase); console.error(`❌ projection refusée (${enBase.join(', ')}) : ${raison(err)}`); }

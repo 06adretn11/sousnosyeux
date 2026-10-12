@@ -59,9 +59,9 @@ jobs:
           git commit -m "publication: évolution validée par l'éditeur ($PROJ_IDS)"
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
-      # Décision VALIDATE/CREATE postérieure à l'activation → garde-fous (HOLD, retrait, fiabilité, sources, doublon) → statut Neon →
-      # project-public --ajouter (lot). Une affaire bloquée n'empêche jamais les autres ; rejouable à chaque passage (états recalculés).
-      - name: 5. Réconcilier la publication (affaires validées → site)
+      # GO PUBLICATION explicite (publier-affaire --go, déjà consigné dans Neon) → garde-fous (HOLD, retrait, fiabilité, GO postérieur à l'activation) →
+      # project-public --ajouter (lot). Jamais de publication d'une candidate ici. Une affaire bloquée n'empêche jamais les autres ; rejouable.
+      - name: 5. Exécuter la suite d'une publication autorisée (projection ciblée)
         id: reconcile
         env:
           SNY_PUBLICATION_DEPUIS: '2026-10-11T14:19:00Z'

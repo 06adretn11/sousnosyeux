@@ -437,7 +437,8 @@ async function main() {
       if (!nouvelle) throw new Error(`${id} n’est plus projetable (retirée, sous le seuil ou sous HOLD) : refus, un retrait n’est pas une modification`);
       // Le marquage « localisation approximative » n'est émis que pour les NOUVELLES entrées : une entrée déjà en ligne ne change pas
       // d'elle-même (modifier l'affichage d'une fiche publiée est une décision de l'éditeur, pas un effet de bord d'une mise à jour).
-      if (!('geocode_source' in base.cases.find((c) => c.case_id === id))) delete nouvelle.geocode_source;
+      // `--avec-geocode` : cette décision, prise explicitement (ex. marquer d'anciens points au centre de commune).
+      if (!process.argv.includes('--avec-geocode') && !('geocode_source' in base.cases.find((c) => c.case_id === id))) delete nouvelle.geocode_source;
       nouvelles.set(id, nouvelle);
     }
     const cases = base.cases.map((c) => nouvelles.get(c.case_id) || c);

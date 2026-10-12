@@ -1,10 +1,11 @@
 // =====================================================================
-// scripts/lib/publication-gates.mjs — une affaire VALIDÉE par l'éditeur peut-elle devenir publique SANS second GO ? Fonction PURE.
+// scripts/lib/publication-gates.mjs — EXAMEN d'une candidate validée + état de réconciliation d'une affaire. Fonctions PURES.
 //
 // Aucun raisonnement éditorial nouveau : ce sont les garde-fous déjà en vigueur (publier-affaire.mjs, QA, HOLD), réunis en un
 // seul endroit pour que la décision soit identique à chaque passage et testable sans base ni réseau.
-//   → { etat: 'NON_VALIDEE' | 'READY' | 'BLOCKED', raisons: [...] }
-// NON_VALIDEE = aucune décision humaine de création : ni publiée, ni signalée comme bloquée (ce n'est pas un oubli).
+//   evaluerPublication → { etat: 'NON_VALIDEE' | 'READY' | 'BLOCKED', raisons } : READY = « éligible, examinée » — JAMAIS une autorisation.
+// Une validation de CRÉATION (VALIDATE / CREATE) ne vaut JAMAIS GO de publication : seul l'acte existant de publier-affaire.mjs --go
+// (revue « [Publication AAAA-MM-JJ] GO d'Adrien : … ») est une autorisation explicite (voir goPublication).
 // Les `raisons` ne contiennent jamais de nom ni de lieu (les logs CI d'un dépôt public sont publics).
 // =====================================================================
 
@@ -23,11 +24,8 @@ export function evaluerPublication(c, ctx) {
   if (c.publication_status !== 'candidate') return { etat: 'NON_VALIDEE', raisons: ['pas une candidate'] };
   const revues = ctx.revues || [];
   const humaines = revues.filter((r) => REVUE_HUMAINE.test(r.reviewed_by || ''));
-  // `ctx.depuis` : seules les validations POSTÉRIEURES à l'activation de l'autonomie valent GO de publication. Les validations
-  // antérieures étaient des « CRÉER (candidate, non publiée) » : elles ne sont jamais publiées par ce mécanisme (arriéré).
-  const apresSeuil = (r) => !ctx.depuis || new Date(r.reviewed_at) >= ctx.depuis;
   const decisives = humaines.filter((r) => r.decision === 'retirer' || r.decision === 'à corriger'
-    || (r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || '') && apresSeuil(r)));
+    || (r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || '')));
   const derniere = decisives[decisives.length - 1];
   if (!derniere) return { etat: 'NON_VALIDEE', raisons: ['aucune décision humaine de validation'] };
 
@@ -49,11 +47,23 @@ export function evaluerPublication(c, ctx) {
 
 const avecPoint = (c) => typeof c.lat === 'number' && typeof c.lng === 'number';
 
+// GO PUBLICATION explicite = la revue que publier-affaire.mjs --go consigne : « [Publication AAAA-MM-JJ] GO d'Adrien : « <mot> » ».
+// Le texte « Publication automatique SNY » est celui qu'une automatisation s'était écrit à elle-même : jamais une autorisation.
+export const REVUE_GO_PUBLICATION = /^\[Publication \d{4}-\d{2}-\d{2}\] GO d'Adrien : « (?!Publication automatique SNY)/;
+
+/** Dernier GO publication explicite d'Adrien, postérieur à `depuis` (activation) quand elle est fournie ; sinon null. */
+export function goPublication(revues = [], depuis = null) {
+  const go = revues.filter((r) => /^Adrien/.test(r.reviewed_by || '') && r.decision === 'validé' && REVUE_GO_PUBLICATION.test(r.comment || '')
+    && (!depuis || new Date(r.reviewed_at) >= depuis));
+  return go[go.length - 1] || null;
+}
+
 /**
  * État de réconciliation d'UNE affaire, depuis Neon + artefact. Fonction PURE (testée sans base ni réseau).
  *   ctx = { revues, sources, holds:Set, autres:[...], artefact:Map<case_id, entrée>, depuis?:Date }
- *   → null (rien à dire : non validée) | { etat: HOLD|BLOCKED|IN_ARTEFACT|NEEDS_PROJECTION|READY, raisons, alerter? }
- * Une affaire sous HOLD, retirée ou sans GO n'est JAMAIS READY, même présente dans `cases_public`.
+ *   → null (rien à dire : candidate non validée) | { etat: HOLD | BLOCKED | NO_GO | IN_ARTEFACT | NEEDS_PROJECTION | AWAITING_GO, raisons }
+ * Une candidate n'est JAMAIS publiée ici (AWAITING_GO = examinée, attend un GO). Une affaire sous HOLD, retirée ou sans GO explicite n'est
+ * JAMAIS projetée, même présente dans `cases_public`.
  */
 export function etatPublication(c, ctx) {
   if (c.publication_status === 'publiée') {
@@ -63,12 +73,14 @@ export function etatPublication(c, ctx) {
       ? { etat: 'IN_ARTEFACT', raisons: [] }
       : { etat: 'BLOCKED', raisons: ['dans l’artefact sans coordonnées : le front ne l’affiche pas'] };
     const raisons = [];
+    if ((ctx.revues || []).some((r) => r.decision === 'retirer')) raisons.push('une revue « retirer » existe');
     if (!(c.fiabilite_info_10 >= 8)) raisons.push(`publiée en base mais fiabilité ${c.fiabilite_info_10} < 8 : jamais projetée`);
     if (c.lat === null || c.lng === null) raisons.push('aucune coordonnée');
-    return raisons.length ? { etat: 'BLOCKED', raisons } : { etat: 'NEEDS_PROJECTION', raisons: [] };
+    if (raisons.length) return { etat: 'BLOCKED', raisons };
+    if (!goPublication(ctx.revues, ctx.depuis)) return { etat: 'NO_GO', raisons: ['publiée en base sans GO publication explicite (postérieur à l’activation) : jamais projetée'] };
+    return { etat: 'NEEDS_PROJECTION', raisons: [] };
   }
   const g = evaluerPublication(c, ctx);
   if (g.etat === 'NON_VALIDEE') return null;
-  // Une affaire validée mais bloquée est SIGNALÉE (une fois) ; « à corriger » / « retirer » sont des décisions humaines voulues : pas d'alerte.
-  return g.etat === 'BLOCKED' && !g.raisons[0].startsWith('dernière décision humaine') ? { ...g, alerter: true } : g;
+  return g.etat === 'READY' ? { etat: 'AWAITING_GO', raisons: ['examinée, éligible : attend un GO publication explicite'] } : g;
 }

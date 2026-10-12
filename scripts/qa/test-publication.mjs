@@ -1,7 +1,6 @@
 // Publication autonome — contre-exemples : chaque garde-fou sait REFUSER, et le point de carte n'est jamais inventé.
 import assert from 'node:assert/strict';
 import { evaluerPublication } from '../lib/publication-gates.mjs';
-import { choisirCommune } from '../lib/geocoder-commune.mjs';
 
 const base = { case_id: 'FR-2026-9001', publication_status: 'candidate', fiabilite_info_10: 10, statut_judiciaire: 'enquête', crit_statut_clair: true,
   etablissement: 'Centre de loisirs X', commune: 'Ville', departement: 'Dep', type_structure: 'centre de loisirs', role_mis_en_cause: 'animateur',
@@ -28,11 +27,4 @@ t('doublon évident (même commune, structure, rôle) → BLOCKED', () => assert
 t('déjà publiée → NON_VALIDEE (rejeu : rien à faire)', () => assert.equal(etat({ publication_status: 'publiée' }).etat, 'NON_VALIDEE'));
 t('les raisons ne contiennent ni nom ni lieu', () => assert.ok(!/Ville|Centre de loisirs X/.test(etat({ fiabilite_info_10: 3 }, { autres: [{ ...base, case_id: 'FR-2026-0001' }] }).raisons.join(' '))));
 
-const feat = (label, context, lng, lat) => ({ properties: { label, context }, geometry: { coordinates: [lng, lat] } });
-t('commune exacte + bon département → point marqué ban-commune', () => assert.deepEqual(choisirCommune([feat('Tarnos', '40, Landes, Nouvelle-Aquitaine', -1.4611, 43.52979)], 'Tarnos', 'Landes'), { lat: 43.52979, lng: -1.4611, source: 'ban-commune' }));
-t('homonyme dans un autre département → null (aucun point inventé)', () => assert.equal(choisirCommune([feat('Mées', '40, Landes, X', -1.1, 43.7)], 'Mées', 'Alpes-de-Haute-Provence'), null));
-t('« Les Mées » n\'est pas « Mées » → null', () => assert.equal(choisirCommune([feat('Les Mées', '04, Alpes-de-Haute-Provence, X', 5.9, 44.0)], 'Mées', 'Alpes-de-Haute-Provence'), null));
-t('commune composée : la première commune seule ne suffit pas → null', () => assert.equal(choisirCommune([feat('Saint-Germain-de-Prinçay', '85, Vendée, X', -1.03, 46.73)], 'Sigournais et Saint-Germain-de-Prinçay', 'Vendée'), null));
-t('arrondissement de Paris → centroid-arr', () => assert.equal(choisirCommune([feat('Paris 10e Arrondissement', '75, Paris, Île-de-France', 2.36, 48.87)], 'Paris 10e', 'Paris')?.source, 'centroid-arr'));
-t('point hors France métropolitaine → null', () => assert.equal(choisirCommune([feat('Tarnos', '40, Landes, X', 55.5, -21.1)], 'Tarnos', 'Landes'), null));
 console.log(`\n${n} contrôles de publication autonome : OK`);

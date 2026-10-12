@@ -1,13 +1,25 @@
-# Publication autonome (mission 1, 11/10/2026)
+# Publication autonome — l'exécution est automatique, l'autorisation ne l'est jamais
 
-**Rupture trouvée** — la chaîne s'arrêtait à `candidate` : `appliquer-nouvelles-affaires.mjs` écrit la fiche « jamais de publication », et le passage à `publiée` exigeait un appel manuel de `publier-affaire.mjs --go` + `project-public.mjs --ajouter` + un push. Les workflows `sny-telegram` / `sny-clics` ne projetaient que les évolutions d'affaires DÉJÀ publiques. Ce n'était ni un défaut de permissions (`contents: write` déjà accordé), ni un déclenchement perdu : le maillon n'existait pas. Deux défauts latents en sus : (1) `project-public --ajouter` repartait du committé à chaque appel (deux ajouts successifs s'écrasaient) ; (2) l'ordre des sources à égalité n'était pas déterministe ; (3) les validées n'avaient aucun point de carte et le front n'affiche pas une fiche sans coordonnées.
+**Contrat** (jamais d'autorisation implicite) :
 
-**Soudure** — `scripts/reconcilier-publication.mjs` (états READY / BLOCKED / NEEDS_PROJECTION / PENDING_DEPLOYMENT / PUBLISHED_VERIFIED / HOLD, recalculés depuis Neon + artefact + site : aucun état stocké, rejouable). Réutilise `publier-affaire.mjs`, `project-public.mjs --ajouter`, la QA, le commit sur `main`, `verifier-site.mjs`. Branchée dans `sny-telegram` (clic) et `sny-clics` (filet toutes les 30 min).
+| Acte éditorial | Effet |
+|---|---|
+| CREATE / VALIDATE Discovery | candidate dans Neon, **jamais publiée** |
+| CREATE_PENDING_EVIDENCE (« à corriger ») | candidate non publiable tant que les preuves manquent |
+| ATTACH / RAPPROCHER | rattachement à une affaire existante, aucune autorisation de publier |
+| REVIEW / HOLD | aucune publication |
+| **GO PUBLICATION** | `publier-affaire.mjs --ecrire --go "…"` : bascule la fiche en `publiée` et consigne la revue « [Publication AAAA-MM-JJ] GO d'Adrien : … » (même instruction SQL) |
 
-**Garde-fous** (`scripts/lib/publication-gates.mjs`) : décision humaine de création (Decision Pack « VALIDATED » ou clic Telegram VALIDATE/CREATE ; un rattachement de sources n'en est pas une) · aucune décision ultérieure « à corriger »/« retirer » · pas de HOLD · fiabilité ≥ 8 · statut judiciaire établi · source exploitable (URL non tronquée) · pas de doublon (commune + structure + rôle) · point de carte fiable.
+**Exécution automatique après un GO** — `scripts/reconcilier-publication.mjs --ecrire`, appelé par `sny-telegram` et `sny-clics` (même groupe de concurrence) :
+`publiée` + GO explicite + absente de l'artefact → `project-public.mjs --ajouter` (lot) → QA → commit → push `main` → build Cloudflare → `verifier-site.mjs`
+(« Publié et vérifié » n'est annoncé qu'après lecture du site servi) → contrôle `--site`. Un passage interrompu (push, QA, build) est rattrapé au passage suivant : les états sont recalculés depuis Neon + artefact + site.
 
-**Point de carte** — jamais inventé : centre de commune (API Adresse officielle) accepté seulement si nom EXACT et département concordants ; marqué `cases.geocode_source` (migration 021) → le front affiche déjà « Localisation approximative ». Commune composée, homonyme ou inconnue → BLOCKED explicite.
+**Ce que le script ne fait jamais** : publier une candidate, écrire un GO, projeter une affaire sous HOLD, retirée, de fiabilité < 8, ou publiée en base sans GO explicite.
+Le GO doit être postérieur à `SNY_PUBLICATION_DEPUIS` (variable des deux workflows) : l'historique est protégé. Le texte « Publication automatique SNY » (écrit autrefois par une automatisation) n'est pas un GO.
+États : AWAITING_GO (candidate validée, éligible, examinée, attend un GO) · NEEDS_PROJECTION · NO_GO · BLOCKED · HOLD · IN_ARTEFACT · PENDING_DEPLOYMENT · PUBLISHED_VERIFIED.
 
-**Note de sécurité** — but : publier les affaires déjà validées par l'éditeur. Installation : aucune (scripts du dépôt, exécutés par GitHub Actions). Au démarrage : rien. Réseau : Neon (HTTPS), API Adresse (api-adresse.data.gouv.fr), site public (lecture), Telegram (alerte « validée mais non publiée », une fois par raison). Privilèges : `contents: write` sur le dépôt (déjà en place pour `sny-telegram`/`sny-clics`), secrets existants. Logs CI : identifiants et raisons génériques, jamais de nom ni de lieu. Plafond : 5 affaires par passage. Revue Sécurité recommandée : écriture automatique sur `main` par un bot (déjà le cas pour les évolutions).
+**Concurrence** — deux publieurs simultanés : le serveur git arbitre ; un conflit fait échouer franchement le second push, rien n'est écrasé, l'affaire reste `publiée` en base et est reprojetée au passage suivant.
 
-**Activation (intégration du 11/10/2026)** — raccordée à `sny-telegram` et `sny-clics` (même groupe de concurrence : jamais deux publications simultanées). Seules les validations VALIDATE/CREATE **postérieures** à `SNY_PUBLICATION_DEPUIS` (variable des deux workflows) valent GO de publication : les validations antérieures étaient des « CRÉER (candidate, non publiée) » et restent candidates (arriéré). Pour publier une affaire de l'arriéré : `node scripts/reconcilier-publication.mjs --ecrire --ids <id>` avec une date de seuil antérieure à sa validation. Le marquage `geocode_source` n'est émis que pour les NOUVELLES entrées. Un conflit git (deux publieurs) fait échouer franchement le second push : rien n'est écrasé, l'affaire reste `publiée` en base et est reprojetée (NEEDS_PROJECTION) au passage suivant.
+**Marquage `geocode_source`** — émis pour les NOUVELLES entrées uniquement ; une entrée en ligne ne change pas d'elle-même. Pour marquer d'anciens points : `project-public.mjs --modifier <ids> --avec-geocode` (décision explicite).
+
+**Note de sécurité** — but : exécuter sans intervention Git la suite d'une publication déjà autorisée par l'éditeur. Installation : aucune (scripts du dépôt, exécutés par GitHub Actions). Au démarrage : rien. Réseau : Neon (HTTPS), site public (lecture). Privilèges : `contents: write` sur le dépôt (déjà accordé à ces workflows), uniquement après QA. Aucune donnée personnelle traitée au-delà de celles de l'artefact public ; en CI les logs ne portent ni nom ni lieu. Revue par l'équipe sécurité recommandée avant activation : modification de workflows qui poussent sur `main`.

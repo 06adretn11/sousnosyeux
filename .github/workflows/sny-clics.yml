@@ -52,7 +52,7 @@ jobs:
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
       # Même réconciliation que sny-telegram (filet de sécurité : rattrape ce qu'un passage interrompu aurait laissé en route).
-      - name: Réconcilier la publication (affaires validées → site)
+      - name: Exécuter la suite d'une publication autorisée (projection ciblée)
         id: reconcile
         env:
           SNY_PUBLICATION_DEPUIS: '2026-10-11T14:19:00Z'
