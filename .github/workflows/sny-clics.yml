@@ -51,6 +51,14 @@ jobs:
           git commit -m "publication: évolution validée par l'éditeur ($PROJ_IDS)"
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
+      # PROPOSITION de publication (jamais une publication) : seules les NOUVELLES candidates examinées (validées après l'activation),
+      # plafond 3 par passage, une proposition par candidate ; l'arriéré n'est jamais proposé sans demande explicite (--ids).
+      - name: Proposer la publication des nouvelles candidates examinées (aucune publication)
+        env:
+          SNY_PUBLICATION_DEPUIS: '2026-10-11T14:19:00Z'
+        run: node scripts/proposer-publication.mjs --ecrire
+      - name: Envoyer les propositions non encore envoyées (une seule fois chacune)
+        run: node scripts/telegram-v0.mjs notifier-nouvelles 3
       # Même réconciliation que sny-telegram (filet de sécurité : rattrape ce qu'un passage interrompu aurait laissé en route).
       - name: Exécuter la suite d'une publication autorisée (projection ciblée)
         id: reconcile
