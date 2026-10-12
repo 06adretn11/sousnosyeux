@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-11"
+    "generated_at": "2026-10-12"
   },
   "cases": [
     {
@@ -1284,6 +1284,7 @@
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 43.52979,
       "lng": -1.4611,
+      "geocode_source": "ban-commune",
       "sources": [
         {
           "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
@@ -1328,6 +1329,7 @@
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 49.225399,
       "lng": -0.490016,
+      "geocode_source": "ban-commune",
       "sources": [
         {
           "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
