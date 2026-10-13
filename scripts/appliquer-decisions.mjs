@@ -182,7 +182,7 @@ if (process.argv.includes('--generique')) {
       if (inst) {
         auto++;
         dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | AUTO_APPLICABLE`);
-        dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
+        dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation ?? 'prise de parole'}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
         if (!DRY) {
           const [deja] = await sql`select event_id from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
           let ev = deja?.event_id ?? null;
@@ -197,7 +197,7 @@ if (process.argv.includes('--generique')) {
             dire(`      + événement ${inst.event_type} → ${String(ev).slice(0, 8)}${S.realisation ? '' : ' (colonne realisation absente : migration 019 non appliquée)'}`);
           }
           await sql`update state_proposals set applied_event_id = ${ev} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
-          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phrasePublication(p.pub)}`);
+          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation ?? 'prise de parole'}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phrasePublication(p.pub)}`);
         }
         continue;
       }

@@ -1,0 +1,206 @@
+{
+  "_meta": {
+    "hub_id": "isoles",
+    "redige_le": "2026-10-12",
+    "statut": "matière éditoriale des affaires PUBLIQUES hors hub — même forme que data/hub-matiere/<hub>.json",
+    "methode": "chaque entrée est rattachée à un article dont le texte a été relu avant écriture ; les paroles sont attribuées ; une date d'événement n'est affichée que si l'article la donne."
+  },
+  "dossiers": {
+    "FR-2026-0042": {
+      "etat_actuel": [
+        "Selon L'Est Républicain (16 décembre 2025), le tribunal de Belfort a condamné l'ancien professeur à 24 mois de prison avec sursis, avec interdiction à vie de travailler avec des mineurs et inscription au fichier des auteurs d'infractions sexuelles (Fijais).",
+        "Aucun des articles consultés ne dit si cette condamnation a été contestée : elle est présentée comme non définitive."
+      ],
+      "appel": false,
+      "faits": "Selon la presse, un professeur du collège Jules-Ferry de Delle (Territoire de Belfort) a entretenu, de novembre 2023 à février 2024, des échanges à caractère sexuel avec une élève mineure, sur une messagerie. Des images illicites ont aussi été découvertes lors de l'enquête. Les parents de l'élève ont déposé plainte en mars 2024.",
+      "deroule": [
+        {
+          "date": "2023-11",
+          "date_nature": "approximative",
+          "type": "fait_rapporte",
+          "acteur": null,
+          "texte": "Début de la période des échanges reprochés, qui dure jusqu'en février 2024 selon le journal.",
+          "source": {
+            "media": "L'Est Républicain",
+            "url": "https://www.estrepublicain.fr/faits-divers-justice/2025/12/16/je-testais-les-limites-ce-professeur-envoyait-des-messages-sexuels-a-une-eleve-de-14-ans",
+            "publie_le": "2025-12-16",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2024-03-04",
+          "date_nature": "evenement",
+          "type": "plainte",
+          "acteur": "Famille de l'élève",
+          "texte": "La famille de l'élève dépose plainte à la gendarmerie.",
+          "source": {
+            "media": "France 3 Régions",
+            "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+            "publie_le": "2024-03-27",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2024-03",
+          "date_nature": "approximative",
+          "type": "garde_a_vue",
+          "acteur": null,
+          "texte": "Le professeur est placé en garde à vue « début mars ».",
+          "source": {
+            "media": "ICI Belfort-Montbéliard (France Bleu)",
+            "url": "https://www.ici.fr/infos/faits-divers-justice/propositions-sexuelles-a-une-eleve-mineur-un-enseignant-de-delle-suspendu-6854847",
+            "publie_le": "2024-03-27",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mise_en_examen",
+          "acteur": "Parquet de Belfort",
+          "texte": "Mise en examen « pour propositions sexuelles faites à une mineure de moins de 15 ans » ; placé sous contrôle judiciaire, avec interdiction d'approcher la victime. Une information judiciaire est ouverte, notamment pour vérifier l'existence d'autres affaires.",
+          "source": {
+            "media": "ICI Belfort-Montbéliard (France Bleu)",
+            "url": "https://www.ici.fr/infos/faits-divers-justice/propositions-sexuelles-a-une-eleve-mineur-un-enseignant-de-delle-suspendu-6854847",
+            "publie_le": "2024-03-27",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_etablissement",
+          "acteur": "Rectorat",
+          "texte": "Le rectorat suspend l'enseignant de ses fonctions à titre conservatoire, le temps de l'instruction, et déclare, selon ICI, ne pas faire d'autre commentaire.",
+          "source": {
+            "media": "ICI Belfort-Montbéliard (France Bleu)",
+            "url": "https://www.ici.fr/infos/faits-divers-justice/propositions-sexuelles-a-une-eleve-mineur-un-enseignant-de-delle-suspendu-6854847",
+            "publie_le": "2024-03-27",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2025-12-16",
+          "date_nature": "evenement",
+          "type": "audience",
+          "acteur": "Tribunal correctionnel de Belfort",
+          "texte": "Procès pour détention d'images illicites et propositions sexuelles à une mineure. Selon L'Est Républicain, l'ancien professeur ne conteste pas les faits à l'audience ; sa défense demande qu'on comprenne pourquoi il a agi.",
+          "source": {
+            "media": "L'Est Républicain",
+            "url": "https://www.estrepublicain.fr/faits-divers-justice/2025/12/16/je-testais-les-limites-ce-professeur-envoyait-des-messages-sexuels-a-une-eleve-de-14-ans",
+            "publie_le": "2025-12-16",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2025-12-16",
+          "date_nature": "evenement",
+          "type": "decision",
+          "acteur": "Tribunal correctionnel de Belfort",
+          "texte": "Condamnation à 24 mois de prison avec sursis, interdiction à vie de travailler avec des mineurs, inscription au Fijais.",
+          "source": {
+            "media": "L'Est Républicain",
+            "url": "https://www.estrepublicain.fr/faits-divers-justice/2025/12/16/je-testais-les-limites-ce-professeur-envoyait-des-messages-sexuels-a-une-eleve-de-14-ans",
+            "publie_le": "2025-12-16",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "Appel : aucun article consulté ne dit si la condamnation a été contestée par le condamné ou par le parquet.",
+        "Suites administratives (révocation, mesures du rectorat ou de l'établissement après la condamnation) : non documentées.",
+        "Le dossier ne repose que sur trois articles (mars 2024 et décembre 2025) : rien n'a été retrouvé entre les deux."
+      ],
+      "synthese": {
+        "decision": "Le tribunal de Belfort a condamné l’ancien professeur le 16 décembre 2025 à 24 mois de prison avec sursis et à l’interdiction à vie de travailler avec des mineurs.",
+        "ouvert": "Aucun article consulté ne dit si la condamnation a été contestée : elle est présentée comme non définitive."
+      },
+      "reperes": [
+        {
+          "k": "Poursuivi pour",
+          "v": "détention d’images illicites et propositions sexuelles faites à une élève mineure"
+        },
+        {
+          "k": "Procédure",
+          "v": "plainte en mars 2024 → mise en examen → procès et condamnation le 16 décembre 2025"
+        },
+        {
+          "k": "Mesure",
+          "v": "suspension à titre conservatoire par le rectorat dès mars 2024"
+        }
+      ],
+      "reactions": [
+        {
+          "acteur": "Une représentante des parents d’élèves",
+          "qualite": "interrogée par France 3",
+          "date": "2024-03-27",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "La mise en examen de l’enseignant (mars 2024)",
+          "contexte": "Réaction recueillie au collège après l’annonce de la mise en examen.",
+          "citations": [
+            {
+              "texte": "J’ai trouvé ça très inquiétant et choquant. On a le sentiment de placer nos enfants dans un cadre structuré, de confier nos enfants en toute sécurité, oui on s’inquiète",
+              "pour": "à propos de la situation au collège"
+            }
+          ],
+          "etabli": "Établi : propos recueillis par France 3. Une seule représentante s’exprime : ce n’est pas la parole de toutes les familles.",
+          "source": {
+            "media": "France 3 Régions",
+            "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+            "publie_le": "2024-03-27",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE",
+          "precision": "Une seule représentante s’exprime : ce n’est pas la parole de toutes les familles."
+        },
+        {
+          "acteur": "L’avocat de la défense",
+          "qualite": "plaidoirie rapportée par L’Est Républicain",
+          "date": "2025-12-16",
+          "date_nature": "evenement",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "Le procès du 16 décembre 2025",
+          "contexte": "Selon le journal, la défense précise que son client n’a jamais nié les faits et demande qu’on comprenne pourquoi il a agi.",
+          "citations": [
+            {
+              "texte": "Maintenant, il faut comprendre pourquoi il a agi ainsi. Dès qu’il a été dénoncé, il est allé chercher de l’aide auprès de psychologues",
+              "pour": "plaidoirie"
+            }
+          ],
+          "etabli": "Établi : propos tenus à l’audience, rapportés par le journal. Une plaidoirie est la position de la défense : elle n’a pas valeur de décision.",
+          "source": {
+            "media": "L'Est Républicain",
+            "url": "https://www.estrepublicain.fr/faits-divers-justice/2025/12/16/je-testais-les-limites-ce-professeur-envoyait-des-messages-sexuels-a-une-eleve-de-14-ans",
+            "publie_le": "2025-12-16",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE",
+          "precision": "Une plaidoirie est la position de la défense, pas une décision."
+        }
+      ],
+      "situation": {
+        "decision": {
+          "label": "Décision",
+          "titre": "Condamnation",
+          "meta": "16 décembre 2025 · Tribunal correctionnel de Belfort",
+          "cat": "red",
+          "texte": "24 mois de prison avec sursis ; interdiction à vie de travailler avec des mineurs."
+        },
+        "suite": {
+          "label": "Situation · mesure",
+          "titre": "Aucun appel rapporté",
+          "meta": "dans les sources consultées",
+          "cat": "blue",
+          "lignes": [
+            "Aucun article consulté ne dit si la condamnation a été contestée : elle est présentée comme non définitive.",
+            "Mesure administrative, et non décision judiciaire : suspension à titre conservatoire par le rectorat, en mars 2024."
+          ]
+        }
+      },
+      "suivre_neon": true
+    }
+  }
+}

@@ -65,28 +65,44 @@ jobs:
         env:
           SNY_PUBLICATION_DEPUIS: '2026-10-11T14:19:00Z'
         run: node scripts/reconcilier-publication.mjs --ecrire
+      # Mémoire → surfaces : événements validés (fiches + Hubs) et fiches APPROUVÉES (revue Telegram « [Fiche approuvée] », empreinte du dossier à jour).
+      # Même chaîne que la suite : QA → commit → push → build Cloudflare → vérification du site servi. Rejouable : lit Neon, réécrit seulement ce qui change.
+      - name: Projeter événements validés et fiches approuvées
+        id: evenements
+        run: node scripts/project-evenements.mjs
       - name: QA avant toute publication
-        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true' }}
         run: node scripts/qa/run-all.mjs
       - name: Publier la projection (commit sur main → build Cloudflare existant)
-        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true' }}
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
-          if [ "$RECON_CHANGE" = "true" ]; then
-            git add data/cases.json
-            git commit -m "publication: affaire(s) validée(s) par l'éditeur ($RECON_IDS)"
+          git add data/cases.json data/evenements.json
+          if ! git diff --cached --quiet; then
+            git commit -m "publication: mise à jour validée par l'éditeur ($RECON_IDS $FICHES)"
           fi
           git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
         env:
           RECON_CHANGE: ${{ steps.reconcile.outputs.change }}
           RECON_IDS: ${{ steps.reconcile.outputs.ids }}
+          FICHES: ${{ steps.evenements.outputs.fiches }}
       - name: Vérifier le site public et confirmer sur Telegram
-        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' }}
-        run: node scripts/verifier-site.mjs $(echo "$PROJ_IDS,$RECON_IDS" | tr ',' ' ')
+        if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true' }}
+        run: |
+          ARGS="$(echo "$PROJ_IDS,$RECON_IDS" | tr ',' ' ')"
+          if [ -n "$FICHES" ]; then ARGS="$ARGS --fiches $FICHES"; fi
+          if [ -n "$(echo $ARGS)" ]; then node scripts/verifier-site.mjs $ARGS; else echo "aucune page à vérifier"; fi
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
           RECON_IDS: ${{ steps.reconcile.outputs.ids }}
+          FICHES: ${{ steps.evenements.outputs.fiches }}
       - name: Contrôler le site réellement servi
         if: ${{ !cancelled() }}
         run: node scripts/reconcilier-publication.mjs --site
+      # Diagnostic territorial : la mémoire a changé → un Hub est-il à intégrer, enrichir ou proposer ? Notifie SEULEMENT si les compteurs ont bougé ;
+      # ne publie jamais rien ; une panne du diagnostic ne bloque jamais la publication.
+      - name: Diagnostic territorial (réévaluation des Hubs)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: node scripts/diagnostic-territoire.mjs --ecrire

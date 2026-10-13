@@ -89,6 +89,21 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Fiches individuelles — une seule mémoire (liens d’événements, réactions attribuées, rien de privé)',
+    script: 'scripts/qa/test-fiches.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Fiche individuelle — pas de page sans approbation (empreinte du dossier), APPROUVER ≠ PUBLIER, prise de parole sans effet sur l’état',
+    script: 'scripts/qa/test-fiche-approbation.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Diagnostic territorial — évolue avec la mémoire, aucune notification sans changement',
+    script: 'scripts/qa/test-diagnostic.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

@@ -148,6 +148,19 @@
           }
         },
         {
+          "date": null,
+          "date_nature": "inconnue",
+          "type": "enquete",
+          "acteur": "Brigade de protection des mineurs",
+          "texte": "L'enquête est confiée à la brigade des mineurs ; l'animateur est placé sous contrôle judiciaire dans l'attente de son procès.",
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+            "publie_le": "2026-06-17",
+            "acces": "libre"
+          }
+        },
+        {
           "date": "2026-05-05",
           "date_nature": "evenement",
           "type": "audience",
@@ -171,27 +184,143 @@
             "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
             "publie_le": "2026-06-17",
             "acces": "libre"
-          }
+          },
+          "event_id": "40822595-4ee6-49a9-90ed-f00625514e9d"
         },
         {
           "date": "2026-06-17",
           "date_nature": "evenement",
           "type": "appel",
           "acteur": "Parquet de Paris",
-          "texte": "Le parquet indique faire appel de la relaxe. Les familles expriment, selon ICI, leur colère et leur incompréhension.",
+          "texte": "Le parquet de Paris annonce faire appel de la relaxe le mercredi soir, soit le 17 juin (jugement rendu « mardi 16 juin », selon franceinfo et ICI). Les familles expriment, selon ICI, leur colère et leur incompréhension.",
           "source": {
             "media": "ICI (France Bleu)",
             "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140",
             "publie_le": "2026-06-17",
             "acces": "libre"
-          }
+          },
+          "event_id": "134bb5ef-c0bf-4423-b666-d1aac04bdcf5"
         }
       ],
       "inconnues": [
         "Date de l'audience d'appel : non trouvée au 10 octobre 2026.",
         "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
-        "La source d'état enregistrée par SNY (franceinfo, 17 juin) n'a pas de lien conservé ; l'article relu ci-dessus la remplace."
-      ]
+        "La source d'état enregistrée par SNY (franceinfo, 17 juin) n'a pas de lien conservé ; l'article relu ci-dessus la remplace.",
+        "Position de la Ville de Paris ou du rectorat sur ce jugement précis : aucune déclaration retrouvée dans les articles consultés (le ministre de l'Éducation nationale a, lui, refusé de commenter)."
+      ],
+      "faits": "Selon l'accusation rapportée par franceinfo, un animateur du périscolaire de l'école Titon était poursuivi pour harcèlement sexuel sur plusieurs élèves de CM2 et pour agressions sexuelles sur certaines d'entre elles. Il avait été suspendu en octobre 2024 après des plaintes de plusieurs parents. Ces faits sont allégués ; la décision de relaxe n'est pas définitive.",
+      "reactions": [
+        {
+          "acteur": "Ministre de l'Éducation nationale",
+          "qualite": "Edouard Geffray, invité de franceinfo",
+          "acte": "declaration",
+          "date": "2026-06-17",
+          "date_nature": "evenement",
+          "portee": "affaire",
+          "validation": "PAROLE_ETABLIE",
+          "resume": "Invité de franceinfo, il n'a pas souhaité commenter le jugement.",
+          "contenu_attribue": [
+            "La justice, elle passe au regard d'un droit pénal et les décisions sont susceptibles de faire l'objet d'un recours, c'est le parquet qui décidera"
+          ],
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+            "publie_le": "2026-06-17",
+            "acces": "libre"
+          },
+          "a_propos": "Le jugement de relaxe (16 juin)",
+          "contexte": "Interrogé le 17 juin, il n’a pas souhaité commenter la décision rendue.",
+          "etabli": "Établi : la phrase a été prononcée sur franceinfo. Elle ne prend pas position sur le jugement.",
+          "citations": [
+            {
+              "texte": "La justice, elle passe au regard d'un droit pénal et les décisions sont susceptibles de faire l'objet d'un recours, c'est le parquet qui décidera",
+              "pour": "à propos de la relaxe"
+            }
+          ],
+          "precision": "Il n’a pas souhaité commenter la décision."
+        },
+        {
+          "acteur": "Des parents, parties civiles dans le dossier",
+          "qualite": "communiqué diffusé le 18 juin, consulté par ELLE",
+          "acte": "communique",
+          "date": "2026-06-18",
+          "date_nature": "evenement",
+          "portee": "affaire",
+          "validation": "POSITION_ATTRIBUEE",
+          "resume": "Dans un communiqué, des parents parties civiles saluent l'appel du parquet et contestent le jugement. Leur appréciation du jugement est la leur : elle n'établit pas son contenu.",
+          "contenu_attribue": [
+            "un profond soulagement",
+            "fondé sur des erreurs factuelles"
+          ],
+          "source": {
+            "media": "ELLE (via portail Free)",
+            "url": "https://portail.free.fr/actualites/societe/periscolaire-a-paris-la-relaxe-de-lanimateur-de-lecole-titon-indigne-les-parents-le-parquet-fait-appel/",
+            "publie_le": "2026-06-18",
+            "acces": "libre"
+          },
+          "a_propos": "L’appel du parquet et le jugement de relaxe",
+          "contexte": "Ils saluent l’appel du parquet et contestent le jugement.",
+          "citations": [
+            {
+              "texte": "un profond soulagement",
+              "pour": "à propos de l’appel du parquet"
+            },
+            {
+              "texte": "fondé sur des erreurs factuelles",
+              "pour": "à propos du jugement"
+            }
+          ],
+          "etabli": "Établi : un communiqué a été diffusé. Non établi : son texte intégral n’a pas été consulté ; Le Parisien en rapporte la formule « fondée sur des erreurs factuelles manifestes ».",
+          "apprecie": "Appréciation des parties civiles : elle n’établit pas que le jugement soit erroné. Le parquet a fait appel ; l’affaire sera réexaminée."
+        }
+      ],
+      "suivre_neon": true,
+      "verifie_le": "2026-10-12",
+      "apercu_types": [
+        "decision",
+        "appel"
+      ],
+      "synthese": {
+        "decision": "Relaxe prononcée le 16 juin 2026 par le tribunal correctionnel de Paris : le harcèlement sexuel n’a pas été retenu et, pour les agressions sexuelles, l’infraction n’est pas jugée caractérisée.",
+        "ouvert": "Le parquet de Paris a fait appel le 17 juin : la relaxe n’est pas définitive. Aucune date d’audience d’appel n’est connue."
+      },
+      "reperes": [
+        {
+          "k": "Poursuivi pour",
+          "v": "harcèlement sexuel sur plusieurs élèves de CM2 et agressions sexuelles sur certaines d’entre elles (faits allégués)"
+        },
+        {
+          "k": "Réquisitions",
+          "v": "dix-huit mois de prison avec sursis (audience à huis clos, 5 mai 2026)"
+        },
+        {
+          "k": "Décision",
+          "v": "relaxe, 16 juin 2026 ; le tribunal juge toutefois certains comportements « inappropriés »"
+        },
+        {
+          "k": "Ce qui vient",
+          "v": "appel du parquet (17 juin) : l’affaire sera réexaminée ; date non connue"
+        }
+      ],
+      "situation": {
+        "decision": {
+          "label": "Décision",
+          "titre": "Relaxe",
+          "meta": "16 juin 2026 · Tribunal correctionnel de Paris",
+          "cat": "green",
+          "texte": "Le harcèlement sexuel n’a pas été retenu ; pour les agressions sexuelles, l’infraction n’est pas jugée caractérisée."
+        },
+        "suite": {
+          "label": "Suite · recours",
+          "titre": "Appel du parquet",
+          "meta": "annoncé le 17 juin 2026",
+          "cat": "orange",
+          "lignes": [
+            "Décision non définitive.",
+            "Date d’audience d’appel non connue."
+          ]
+        }
+      }
     },
     "POC-07": {
       "etat_actuel": [

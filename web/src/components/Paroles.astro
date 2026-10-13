@@ -1,0 +1,81 @@
+---
+// Paroles publiques attribuées — traitement éditorial sobre : acteur et qualité, citation courte, contexte, source, date, niveau d'attribution.
+// Une prise de parole établit « X a dit Y », jamais « Y ». Aucune citation n'est choisie pour son effet : chacune porte sur un point précis.
+import { libelleDate } from '../lib/hub-matiere';
+import { dateLongue } from '../lib/etat-wording';
+
+interface Props { items: any[]; points?: Record<string, string>; mis_en_avant?: boolean; compact?: boolean }
+const { items, points = {}, mis_en_avant = false, compact = false } = Astro.props;
+
+// Rendu compact (fiches V1) : qui et quand → à propos de quoi → citation(s) courte(s) ou position paraphrasée → source.
+// Les citations marquées `vedette` sont les seules affichées ; à défaut, les deux premières. Les autres restent dans la matière.
+const citationsAffichees = (r: any): any[] => { const cs = r.citations ?? []; const v = cs.filter((c: any) => c.vedette); return v.length ? v : cs.slice(0, 2); };
+const quand = (r: any) => (r.date_nature === 'article' && r.source?.publie_le ? `article du ${dateLongue(r.source.publie_le)}` : libelleDate(r.date, r.date_nature));
+const paraphrase = (r: any) => r.paraphrase ?? ((r.citations ?? []).length ? null : r.contexte);
+const NIVEAU: Record<string, { label: string; aide: string }> = {
+  PAROLE_ETABLIE: { label: 'Parole établie', aide: 'prononcée ou publiée : le fait de l’avoir dite est établi, pas son contenu' },
+  POSITION_ATTRIBUEE: { label: 'Position attribuée', aide: 'rapportée par un média : sa position, pas un fait établi' },
+};
+const pour = (c: any) => c.pour ?? (c.point ? points[c.point] : null);
+---
+
+<div class={`paroles ${mis_en_avant ? 'avant' : ''} ${compact ? 'compact' : ''}`}>
+  {compact && items.map((r) => (
+    <article class="parole c">
+      <p class="qui"><strong>{r.acteur}</strong>{r.qualite ? <span class="qualite"> — {r.qualite}</span> : null} <span class="quand">· {quand(r)}</span></p>
+      {r.a_propos && <p class="apropos"><span class="lbl">À propos de</span> {r.a_propos}</p>}
+      {citationsAffichees(r).map((c: any) => <blockquote><p>« {c.texte} »</p></blockquote>)}
+      {paraphrase(r) && <p class="paraphrase">{paraphrase(r)}</p>}
+      {r.precision && <p class="precision">{r.precision}</p>}
+      {r.source?.url && <p class="src"><a href={r.source.url} target="_blank" rel="noopener noreferrer">Source : {r.source.media}, {dateLongue(r.source.publie_le)} ↗</a></p>}
+    </article>
+  ))}
+  {!compact && items.map((r) => (
+    <article class={`parole ${r.attribution ?? r.validation}`}>
+      <header>
+        <p class="qui"><strong>{r.acteur}</strong>{r.qualite ? <span class="qualite"> — {r.qualite}</span> : null}</p>
+        <p class="meta">
+          <span class="badge" title={NIVEAU[r.attribution ?? r.validation]?.aide}>{NIVEAU[r.attribution ?? r.validation]?.label}</span>
+          <span class="quand">{libelleDate(r.date, r.date_nature)}</span>
+        </p>
+      </header>
+      {r.a_propos && <p class="apropos"><span class="lbl">À propos de</span> {r.a_propos}</p>}
+      {r.contexte && <p class="contexte">{r.contexte}</p>}
+      {(r.citations ?? []).map((c: any) => (
+        <blockquote>
+          <p>« {c.texte} »</p>
+          {pour(c) && <p class="pour">{pour(c)}</p>}
+        </blockquote>
+      ))}
+      {(r.etabli || r.apprecie || r.portee_parole) && (
+        <div class="statut">
+          {r.etabli && <p>{r.etabli}</p>}
+          {r.apprecie && <p>{r.apprecie}</p>}
+        </div>
+      )}
+      {r.source?.url && <p class="src"><a href={r.source.url} target="_blank" rel="noopener noreferrer">{r.source.media}, {dateLongue(r.source.publie_le)} ↗</a></p>}
+    </article>
+  ))}
+</div>
+
+<style>
+  .paroles { display: grid; gap: 12px; }
+  .parole { padding: 12px 15px; background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--blue); border-radius: 2px; }
+  .parole.PAROLE_ETABLIE { border-left-color: var(--green); }
+  .parole.POSITION_ATTRIBUEE { border-left-color: var(--orange); }
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; align-items: baseline; }
+  .qui { margin: 0; font-size: 0.94rem; line-height: 1.35; } .qualite { color: var(--muted); font-size: 0.84rem; }
+  .meta { margin: 0; display: flex; gap: 8px; align-items: baseline; }
+  .badge { padding: 1px 6px; font: 0.62rem var(--mono); text-transform: uppercase; letter-spacing: 0.06em; background: #efefec; color: #3d3d42; }
+  .quand { font: 0.72rem var(--mono); color: var(--muted); }
+  .apropos { margin: 6px 0 0; font-size: 0.82rem; color: #3d3d42; } .lbl { font: 0.62rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-right: 4px; }
+  .contexte { margin: 5px 0 0; font-size: 0.88rem; line-height: 1.5; color: #2a2a2d; }
+  blockquote { margin: 8px 0 0; padding: 5px 12px; border-left: 3px solid var(--border); background: #f7f7f4; }
+  blockquote p { margin: 0; font-size: 0.92rem; line-height: 1.5; color: #1f1f23; }
+  blockquote .pour { margin-top: 2px; font: 0.7rem var(--mono); color: var(--muted); }
+  .statut { margin: 9px 0 0; padding-top: 7px; border-top: 1px dashed var(--border); } .statut p { margin: 2px 0; font-size: 0.78rem; line-height: 1.45; color: #55555b; }
+  .src { margin: 8px 0 0; font-size: 0.76rem; } .src a { color: var(--blue); }
+  .parole.c { padding: 10px 14px; } .parole.c blockquote { margin: 6px 0 0; } .paraphrase { margin: 6px 0 0; font-size: 0.9rem; line-height: 1.5; font-style: italic; color: #2a2a2d; }
+  .precision { margin: 6px 0 0; font-size: 0.78rem; color: var(--muted); } .parole.c .src { margin-top: 6px; }
+  .avant .parole { padding: 15px 18px; border-left-width: 6px; } .avant blockquote p:not(.pour) { font-size: 1.04rem; }
+</style>

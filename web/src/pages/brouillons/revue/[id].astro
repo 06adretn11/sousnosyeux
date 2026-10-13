@@ -1,0 +1,20 @@
+---
+// ⛔ BROUILLON — les trois fiches de revue, rendues par UN SEUL composant (FicheUnique).
+// Aucune page dans le build par défaut (SNY_DRAFTS ≠ 1). Jamais indexées.
+import Layout from '../../../layouts/Layout.astro';
+import FicheUnique from '../../../components/FicheUnique.astro';
+import { ficheDe } from '../../../lib/fiche';
+import { chargerHub } from '../../../lib/hub-matiere';
+import { REVUE_ACTIVE, FICHES_REVUE } from '../../../lib/revue';
+
+export function getStaticPaths() {
+  return REVUE_ACTIVE ? FICHES_REVUE.map((id) => ({ params: { id: id.toLowerCase() }, props: { id } })) : [];
+}
+const { id } = Astro.props as { id: string };
+const { c, hub } = ficheDe(id);
+const verifieLe = chargerHub(hub?.id ?? 'isoles').matiere._meta.redige_le;
+---
+
+<Layout title={`${c.etablissement}, ${c.commune} — fiche (revue) — sousnosyeux`} description={`Fiche de revue : ${c.etablissement}, ${c.commune}.`} noindex>
+  <FicheUnique {id} {verifieLe} />
+</Layout>
