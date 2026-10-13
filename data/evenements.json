@@ -205,5 +205,9 @@
       }
     ]
   },
-  "fiches_approuvees": {}
+  "fiches_approuvees": {
+    "POC-09": {
+      "hash": "b1389eedbc0e7c7d"
+    }
+  }
 }
