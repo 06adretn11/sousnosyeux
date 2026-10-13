@@ -1,0 +1,19 @@
+---
+// Fiches individuelles PUBLIQUES : uniquement les fiches APPROUVÉES dans Telegram (revue « [Fiche approuvée] », empreinte du dossier à jour),
+// telles que projetées dans data/evenements.json par scripts/project-evenements.mjs. Aucune approbation → aucune page.
+import Layout from '../../layouts/Layout.astro';
+import FicheUnique from '../../components/FicheUnique.astro';
+import { ficheDe, fichesApprouvees } from '../../lib/fiche';
+import { chargerHub } from '../../lib/hub-matiere';
+
+export function getStaticPaths() {
+  return fichesApprouvees().map((id) => ({ params: { id: id.toLowerCase() }, props: { id } }));
+}
+const { id } = Astro.props as { id: string };
+const { c, hub } = ficheDe(id);
+const verifieLe = chargerHub(hub?.id ?? 'isoles').matiere._meta.redige_le;
+---
+
+<Layout title={`${c.etablissement}, ${c.commune} — fiche — sousnosyeux`} description={`Fiche de l'affaire : ${c.etablissement}, ${c.commune}. Déroulé daté et sourcé, réactions attribuées, ce que l'on ne sait pas.`}>
+  <FicheUnique {id} {verifieLe} />
+</Layout>

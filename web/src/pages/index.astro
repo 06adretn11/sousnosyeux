@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import casesDoc from '../../../data/cases.json';
+import { urlFiche } from '../lib/revue';
 
 // Source de vérité : data/cases.json
 // Synchronisé depuis Supabase via : node --env-file=.env.local scripts/sync-data.mjs
@@ -31,6 +32,9 @@ const allCases = (casesDoc.cases as any[])
     // Écoles concernées quand une affaire en touche plusieurs (absent sinon).
     etablissements:         c.etablissements ?? null,
   }));
+
+// Liens vers les fiches : pages publiques des fiches APPROUVÉES ; pages de revue seulement dans le build de revue (SNY_DRAFTS=1).
+const fichesRevue: Record<string, string> = Object.fromEntries(allCases.map((c) => [c.case_id, urlFiche(c.case_id)]).filter(([, u]) => u) as [string, string][]);
 
 const totalCount    = casesDoc.cases.length;
 const geocodedCount = allCases.length;
@@ -160,6 +164,7 @@ function caseYear(c: typeof allCases[0]): string {
                   {statutLabel(c.statut_judiciaire, c.etat)}
                 </span>
                 <span class="case-tag-type">{c.type_affaire}</span>
+                {fichesRevue[c.case_id] && <span class="case-fiche" role="link" tabindex="0" data-href={fichesRevue[c.case_id]}>Fiche →</span>}
               </span>
             </span>
           </button>
@@ -171,6 +176,7 @@ function caseYear(c: typeof allCases[0]): string {
 
   <!-- Données JSON pour le script client -->
   <script type="application/json" id="cases-data" set:html={JSON.stringify(allCases)} />
+  {Object.keys(fichesRevue).length > 0 && <script type="application/json" id="fiches-revue" set:html={JSON.stringify(fichesRevue)} />}
 
   <!-- ── SCRIPT CARTE ── -->
   <script>
@@ -209,6 +215,8 @@ function caseYear(c: typeof allCases[0]): string {
     const dataEl = document.getElementById('cases-data');
     if (!dataEl?.textContent) throw new Error('cases-data missing');
     const cases: CaseRow[] = JSON.parse(dataEl.textContent);
+    // Build de revue : id → URL de fiche. Absent du build public.
+    const fichesRevue: Record<string, string> = JSON.parse(document.getElementById('fiches-revue')?.textContent ?? '{}');
 
     // ── Catégorie de statut → couleur B2 ──
     function statutCat(s: string): string {
@@ -448,6 +456,7 @@ function caseYear(c: typeof allCases[0]): string {
             <li><b>Enfants concernés :</b> ${escapeHtml(c.enfants_concernes_public)}</li>
           </ul>
           <p class="popup-b2-source">${sourcesHtml(c, srcs)}</p>
+          ${fichesRevue[c.case_id] ? `<p class="popup-b2-fiche"><a href="${fichesRevue[c.case_id]}">Voir la fiche de l’affaire →</a></p>` : ''}
           ${approx}
           <p class="popup-b2-disclaimer">
             Présomption d'innocence. Informations issues de la presse.
@@ -487,7 +496,10 @@ function caseYear(c: typeof allCases[0]): string {
 
     // ── Sidebar : clic → zoomer ET ouvrir la popup ──
     document.querySelectorAll<HTMLElement>('.case-item').forEach((el) => {
-      el.addEventListener('click', () => {
+      el.addEventListener('click', (ev) => {
+        // Build de revue : lien direct vers la fiche (la popup est peu lisible sur mobile).
+        const lien = (ev.target as HTMLElement).closest<HTMLElement>('.case-fiche');
+        if (lien) { window.location.href = lien.dataset.href!; return; }
         const caseId = el.dataset.id!;
         const c = cases.find((row) => row.case_id === caseId);
         if (!c) return;
@@ -736,6 +748,7 @@ function caseYear(c: typeof allCases[0]): string {
       font-family: var(--sans);
     }
     .case-item:hover { background: #F5F5F3; }
+    .case-fiche { padding: 2px 8px; font: 700 0.7rem var(--sans); color: #fff; background: var(--blue); border-radius: 3px; cursor: pointer; }
     .case-item.active {
       background: var(--red-bg);
       border-left: 3px solid var(--red);
@@ -869,6 +882,8 @@ function caseYear(c: typeof allCases[0]): string {
       word-break: break-word;
     }
     .popup-b2-source a { color: var(--blue); }
+    .popup-b2-fiche { margin: 0.5rem 0 0; font-size: 0.82rem; font-weight: 700; }
+    .popup-b2-fiche a { color: var(--blue); }
     .popup-b2-approx {
       margin: 0 0 0.35rem;
       font-size: 0.68rem;

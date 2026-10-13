@@ -181,7 +181,129 @@
           }
         },
         "note": "SNY rapporte les deux positions ; aucun article relu ne permet de les départager."
-      }
+      },
+      "cadre": {
+        "texte": "L’animateur n’était pas directement employé par la mairie, mais par l’association délégataire du périscolaire, les Francas. Le délégataire a changé pour l’année 2026-2027, sans lien avec l’affaire, selon ICI.",
+        "source": {
+          "media": "ICI Gironde",
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+          "publie_le": "2026-09-19",
+          "acces": "libre"
+        }
+      },
+      "points": {
+        "honorabilite": "Contrôle d’honorabilité",
+        "documents": "Transmission des documents",
+        "suspension": "Suspension de l’animateur",
+        "information_familles": "Information des familles"
+      },
+      "paroles": [
+        {
+          "acteur": "Jean-François Egron",
+          "qualite": "maire de Cenon",
+          "camp": "mairie",
+          "date": "2026-09-19",
+          "date_nature": "evenement",
+          "attribution": "PAROLE_ETABLIE",
+          "acte": "entretien rapporté par ICI",
+          "contexte": "À propos du certificat d’honorabilité demandé à l’animateur, selon la mairie. Il annonce aussi un renforcement des contrôles (vérification du fichier des auteurs d’infractions sexuelles).",
+          "citations": [
+            {
+              "texte": "C’est la personne qui rédige ce certificat, donc c’est selon sa bonne volonté et sa clarté morale que ça vaut quelque chose",
+              "point": "honorabilite"
+            }
+          ],
+          "source": {
+            "media": "ICI Gironde",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+            "publie_le": "2026-09-19",
+            "acces": "libre"
+          },
+          "a_propos": "Le certificat d’honorabilité de l’animateur"
+        },
+        {
+          "acteur": "Le maire de Cenon",
+          "qualite": "position rapportée par Sud Ouest, sans citation",
+          "camp": "mairie",
+          "date": "2026-09-29",
+          "date_nature": "evenement",
+          "attribution": "POSITION_ATTRIBUEE",
+          "acte": "réunion publique du 29 septembre",
+          "contexte": "Le journal écrit que le maire se plaignait de documents demandés et non transmis, comme les lieux où l’ex-animateur avait exercé depuis plus de dix ans. Selon ICI, la ville a aussi adressé une lettre de sommation aux Francas pour connaître l’historique de l’animateur.",
+          "points": [
+            "documents"
+          ],
+          "citations": [],
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08",
+            "acces": "libre"
+          },
+          "a_propos": "Les documents demandés aux Francas",
+          "paraphrase": "Le journal écrit que le maire se plaignait de documents demandés et non transmis, comme les lieux où l’ex-animateur avait exercé depuis plus de dix ans."
+        },
+        {
+          "acteur": "Odile Rapeau",
+          "qualite": "présidente des Francas de Gironde (employeur)",
+          "camp": "francas",
+          "date": "2026-10-08",
+          "date_nature": "article",
+          "attribution": "POSITION_ATTRIBUEE",
+          "acte": "communiqué rapporté par Sud Ouest",
+          "contexte": "Communiqué en réponse aux mises en cause de la gestion de l’affaire ; sa date exacte n’est pas donnée (article du 8 octobre).",
+          "citations": [
+            {
+              "texte": "l’association a immédiatement pris les mesures relevant de sa responsabilité d’employeur et de gestionnaire à cette date. Les salariés concernés […] ont été écartés de leurs fonctions à titre conservatoire le jour même",
+              "point": "suspension",
+              "vedette": true
+            },
+            {
+              "texte": "à aucun moment, le maire de Cenon n’a eu à demander ou à exiger de l’association la suspension de ces animateurs",
+              "point": "suspension"
+            },
+            {
+              "texte": "dans un cadre juridiquement sécurisé, dans le respect des droits des personnes et sans interférer avec la procédure en cours",
+              "point": "documents",
+              "vedette": true
+            },
+            {
+              "texte": "Les Francas n’ayant pas été invités à la réunion publique […], nous n’avons pas été en mesure, à cette occasion, d’apporter directement aux familles les réponses légitimes qu’elles peuvent attendre",
+              "point": "information_familles"
+            },
+            {
+              "texte": "les personnels sont déclarés auprès des services de l’État par l’intermédiaire du système de télédéclaration des accueils de mineurs (TAM), dans le cadre duquel sont réalisés les contrôles administratifs prévus par la réglementation",
+              "point": "honorabilite"
+            }
+          ],
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+            "publie_le": "2026-10-08",
+            "acces": "libre"
+          },
+          "a_propos": "Les mises en cause de la gestion de l’affaire"
+        }
+      ],
+      "situation": {
+        "decision": {
+          "label": "Situation judiciaire",
+          "titre": "Renvoi devant le tribunal",
+          "meta": "Tribunal correctionnel de Bordeaux · animateur visé",
+          "cat": "blue",
+          "texte": "Sous contrôle judiciaire strict depuis le 26 août 2026. Aucune condamnation prononcée."
+        },
+        "suite": {
+          "label": "Prochaine étape",
+          "titre": "Audience le 22 février 2027",
+          "meta": "à venir · le procès n’a pas eu lieu",
+          "cat": "blue",
+          "lignes": [
+            "L’animateur est présumé innocent."
+          ]
+        }
+      },
+      "suivre_neon": true
     }
   },
   "reponses": [

@@ -8,10 +8,17 @@
 import Chronologie from './Chronologie.astro';
 import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
 import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre } from '../lib/territoires';
+import { derouleCommun, fichePubliee } from '../lib/fiche';
+import { urlFicheRevue } from '../lib/revue';
 
 interface Props { c: any; d?: any; titre?: string }
 const { c, d = {}, titre } = Astro.props;
 
+// Déroulé COMMUN (Hub + fiche) : entrées du dossier alignées sur les événements validés de Neon (lib/fiche.ts).
+const { items: tout } = derouleCommun(c.case_id, d);
+// Fiche individuelle PUBLIÉE (approuvée) : le Hub garde le contexte et un aperçu des étapes structurantes ; le déroulé complet est sur la fiche.
+const fiche = fichePubliee(c.case_id) && Array.isArray(d.apercu_types);
+const deroule = fiche ? tout.filter((e: any) => d.apercu_types.includes(e.type)) : tout;
 const sourcesLibres = (c.sources ?? []).filter((s: any) => libre(s.media));
 const principale = sourcesLibres[0]
   ? { media: sourcesLibres[0].media, date: sourcesLibres[0].publication_date ?? null, url: sourcesLibres[0].url ?? null }
@@ -64,14 +71,18 @@ for (const s of sourcesLibres) {
     </div>
   )}
 
-  {d.deroule?.length > 0 && (
+  {deroule.length > 0 && (
     <>
       <h4>Déroulé</h4>
-      <Chronologie items={d.deroule} />
+      <Chronologie items={deroule} />
     </>
   )}
 
-  {d.inconnues?.length > 0 && (
+  {/* BUILD DE REVUE uniquement : urlFicheRevue() vaut null dans le build public → aucun lien vers un brouillon. */}
+  {!fiche && urlFicheRevue(c.case_id) && <p class="voir"><a href={urlFicheRevue(c.case_id)}>Fiche de l’affaire (revue) →</a></p>}
+  {fiche && <p class="voir"><a href={`/affaires/${c.case_id.toLowerCase()}/`}>Consulter le dossier complet →</a></p>}
+
+  {!fiche && d.inconnues?.length > 0 && (
     <>
       <h4>Ce que l’on ne sait pas</h4>
       <ul class="inconnues">{d.inconnues.map((i: string) => <li>{i}</li>)}</ul>
@@ -118,6 +129,7 @@ for (const s of sourcesLibres) {
   .v-col a { font-size: 0.72rem; color: var(--blue); }
   .v-note { margin: 8px 0 0; font-size: 0.76rem; color: var(--muted); font-style: italic; }
   @media (max-width: 640px) { .v-cols { grid-template-columns: 1fr; } }
+  .voir { margin: 0.9rem 0 0; font-size: 0.88rem; font-weight: 600; } .voir a { color: var(--blue); }
   .inconnues { margin: 0; padding-left: 1.1rem; font-size: 0.86rem; color: #4a4a50; }
   .inconnues li { margin: 3px 0; }
   .sources { margin: 1rem 0 0; font-size: 0.76rem; line-height: 1.6; color: var(--muted); }

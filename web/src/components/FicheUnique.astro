@@ -1,0 +1,162 @@
+---
+// FICHE AFFAIRE — UN SEUL composant pour toutes les affaires. Aucune branche par case_id : chaque bloc s'adapte à la matière.
+//
+//   1. Situation judiciaire et décision   (dossier.synthese, sinon les phrases d'état du dossier)
+//   2. Repères essentiels                 (seulement ceux que la situation ne dit pas déjà)
+//   3. Paroles et réactions               (mêmes cartes <Paroles> pour toutes les affaires ; absent si aucune)
+//   4. Déroulé                            (chronologie sourcée — c'est ici qu'une info de la synthèse est développée)
+//   5. Sources et inconnues
+//
+// Une information peut figurer dans la situation puis dans le déroulé ; elle n'est jamais répétée dans plusieurs blocs
+// d'introduction. Pas d'analyse comparative entre institutions dans les fiches V1.
+import Chronologie from './Chronologie.astro';
+import Paroles from './Paroles.astro';
+import { ficheDe, evenementsDe, fichePubliee } from '../lib/fiche';
+import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
+import { dateLongue } from '../lib/etat-wording';
+
+interface Props { id: string; verifieLe: string }
+const { id, verifieLe } = Astro.props;
+const { c, hub, d, deroule } = ficheDe(id);
+
+const statut = d.statut_affiche ?? statutCourant(c);
+const cat = statutCat(statut);
+const appel = d.appel === true || (c.etat?.suites ?? []).includes('APPEL_EN_COURS');
+const lib = (x: string | null) => (x ? dateLongue(x) : null);
+
+// 1. Situation : DEUX blocs (décision / suite) alimentés par `dossier.situation` ; à défaut, synthèse rédigée, sinon phrases d'état.
+const blocs2: { decision: any; suite: any } | null = d.situation ?? null;
+const etat: string[] = d.etat_actuel ?? [];
+const situation: { decision: string; ouvert: string | null } | null = d.synthese
+  ? { decision: d.synthese.decision, ouvert: d.synthese.ouvert ?? null }
+  : etat.length ? { decision: etat[0], ouvert: etat.slice(1).join(' ') || null } : null;
+
+// 2. Repères : ceux dont la fonction est déjà remplie par la situation (décision, suite) ou par le déroulé (procédure) ne sont pas répétés.
+const REDONDANTS = new Set(['décision', 'ce qui vient', 'ce qui reste ouvert', 'procédure']);
+const mots = (t: string) => new Set(t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().match(/[a-z0-9]{4,}/g) ?? []);
+const texteSituation = blocs2 ? [blocs2.decision, blocs2.suite].flatMap((b: any) => [b.titre, b.meta, b.texte, ...(b.lignes ?? [])]).join(' ') : '';
+const dejaDit = (v: string) => { const m = [...mots(v)], s = mots(texteSituation); return m.length > 0 && m.filter((x) => s.has(x)).length / m.length >= 0.5; };
+const reperes: { k: string; v: string }[] = (d.reperes ?? []).filter((r: any) => !((situation || blocs2) && REDONDANTS.has(r.k.toLowerCase())) && !(blocs2 && dejaDit(r.v)));
+
+// 3. Paroles : un seul contrat (acteur, qualité, date, niveau d'attribution, citations). `reactions` ou `paroles` selon le dossier.
+const NIVEAUX = ['PAROLE_ETABLIE', 'POSITION_ATTRIBUEE'];
+const paroles: any[] = [...(d.reactions ?? []), ...(d.paroles ?? [])]
+  .filter((r: any) => (r.portee ?? 'affaire') === 'affaire' && NIVEAUX.includes(r.attribution ?? r.validation));
+const points: Record<string, string> = d.points ?? {};
+
+// 5. Sources : fiche + déroulé + paroles, dédoublonnées par URL, médias payants exclus.
+const vues = new Set<string>(); const sources: { media: string; date: string | null; url: string }[] = [];
+const ajoute = (s: any, date: string | null) => { if (!s?.url || vues.has(s.url) || !libre(s.media)) return; vues.add(s.url); sources.push({ media: s.media, date, url: s.url }); };
+for (const s of c.sources ?? []) ajoute(s, s.publication_date ?? null);
+for (const e of deroule) ajoute(e.source, e.source?.publie_le ?? null);
+for (const r of paroles) ajoute(r.source, r.source?.publie_le ?? null);
+const inconnues: string[] = d.inconnues ?? [];
+// Événements validés (Neon) que la rédaction du dossier ne porte pas : ils sont AJOUTÉS au déroulé, mais les blocs de situation sont rédigés → on le dit.
+const portes = new Set((d.deroule ?? []).map((e: any) => e.event_id).filter(Boolean));
+const nouveaux = d.suivre_neon ? evenementsDe(id).filter((e: any) => !portes.has(e.event_id)).length : 0;
+const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 'paroles' : null, deroule.length ? 'deroule' : null, 'sources'].filter(Boolean).join(' ');
+---
+
+<article class={`fiche ${cat}`} data-fiche={id} data-blocs={blocs} data-evenements={evenementsDe(id).length}>
+  <nav class="fil" aria-label="Fil d’Ariane">
+    <a href="/">Carte</a>
+    {hub && <><span aria-hidden="true">›</span> <a href={hub.url}>{hub.titre}</a></>}
+    <span aria-hidden="true">›</span> <span>Fiche</span>
+  </nav>
+  <p class="eyebrow">{fichePubliee(id) ? 'Fiche affaire' : 'Fiche affaire · version de revue'}</p>
+  <h1>{c.etablissement}</h1>
+  <p class="meta">{c.type_structure} · {c.commune}</p>
+  <div class="chips">
+    {!blocs2 && <span class={`chip ${cat}`}>{d.statut_libelle ?? STATUT_LABELS[statut] ?? statut}</span>}
+    {!blocs2 && appel && <span class="chip appel">Appel — décision non définitive</span>}
+    <span class="chip muted">{c.statut_des_faits === 'allégué' ? 'faits allégués' : c.statut_des_faits}</span>
+  </div>
+
+  {blocs2 && (
+    <section class="duo" aria-label="Situation judiciaire">
+      {[blocs2.decision, blocs2.suite].map((b: any) => (
+        <div class={`bloc ${b.cat}`}>
+          <p class="b-label">{b.label}</p>
+          <p class="b-titre">{b.titre}</p>
+          {b.meta && <p class="b-meta">{b.meta}</p>}
+          {b.texte && <p class="b-texte">{b.texte}</p>}
+          {b.lignes?.map((l: string) => <p class="b-texte">{l}</p>)}
+        </div>
+      ))}
+    </section>
+  )}
+  {blocs2 && nouveaux > 0 && <p class="maj">Mise à jour : {nouveaux} événement(s) validé(s) depuis la dernière relecture figure(nt) dans le déroulé ci-dessous ; les blocs ci-dessus peuvent ne pas encore en tenir compte.</p>}
+
+  {!blocs2 && situation && (
+    <section class="situation" aria-label="Situation judiciaire et décision">
+      <p class="ligne"><span class="k">Situation judiciaire et décision</span> {situation.decision}</p>
+      {situation.ouvert && <p class="ligne"><span class="k">Ce qui reste ouvert</span> {situation.ouvert}</p>}
+    </section>
+  )}
+
+  {reperes.length > 0 && (
+    <section aria-label="Repères essentiels">
+      <h2>Repères essentiels</h2>
+      <dl class="reperes">{reperes.map((r) => (<div><dt>{r.k}</dt><dd>{r.v}</dd></div>))}</dl>
+    </section>
+  )}
+
+  {paroles.length > 0 && (
+    <section aria-label="Paroles et réactions">
+      <h2>Paroles et réactions</h2>
+      <p class="note">Ce que chacun a dit, attribué et sourcé. Une prise de parole n’établit pas son contenu.</p>
+      <Paroles items={paroles} {points} compact />
+    </section>
+  )}
+
+  {deroule.length > 0 && (
+    <section aria-label="Déroulé">
+      <h2>Déroulé</h2>
+      <Chronologie items={deroule} />
+    </section>
+  )}
+
+  <section id="sources" aria-label="Sources et inconnues">
+    <h2>Sources et inconnues</h2>
+    <ul class="sources">{sources.map((s) => <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${lib(s.date)}` : ''} ↗</a></li>)}</ul>
+    {inconnues.length > 0 && (<><p class="sous">Ce que l’on ne sait pas</p><ul class="inconnues">{inconnues.map((i) => <li>{i}</li>)}</ul></>)}
+  </section>
+
+  <p class="verif">Dernière vérification : {lib(d.verifie_le ?? verifieLe)}.</p>
+  <p class="retours">
+    {hub && <a class="r-hub" href={`${hub.url}#${c.case_id.toLowerCase()}`}>← {hub.titre}</a>}
+    <a class="r-home" href="/">← Retour à la carte</a>
+  </p>
+</article>
+
+<style>
+  .fiche { max-width: 780px; margin: 0 auto; padding: 1.2rem 1.1rem 3rem; --c: var(--blue); }
+  .fiche.red { --c: var(--red); } .fiche.orange { --c: var(--orange); } .fiche.green { --c: var(--green); }
+  .fil { font: 0.74rem var(--mono); color: var(--muted); margin-bottom: 0.8rem; } .fil a { color: var(--blue); }
+  .eyebrow { margin: 0 0 6px; color: var(--red); font: 0.72rem var(--mono); letter-spacing: 0.13em; text-transform: uppercase; }
+  h1 { margin: 0 0 4px; font: 700 clamp(1.6rem, 5vw, 2.3rem)/1.12 var(--display); letter-spacing: -0.02em; }
+  .meta { margin: 0 0 10px; color: var(--muted); font-size: 0.9rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .chip { padding: 3px 8px; font: 0.7rem var(--mono); background: #eef2f5; color: #3f5c6c; border-left: 3px solid var(--c); }
+  .chip.appel { background: #fff; color: #92500a; border: 1px solid var(--orange); } .chip.muted { background: #f4f4f2; color: #6b7280; border-left-color: var(--border); }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 4px; }
+  .bloc { padding: 12px 14px 13px; background: var(--bg-card); border: 1px solid var(--border); border-left: 6px solid var(--border); }
+  .bloc.red { border-left-color: var(--red); background: var(--red-bg); } .bloc.blue { border-left-color: var(--blue); background: var(--blue-bg); }
+  .bloc.orange { border-left-color: var(--orange); background: var(--orange-bg); } .bloc.green { border-left-color: var(--green); background: var(--green-bg); }
+  .bloc p { margin: 0; } .b-label { font: 0.64rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: #55555b; }
+  .b-titre { margin: 3px 0 2px; font: 700 1.45rem/1.15 var(--display); color: #16161a; } .b-meta { font: 0.74rem var(--mono); color: #3d3d42; }
+  .bloc .b-texte { margin-top: 8px; font-size: 0.92rem; line-height: 1.5; color: #1f1f23; }
+  .situation { margin: 0 0 4px; padding: 12px 14px; background: #fff; border: 1px solid var(--border); border-top: 3px solid var(--c); }
+  .ligne { margin: 0 0 9px; font-size: 0.95rem; line-height: 1.5; color: #1f1f23; } .ligne:last-child { margin-bottom: 0; }
+  .ligne .k { display: block; font: 0.62rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 1px; }
+  h2 { margin: 1.8rem 0 0.7rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); font: 400 0.76rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: #6b6b72; }
+  .maj { margin: 8px 0 0; padding: 7px 10px; font-size: 0.8rem; color: #6b3d00; background: var(--orange-bg); }
+  .note { font-size: 0.82rem; color: var(--muted); margin: 0 0 10px; }
+  .reperes { margin: 0; display: grid; gap: 8px; } .reperes div { display: grid; grid-template-columns: 9rem 1fr; gap: 12px; font-size: 0.9rem; line-height: 1.45; }
+  .reperes dt { font: 0.68rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding-top: 2px; } .reperes dd { margin: 0; }
+  .sources, .inconnues { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; color: #4a4a50; } .sources li, .inconnues li { margin: 4px 0; } .sources a { color: var(--blue); }
+  .sous { margin: 14px 0 4px; font: 0.68rem var(--mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .verif { margin: 1.2rem 0 0; font-size: 0.78rem; color: var(--muted); }
+  .retours { margin: 0.6rem 0 0; display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 0.9rem; font-weight: 600; } .retours a { color: var(--blue); }
+  @media (max-width: 640px) { .duo { grid-template-columns: 1fr; } .reperes div { grid-template-columns: 1fr; gap: 1px; } }
+</style>

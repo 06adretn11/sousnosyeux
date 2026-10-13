@@ -193,7 +193,7 @@ async function decisionInstitutionnelle(cle) {
   if (soeurs.some((q) => detecterInstitutionnel(citationsDe(q))?.libelle_public === inst.libelle_public)) throw new Error('même mesure déjà soumise à décision : une seule demande');
   return envoyer(
     `🔄 <b>MAINTENANCE</b> · 🏛 ${entete(p)}\n\nÉVÉNEMENT INSTITUTIONNEL\n(sans effet sur l’état judiciaire : ${esc(p.courant)})` +
-      `\n<b>${esc(inst.libelle_public)}</b>\nMesure ${esc(inst.realisation)}.` +
+      `\n<b>${esc(inst.libelle_public)}</b>\n${inst.realisation ? `Mesure ${esc(inst.realisation)}.` : 'Prise de parole attribuée (son contenu n’est pas établi).'}` +
       `\n\nPreuve :\n« ${esc(cut(inst.citation, 320))} »` +
       `\n\nSNY a besoin de ta validation.`,
     boutonsEtat(cle),
@@ -219,6 +219,12 @@ async function nouvelle(cle) {
   if (r[0].payload?.attach && !(await schemaBoucle(sql)).action) {
     throw new Error('migration 019 non appliquée : message comparatif (RAPPROCHER / CRÉER) non envoyé');
   }
+  // Proposition de FICHE : jamais envoyée pour une affaire qui n'est pas (ou plus) publique ; l'enregistrement du choix exige `action`.
+  if (r[0].payload?.page) {
+    const [cc] = await sql`select publication_status::text ps from cases where case_id = ${r[0].payload.page.case_id}`;
+    if (cc?.ps !== 'publiée') throw new Error('proposition de fiche périmée (l’affaire n’est pas publique) — rien envoyé');
+    if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de fiche non envoyée');
+  } else
   // Proposition de PUBLICATION : jamais envoyée pour une affaire qui n'est plus candidate (déjà publiée, retirée) ; l'enregistrement du choix exige `action`.
   if (r[0].payload?.publication) {
     const [cc] = await sql`select publication_status::text ps from cases where case_id = ${r[0].payload.publication.case_id}`;
