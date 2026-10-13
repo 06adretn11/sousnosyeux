@@ -208,6 +208,9 @@
   "fiches_approuvees": {
     "POC-09": {
       "hash": "b1389eedbc0e7c7d"
+    },
+    "FR-2026-0042": {
+      "hash": "07c4467d69ad1b45"
     }
   }
 }
