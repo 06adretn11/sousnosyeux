@@ -4,19 +4,19 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
   title="Méthodologie — sousnosyeux"
-  description="Comment les affaires sont sélectionnées, scorées, et publiées sur sousnosyeux : critères de fiabilité, wording standardisé, présomption d'innocence."
+  description="Comment sousnosyeux sélectionne, vérifie et présente les affaires rapportées par la presse : sources, validation, états judiciaires, mise à jour et limites."
 >
   <article class="prose">
     <h1>Méthodologie</h1>
     <p class="lede">
       <strong>sousnosyeux</strong> ne mène pas d'enquête. Le site <em>relaie</em> des affaires déjà
-      documentées publiquement par la presse, en respectant strictement la présomption d'innocence.
-      Cette page explique comment chaque fiche est construite et validée.
+      documentées publiquement, en respectant strictement la présomption d'innocence.
+      Cette page explique comment l'information est sélectionnée, vérifiée et présentée.
     </p>
 
     <div class="callout callout-info">
-      <strong>En une phrase :</strong> seules les affaires citées par une source presse identifiable
-      et atteignant un score de fiabilité de <strong>8 sur 10 ou plus</strong> sont publiées sur la carte.
+      <strong>En une phrase :</strong> une affaire n'est publiée que si elle repose sur des sources publiques
+      identifiables, passe des contrôles et reçoit une décision humaine ; ce qu'on ne sait pas est écrit.
     </div>
 
     <h2>1. Périmètre</h2>
@@ -27,113 +27,148 @@ import Layout from '../layouts/Layout.astro';
       <li>tout établissement assimilé accueillant des mineurs.</li>
     </ul>
     <p>
-      Le MVP couvre Paris et sa proche périphérie (17 fiches à date). L'extension géographique
-      se fera progressivement à mesure que les sources sont vérifiées.
+      sousnosyeux documente des affaires sur plusieurs territoires français. Le corpus <strong>n'est pas exhaustif</strong> :
+      il s'agrandit à mesure que des affaires sont trouvées, vérifiées et validées.
     </p>
 
-    <h2>2. Sources</h2>
-    <p>Chaque fiche s'appuie sur au moins une source publique identifiable, dans cet ordre de préférence :</p>
+    <h2>2. Trois niveaux de lecture</h2>
+    <ul>
+      <li><strong>La carte</strong> : la localisation et l'état judiciaire connu de chaque affaire publiée.</li>
+      <li><strong>La fiche individuelle</strong> : le déroulé, les décisions, les prises de parole attribuées, les sources et les inconnues.</li>
+      <li><strong>Le hub territorial</strong> : le contexte local, les réponses institutionnelles et une lecture d'ensemble des affaires documentées d'un territoire.</li>
+    </ul>
+    <p>Ces trois surfaces reposent sur la même mémoire, mais apportent des lectures complémentaires. Toutes les affaires de la carte n'ont pas (encore) une fiche ou un hub.</p>
+
+    <h2>3. Sources</h2>
+    <p>Chaque affaire s'appuie sur au moins une source publique identifiable, dans cet ordre de préférence :</p>
     <ol>
-      <li><strong>Presse nationale ou régionale</strong> (Le Monde, Le Figaro, Libération, Le Parisien, AFP, France 3, etc.) ;</li>
+      <li><strong>Presse nationale ou régionale</strong> ;</li>
       <li><strong>Sources institutionnelles</strong> (procureur, préfecture, communiqué officiel) ;</li>
       <li><strong>Décisions de justice publiques</strong>.</li>
     </ol>
     <p>
-      Les blogs, réseaux sociaux non vérifiés et témoignages anonymes ne sont jamais utilisés comme
-      source primaire. L'URL exacte de la source est stockée et reste consultable depuis chaque popup.
+      Les fiches et les hubs peuvent aussi restituer des déclarations publiques rapportées par ces sources :
+      familles ou parties civiles, associations, établissements ou gestionnaires, institutions.
+      Les blogs, les réseaux sociaux et les témoignages anonymes ne sont pas utilisés comme source de référence.
+      L'adresse exacte de chaque source reste consultable.
     </p>
-
-    <h2>3. Score de fiabilité (0 à 10)</h2>
-    <p>Chaque fiche reçoit un score qui agrège la qualité de la source, la précision du fait rapporté et la traçabilité judiciaire :</p>
-    <ul>
-      <li><strong>+ Source nationale de référence</strong> (Le Monde, AFP, France Info…)</li>
-      <li><strong>+ Article dédié à l'affaire</strong> (vs mention dans un récap général)</li>
-      <li><strong>+ Établissement nommé et localisé</strong></li>
-      <li><strong>+ Statut judiciaire clair</strong> (plainte / enquête / mise en examen / procès / décision)</li>
-      <li><strong>+ Corroboration par au moins une seconde source</strong></li>
-      <li><strong>− Anonymat de l'établissement, contexte flou, source unique non spécialisée</strong></li>
-    </ul>
     <div class="callout">
-      <strong>Seuil de publication MVP : ≥ 8/10.</strong>
-      Les fiches notées entre 0 et 7 restent dans la base éditoriale mais ne sont pas affichées sur la carte
-      tant qu'une source complémentaire ne les fait pas passer le seuil.
+      <strong>Une déclaration n'est pas une preuve.</strong> Nous distinguons trois choses :
+      <ul>
+        <li>qu'une déclaration a été faite (ce que la source permet d'établir) ;</li>
+        <li>le contenu de cette déclaration (la position de son auteur, toujours attribuée) ;</li>
+        <li>la vérification indépendante de ce contenu (que nous ne présumons jamais).</li>
+      </ul>
     </div>
 
-    <h2>4. Wording standardisé par statut judiciaire</h2>
+    <h2>4. Fiabilité et validation</h2>
     <p>
-      Le vocabulaire utilisé dans chaque fiche dépend strictement du <em>statut judiciaire</em> à
-      l'instant de la dernière vérification. Aucune affirmation n'est faite « en nom propre » :
-      la formulation indique toujours qu'une <em>source publique</em> rapporte l'information.
+      Chaque affaire reçoit un <strong>score de fiabilité de 0 à 10</strong> : cinq critères valant chacun 2 points
+      (source fiable, article récent, établissement nommé, statut judiciaire clair, recoupement par une seconde source).
+      Le seuil minimal de publication est <strong>8 sur 10</strong>.
+    </p>
+    <div class="callout">
+      <strong>Le score ne suffit pas.</strong> Une affaire suffisamment documentée n'est pas automatiquement publiée :
+      la publication repose aussi sur une <strong>décision humaine</strong> et des contrôles complémentaires.
+      Concrètement :
+      <ul>
+        <li>l'affaire doit être validée par l'éditeur, qui donne son accord explicite avant publication sur la carte ;</li>
+        <li>elle doit pouvoir être localisée (le site n'affiche pas une affaire sans point sur la carte) ;</li>
+        <li>elle peut être <strong>mise en attente</strong> quand un doute persiste (par exemple sur l'identification de l'établissement ou sur le nombre d'affaires distinctes) ;</li>
+        <li>les sources et les doublons sont contrôlés.</li>
+      </ul>
+    </div>
+    <p>
+      Ces décisions sont distinctes : <em>valider</em> une affaire, <em>l'autoriser sur la carte</em>, puis <em>approuver sa fiche individuelle</em>.
+      Une affaire publiée sur la carte n'a donc pas forcément de fiche.
+    </p>
+
+    <h2>5. Formulations selon l'état judiciaire</h2>
+    <p>
+      Le vocabulaire dépend de l'<em>état judiciaire</em> connu. Aucune affirmation n'est faite en nom propre :
+      la phrase indique toujours qui rapporte l'information (« Selon <em>média</em>, … »).
+      Une mention rappelle, tant qu'aucune décision n'est intervenue, que l'étape en cours ne vaut pas culpabilité.
     </p>
     <table>
       <thead>
-        <tr><th>Statut judiciaire</th><th>Phrase affichée</th></tr>
+        <tr><th>État judiciaire</th><th>Formulation</th></tr>
       </thead>
       <tbody>
-        <tr><td>Plainte</td><td><em>« Une plainte a été déposée selon une source publique. »</em></td></tr>
-        <tr><td>Enquête</td><td><em>« Une enquête est en cours selon une source publique. »</em></td></tr>
-        <tr><td>Mise en examen</td><td><em>« Une mise en examen a été prononcée selon une source publique. »</em></td></tr>
-        <tr><td>Procès</td><td><em>« Un procès est en cours selon une source publique. »</em></td></tr>
-        <tr><td>Condamnation non définitive</td><td><em>« Une condamnation non définitive a été prononcée selon une source publique. »</em></td></tr>
-        <tr><td>Condamnation définitive</td><td><em>« Une condamnation définitive a été prononcée selon une source publique. »</em></td></tr>
-        <tr><td>Relaxe / non-lieu / classement</td><td><em>« Une relaxe / un non-lieu / un classement a été prononcé selon une source publique. »</em></td></tr>
+        <tr><td>Plainte</td><td><em>« Selon …, une plainte a été déposée. »</em></td></tr>
+        <tr><td>Enquête</td><td><em>« Selon …, une enquête a été ouverte. »</em></td></tr>
+        <tr><td>Mise en examen</td><td><em>« Selon …, une mise en examen a été prononcée. »</em></td></tr>
+        <tr><td>Procès</td><td><em>« Selon …, un procès s'est tenu le … »</em> seulement si la date du procès est établie ; sinon <em>« l'affaire est au stade du procès (audience annoncée ou déjà tenue) »</em>. Une audience annoncée n'est pas un procès tenu.</td></tr>
+        <tr><td>Condamnation non définitive</td><td><em>« Selon …, une condamnation non définitive a été prononcée. »</em></td></tr>
+        <tr><td>Condamnation définitive</td><td><em>« Selon …, une condamnation définitive a été prononcée. »</em></td></tr>
+        <tr><td>Relaxe / non-lieu / classement</td><td><em>« Selon …, une relaxe, un non-lieu ou un classement a été prononcé. »</em></td></tr>
       </tbody>
     </table>
-
-    <h2>5. Statut des faits — code couleur</h2>
-    <p>La couleur du pin sur la carte reflète le statut <em>des faits</em>, distinct du statut judiciaire :</p>
     <ul>
-      <li><span class="legend-dot" style="background:#c0392b"></span> <strong>Allégué</strong> — les faits sont rapportés mais ne sont pas (encore) judiciairement retenus.</li>
-      <li><span class="legend-dot" style="background:#e67e22"></span> <strong>Retenu par jugement non définitif</strong> — une condamnation a été prononcée mais reste susceptible d'appel.</li>
-      <li><span class="legend-dot" style="background:#7d3c98"></span> <strong>Établi judiciairement</strong> — décision définitive (appel épuisé ou délai dépassé).</li>
-      <li><span class="legend-dot" style="background:#7f8c8d"></span> <strong>Autre / non précisé</strong> — situation atypique (relaxe partielle, faits mixtes, etc.).</li>
+      <li><strong>Appel :</strong> quand un appel est rapporté, la phrase nomme la décision attaquée (« un appel a été formé contre cette relaxe : elle n'est pas définitive »).</li>
+      <li><strong>Aucun appel rapporté</strong> ne veut pas dire décision définitive : tant que les sources ne le disent pas, la fiche écrit que la décision est présentée comme non définitive.</li>
+      <li><strong>Situations mixtes</strong> (relaxe partielle, faits distincts) : il n'existe pas d'état dédié ; elles sont décrites dans le texte de la fiche quand elles sont connues.</li>
     </ul>
 
-    <h2>6. Ce qui n'est jamais publié</h2>
+    <h2>6. Code couleur de la carte</h2>
+    <p>La couleur d'un point reflète l'état judiciaire connu :</p>
+    <ul>
+      <li><span class="legend-dot" style="background:#E63946"></span> <strong>Condamné</strong> — condamnation, définitive ou non ;</li>
+      <li><span class="legend-dot" style="background:#457B9D"></span> <strong>En cours</strong> — enquête, mise en examen ou procès (audience annoncée comprise) ;</li>
+      <li><span class="legend-dot" style="background:#D97706"></span> <strong>Allégué / plainte</strong> — faits rapportés, pas encore de procédure avancée connue ;</li>
+      <li><span class="legend-dot" style="background:#2D6A4F"></span> <strong>Classé / relaxé</strong> — relaxe, non-lieu ou classement (un appel éventuel est signalé).</li>
+    </ul>
+
+    <h2>7. Ce qui n'est jamais publié</h2>
     <div class="callout callout-danger">
       <strong>Principes éditoriaux non négociables :</strong>
       <ul>
         <li>Aucun nom de personne mise en cause n'est publié.</li>
         <li>Aucun nombre exact d'enfants concernés n'est publié — on utilise <code>1 enfant</code>, <code>plusieurs enfants</code> ou <code>non précisé</code>.</li>
         <li>Aucun détail graphique ou sexuel n'est publié.</li>
-        <li>Aucune affirmation n'est faite en nom propre — toujours « une source publique rapporte que… ».</li>
+        <li>Aucune affirmation n'est faite en nom propre : l'information est toujours attribuée à sa source.</li>
       </ul>
     </div>
 
-    <h2>7. Géolocalisation</h2>
+    <h2>8. Localisation</h2>
     <p>
-      Les coordonnées affichées proviennent, par ordre de précision :
-    </p>
-    <ol>
-      <li><strong>Annuaire de l'éducation</strong> (<code>data.education.gouv.fr</code>) — coordonnées GPS de l'établissement scolaire.</li>
-      <li><strong>Base Adresse Nationale</strong> (<code>api-adresse.data.gouv.fr</code>) — adresse de la rue éponyme.</li>
-      <li><strong>Centroïde de la commune ou de l'arrondissement</strong> — uniquement quand les deux précédents échouent. Dans ce cas, un avertissement <em>« localisation approximative »</em> est affiché dans la popup.</li>
-    </ol>
-    <p>
-      L'imprécision est donc <em>déclarée</em> et non masquée. Aucun pin ne pointe vers une adresse
-      personnelle ni vers un domicile.
+      Le point affiché est celui de l'établissement quand ses coordonnées sont connues, sinon celui de la commune ou de l'arrondissement.
+      Dans ce second cas, un avertissement <em>« localisation approximative »</em> est affiché.
+      Aucun point ne désigne une adresse personnelle ni un domicile.
     </p>
 
-    <h2>8. Mise à jour et retrait</h2>
-    <p>Chaque fiche est vérifiée à intervalle régulier. Une affaire peut être :</p>
-    <ul>
-      <li><strong>Modifiée</strong> si le statut judiciaire évolue (par exemple : enquête → mise en examen, condamnation non définitive → définitive ou cassée en appel) ;</li>
-      <li><strong>Retirée</strong> en cas de relaxe définitive, de classement sans suite, de retrait de plainte avéré, ou à la demande motivée d'une personne concernée (cf. <a href="/mentions-legales#droit-de-reponse">droit de réponse</a>).</li>
-    </ul>
+    <h2>9. Mise à jour et retrait</h2>
+    <p>
+      sousnosyeux recherche régulièrement les évolutions publiquement rapportées. Les informations nouvelles sont examinées
+      avant d'être intégrées au site ; un changement d'état n'est pas appliqué sans validation.
+      Toutes les affaires ne sont pas nécessairement suivies avec la même profondeur, et la mise à jour n'est pas instantanée.
+      <strong>Une absence de nouvelle information connue ne signifie pas qu'aucun événement ne s'est produit.</strong>
+    </p>
+    <p>
+      Une affaire reste visible avec son état à jour, y compris après une relaxe ou un classement.
+      Elle peut être modifiée, mise en attente ou retirée en cas d'erreur, ou à la demande motivée d'une personne concernée
+      (cf. <a href="/mentions-legales#droit-de-reponse">droit de réponse</a>).
+    </p>
 
-    <h2>9. Limites assumées</h2>
+    <h2>10. Limites assumées</h2>
     <ul>
-      <li>Le site dépend de ce que la presse publie : des affaires non médiatisées n'apparaîtront pas.</li>
-      <li>Le score est attribué humainement et reste un jugement éditorial — il n'est pas infaillible.</li>
-      <li>L'absence d'une affaire sur la carte ne signifie pas qu'elle n'existe pas.</li>
+      <li>Le site dépend de ce que la presse publie et de ce qui est accessible : des affaires non médiatisées n'apparaîtront pas.</li>
+      <li>La couverture n'est pas exhaustive, et l'absence d'une affaire sur la carte ne signifie pas qu'elle n'existe pas.</li>
+      <li>Les informations sont parfois incomplètes, et la date exacte d'un événement est parfois inconnue.</li>
+      <li>Le score est attribué par une personne : c'est un jugement éditorial, pas une mesure infaillible.</li>
+      <li>Le nombre de fiches ne mesure ni la fréquence des faits, ni un niveau de risque : il ne permet aucune comparaison entre territoires ou établissements.</li>
       <li>La présence d'une affaire sur la carte ne préjuge en rien de la culpabilité de qui que ce soit.</li>
     </ul>
 
-    <h2>10. Demander une correction</h2>
+    <h2>11. Demander une correction</h2>
     <p>
-      Toute personne directement concernée par une fiche (établissement, mise en cause, victime,
+      Toute personne directement concernée par une fiche (établissement, mis en cause, victime,
       famille, employeur) peut demander une rectification ou un retrait. Voir
       <a href="/mentions-legales#droit-de-reponse">la procédure de droit de réponse</a>.
+    </p>
+
+    <p class="mini">
+      À terme, sousnosyeux pourrait également s'enrichir de contributions locales vérifiées et d'analyses transversales
+      pour mieux comprendre les réponses apportées aux situations documentées. Ces fonctionnalités ne font pas partie du fonctionnement actuel.
     </p>
   </article>
 
@@ -156,5 +191,6 @@ import Layout from '../layouts/Layout.astro';
       margin-right: 0.3rem; vertical-align: middle;
       border: 1.5px solid #fff; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
     }
+    .mini { margin-top: 2rem; font-size: 0.85rem; color: var(--muted); }
   </style>
 </Layout>
