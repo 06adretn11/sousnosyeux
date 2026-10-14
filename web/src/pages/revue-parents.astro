@@ -1,85 +1,92 @@
 ---
-// Page de relecture destinée aux parents : rappel du projet, fonctionnement, et les trois types de pages à valider (Home, Hubs, Fiches).
-// Hors navigation, noindex : on y accède par le lien partagé. Aucun formulaire ni collecte : le retour se fait par e-mail, à l'initiative de la personne.
+// Page temporaire de retours, partagée directement avec quelques proches. Hors navigation. `noindex` demande aux moteurs de ne pas l'indexer,
+// mais l'URL reste publique et partageable : ce n'est pas un dispositif de confidentialité.
+// Aucun formulaire ni collecte : le retour se fait par e-mail, à l'initiative de la personne.
 import Layout from '../layouts/Layout.astro';
 
 const QUESTIONS = [
-  'Carte (page d’accueil) : comprenez-vous ce que montre la carte, et ce qu’elle ne dit pas ?',
-  'Pages territoire : voyez-vous l’intérêt de regarder un quartier ou une région plutôt qu’une affaire isolée ?',
-  'Fiches : la situation judiciaire est-elle claire dès les premières lignes ? Les paroles citées sont-elles bien attribuées ?',
-  'Y a-t-il une phrase qui vous a inquiété·e, choqué·e ou qui vous a semblé affirmer plus que la source ?',
-  'Qu’auriez-vous voulu savoir et qui manque ?',
+  'Sur le fond : les informations vous semblent-elles utiles, suffisamment précises et bien contextualisées ? Qu’est-ce qui manque ?',
+  'Sur la forme : le site est-il clair, agréable à consulter et facile à parcourir ?',
+  'Sur la confiance : les sources, les formulations et les précautions prises vous semblent-elles adaptées ?',
+  'Pour la suite : qu’aimeriez-vous voir apparaître ou approfondir ?',
 ];
-const mailto = `mailto:contact@sousnosyeux.org?subject=${encodeURIComponent('Relecture sousnosyeux')}&body=${encodeURIComponent(
-  QUESTIONS.map((q, i) => `${i + 1}. ${q}\n\n`).join('') + 'Vous pouvez répondre sans donner votre nom.\n',
+const mailto = `mailto:contact@sousnosyeux.org?subject=${encodeURIComponent('Mon avis sur sousnosyeux')}&body=${encodeURIComponent(
+  'Quelques remarques spontanées suffisent, positives ou critiques. Vous pouvez supprimer les questions auxquelles vous ne souhaitez pas répondre.\n\n' +
+    QUESTIONS.map((q, i) => `${i + 1}. ${q}\n\n`).join(''),
 )}`;
 ---
 
 <Layout
-  title="Relire sousnosyeux avec nous"
-  description="Page de relecture : le projet en quelques lignes et les trois types de pages à valider."
+  title="Aidez-nous à améliorer sousnosyeux"
+  description="Première version de sousnosyeux : nous aimerions avoir votre avis."
   noindex
 >
   <article class="prose">
-    <h1>Relire sousnosyeux avec nous</h1>
+    <h1>Aidez-nous à améliorer sousnosyeux</h1>
     <p class="lede">
-      Merci de prendre quelques minutes. Nous sommes deux parents parisiens ; nous construisons <strong>sousnosyeux</strong>
-      et nous voulons savoir si ce que nous publions est <em>clair, juste et utile</em> pour d’autres parents.
+      Nous avons créé une première version de sousnosyeux, un site qui rassemble et suit les affaires publiquement rapportées
+      concernant des structures accueillant des mineurs.
+      Nous aimerions avoir votre avis sur ce premier résultat : est-ce clair, fiable, facile à utiliser et surtout utile ?
+      Vos critiques et suggestions nous aideront à décider comment le faire évoluer.
     </p>
 
     <h2>Le projet, en bref</h2>
     <p>
-      sousnosyeux est une carte publique des affaires signalées dans les structures qui accueillent des mineurs en France
-      (crèches, écoles, périscolaire…). Il n’y a pas de mémoire collective de ces affaires : nous les rassemblons au même endroit.
+      Aujourd’hui, sousnosyeux rassemble des informations issues de la presse, retrace le déroulement des affaires
+      et documente les réactions publiques connues.
+    </p>
+    <p>
+      À terme, notre ambition est d’aller plus loin : enrichir cette mémoire grâce aux contributions de citoyens et d’acteurs locaux,
+      mieux documenter les réponses apportées et développer des analyses permettant de comprendre la situation dans son ensemble,
+      au-delà des affaires individuelles.
     </p>
 
     <h2>Comment ça fonctionne</h2>
     <ul>
-      <li>Nous <strong>relayons uniquement des affaires déjà rapportées par la presse</strong> ; chaque information renvoie à son article.</li>
-      <li>Nous <strong>ne publions jamais le nom</strong> de la personne mise en cause, ni le nombre exact d’enfants, ni de détails graphiques.</li>
-      <li><strong>Présomption d’innocence</strong> : on distingue toujours allégation, enquête, procès, condamnation, relaxe.</li>
-      <li>Rien n’est publié sans <strong>validation humaine</strong>, et ce qui change dans une affaire est mis à jour après vérification.</li>
-      <li>Ce que l’on ne sait pas est écrit sur la page. Plus de détails : <a href="/methodologie">méthodologie</a>.</li>
+      <li>Les informations publiées sont <strong>sourcées</strong> et font l’objet de <strong>contrôles avant publication</strong>.</li>
+      <li>Nous distinguons les <strong>faits allégués</strong>, les <strong>procédures judiciaires</strong> et les <strong>décisions</strong>, dans le respect de la présomption d’innocence.</li>
+      <li>Nous indiquons <strong>ce qui reste inconnu</strong> et ne cherchons pas à présenter une vision exhaustive de la situation.</li>
     </ul>
+    <p>Pour le détail : la <a href="/methodologie">méthodologie</a>.</p>
 
-    <h2>Les trois types de pages à valider</h2>
+    <h2>Trois façons de découvrir le site</h2>
 
-    <h3>1. La carte (page d’accueil)</h3>
-    <p>Toutes les affaires publiées, avec leur état judiciaire. Cliquez sur une affaire pour la voir de près.</p>
+    <h3>1. La carte — voir les affaires documentées</h3>
+    <p>Une vue d’ensemble des affaires publiées, avec leur localisation et leur situation judiciaire connue.</p>
     <p><a class="btn" href="/">Ouvrir la carte →</a></p>
 
-    <h3>2. Les pages territoire (Hubs)</h3>
-    <p>Un quartier ou une région : les affaires qui s’y trouvent, le déroulé, les réponses publiques, ce qu’on ne sait pas.</p>
+    <h3>2. Les territoires — comprendre le contexte local</h3>
+    <p>Des pages qui regroupent les affaires d’un territoire et documentent les réactions publiques, les décisions et les initiatives connues.</p>
     <ul>
       <li><a href="/territoires/paris-11e/">Paris 11e</a></li>
       <li><a href="/territoires/bordeaux-gironde/">Bordeaux / Gironde</a></li>
       <li><a href="/territoires/hautes-alpes/">Hautes-Alpes</a></li>
     </ul>
 
-    <h3>3. Les fiches individuelles</h3>
-    <p>Une affaire en détail : où en est la justice, qui a dit quoi (attribué et sourcé), le déroulé daté, les sources et les inconnues.</p>
+    <h3>3. Les fiches — suivre une affaire dans le temps</h3>
+    <p>Le déroulement de chaque affaire, les étapes judiciaires, les prises de parole publiques, les sources et les inconnues.</p>
     <ul>
-      <li><a href="/affaires/poc-09/">École Titon — Paris 11e</a></li>
-      <li><a href="/affaires/fr-2026-0042/">Collège Jules-Ferry — Delle</a></li>
-      <li><a href="/affaires/fr-2026-0114/">Centre de loisirs — Cenon</a></li>
+      <li><a href="/affaires/poc-09/">École Titon</a></li>
+      <li><a href="/affaires/fr-2026-0042/">Collège Jules-Ferry</a></li>
+      <li><a href="/affaires/fr-2026-0114/">Centre de loisirs de Cenon</a></li>
     </ul>
 
     <h2>Vos retours</h2>
-    <p>Quelques questions pour guider votre lecture. Répondez à celles que vous voulez, en vrac, sans donner votre nom si vous préférez.</p>
+    <p>Quelques remarques spontanées suffisent, positives ou critiques. Pas besoin de répondre à toutes les questions.</p>
     <ol>
       {QUESTIONS.map((q) => <li>{q}</li>)}
     </ol>
-    <p><a class="btn" href={mailto}>Répondre par e-mail →</a> <span class="mini">contact@sousnosyeux.org — uniquement ce que vous choisissez d’écrire.</span></p>
+    <p><a class="btn" href={mailto}>Répondre par e-mail →</a> <span class="mini">contact@sousnosyeux.org</span></p>
 
-    <div class="callout callout-info">
-      Ces pages sont réelles et sourcées, mais le site est en construction : elles peuvent évoluer après vos retours.
-      Une erreur, une évolution judiciaire, une relaxe ? Écrivez-nous.
-    </div>
+    <p class="mini fin">
+      Cette première version est encore en construction. Vos retours nous aideront à en améliorer le contenu et la présentation.
+    </p>
   </article>
 
   <style>
     .btn { display: inline-block; padding: 0.5rem 0.9rem; background: var(--blue); color: #fff !important; border-radius: 4px; font-weight: 700; text-decoration: none; }
     .mini { font-size: 0.8rem; color: var(--muted); margin-left: 6px; }
+    .fin { margin: 2rem 0 0; }
     .prose h3 { margin: 1.4rem 0 0.3rem; }
   </style>
 </Layout>
