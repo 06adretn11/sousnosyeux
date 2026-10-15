@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 64,
+    "total_cases": 65,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1487,6 +1487,65 @@
           "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
           "media": "Midi Libre (AFP)",
           "publication_date": "2026-09-25",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "etablissement": "Centre de loisirs de l'école maternelle Terra Amata",
+      "commune": "Nice",
+      "departement": "Alpes-Maritimes",
+      "type_structure": "centre de loisirs",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 43.71273,
+      "lng": 7.255313,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-02-11",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "media": "20 Minutes",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+          "media": "France 3 Régions",
+          "publication_date": "2026-10-02",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+          "media": "Nice-Matin",
+          "publication_date": "2026-10-05",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+          "media": "Nice-Matin",
+          "publication_date": "2026-10-03",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "media": "TF1 Info",
+          "publication_date": "2026-02-12",
           "source_type": "presse",
           "is_primary": false
         }
