@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 59,
+    "total_cases": 60,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1387,6 +1387,37 @@
           "url": "https://www.rennes-infos-autrement.fr/saint-aubin-daubigne-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineures/",
           "media": "Rennes Infos Autrement",
           "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0119",
+      "etablissement": "Centre aéré (école maternelle non nommée)",
+      "commune": "Morières-lès-Avignon",
+      "departement": "Vaucluse",
+      "type_structure": "centre de loisirs",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 43.937708,
+      "lng": 4.902339,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+          "media": "La Provence",
+          "publication_date": "2026-06-26",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+          "media": "Midi Libre (AFP)",
+          "publication_date": "2026-06-22",
           "source_type": "presse",
           "is_primary": false
         }
