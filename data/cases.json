@@ -3,11 +3,11 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 58,
+    "total_cases": 59,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-12"
+    "generated_at": "2026-10-15"
   },
   "cases": [
     {
@@ -1311,6 +1311,44 @@
           "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
           "media": "ici",
           "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0116",
+      "etablissement": "École de Mées (type non précisé)",
+      "commune": "Mées",
+      "departement": "Landes",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "procès",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "lat": 43.707681,
+      "lng": -1.116278,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-09-25",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+          "media": "ICI Gascogne",
+          "publication_date": "2026-09-25",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-09-29",
           "source_type": "presse",
           "is_primary": false
         }
