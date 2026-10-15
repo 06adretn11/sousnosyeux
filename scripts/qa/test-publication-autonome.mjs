@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { etatPublication, goPublication } from '../lib/publication-gates.mjs';
+import { etatPublication, goPublication, categorieDiagnostic } from '../lib/publication-gates.mjs';
 import { ecartsSite } from '../lib/ecarts-site.mjs';
 
 let n = 0; const t = (nom, f) => { f(); n++; console.log(`  ✓ ${nom}`); };
@@ -110,5 +110,57 @@ t('les deux workflows : suite autorisée → QA → push ; seuil d’activation 
   }
   assert.ok(src('.github/workflows/sny-telegram.yml').includes('OUTCOME_reconcile'));
 });
+
+
+// --- aucune validation ne disparaît : chaque affaire validée a une catégorie de diagnostic explicite ------------------------------
+const diag = (c = {}, o = {}) => categorieDiagnostic({ ...base, ...c }, ctx(o));
+console.log('\n  DIAGNOSTIC — aucune affaire validée ne disparaît silencieusement\n  ' + '─'.repeat(70));
+t('validation de création attribuée à un autre qu’Adrien → DECISION_CONFLICT (jamais silencieuse, jamais proposée)', () => {
+  const o = { revues: [R('VALIDATED — règle conditionnelle', 'validé', 'Claude — règle conditionnelle d’Adrien')] };
+  assert.equal(cand({}, o).etat, 'DECISION_CONFLICT');
+  assert.equal(diag({}, o).categorie, 'DECISION_CONFLICT');
+});
+t('candidate jamais validée → hors entonnoir (NON_VALIDEE), pas un conflit', () => assert.equal(diag({}, { revues: [] }).categorie, 'NON_VALIDEE'));
+t('un simple rattachement (RAPPROCHER) n’est ni une validation ni un conflit', () =>
+  assert.equal(diag({}, { revues: [R('[Discovery-auto:ab12cd34] RAPPROCHER — 2 article(s)', 'validé', 'Claude (script)')] }).categorie, 'NON_VALIDEE'));
+t('VALIDATE éligible sans proposition → MISSING_PROPOSAL, avec l’action attendue', () => {
+  const d = diag({}, { proposition: null, localisable: true });
+  assert.equal(d.categorie, 'MISSING_PROPOSAL'); assert.ok(/proposer-publication/.test(d.action));
+});
+t('proposition existante non décidée → AWAITING_GO (aucune duplication : une seule ligne par affaire)', () =>
+  assert.equal(diag({}, { proposition: { decision: null }, localisable: true }).categorie, 'AWAITING_GO'));
+t('éligible mais sans localisation fiable → BLOCKED explicite (jamais MISSING_PROPOSAL)', () => {
+  const d = diag({ lat: null, lng: null }, { proposition: null, localisable: false });
+  assert.equal(d.categorie, 'BLOCKED'); assert.ok(/localisation/.test(d.raisons[0]));
+});
+t('API d’adresse en panne (localisable inconnu) → on ne conclut pas à un blocage', () => assert.equal(diag({}, { proposition: null, localisable: null }).categorie, 'MISSING_PROPOSAL'));
+t('GO donné sur la proposition mais candidate encore → GO_STUCK (reprise)', () => assert.equal(diag({}, { proposition: { decision: 'ACCEPT' } }).categorie, 'GO_STUCK'));
+t('publiée avec GO, absente de l’artefact → GO_STUCK (reprise de projection)', () => {
+  const d = categorieDiagnostic({ ...base, publication_status: 'publiée' }, ctx({ revues: [CREATE(), GO()] }));
+  assert.equal(d.categorie, 'GO_STUCK');
+});
+t('dans l’artefact mais pas sur le site servi → GO_STUCK ; site non contrôlé ou conforme → PUBLIC (NO_ACTION)', () => {
+  const art = new Map([['FR-2026-9001', { ...base }]]);
+  const c = { ...base, publication_status: 'publiée' };
+  assert.equal(categorieDiagnostic(c, ctx({ revues: [CREATE(), GO()], artefact: art, servie: false })).categorie, 'GO_STUCK');
+  assert.equal(categorieDiagnostic(c, ctx({ revues: [CREATE(), GO()], artefact: art, servie: true })).categorie, 'PUBLIC');
+  assert.equal(categorieDiagnostic(c, ctx({ revues: [CREATE(), GO()], artefact: art, servie: null })).categorie, 'PUBLIC');
+});
+t('HOLD → HOLD (candidate comme publiée) ; REVIEW (« à corriger ») → REVIEW ; retirer → REJECT', () => {
+  assert.equal(diag({}, { holds: new Set(['FR-2026-9001']) }).categorie, 'HOLD');
+  assert.equal(diag({}, { revues: [CREATE(), R('REVIEW — à reprendre', 'à corriger')] }).categorie, 'REVIEW');
+  assert.equal(diag({}, { revues: [CREATE(), R('Retirée', 'retirer')] }).categorie, 'REJECT');
+  assert.equal(categorieDiagnostic({ ...base, publication_status: 'retirée' }, ctx()).categorie, 'REJECT');
+});
+t('doublon possible → BLOCKED (cause explicite)', () => {
+  const d = diag({}, { autres: [{ case_id: 'FR-2026-9002', commune: 'Ville', type_structure: 'centre de loisirs', role_mis_en_cause: 'animateur' }], localisable: true });
+  assert.equal(d.categorie, 'BLOCKED'); assert.ok(/doublon/.test(d.raisons.join(' ')));
+});
+t('rejeu : le diagnostic est une fonction pure (même entrée, même sortie)', () => {
+  const o = { proposition: null, localisable: true };
+  assert.deepEqual(diag({}, o), diag({}, o));
+});
+t('la validation ancienne (arriéré) reste visible : MISSING_PROPOSAL, pas oubliée', () =>
+  assert.equal(diag({}, { revues: [CREATE(avant)], proposition: null, localisable: true }).categorie, 'MISSING_PROPOSAL'));
 
 console.log(`\n  ${n} contrôles : OK\n`);

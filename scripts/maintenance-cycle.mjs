@@ -395,6 +395,28 @@ const dateCoherente = (eventDate, fenetre) => {
   return e >= Date.parse(fenetre.debut) - 30 * JOUR_MS && e <= Date.parse(fenetre.fin || fenetre.debut) + 10 * JOUR_MS;
 };
 
+/** Réponses publiques NOUVELLES d'un article (absentes de la mémoire de l'affaire). Pas de modèle : vocabulaire et libellés fermés. */
+function reactionsDe(fiche, article, corps) {
+  const connus = libellesConnus.get(fiche.case_id) || new Set();
+  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: String(article.publication_date || '').slice(0, 4) || null })
+    .filter((x) => x.libelle_public && !connus.has(x.libelle_public));
+  F.reactions_nouvelles += r.length;
+  return r;
+}
+/** Proposition ENRICHMENT SÉPARÉE (version « +reactions ») : décision et effets distincts du changement d'état ; idempotente. */
+async function ecrireReactions(base, reactions) {
+  if (DRY || !reactions.length) return;
+  const faits = reactions.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
+  const r2 = await enregistrerProposition(sql, {
+    ...base, version: `${base.version || PRIMITIVE_VERSION}+reactions`,
+    engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
+    PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
+    _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
+    RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee})`).join(' ; ')}`,
+  });
+  if (!r2.deja_presente) F.propositions_reactions++;
+}
+
 async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = null, fenetre = null, arbitre = false }) {
   let corps = '';
   if (page?.ok) corps = page.corps;
@@ -432,6 +454,16 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
     const prev = analysesFaites.get(cleAnalyse);
     const s = SORTIE_DE_ACTION[prev.analysis_action] || 'AMBIGUOUS';
     F[s]++;
+    // Un article analysé avant que les réponses publiques soient extraites : aucun appel modèle, le corps est déjà lu.
+    if (prev.rattachement === 'OK') {
+      const rx = reactionsDe(fiche, article, corps);
+      if (rx.length && !DRY) {
+        await assurerArticle(sql, article);
+        await ecrireReactions({ case_id: fiche.case_id, article_id: article.article_id, content_fingerprint: article.content_fingerprint,
+          version: CONTRAT_V2 ? CONTRAT.CONTRAT_VERSION : contratVersion(), rattachement: 'OK', CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire },
+          SOURCE_DATE: article.publication_date || null, finalite: 'inconnue', REQUIRES_HUMAN_REVIEW: true }, rx);
+      }
+    }
     const { acteEtabli, suffisante } = suffisance({
       moteur: MOTEUR, rattachement: prev.rattachement, evidence: prev.evidence, evidenceInvalide: prev.evidence_invalide,
       acte, dateOk: dateCoherente(prev.event_date, fenetre), arbitre,
@@ -509,13 +541,7 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
   // publiques nouvelles (cas Villeurbanne, 15/10/2026 : le seul fait retenu était un rappel judiciaire, l'audit, la commission et le
   // plan de formation de la Ville étaient perdus). Elles forment une proposition ENRICHMENT SÉPARÉE (version « +reactions ») :
   // décision et effets distincts de ceux du changement d'état. Aucun appel modèle : vocabulaire fermé, libellés publics fermés.
-  let reactionsNouvelles = [];
-  if (out.rattachement === 'OK') {
-    const connus = libellesConnus.get(fiche.case_id) || new Set();
-    reactionsNouvelles = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: String(article.publication_date || '').slice(0, 4) || null })
-      .filter((x) => x.libelle_public && !connus.has(x.libelle_public));
-    F.reactions_nouvelles += reactionsNouvelles.length;
-  }
+  const reactionsNouvelles = out.rattachement === 'OK' ? reactionsDe(fiche, article, corps) : [];
 
   // --- garde-fou de fiabilité ---------------------------------------
   // Le moteur `rules` a été validé sur des corps d'articles RECONSTITUÉS
@@ -558,17 +584,7 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
     if (p.deja_presente) F.propositions_deja_presentes++;
     else if (ACTION === 'STATE_CHANGE' || ACTION === 'AMBIGUOUS') F.propositions_ecrites++;
     else F.analyses_ecrites++;
-    if (reactionsNouvelles.length) {
-      const faits = reactionsNouvelles.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
-      const r2 = await enregistrerProposition(sql, {
-        ...out, article_id: article.article_id, version: `${out.version || PRIMITIVE_VERSION}+reactions`,
-        engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
-        PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
-        _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
-        RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee})`).join(' ; ')}`,
-      });
-      if (!r2.deja_presente) F.propositions_reactions++;
-    }
+    await ecrireReactions({ ...out, article_id: article.article_id }, reactionsNouvelles);
   }
 
   // SUFFISANCE (doctrine SOURCE_EVIDENCE) : la source est rattachée par le
