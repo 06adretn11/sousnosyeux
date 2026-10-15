@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 63,
+    "total_cases": 64,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1570,6 +1570,58 @@
           "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
           "media": "ici",
           "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0137",
+      "etablissement": "école maternelle Julie-Victoire Daubié",
+      "commune": "Soyaux",
+      "departement": "Charente",
+      "type_structure": "autre",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 45.639166,
+      "lng": 0.198152,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-instituteur-d-une-ecole-maternelle-en-charente-vise-par-une-enquete-pour-agressions-sexuelles-et-viol-sur-plusieurs-enfants_8237044.html",
+          "media": "France Info",
+          "publication_date": "2026-10-14",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://actu.fr/nouvelle-aquitaine/soyaux_16374/pres-d-angouleme-un-enseignant-soupconne-de-viol-et-d-agressions-sexuelles-sur-cinq-fillettes-en-maternelle_64923608.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-10-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lamontagne.fr/soyaux-16800/faits-divers/baisers-imposes-gestes-au-niveau-du-sexe-un-instituteur-mis-en-examen-pour-agressions-sexuelles-sur-quatre-enfants_15063632/",
+          "media": "La Montagne",
+          "publication_date": "2026-10-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/10/14/malgre-les-plaintes-on-lui-a-confie-une-classe-de-petite-section-a-la-rentree-un-instituteur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-ses-13601628.php",
+          "media": "Midi Libre",
+          "publication_date": "2026-10-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/societe/faits-divers/en-charente-un-instituteur-mis-en-examen-pour-des-agressions-sexuelles-sur-quatre-enfants-08cb91a0-c7f8-11f1-9522-1f9ae0711c0a",
+          "media": "Ouest-France",
+          "publication_date": "2026-10-14",
           "source_type": "presse",
           "is_primary": false
         }
