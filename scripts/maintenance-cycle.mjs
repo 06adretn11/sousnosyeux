@@ -56,6 +56,7 @@ import {
   suffisance, entreeCache, entreeDepuisBase, evenementDejaValide,
 } from './lib/routage-veille.mjs';
 import { trouverSources, canonique } from './lib/preuve-claim.mjs';
+import { extraireReactions, dateEcrite } from './lib/evenement-institutionnel.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const A = process.argv.slice(2);
@@ -174,8 +175,17 @@ const analysesFaites = new Map(
                     facts, statut_propose, event_date::text as event_date,
                     payload->>'rattachement' as rattachement, payload->>'_claim' as claim,
                     payload->'_evidence' as ev, payload->>'_evidence_invalide' as evinv
-             from state_proposals where analysis_action is not null`)
+             from state_proposals where analysis_action is not null
+              -- les lignes « +reactions » portent les réponses publiques d'un article, pas son analyse judiciaire : jamais une mémoire d'analyse
+              and primitive_version not like '%+reactions'`)
     .map((a) => [`${a.case_id}|${a.article_id}|${a.content_fingerprint}|${a.engine}`, entreeDepuisBase(a)]));
+
+// Réponses publiques DÉJÀ consignées (libellé public d'un événement institutionnel) : une information déjà connue n'est pas reproposée.
+const libellesConnus = new Map();
+for (const e of await sql`select case_id, libelle_public from case_events where libelle_public is not null`) {
+  if (!libellesConnus.has(e.case_id)) libellesConnus.set(e.case_id, new Set());
+  libellesConnus.get(e.case_id).add(e.libelle_public);
+}
 
 // ARBITRAGES HUMAINS PERSISTÉS. Un rattachement (affaire, article) déjà accepté par un humain
 // (`state_proposals.decision = ACCEPT`, décideur non machine) n'est jamais redemandé : il remplace
@@ -332,6 +342,9 @@ async function viaModele({ fiche, article, modele, F }) {
       if (!verifiees.length) return [];
       return [{
         event_type: reponse.event_type, event_date: dateISO(reponse.event_date),
+        // Fait rapporté sans jour (« en juin 2026 ») : la période est conservée telle qu'écrite, le jour n'est jamais inventé,
+        // et la date de l'article n'est jamais prise pour celle du fait.
+        event_period: dateISO(reponse.event_date) ? null : dateEcrite(verifiees.join(' '), String(article.publication_date || '').slice(0, 4) || null).periode,
         resulting_state: etat(reponse.resulting_state), finality: etat(reponse.finality),
         appeal: reponse.appeal, evidence: verifiees,
       }];
@@ -346,7 +359,7 @@ const F = {
   url_non_resolue: 0, fetch_echoue: 0, qualifies: 0,
   NO_CHANGE: 0, NEW_SOURCE_NO_STATE_CHANGE: 0, STATE_CHANGE_CANDIDATE: 0,
   AMBIGUOUS: 0, SOURCE_ACCESS_BLOCKED: 0, SOURCE_REVIEW_REQUIRED: 0,
-  propositions_ecrites: 0, propositions_deja_presentes: 0,
+  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0,
   appels_llm: 0, fetches: 0, octets: 0,
   analyses_ecrites: 0, analyses_reutilisees: 0, evidence_inventee: 0,
   input_tokens: 0, output_tokens: 0, cout_usd: 0,
@@ -492,6 +505,18 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
   else sortie = 'STATE_CHANGE_CANDIDATE';
   F[sortie]++;
 
+  // INFORMATIONS DISTINCTES DU FAIT JUDICIAIRE. Un article peut rappeler un fait connu (ou ancien) ET rapporter des réponses
+  // publiques nouvelles (cas Villeurbanne, 15/10/2026 : le seul fait retenu était un rappel judiciaire, l'audit, la commission et le
+  // plan de formation de la Ville étaient perdus). Elles forment une proposition ENRICHMENT SÉPARÉE (version « +reactions ») :
+  // décision et effets distincts de ceux du changement d'état. Aucun appel modèle : vocabulaire fermé, libellés publics fermés.
+  let reactionsNouvelles = [];
+  if (out.rattachement === 'OK') {
+    const connus = libellesConnus.get(fiche.case_id) || new Set();
+    reactionsNouvelles = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: String(article.publication_date || '').slice(0, 4) || null })
+      .filter((x) => x.libelle_public && !connus.has(x.libelle_public));
+    F.reactions_nouvelles += reactionsNouvelles.length;
+  }
+
   // --- garde-fou de fiabilité ---------------------------------------
   // Le moteur `rules` a été validé sur des corps d'articles RECONSTITUÉS
   // (`fixtures/articles/README.md`), pas sur de la prose de presse
@@ -533,6 +558,17 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
     if (p.deja_presente) F.propositions_deja_presentes++;
     else if (ACTION === 'STATE_CHANGE' || ACTION === 'AMBIGUOUS') F.propositions_ecrites++;
     else F.analyses_ecrites++;
+    if (reactionsNouvelles.length) {
+      const faits = reactionsNouvelles.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
+      const r2 = await enregistrerProposition(sql, {
+        ...out, article_id: article.article_id, version: `${out.version || PRIMITIVE_VERSION}+reactions`,
+        engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
+        PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
+        _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
+        RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee})`).join(' ; ')}`,
+      });
+      if (!r2.deja_presente) F.propositions_reactions++;
+    }
   }
 
   // SUFFISANCE (doctrine SOURCE_EVIDENCE) : la source est rattachée par le

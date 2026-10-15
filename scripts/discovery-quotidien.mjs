@@ -20,8 +20,7 @@ import { createHash } from 'node:crypto';
 import { connecter } from './lib/neon.mjs';
 import { scannerFenetre, GRILLE } from './lib/discovery-presse.mjs';
 import { scannerBing } from './lib/scan-bing.mjs';
-import { aplatir, filtrer } from './lib/capteurs.mjs';
-import { construireIndex, resoudre } from './lib/resolver.mjs';
+import { aplatir, filtrer } from './lib/capteurs.mjs';import { construireIndex, resoudre } from './lib/resolver.mjs';
 import { evaluer } from './lib/qualifier-signal.mjs';
 import { messageDecision } from './lib/discovery-messages.mjs';
 
@@ -117,7 +116,7 @@ for (const gr of grappes) gr.rep = { ...gr.rep, urls: gr.membres.flatMap((m) => 
 const anonymesEcartees = new Set((await sql`select case_id from cases where publication_status = 'retirée' and etablissement ~* 'non nomm'`).map((r) => r.case_id));
 const index = (await construireIndex(sql, {})).filter((f) => !anonymesEcartees.has(f.case_id));
 const cache = new Map();
-const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, geo_ecartes: 0, cout: 0 };
+const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, fusionnes: 0, geo_ecartes: 0, cout: 0 };
 const aEnvoyer = [];
 
 for (const g of grappes) {
@@ -139,7 +138,18 @@ for (const g of grappes) {
   v(`  [${r.statut}] ${s.titre.slice(0, 90)} — ${r.motif}` + (r.proposition ? ` | ${r.proposition.payload.commune} · ${r.proposition.payload.etablissement || '?'} · matches: ${(r.proposition.payload.possible_matches_sny || []).map((m) => m.case_id).join(',') || r.proposition.attach_case_id || '-'} | ${r.proposition.payload.avertissement || ''}` : ''));
   if (r.statut === null) { cp.incidents++; continue; } // non consigné : repris au prochain run
   let statut = r.statut, motif = r.motif, proposalId = null;
-  if (statut === 'propose') {
+  if (statut === 'fusion') {
+    // Même affaire qu'une proposition ouverte : on l'enrichit (jamais une seconde proposition). La mise à jour est gardée par la
+    // décision : si un humain a cliqué entre-temps, rien n'est écrasé et le signal est repris au prochain run.
+    if (DRY) { cp.fusionnes++; statut = 'propose'; }
+    else {
+      const maj = await sql`update new_case_proposals set payload = ${JSON.stringify(r.fusion.payload)}::jsonb
+                             where proposal_id = ${r.fusion.proposal_id}::uuid and applied_at is null and (decision is null or decision = 'REVIEW_REQUIRED')
+                             returning proposal_id::text pid`;
+      if (maj.length) { cp.fusionnes++; statut = 'propose'; proposalId = maj[0].pid; motif = `fusionné dans ${maj[0].pid.slice(0, 8)}`; }
+      else { statut = 'attente'; motif = 'proposition jumelle décidée entre-temps : repris au prochain run'; cp.attente++; }
+    }
+  } else if (statut === 'propose') {
     const p = r.proposition;
     if (DRY) { cp['propose_' + (p.recommendation === 'ATTACH_EXISTING' ? 'attach' : p.recommendation === 'REVIEW' ? 'review' : 'new')]++; aEnvoyer.push(p); }
     else {
@@ -159,7 +169,7 @@ for (const g of grappes) {
 }
 
 console.log(`signaux : ${neufs.length} jamais vus (${filtres.length} filtrés, ${candidatsNeufs.length} candidats) · ${aReexaminer.length} en attente réexaminés · ${expires.length} expirés`);
-console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s), ${cp.geo_ecartes} rapprochement(s) écarté(s) (contradiction géographique) · coût modèle ${cp.cout.toFixed(4)} $`);
+console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.fusionnes} fusionnée(s) dans une proposition ouverte · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s), ${cp.geo_ecartes} rapprochement(s) écarté(s) (contradiction géographique) · coût modèle ${cp.cout.toFixed(4)} $`);
 if (DRY) {
   // Diagnostic privé : le dépôt est public, les logs CI ne montrent que des compteurs. Avec SNY_DIAG_NEON=1, les propositions
   // qu'un run à blanc AURAIT faites sont déposées dans `discovery_dryrun` (jamais lue par un autre script) pour relecture locale.

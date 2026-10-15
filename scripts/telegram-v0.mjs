@@ -19,7 +19,7 @@ import { connecter } from './lib/neon.mjs';
 import { messageDecision, boutons, modeCreation } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
-import { detecterInstitutionnel } from './lib/evenement-institutionnel.mjs';
+import { detecterInstitutionnel, planReactions, moisFr } from './lib/evenement-institutionnel.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -163,8 +163,11 @@ async function decision(cle) {
     console.log('preuve ne suffisant pas à établir ' + p.apres + ' → message INFORMATION, pas de bouton');
     return info(cle);
   }
+  // Fait rapporté sans jour (« en juin 2026 ») dans un article PLUS RÉCENT : la période est dite, pas la date de l'article.
+  const periode = moisFr(p.facts?.find?.((f) => f?.resulting_state === p.apres && f.event_period)?.event_period);
+  const quand = !p.ed && periode ? `\n<i>Fait rapporté comme intervenu en ${esc(periode)} (jour non précisé) — l’article du ${jour(p.publication_date)} le rappelle.</i>` : '';
   return envoyer(
-    `🔄 <b>MAINTENANCE</b> · ⚖️ ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>` +
+    `🔄 <b>MAINTENANCE</b> · ⚖️ ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>${quand}` +
       `\n\nPreuve :\n« ${esc(q)} »` +
       `\n\nSNY a besoin de ta validation.`,
     boutonsEtat(cle),
@@ -179,9 +182,36 @@ const citationsDe = (p) => (Array.isArray(p.facts) ? p.facts.flatMap((f) => f?.e
  * boutons. VALIDATE consigne un événement institutionnel (annoncé ou réalisé) — jamais une transition judiciaire.
  * Sans fait institutionnel net : message d'information, comme avant.
  */
+/**
+ * Réponses publiques extraites d'un article entier (proposition « +reactions », faits structurés avec leur PORTÉE).
+ * Une mesure « territoire » (politique de collectivité visant plusieurs structures) n'est jamais un événement de CETTE affaire :
+ * seule la portée « établissement » donne des boutons ; le reste est dit en information et reste en mémoire privée.
+ */
+async function decisionReactions(cle, p, faits) {
+  const connus = new Set((await sql`select libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null`).map((r) => r.libelle_public));
+  const { neufs, propres, territoire } = planReactions(faits, connus);
+  if (!neufs.length) throw new Error('mesures déjà consignées pour cette affaire : aucune nouvelle demande');
+  const ligne = (f) => `• ${esc(f.libelle_public)} (${esc(f.realisation)}${f.event_period ? ', ' + esc(moisFr(f.event_period)) : f.event_date ? ', ' + esc(jour(f.event_date)) : ''})`;
+  const preuve = (f) => `« ${esc(cut(f.evidence[0], 240))} »`;
+  if (!propres.length) {
+    return envoyer(
+      `🔄 <b>MAINTENANCE</b> · 🏛 ${entete(p)}\n\nINFORMATIONS TERRITORIALES (non rattachées à l’affaire)\nL’article rapporte des mesures de la collectivité qui visent plusieurs structures :\n${territoire.map(ligne).join('\n')}` +
+        `\n\n${preuve(territoire[0])}\n\nAucun changement de la fiche : matière conservée en mémoire pour un éventuel Hub territorial.`,
+    );
+  }
+  return envoyer(
+    `🔄 <b>MAINTENANCE</b> · 🏛 ${entete(p)}\n\nÉVÉNEMENT(S) INSTITUTIONNEL(S) DE CET ÉTABLISSEMENT\n(sans effet sur l’état judiciaire : ${esc(p.courant)})\n${propres.map(ligne).join('\n')}` +
+      `\n\nPreuve :\n${preuve(propres[0])}` +
+      (territoire.length ? `\n\nNon rattaché à l’affaire (portée territoriale) : ${territoire.length} mesure(s) de la collectivité.` : '') +
+      `\n\nSNY a besoin de ta validation.`,
+    boutonsEtat(cle),
+  );
+}
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
   if (p.decision) throw new Error(`déjà décidée (${p.decision}) — rien envoyé`);
+  const structures = Array.isArray(p.facts) ? p.facts.filter((f) => f?.mesure && f.libelle_public && f.evidence?.length) : [];
+  if (p.rat === 'OK' && structures.length) return decisionReactions(cle, p, structures);
   const inst = p.rat === 'OK' ? detecterInstitutionnel(citationsDe(p)) : null;
   if (!inst) return info(cle);
   const [deja] = await sql`select 1 x from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;

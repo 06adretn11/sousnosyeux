@@ -54,6 +54,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Une affaire, une décision (Discovery) · réponses publiques et dates écrites (Maintenance)',
+    script: 'scripts/qa/test-unite-decision.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
     script: 'scripts/qa/test-boucle.mjs',
     bloquant: true,
