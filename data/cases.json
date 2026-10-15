@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 62,
+    "total_cases": 63,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1487,6 +1487,44 @@
           "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
           "media": "Midi Libre (AFP)",
           "publication_date": "2026-09-25",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0124",
+      "etablissement": "École maternelle Gustave-Bienvêtu",
+      "commune": "Colombes",
+      "departement": "Hauts-de-Seine",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 48.922451,
+      "lng": 2.247799,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-deux-plaintes-deposees-a-colombes-polemique-apres-laudition-des-enfants-09-06-2026-4RSM42ZMA5CS3E7K2KHM43EEP4.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-06-09",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lefigaro.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-colombes-deux-plaintes-secouent-une-ecole-et-mettent-la-mairie-sous-pression-20260616",
+          "media": "Le Figaro",
+          "publication_date": "2026-06-16",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://actu.fr/ile-de-france/colombes_92025/agressions-sexuelles-dans-le-periscolaire-une-nouvelle-affaire-eclabousse-une-ecole-maternelle-de-colombes_64374882.html",
+          "media": "actu.fr",
+          "publication_date": "2026-06-09",
           "source_type": "presse",
           "is_primary": false
         }
