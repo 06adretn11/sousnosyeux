@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 60,
+    "total_cases": 61,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1418,6 +1418,37 @@
           "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
           "media": "Midi Libre (AFP)",
           "publication_date": "2026-06-22",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0120",
+      "etablissement": "Centre périscolaire / de loisirs de Charly (non nommé)",
+      "commune": "Charly",
+      "departement": "Rhône",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 45.649984,
+      "lng": 4.785846,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-06-11",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.bfmtv.com/lyon/faits-divers/c-est-inquietant-la-crainte-des-parents-d-eleves-apres-des-plaintes-pour-viols-et-agressions-sexuelles-sur-mineurs-contre-des-animateurs-periscolaires-a-charly-et-villeurbanne_AV-202607020580.html",
+          "media": "BFMTV Lyon",
+          "publication_date": "2026-07-02",
           "source_type": "presse",
           "is_primary": false
         }
