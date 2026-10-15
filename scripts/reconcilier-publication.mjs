@@ -32,7 +32,9 @@
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
-import { etatPublication } from './lib/publication-gates.mjs';
+import { etatPublication, categorieDiagnostic, goPublication, REVUE_VALIDATION } from './lib/publication-gates.mjs';
+import { geocoderCommune } from './lib/geocoder-commune.mjs';
+import { localisationDe } from './lib/proposition-publication.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
 
 const A = process.argv.slice(2);
@@ -59,14 +61,32 @@ const revues = await sql`select case_id, reviewed_by, decision::text decision, c
 const sources = await sql`select case_id, url, media from sources`;
 const parCas = (rows) => rows.reduce((m, r) => ((m.get(r.case_id) || m.set(r.case_id, []).get(r.case_id)).push(r), m), new Map());
 const revuesDe = parCas(revues), sourcesDe = parCas(sources);
+// Proposition « PUBLIER ? » de chaque affaire (une seule par affaire : dedup `publication|<id>`).
+const propositionDe = new Map((await sql`select substr(dedup_key, 13) case_id, decision::text decision from new_case_proposals where dedup_key like 'publication|%'`)
+  .map((r) => [r.case_id, { decision: r.decision }]));
+
+/** Localisation fiable de la candidate : { loc } ; `connu:false` si l'API Adresse est en panne (« introuvable » ≠ « panne » : on ne conclut rien). */
+async function localiser(c) {
+  let geo = null;
+  if (c.lat === null || c.lng === null) {
+    try { geo = await geocoderCommune(c.commune, c.departement); } catch { return { loc: null, connu: false }; }
+  }
+  return { loc: localisationDe(c, geo), connu: true };
+}
 
 // --- 1. état de chaque affaire -------------------------------------------------------------------------------------------------
 const etats = new Map(); // case_id → { etat, raisons, geo? }
 const depuis = process.env.SNY_PUBLICATION_DEPUIS ? new Date(process.env.SNY_PUBLICATION_DEPUIS) : null; // activation de l'autonomie (arriéré exclu)
 for (const c of cases) {
   c.lieu = CI ? '' : ` — ${c.etablissement} (${c.commune})`;
-  const e = etatPublication(c, { revues: revuesDe.get(c.case_id), sources: sourcesDe.get(c.case_id), holds, autres: cases.filter((o) => o.case_id !== c.case_id), artefact, depuis });
-  if (e) etats.set(c.case_id, e);
+  const ctxC = { revues: revuesDe.get(c.case_id), sources: sourcesDe.get(c.case_id), holds, autres: cases.filter((o) => o.case_id !== c.case_id), artefact, depuis, proposition: propositionDe.get(c.case_id) ?? null };
+  const e = etatPublication(c, ctxC);
+  if (!e) continue;
+  // « Éligible » ne suffit pas à être vue : sans proposition « PUBLIER ? » active, l'affaire n'attend personne. Elle est dite MISSING_PROPOSAL
+  // (état de diagnostic, rien n'est stocké) au lieu de se confondre avec une affaire dont la proposition attend un GO.
+  if (e.etat === 'AWAITING_GO' && !ctxC.proposition) { const l = await localiser(c); ctxC.localisable = l.connu ? !!l.loc : null; }
+  const d = e.etat === 'AWAITING_GO' ? categorieDiagnostic(c, ctxC) : null;
+  etats.set(c.case_id, d && ['MISSING_PROPOSAL', 'BLOCKED'].includes(d.categorie) ? { etat: d.categorie, raisons: d.raisons } : e);
 }
 
 // --- 3. site réellement servi --------------------------------------------------------------------------------------------------
@@ -87,6 +107,55 @@ if (SITE_CTRL) {
   }
   for (const id of enAttenteSite) etats.set(id, { etat: 'PENDING_DEPLOYMENT', raisons: ['dans l’artefact mais absent ou différent sur le site servi'] });
   for (const id of siteVerifie) if (etats.get(id)?.etat === 'IN_ARTEFACT') etats.set(id, { etat: 'PUBLISHED_VERIFIED', raisons: [] });
+}
+
+// --- 3b. ENTONNOIR (diagnostic, lecture seule) ----------------------------------------------------------------------------------
+//   node scripts/reconcilier-publication.mjs --funnel [--site] [--json]
+// VALIDATED → ELIGIBLE → PUBLICATION_PROPOSED → GO → NEON_PUBLISHED → PROJECTED → SERVED_VERIFIED. Chaque affaire est comptée UNE fois, au dernier stade
+// atteint ; les catégories (AWAITING_GO, MISSING_PROPOSAL, BLOCKED, GO_STUCK, REVIEW, HOLD, REJECT, DECISION_CONFLICT) sont des diagnostics, jamais stockées.
+// « legacy » = publiée avant l'autonomie, sans proposition ni GO explicite consignés : valable tant qu'elle n'est pas remplacée ou invalidée.
+if (A.includes('--funnel')) {
+  const toutes = await sql`select case_id, etablissement, commune, departement, type_structure::text type_structure, role_mis_en_cause::text role_mis_en_cause,
+         statut_judiciaire::text statut_judiciaire, enfants_concernes_public::text enfants_concernes_public, publication_status::text publication_status,
+         fiabilite_info_10, crit_statut_clair, lat, lng, geocode_source from cases order by case_id`;
+  const STADES = ['VALIDATED', 'ELIGIBLE', 'PUBLICATION_PROPOSED', 'GO', 'NEON_PUBLISHED', 'PROJECTED', 'SERVED_VERIFIED'];
+  const lignes = [];
+  for (const c of toutes) {
+    const rv = revuesDe.get(c.case_id) || [];
+    const prop = propositionDe.get(c.case_id) ?? null;
+    const ctxC = { revues: rv, sources: sourcesDe.get(c.case_id), holds, autres: toutes.filter((o) => o.case_id !== c.case_id && o.publication_status !== 'retirée'), artefact, depuis,
+      proposition: prop, localisable: null, servie: SITE_CTRL ? siteVerifie.has(c.case_id) : null };
+    let loc = null;
+    if (c.publication_status === 'candidate') {
+      const l = await localiser(c);
+      loc = l.loc; ctxC.localisable = l.connu ? !!l.loc : null;
+    }
+    const d = categorieDiagnostic(c, ctxC);
+    if (d.categorie === 'NON_VALIDEE') continue;
+    if (c.publication_status === 'retirée' && !rv.some((r) => r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || ''))) continue; // retirée sans avoir jamais été validée : hors entonnoir
+    const pub = c.publication_status === 'publiée', art = artefact.get(c.case_id);
+    const go = goPublication(rv);
+    const stade = d.categorie === 'REJECT' || d.categorie === 'DECISION_CONFLICT' ? 0
+      : pub && art && avecPoint(art) && siteVerifie.has(c.case_id) ? 6 : pub && art && avecPoint(art) ? 5 : pub ? 4
+      : d.categorie === 'GO_STUCK' ? 3 : d.categorie === 'AWAITING_GO' ? 2 : d.categorie === 'MISSING_PROPOSAL' ? 1 : 0;
+    const validation = rv.filter((r) => r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || '')).pop();
+    lignes.push({ id: c.case_id, etablissement: c.etablissement, commune: c.commune, validation: validation ? `${validation.reviewed_at?.toISOString?.().slice(0, 10) ?? ''} · ${validation.reviewed_by}` : (pub ? 'legacy (publiée avant l’autonomie)' : 'aucune'),
+      statut: c.statut_judiciaire, fiabilite: c.fiabilite_info_10, sources: (sourcesDe.get(c.case_id) || []).length,
+      localisation: pub ? (art && avecPoint(art) ? 'point publié' : 'aucun point publié') : loc ? loc.type : 'AUCUNE', go: go ? 'GO explicite' : pub ? 'legacy' : 'non',
+      proposition: prop ? (prop.decision || 'active') : pub ? 'legacy' : 'aucune', categorie: d.categorie, blocage: d.raisons.join(' ; '), action: d.action, stade: STADES[stade] });
+  }
+  const parStade = Object.fromEntries(STADES.map((s) => [s, lignes.filter((l) => l.stade === s).length]));
+  const atteint = (i) => lignes.filter((l) => STADES.indexOf(l.stade) >= i || (l.stade === 'VALIDATED' && i === 0)).length;
+  if (A.includes('--json')) console.log(JSON.stringify({ stades: parStade, lignes }, null, 1));
+  else {
+    console.log('ENTONNOIR (chaque affaire comptée une fois, au dernier stade atteint ; sortie = ce qui ne passe pas au stade suivant)');
+    STADES.forEach((s, i) => console.log(`  ${s.padEnd(22)} atteint=${String(atteint(i)).padStart(3)}  arrêtées ici=${String(parStade[s]).padStart(3)}`));
+    const cats = {}; for (const l of lignes.filter((x) => x.categorie !== 'PUBLIC')) cats[l.categorie] = (cats[l.categorie] || 0) + 1;
+    console.log(`  dont publiées « legacy » (sans GO explicite consigné) : ${lignes.filter((l) => l.go === 'legacy').length} · avec GO explicite : ${lignes.filter((l) => l.go === 'GO explicite').length}`);
+    console.log(`  hors du public :${Object.entries(cats).map(([k, v]) => `${k}=${v}`).join(' · ') || 'aucune'}`);
+    for (const l of lignes.filter((x) => x.categorie !== 'PUBLIC')) console.log(`· ${l.id.padEnd(13)} ${l.categorie.padEnd(17)} ${CI ? '' : `${l.etablissement} (${l.commune}) · `}${l.blocage || '—'} → ${l.action}`);
+  }
+  process.exit(0);
 }
 
 // --- 4. rapport ---------------------------------------------------------------------------------------------------------------

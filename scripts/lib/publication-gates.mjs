@@ -81,6 +81,52 @@ export function etatPublication(c, ctx) {
     return { etat: 'NEEDS_PROJECTION', raisons: [] };
   }
   const g = evaluerPublication(c, ctx);
-  if (g.etat === 'NON_VALIDEE') return null;
+  if (g.etat === 'NON_VALIDEE') {
+    // Une validation de création qui n'est PAS d'Adrien (ex. « Claude — règle conditionnelle ») ne vaut pas validation, mais elle ne doit pas
+    // non plus disparaître : sans cette branche l'affaire sortait de tous les états, silencieusement.
+    const attribuee = (ctx.revues || []).some((r) => r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || '') && !REVUE_HUMAINE.test(r.reviewed_by || ''));
+    return attribuee ? { etat: 'DECISION_CONFLICT', raisons: ['validation de création attribuée à un autre auteur qu’Adrien : à confirmer par Adrien'] } : null;
+  }
   return g.etat === 'READY' ? { etat: 'AWAITING_GO', raisons: ['examinée, éligible : attend un GO publication explicite'] } : g;
+}
+
+/** Dernière décision humaine qui décide (retirer / à corriger / validation de création), ou null. */
+export function derniereDecision(revues = []) {
+  const d = revues.filter((r) => REVUE_HUMAINE.test(r.reviewed_by || '') && (r.decision === 'retirer' || r.decision === 'à corriger'
+    || (r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || ''))));
+  return d.length ? d[d.length - 1].decision : null;
+}
+
+/**
+ * CATÉGORIE DE DIAGNOSTIC d'une affaire (jamais persistée) : où en est-elle, et que faut-il d'Adrien ? Fonction PURE.
+ *   ctx = ctx d'etatPublication + { proposition: null | { decision: null|'ACCEPT'|'REJECT'|'REVIEW_REQUIRED' } (proposition « PUBLIER ? » de l'affaire),
+ *                                   localisable: boolean|null (null = non évalué), servie: boolean|null (null = site non contrôlé) }
+ * @returns {{ categorie: 'AWAITING_GO'|'MISSING_PROPOSAL'|'BLOCKED'|'GO_STUCK'|'REVIEW'|'HOLD'|'REJECT'|'DECISION_CONFLICT'|'PUBLIC'|'NON_VALIDEE', raisons: string[], action: string }}
+ */
+export function categorieDiagnostic(c, ctx) {
+  const rec = (categorie, raisons = [], action = '') => ({ categorie, raisons, action });
+  if (c.publication_status === 'retirée') return rec('REJECT', ['affaire retirée'], 'aucune');
+  const e = etatPublication(c, ctx);
+  if (!e) return rec('NON_VALIDEE');
+  if (e.etat === 'HOLD') return rec('HOLD', e.raisons, 'lever le HOLD (décision d’Adrien) ou laisser');
+  if (e.etat === 'DECISION_CONFLICT') return rec('DECISION_CONFLICT', e.raisons, 'Adrien confirme ou infirme la validation');
+  if (e.etat === 'NO_GO') return rec('DECISION_CONFLICT', e.raisons, 'Adrien confirme la publication (GO) ou la retire');
+  if (e.etat === 'NEEDS_PROJECTION') return rec('GO_STUCK', ['GO enregistré, absente de l’artefact public'], 'relancer la réconciliation (automatique)');
+  if (e.etat === 'IN_ARTEFACT') return ctx.servie === false
+    ? rec('GO_STUCK', ['dans l’artefact mais pas (ou pas à l’identique) sur le site servi'], 'vérifier le build Cloudflare')
+    : rec('PUBLIC');
+  if (e.etat === 'BLOCKED') {
+    const d = derniereDecision(ctx.revues);
+    if (d === 'à corriger') return rec('REVIEW', e.raisons, 'réexamen (Maintenance) puis nouvelle validation');
+    if (d === 'retirer') return rec('REJECT', e.raisons, 'aucune');
+    if (e.raisons.some((r) => /HOLD/.test(r))) return rec('HOLD', e.raisons, 'lever le HOLD (décision d’Adrien) ou laisser');
+    return rec('BLOCKED', e.raisons, 'corriger la cause du blocage');
+  }
+  // AWAITING_GO : examinée, éligible
+  const p = ctx.proposition;
+  if (p?.decision === 'ACCEPT') return rec('GO_STUCK', ['GO donné sur la proposition, affaire encore candidate'], 'relancer la réconciliation / publier-affaire');
+  if (p?.decision === 'REVIEW_REQUIRED') return rec('REVIEW', ['proposition de publication mise en réexamen'], 'réexamen (Maintenance)');
+  if (p && p.decision === null) return rec('AWAITING_GO', e.raisons, 'Adrien : GO publication sur la proposition active');
+  if (ctx.localisable === false) return rec('BLOCKED', ['aucune localisation fiable (commune ambiguë, composée ou inconnue)'], 'fournir un point de carte documenté');
+  return rec('MISSING_PROPOSAL', ['validée et éligible, aucune proposition « PUBLIER ? » active'], 'proposer-publication.mjs --ids <id> --ecrire (envoie ensuite une proposition : GO d’Adrien)');
 }
