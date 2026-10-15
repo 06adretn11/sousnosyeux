@@ -257,6 +257,81 @@ export async function construireAttach({ k, c, lues, nouvelles, res, geo, cache,
   };
 }
 
+// --- une affaire = une proposition ---------------------------------------------
+// Cas réel (15/10/2026, Soyaux) : trois articles sur la même école ont donné TROIS propositions NEW_CASE, deux validées puis
+// converties en deux fiches. Les propositions sont qualifiées l'une après l'autre ; la mémoire consultée (le résolveur) ne contient
+// que les FICHES, jamais les propositions encore ouvertes ; et la clé de déduplication (commune|établissement|rôle) varie avec le
+// nom écrit (« école maternelle X », « école X », « structure non nommée »).
+// Preuve d'identité exigée : la même commune ET une même page citée comme preuve par les deux propositions. Deux établissements
+// nommés différemment, ou deux rôles précis différents, restent deux affaires (procédures distinctes : jamais fusionnées sans preuve).
+const GENERIQUES = new Set(['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'centre', 'loisirs', 'periscolaire', 'autre', 'nommee', 'nomme', 'groupe', 'scolaire']);
+const jetonsEtab = (e) => new Set(aplatir(e || '').split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIQUES.has(w)));
+const urlsPreuves = (p) => new Set((p.evidence || []).map((e) => canonique(String(e.url || ''))).filter(Boolean));
+const estNomme = (p) => (p.etablissement_nomme ?? p.fiche?.crit_etablissement_nomme) === true;
+
+/** Deux payloads de proposition décrivent-ils la même affaire ? @returns {{ok:boolean, motif:string}} */
+export function memeAffaire(a, b) {
+  if (niveauGeo({ commune: a.commune, departement: a.fiche?.departement }, { commune: b.commune, departement: b.fiche?.departement }).niveau !== 'ok') return { ok: false, motif: 'communes différentes' };
+  const ub = urlsPreuves(b);
+  if (![...urlsPreuves(a)].some((u) => ub.has(u))) return { ok: false, motif: 'aucune page citée en commun' };
+  if (estNomme(a) && estNomme(b) && jaccard(jetonsEtab(a.etablissement), jetonsEtab(b.etablissement)) < 0.5) return { ok: false, motif: 'établissements nommés différemment' };
+  const [ra, rb] = [a.fiche?.role_mis_en_cause, b.fiche?.role_mis_en_cause];
+  if (ra && rb && ra !== 'autre' && rb !== 'autre' && ra !== rb) return { ok: false, motif: 'rôles différents : procédures distinctes' };
+  return { ok: true, motif: 'même commune, page citée en commun' };
+}
+
+/**
+ * Enrichit une proposition ouverte avec une proposition jumelle : AUCUNE source n'est perdue, les divergences sont consignées,
+ * les nombres de victimes ne sont jamais additionnés, les médias qui reprennent une même dépêche ne deviennent pas indépendants.
+ * L'établissement NOMMÉ l'emporte sur « non nommé » ; deux noms différents → le premier reste, l'autre devient une inconnue.
+ */
+export function fusionner(base, ajout) {
+  const out = JSON.parse(JSON.stringify(base));
+  const vu = new Set((out.articles || []).map((x) => canonique(x.url)));
+  out.articles = [...(out.articles || []), ...(ajout.articles || []).filter((x) => !vu.has(canonique(x.url)))];
+  const preuves = new Set((out.evidence || []).map((e) => `${canonique(e.url)}|${e.quote}`));
+  out.evidence = [...(out.evidence || []), ...(ajout.evidence || []).filter((e) => !preuves.has(`${canonique(e.url)}|${e.quote}`))];
+  out.medias = new Set(out.articles.map((x) => domaine(x.url))).size;
+  out.independantes = Math.max(out.independantes || 0, ajout.independantes || 0);
+  const inconnues = [...(out.unknowns || [])];
+  const note = (t) => { if (t && !inconnues.includes(t)) inconnues.push(t); };
+  for (const u of ajout.unknowns || []) note(u);
+  if (!estNomme(out) && estNomme(ajout)) {
+    Object.assign(out, { etablissement: ajout.etablissement, etablissement_nomme: true, structure: ajout.structure });
+    out.fiche = { ...out.fiche, crit_etablissement_nomme: true, type_structure: ajout.fiche?.type_structure ?? out.fiche?.type_structure };
+  } else if (estNomme(out) && estNomme(ajout) && jetonsEtab(out.etablissement).size && jaccard(jetonsEtab(out.etablissement), jetonsEtab(ajout.etablissement)) < 1) {
+    note(`dénomination différente rapportée : « ${ajout.etablissement} »`);
+  }
+  if (ajout.stade_minimal && out.stade_minimal && ajout.stade_minimal !== out.stade_minimal) note(`stade judiciaire rapporté différemment selon les sources : « ${out.stade_minimal} » / « ${ajout.stade_minimal} »`);
+  if (ajout.dernier_evenement && (!out.dernier_evenement || ajout.dernier_evenement > out.dernier_evenement)) out.dernier_evenement = ajout.dernier_evenement;
+  out.unknowns = inconnues;
+  out.fiche = { ...out.fiche, crit_recoupement: out.independantes >= 2 };
+  if (out.articles.length > (base.articles || []).length) out.regroupes = (out.regroupes || 1) + 1; // un rejeu sans page nouvelle ne compte pas
+  return out;
+}
+
+/**
+ * Que faire d'un signal dont une proposition jumelle existe ?
+ * @returns {{action:'fusion'|'ecarte'|'rattacher'|'attente', motif:string, case_id?:string}}
+ */
+export function decisionJumelle(row, casConnus) {
+  if ((!row.decision || row.decision === 'REVIEW_REQUIRED') && !row.applied_at) return { action: 'fusion', motif: 'même affaire qu’une proposition ouverte : sources ajoutées' };
+  if (row.decision === 'REJECT') return { action: 'ecarte', motif: 'même affaire qu’une proposition rejetée' };
+  if (row.created_case_id && casConnus.has(row.created_case_id)) return { action: 'rattacher', motif: 'même affaire qu’une fiche déjà créée', case_id: row.created_case_id };
+  return { action: 'attente', motif: 'même affaire qu’une proposition validée dont la fiche n’existe pas encore' };
+}
+
+/** Proposition jumelle d'un nouveau signal parmi les propositions de découverte récentes. @returns {Promise<null|{row:object, motif:string}>} */
+export async function chercherJumelle(sql, nouveau) {
+  const rows = await sql`select proposal_id::text pid, dedup_key, recommendation, attach_case_id, payload, decision::text decision,
+                                created_case_id, applied_at
+                           from new_case_proposals
+                          where payload ? 'evidence' and recommendation <> 'ATTACH_EXISTING' and created_at > now() - interval '45 days'
+                          order by created_at`;
+  for (const row of rows) { const m = memeAffaire(row.payload, nouveau); if (m.ok) return { row, motif: m.motif }; }
+  return null;
+}
+
 const GRAVITE = { MATCH: 2, POSSIBLE_MATCH: 1, NO_MATCH: 0 };
 
 /**
@@ -346,6 +421,22 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
     crit_source_fiable: true, crit_article_recent: true, crit_etablissement_nomme: nomme,
     crit_statut_clair: c.statut_judiciaire !== 'à qualifier', crit_recoupement: indep >= 2,
   };
+
+  // UNE AFFAIRE, UNE DÉCISION. Avant de proposer, ce signal décrit-il une affaire déjà proposée ? (pages citées en commun)
+  //   ouverte (aucune décision, non appliquée) → ENRICHIE avec ces sources, aucune nouvelle proposition ;
+  //   validée et déjà devenue fiche           → rapprochement vers CETTE fiche (ATTACH/REVIEW), jamais une seconde création ;
+  //   validée, fiche pas encore créée         → en attente (repris au run suivant, quand la fiche existe) ;
+  //   rejetée                                 → écartée (une décision humaine n'est pas rejouée).
+  if (statutRes !== 'MATCH') {
+    const j = await chercherJumelle(sql, { ...base, fiche, etablissement_nomme: nomme });
+    if (j) {
+      const d = decisionJumelle(j.row, new Set(index.map((f) => f.case_id)));
+      if (d.action === 'fusion') return { statut: 'fusion', motif: d.motif, cout: ext.cout, fusion: { proposal_id: j.row.pid, payload: fusionner(j.row.payload, { ...base, fiche, etablissement_nomme: nomme }) } };
+      if (d.action === 'ecarte') return { statut: 'ecarte', motif: d.motif, cout: ext.cout };
+      if (d.action === 'attente') return { statut: 'attente', motif: d.motif, cout: ext.cout };
+      cible = d.case_id; statutRes = 'POSSIBLE_MATCH';
+    }
+  }
 
   // Une affaire connue est visée : rapprochement complet (MATCH) ou PARTIEL sur UNE seule affaire (POSSIBLE_MATCH avec
   // matched_case_id — ex. « École de Mées (type non précisé) », dont les mots du nom ne se retrouvent jamais tels quels).

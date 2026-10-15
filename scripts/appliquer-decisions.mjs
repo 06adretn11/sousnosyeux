@@ -178,25 +178,35 @@ if (process.argv.includes('--generique')) {
     // Libellé public tiré d'une table fermée ; la citation reste en mémoire privée. Identité de l'événement : (affaire, libellé)
     // — la même mesure, au même stade (annoncée / réalisée), rapportée par un second article, n'est pas un second événement.
     if (!REPLAY && p.aa === 'ENRICHMENT') {
-      const inst = p.rat === 'OK' ? detecterInstitutionnel((Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || [])) : null;
-      if (inst) {
+      // Faits structurés (proposition « +reactions ») : un événement par mesure de PORTÉE « établissement » ; une mesure « territoire »
+      // (politique de collectivité visant plusieurs structures) n'est jamais écrite comme événement de cette affaire.
+      const structures = Array.isArray(p.facts) ? p.facts.filter((x) => x?.mesure && x.libelle_public && x.evidence?.length) : [];
+      const insts = p.rat !== 'OK' ? []
+        : structures.length ? structures.filter((x) => x.portee !== 'territoire').map((x) => ({ ...x, ed: x.event_date || null }))
+        : [detecterInstitutionnel((Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || []))].filter(Boolean).map((x) => ({ ...x, ed: p.ed }));
+      if (p.rat === 'OK' && structures.length && !insts.length) {
+        dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | PORTÉE TERRITORIALE : aucune écriture (matière conservée dans state_proposals.facts)`);
+        continue;
+      }
+      if (insts.length) {
         auto++;
         dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | AUTO_APPLICABLE`);
-        dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation ?? 'prise de parole'}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
-        if (!DRY) {
+        for (const inst of insts) {
+          dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation ?? 'prise de parole'}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
+          if (DRY) continue;
           const [deja] = await sql`select event_id from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
           let ev = deja?.event_id ?? null;
           if (ev) dire(`      = mesure déjà consignée (${String(ev).slice(0, 8)}) : preuve rattachée, aucun doublon`);
           else {
             const [r] = S.realisation
               ? await sql`insert into case_events (case_id, event_date, event_type, statut_apres, libelle_public, article_id, realisation)
-                          values (${p.case_id}, ${p.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}, ${inst.realisation}) returning event_id`
+                          values (${p.case_id}, ${inst.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}, ${inst.realisation}) returning event_id`
               : await sql`insert into case_events (case_id, event_date, event_type, statut_apres, libelle_public, article_id)
-                          values (${p.case_id}, ${p.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}) returning event_id`;
+                          values (${p.case_id}, ${inst.ed}, ${inst.event_type}::case_event_type, null, ${inst.libelle_public}, ${p.article_id}) returning event_id`;
             ev = r.event_id;
             dire(`      + événement ${inst.event_type} → ${String(ev).slice(0, 8)}${S.realisation ? '' : ' (colonne realisation absente : migration 019 non appliquée)'}`);
           }
-          await sql`update state_proposals set applied_event_id = ${ev} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
+          await sql`update state_proposals set applied_event_id = coalesce(applied_event_id, ${ev}) where proposal_id = ${p.proposal_id} and decision = 'ACCEPT'`;
           await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation ?? 'prise de parole'}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phrasePublication(p.pub)}`);
         }
         continue;
