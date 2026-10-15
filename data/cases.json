@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 61,
+    "total_cases": 62,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1449,6 +1449,44 @@
           "url": "https://www.bfmtv.com/lyon/faits-divers/c-est-inquietant-la-crainte-des-parents-d-eleves-apres-des-plaintes-pour-viols-et-agressions-sexuelles-sur-mineurs-contre-des-animateurs-periscolaires-a-charly-et-villeurbanne_AV-202607020580.html",
           "media": "BFMTV Lyon",
           "publication_date": "2026-07-02",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0122",
+      "etablissement": "École maternelle privée Saint-Laurent",
+      "commune": "Paris 10e",
+      "departement": "Paris",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "intervenant extérieur",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 48.876064,
+      "lng": 2.362272,
+      "geocode_source": "centroid-arr",
+      "sources": [
+        {
+          "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+          "media": "Le Monde",
+          "publication_date": "2026-09-24",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "media": "Le Figaro",
+          "publication_date": "2026-09-24",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+          "media": "Midi Libre (AFP)",
+          "publication_date": "2026-09-25",
           "source_type": "presse",
           "is_primary": false
         }
