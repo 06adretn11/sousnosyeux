@@ -45,8 +45,8 @@ export function payloadPublication({ c, examen, sources = [], loc, resume = null
  * Arguments (liste, jamais de shell) de publier-affaire.mjs pour exécuter le GO. Les coordonnées ne sont passées que si la fiche n'en a pas
  * (publier-affaire refuse d'écraser) ; un point approximatif porte TOUJOURS sa précision (--geocode-source).
  */
-export function argsPublierAffaire({ case_id, id8, dbLat, dbLng, loc, date }) {
-  const args = ['scripts/publier-affaire.mjs', case_id, '--ecrire', '--go', `Telegram PUBLIER ${id8}`];
+export function argsPublierAffaire({ case_id, id8, dbLat, dbLng, loc, date, go = `Telegram PUBLIER ${id8}` }) {
+  const args = ['scripts/publier-affaire.mjs', case_id, '--ecrire', '--go', go];
   if (nombre(dbLat) === null || nombre(dbLng) === null) {
     if (!loc) throw new Error('aucune localisation fiable : publication refusée');
     args.push('--coords', `${loc.lat},${loc.lng}`, '--coords-source', loc.type === 'approximative' ? `API Adresse (BAN), centre de commune, ${date}` : `coordonnées documentées, ${date}`);

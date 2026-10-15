@@ -9,6 +9,8 @@
 // Les `raisons` ne contiennent jamais de nom ni de lieu (les logs CI d'un dépôt public sont publics).
 // =====================================================================
 
+import { stadePubliable } from './stade-judiciaire.mjs';
+
 // Revue qui vaut DÉCISION DE CRÉER/VALIDER l'affaire : Decision Pack (« VALIDATED — … ») ou clic Telegram (« [Discovery-auto:…] VALIDATE|CREATE »).
 // Un rattachement de sources (« RAPPROCHER », « ATTACH », « RATTACHER ») ne décide PAS de la publication de la fiche.
 export const REVUE_VALIDATION = /^(?:\[Discovery-auto:[0-9a-f]{8}\]\s+(?:VALIDATE|CREATE)\b|VALIDATED\b)/;
@@ -35,6 +37,8 @@ export function evaluerPublication(c, ctx) {
   if (ctx.holds?.has(c.case_id)) raisons.push('sous HOLD de publication');
   if (!(c.fiabilite_info_10 >= 8)) raisons.push(`fiabilité ${c.fiabilite_info_10} < 8`);
   if (!c.statut_judiciaire || c.statut_judiciaire === 'à qualifier' || c.crit_statut_clair === false) raisons.push('statut judiciaire non établi');
+  // Doctrine : une plainte seule n'est pas une procédure policière ou judiciaire établie (ni une suspension, qui n'est pas un stade).
+  else if (!stadePubliable(c.statut_judiciaire)) raisons.push('procédure policière ou judiciaire non établie (plainte seule)');
   if (!c.etablissement) raisons.push('établissement absent');
   if (!c.enfants_concernes_public) raisons.push('mention « enfants concernés » absente');
   const srcs = (ctx.sources || []).filter((s) => /^https?:\/\/[^\s.]+\.[^\s]+$/.test(s.url || '') && !/\.\.\.$|…$/.test(s.url) && s.media);

@@ -62,7 +62,8 @@ const sources = await sql`select case_id, url, media from sources`;
 const parCas = (rows) => rows.reduce((m, r) => ((m.get(r.case_id) || m.set(r.case_id, []).get(r.case_id)).push(r), m), new Map());
 const revuesDe = parCas(revues), sourcesDe = parCas(sources);
 // Proposition « PUBLIER ? » de chaque affaire (une seule par affaire : dedup `publication|<id>`).
-const propositionDe = new Map((await sql`select substr(dedup_key, 13) case_id, decision::text decision from new_case_proposals where dedup_key like 'publication|%'`)
+const propositionDe = new Map((await sql`select substr(dedup_key, 13) case_id, decision::text decision from new_case_proposals where dedup_key like 'publication|%'
+  union all select created_case_id, decision::text from new_case_proposals where decision = 'ACCEPT' and created_case_id is not null and payload ? 'publication_directe'`)
   .map((r) => [r.case_id, { decision: r.decision }]));
 
 /** Localisation fiable de la candidate : { loc } ; `connu:false` si l'API Adresse est en panne (« introuvable » ≠ « panne » : on ne conclut rien). */

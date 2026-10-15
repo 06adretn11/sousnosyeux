@@ -18,6 +18,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
+import { stadePubliable } from './lib/stade-judiciaire.mjs';
 
 const A = process.argv.slice(2);
 const id = A.find((a) => /^[A-Z]+-\d{4}-\d{4}$|^POC-\d+$/.test(a));
@@ -32,12 +33,14 @@ if (ECRIRE && !GO) { console.error('--ecrire exige --go "<GO explicite d’Adrie
 
 const { sql } = connecter();
 const refus = [];
-const [c] = await sql`select case_id, etablissement, commune, publication_status::text ps, fiabilite_info_10 f, lat, lng from cases where case_id = ${id}`;
+const [c] = await sql`select case_id, etablissement, commune, publication_status::text ps, fiabilite_info_10 f, lat, lng, statut_judiciaire::text statut from cases where case_id = ${id}`;
 if (!c) { console.error(`${id} introuvable`); process.exit(1); }
 
 if (c.ps === 'publiée') { console.log(`${id} — déjà publiée en base → NO_PUBLIC_CHANGE (rien à écrire)`); process.exit(0); }
 if (c.ps !== 'candidate') refus.push(`statut « ${c.ps} » (attendu : candidate)`);
 if (!(c.f >= 8)) refus.push(`fiabilité ${c.f} < 8`);
+// Doctrine : publier exige une procédure policière ou judiciaire documentée (ni suspension seule, ni plainte seule).
+if (!stadePubliable(c.statut)) refus.push(`procédure policière ou judiciaire non établie (stade « ${c.statut} »)`);
 const revues = await sql`select reviewed_by, decision::text d, comment from reviews where case_id = ${id}`;
 if (!revues.some((r) => r.d === 'validé' && /^Adrien/.test(r.reviewed_by))) refus.push('aucune revue « validé » d’Adrien');
 if (revues.some((r) => r.d === 'retirer')) refus.push('une revue « retirer » existe');
