@@ -43,13 +43,29 @@ const S = await schemaBoucle(sql);
 
 const dues = S.action
   ? await sql`
-      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, action
+      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, action, created_case_id
         from new_case_proposals
        where decision is not null and applied_at is null order by created_at`
   : await sql`
-      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, null::text as action
+      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, null::text as action, created_case_id
         from new_case_proposals
        where decision is not null and applied_at is null order by created_at`;
+
+/**
+ * GO de publication : exécuté par publier-affaire.mjs (SES contrôles, SA transaction, SA revue « GO d'Adrien ») — aucune seconde logique.
+ * @returns {{etat:'ok'|'refus'|'technique', motif?:string}} refus = garde-fou DÉTERMINISTE (définitif) ; technique = réessayable au prochain passage.
+ */
+async function publierGo({ cid, id8, loc, go }) {
+  const [kc] = await sql`select lat, lng from cases where case_id = ${cid}`;
+  try {
+    const args = argsPublierAffaire({ case_id: cid, id8, dbLat: kc?.lat, dbLng: kc?.lng, loc, date: new Date().toISOString().slice(0, 10), go });
+    execFileSync(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
+    return { etat: 'ok' };
+  } catch (e) {
+    const { motif, definitif } = motifRefus(e.stderr || e.message);
+    return { etat: definitif ? 'refus' : 'technique', motif };
+  }
+}
 console.log(`${dues.length} décision(s) à appliquer${ECRIRE ? '' : ' (à blanc : aucune écriture)'}`);
 
 let creees = 0, rattachees = 0, notees = 0, refusees = 0, publiees = 0;
@@ -119,19 +135,15 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
       notees++;
       continue;
     }
-    const [kc] = await sql`select lat, lng from cases where case_id = ${cid}`;
     if (!ECRIRE) { console.log('  publierait via publier-affaire.mjs (GO Telegram)'); continue; }
-    try {
-      const args = argsPublierAffaire({ case_id: cid, id8, dbLat: kc?.lat, dbLng: kc?.lng, loc: p.publication.localisation, date: new Date().toISOString().slice(0, 10) });
-      execFileSync(process.execPath, args, { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
-    } catch (e) {
-      const { motif, definitif } = motifRefus(e.stderr || e.message);
-      console.log(`  REFUS : ${motif}`);
+    const o = await publierGo({ cid, id8, loc: p.publication.localisation });
+    if (o.etat !== 'ok') {
+      console.log(`  REFUS : ${o.motif}`);
       refusees++;
-      await prevenirUneFois(sql, { cle: id8, resultat: 'refus_publication', texte: `⚠️ <b>Publication NON effectuée</b> — ${esc(cid)} (${id8})\n${esc(motif)}\nRien n’a été publié ; l’affaire reste candidate.` });
+      await prevenirUneFois(sql, { cle: id8, resultat: 'refus_publication', texte: `⚠️ <b>Publication NON effectuée</b> — ${esc(cid)} (${id8})\n${esc(o.motif)}\nRien n’a été publié ; l’affaire reste candidate.` });
       // Garde-fou permanent : la décision de l'éditeur reste TRACÉE (ACCEPT, decided_by/at) et le refus est consigné ; plus de nouvelle tentative.
-      if (definitif && ECRIRE) {
-        await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${' · publication refusée par les contrôles : ' + motif}, 500)
+      if (o.etat === 'refus') {
+        await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${' · publication refusée par les contrôles : ' + o.motif}, 500)
                    where proposal_id = ${r.pid}::uuid and applied_at is null`;
         console.log('  refus DÉFINITIF consigné : aucune nouvelle tentative');
         refusees--; notees++;
@@ -213,13 +225,17 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
     vus.add(a.url);
     sources.push({ url: a.url, media: a.media, d: a.published || p.date_source || null, p: sources.length === 0 });
   }
-  if (!ECRIRE) { console.log(`  créerait ${pubStatus} · ${sources.length} source(s) · revue ${revue}`); continue; }
+  // « VALIDER ET PUBLIER » : le clic vaut confirmation ET GO publication (le message l'énonce). Même chaîne ensuite : publier-affaire
+  // (ses contrôles), réconciliation, projection, QA, déploiement, vérification du site. Un échec technique ne perd rien : la fiche existe
+  // (created_case_id) et la publication est REPRISE au passage suivant, jamais une seconde création ni une seconde demande.
+  const direct = accepte && !rejet && !enAttente && action === 'CREATE' && !!p.publication_directe;
+  if (!ECRIRE) { console.log(`  ${r.created_case_id ? 'reprendrait la publication de ' + r.created_case_id : 'créerait'} ${pubStatus} · ${sources.length} source(s) · revue ${revue}${direct ? ' + GO publication (VALIDER ET PUBLIER)' : ''}`); continue; }
   const prochain = revue === 'à corriger' ? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10) : null;
   const note = enAttente
     ? `${balise} CREATE_PENDING_EVIDENCE — NON PUBLIABLE tant que les preuves manquent : ${manques.join(' ; ') || 'à confirmer'} — ${p.resume}`
     : `${balise} ${rejet ? 'REJECT' : 'VALIDATE'} — ${p.resume}`;
 
-  const cree = await sql`
+  const cree = r.created_case_id ? [] : await sql`
     with nxt as (
       select 'FR-2026-' || lpad((coalesce(max(substring(case_id from 9)::int), 0) + 1)::text, 4, '0') id
         from cases where case_id ~ '^FR-2026-[0-9]{4}$'),
@@ -245,10 +261,10 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
       insert into reviews (case_id, reviewed_by, decision, comment, next_review_at)
       select c.case_id, 'Adrien (Telegram, Discovery)', ${revue}::review_decision, ${note}, ${prochain}::date from c
       returning 1)
-    update new_case_proposals set created_case_id = (select case_id from c), applied_at = now()
+    update new_case_proposals set created_case_id = (select case_id from c), applied_at = case when ${direct} then null else now() end
      where proposal_id = ${r.pid}::uuid and applied_at is null
     returning created_case_id`;
-  console.log(cree.length ? `  ${cree[0].created_case_id} (${pubStatus}, non publiée)` : '  rien écrit (déjà appliquée)');
+  console.log(cree.length ? `  ${cree[0].created_case_id} (${pubStatus}, non publiée)` : r.created_case_id ? `  ${r.created_case_id} déjà créée : reprise de la publication` : '  rien écrit (déjà appliquée)');
   if (cree.length) {
     creees++;
     // Mesure d'institution rapportée avec les faits (mairie qui suspend l'agent, plan d'encadrement…) : consignée avec la fiche,
@@ -264,7 +280,28 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
         console.log(`  + événement institutionnel (${inst.mesure}, ${inst.realisation}) — état judiciaire inchangé`);
       }
     }
-    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +30 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : phrasePublication('candidate')}`);
+    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +30 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : direct ? 'GO publication enregistré par ce même clic (VALIDER ET PUBLIER) : exécution en cours.' : phrasePublication('candidate')}`);
+  }
+  // --- GO publication porté par le clic unique ---------------------------------------------------------------------------------
+  const cid = r.created_case_id || cree[0]?.created_case_id;
+  if (direct && cid) {
+    const o = await publierGo({ cid, id8, loc: p.publication_directe.localisation, go: `Telegram VALIDER ET PUBLIER ${id8}` });
+    if (o.etat === 'ok') {
+      await sql`update new_case_proposals set applied_at = now() where proposal_id = ${r.pid}::uuid and applied_at is null`;
+      console.log('  GO publication appliqué (VALIDER ET PUBLIER)');
+      await prevenir(`🗳 <b>GO publication appliqué</b> — ${esc(cid)} (${id8})\nAutorisation enregistrée en base : l’affaire n’est PAS encore visible. Projection, QA, déploiement et vérification du site suivent ; « Publié et vérifié » ne sera annoncé qu’après lecture du site servi.`);
+      publiees++;
+    } else if (o.etat === 'refus') {
+      // La décision d'Adrien reste tracée ; la publication est bloquée par un garde-fou déterministe : correction factuelle, pas un nouveau GO.
+      await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${' · publication refusée par les contrôles : ' + o.motif}, 500)
+                 where proposal_id = ${r.pid}::uuid and applied_at is null`;
+      console.log(`  REFUS DÉFINITIF : ${o.motif}`);
+      await prevenirUneFois(sql, { cle: id8, resultat: 'refus_publication', texte: `⚠️ <b>Publication NON effectuée</b> — ${esc(cid)} (${id8})\n${esc(o.motif)}\nTon GO est conservé ; l’affaire reste candidate : une correction factuelle est nécessaire, pas un nouveau GO.` });
+      notees++;
+    } else {
+      console.log(`  échec technique, réessayé au prochain passage : ${o.motif}`);
+      refusees++;
+    }
   }
 }
 console.log(`appliqué : ${creees} fiche(s) créée(s), ${rattachees} rattachement(s), ${notees} décision(s) consignée(s) sans écriture de fiche, ${refusees} refusée(s) · ${publiees} GO publication appliqué(s)`);

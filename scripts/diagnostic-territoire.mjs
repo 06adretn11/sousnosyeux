@@ -44,8 +44,9 @@ export async function etatsTerritoires({ hubsOverride = null, retirerPubliques =
       && evaluerPublication({ ...c, publication_status: 'candidate' }, { revues: rv.get(c.case_id), sources: sr.get(c.case_id), holds: new Set(), autres: [] }).etat !== 'NON_VALIDEE');
     territoires[nom] = { hub, publiques: pub.map((c) => c.case_id), horsHub: dossiers ? pub.filter((c) => !dossiers.has(c.case_id)).map((c) => c.case_id) : [],
       candidatesValidees: cand.length, reviewNonPublic: 0, evenements: pub.reduce((n, c) => n + (ev.get(c.case_id) || []).length, 0),
+      avecMatiere: pub.filter((c) => (ev.get(c.case_id) || []).length).length,
       reactions: pub.reduce((n, c) => n + (ev.get(c.case_id) || []).filter((x) => REACTIONS.includes(x.t)).length, 0),
-      sources: pub.reduce((n, c) => n + (sr.get(c.case_id) || []).length, 0), _dep: dans[0]?.departement ?? null };
+      sources: pub.reduce((n, c) => n + (sr.get(c.case_id) || []).length, 0), _dep: dans[0]?.departement ?? null, residuel: nom === 'paris-hors-11e' };
   };
   for (const [h, p] of Object.entries(HUBS_PERIMETRES)) ajouter(h, h, p.test);
   const deptsHub = new Set(['Gironde', 'Hautes-Alpes']);

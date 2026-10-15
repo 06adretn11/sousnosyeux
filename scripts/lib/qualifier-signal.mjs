@@ -20,6 +20,10 @@ import { datesCompletes } from './etat-affaire.mjs';
 import { comprendre } from './comprendre-source.mjs';
 import { niveauGeo, sourceCoherente, forceRapprochement } from './rapprochement-garde.mjs';
 import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
+import { stadeEtabli } from './stade-judiciaire.mjs';
+import { evaluerPublication } from './publication-gates.mjs';
+import { geocoderCommune } from './geocoder-commune.mjs';
+import { localisationDe } from './proposition-publication.mjs';
 
 export const ENUMS = {
   type_structure: ['crèche', 'maternelle', 'élémentaire', 'collège', 'lycée', 'périscolaire', 'centre de loisirs', 'internat', 'autre'],
@@ -36,7 +40,7 @@ RÈGLES ABSOLUES
 1. Tu n'écris que ce que les articles disent. Rien d'inventé : ni lieu, ni date, ni stade de procédure. Inconnu → null.
 2. est_affaire=true seulement si les articles rapportent des faits de violences/agressions sexuelles (ou images pédocriminelles) sur des MINEURS, imputés à un membre du personnel, un intervenant ou un adulte lié à UNE structure accueillant des mineurs en France. Sinon est_affaire=false (affaire privée/familiale, victime adulte, hors France, simple prévention, contrôle, reportage général, bilan statistique, réaction d'élus / commission / plan d'action sans fait précis rattaché à UNE structure identifiée, sujet « scandale du périscolaire » traité globalement).
 3. Si les articles couvrent plusieurs structures, retiens celle du signal ; si l'identification est impossible, est_affaire=false.
-4. "preuves" : 1 à 4 extraits LITTÉRAUX (copiés mot pour mot), chacun avec l'url EXACTE de l'article d'où il vient, parmi les articles fournis. Pas de paraphrase. Chaque extrait doit appuyer un fait (structure, commune, plainte/enquête/procès).
+4. "preuves" : 1 à 4 extraits LITTÉRAUX (copiés mot pour mot), chacun avec l'url EXACTE de l'article d'où il vient, parmi les articles fournis. Pas de paraphrase. Chaque extrait doit appuyer un fait (structure, commune, plainte/enquête/procès). Au moins un extrait doit établir la PROCÉDURE du stade retenu (acte, ou autorité qui enquête) : une suspension, une enquête administrative ou une plainte ne sont pas une enquête judiciaire.
 5. "resume" : 2 phrases neutres, introduites par « Selon la presse » ou équivalent. JAMAIS le nom ni l'âge ni la fonction précise de la personne mise en cause (écris « un animateur », « un agent »). JAMAIS le nombre exact d'enfants. JAMAIS de détail des faits. Pas de qualification de culpabilité.
 6. "statut_judiciaire" = le stade le plus avancé RAPPORTÉ à ce jour (plainte, enquête, mise en examen, procès, condamnation…). Une suspension administrative n'est pas un stade judiciaire : retiens « plainte » ou « enquête » selon ce qui est écrit.
 7. "dernier_evenement" = date (AAAA-MM-JJ) du dernier événement rapporté (pas la date de publication si l'article donne la date de l'événement).
@@ -144,6 +148,10 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
     if (citationPresente(e.citation, p.corps)) evidence.push({ media: p.media, url: p.url, quote: String(e.citation).replace(/\s+/g, ' ').trim(), published: p.published || null });
   }
   if (!evidence.length) return { ok: false, motif: 'aucune citation retrouvée dans les pages' };
+  // DOCTRINE : le stade judiciaire retenu doit être ÉTABLI par les citations (jamais par le nombre d'articles). Suspension, enquête
+  // administrative, plainte seule : jamais promues en « enquête ». Le stade est ramené à ce que les citations établissent.
+  const stade = stadeEtabli(rep.statut_judiciaire, evidence.map((e) => e.quote));
+  if (!stade.ok) { rep.statut_judiciaire = stade.stade; rep.ambiguite = [rep.ambiguite, stade.raison].filter(Boolean).join(' · '); }
   const dernier = /^\d{4}-\d{2}-\d{2}$/.test(rep.dernier_evenement || '') && rep.dernier_evenement <= aujourdhui ? rep.dernier_evenement : null;
   const resume = String(rep.resume || '').replace(/\s+/g, ' ').trim();
   if (resume.length < 30) return { ok: false, motif: 'résumé absent' };
@@ -511,11 +519,45 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
       },
     };
   }
+  // UNE SEULE DÉCISION : si le dossier est complet ET publiable, le bouton unique est « VALIDER ET PUBLIER » ; sinon la validation reste
+  // documentaire (candidate, sans publication) et le message dit pourquoi la publication n'est pas proposée.
+  const dp = await dossierPublication({ c, fiche, nomme, evidence, indep, recommendation, voisins });
   return {
     statut: 'propose', motif: recommendation, cout: ext.cout,
     proposition: {
       dedup_key: cleStd, recommendation, attach_case_id: null,
-      payload: { ...base, fiche, etablissement_nomme: nomme, possible_matches_sny: possibles.slice(0, 4), avertissement, rapprochement_ecarte: ecartes[0] || null },
+      payload: { ...base, fiche, etablissement_nomme: nomme, possible_matches_sny: possibles.slice(0, 4), avertissement, rapprochement_ecarte: ecartes[0] || null,
+        ...(dp.directe ? { publication_directe: dp.directe } : { non_publiable: dp.non }) },
     },
   };
+}
+
+/**
+ * « VALIDER ET PUBLIER » n'est proposé que si les garde-fous de publication existants (evaluerPublication : fiabilité, sources, statut,
+ * doublon, HOLD…) ET la doctrine judiciaire (stade établi par les citations) seraient satisfaits, et si une localisation acceptable existe.
+ * Jamais un bouton qui serait refusé par publier-affaire.mjs. @returns {Promise<{directe?:{localisation:object, reserves:string[]}, non?:string[]}>}
+ */
+export async function dossierPublication({ c, fiche, nomme, evidence, indep, recommendation, voisins = [], geocoder = geocoderCommune }) {
+  if (recommendation !== 'NEW_CASE_CANDIDATE') return { non: ['proposition à arbitrer (rapprochement ou ambiguïté)'] };
+  const crits = [fiche.crit_source_fiable, fiche.crit_article_recent, fiche.crit_etablissement_nomme, fiche.crit_statut_clair, fiche.crit_recoupement].filter(Boolean).length;
+  const g = evaluerPublication({
+    case_id: 'APERCU', publication_status: 'candidate', fiabilite_info_10: 2 * crits, statut_judiciaire: c.statut_judiciaire, crit_statut_clair: fiche.crit_statut_clair,
+    etablissement: nomme ? c.etablissement : `${c.type_structure} non nommée`, enfants_concernes_public: c.enfants_concernes_public, commune: c.commune,
+  }, { revues: [{ reviewed_by: 'Adrien (aperçu)', decision: 'validé', comment: '[Discovery-auto:00000000] VALIDATE — aperçu' }],
+    sources: evidence.map((e) => ({ url: e.url, media: e.media })), holds: new Set(), autres: [] });
+  const non = [...g.raisons];
+  // Doublon / identité : une affaire voisine de même rôle, ou un établissement non nommé avec des voisines, n'est pas résolue.
+  const memeRole = voisins.filter((v) => v.role === c.role_mis_en_cause || v.role === 'autre' || c.role_mis_en_cause === 'autre');
+  if (memeRole.length) non.push(`doublon possible avec ${memeRole.map((v) => v.case_id).join(', ')}`);
+  else if (!nomme && voisins.length) non.push('identité non résolue (établissement non nommé, affaires voisines dans la commune)');
+  let loc = null;
+  try { loc = localisationDe({ lat: null, lng: null }, await geocoder(c.commune, fiche.departement)); } catch { loc = null; }
+  if (!loc) non.push('aucune localisation fiable (commune ambiguë, composée ou inconnue)');
+  if (non.length) return { non };
+  return { directe: { localisation: loc, reserves: [
+    'localisation approximative : centre de commune (API Adresse)',
+    ...(nomme ? [] : ['établissement non nommé']),
+    ...(indep >= 2 ? [] : ['une seule source indépendante']),
+    ...(c.ambiguite ? [c.ambiguite] : []),
+  ] } };
 }

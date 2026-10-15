@@ -59,6 +59,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Une décision humaine, une suite · doctrine judiciaire (stade établi par les citations) · « VALIDER ET PUBLIER » · aucun deuxième GO',
+    script: 'scripts/qa/test-une-decision.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
     script: 'scripts/qa/test-boucle.mjs',
     bloquant: true,

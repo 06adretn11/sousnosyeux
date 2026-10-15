@@ -13,7 +13,7 @@
 // Dépôt public ⇒ en CI, ni nom ni lieu dans les logs.
 // =====================================================================
 import { connecter } from './lib/neon.mjs';
-import { etatPublication, REVUE_VALIDATION } from './lib/publication-gates.mjs';
+import { etatPublication, REVUE_VALIDATION, goPublication } from './lib/publication-gates.mjs';
 import { geocoderCommune } from './lib/geocoder-commune.mjs';
 import { localisationDe, payloadPublication, cleDedup } from './lib/proposition-publication.mjs';
 import { messagePublication, boutons } from './lib/discovery-messages.mjs';
@@ -39,6 +39,8 @@ const cases = await sql`
 const revues = await sql`select case_id, reviewed_by, decision::text decision, comment, reviewed_at from reviews order by reviewed_at`;
 const sources = await sql`select case_id, url, media, publication_date::text d from sources order by publication_date nulls last`;
 const deja = new Set((await sql`select dedup_key from new_case_proposals where dedup_key like 'publication|%'`).map((r) => r.dedup_key));
+// GO déjà donné (clic « VALIDER ET PUBLIER », ou GO explicite consigné) : jamais redemandé — la publication est reprise, pas reproposée.
+const goDonne = new Set((await sql`select created_case_id from new_case_proposals where decision = 'ACCEPT' and created_case_id is not null and payload ? 'publication_directe'`).map((r) => r.created_case_id));
 const par = (rows) => rows.reduce((m, r) => ((m.get(r.case_id) || m.set(r.case_id, []).get(r.case_id)).push(r), m), new Map());
 const revuesDe = par(revues), sourcesDe = par(sources);
 
@@ -48,6 +50,7 @@ for (const c of cases.filter((x) => x.publication_status === 'candidate')) {
   const rv = revuesDe.get(c.case_id) || [];
   const examen = etatPublication(c, { revues: rv, sources: sourcesDe.get(c.case_id), holds, autres: cases.filter((o) => o.case_id !== c.case_id), artefact: new Map() });
   if (examen?.etat !== 'AWAITING_GO') { if (IDS) console.log(`· ${c.case_id} non proposable : ${examen ? examen.raisons.join(' ; ') : 'candidate non validée'}`); continue; }
+  if (goDonne.has(c.case_id) || goPublication(rv)) { if (IDS) console.log(`· ${c.case_id} : GO déjà donné (reprise de la publication, aucune nouvelle demande)`); continue; }
   if (deja.has(cleDedup(c.case_id))) { if (IDS) console.log(`· ${c.case_id} : déjà proposée (aucun doublon)`); continue; }
   if (!IDS) {
     const val = rv.filter((r) => /^Adrien/.test(r.reviewed_by || '') && r.decision === 'validé' && REVUE_VALIDATION.test(r.comment || '')).pop();

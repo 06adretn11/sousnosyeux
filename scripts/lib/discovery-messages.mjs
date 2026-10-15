@@ -89,8 +89,12 @@ export function messageDecision(p, recommendation) {
     : `SNY : correspondance à vérifier${matches.length ? ' — ' + matches.map((v) => v.case_id).join(', ') : ''}.`;
   // La ligne de recommandation dit EXACTEMENT ce que le bouton proposé fera (modeCreation) : jamais « VALIDATE » sous un bouton « preuves à compléter ».
   const pending = modeCreation(recommendation, p) === 'PENDING';
-  const reco = !pending
-    ? `→ VALIDATE : ${p.independantes || p.medias} sources indépendantes recoupent les faits${preuvesDe(p).manques.length ? ` (réserve : ${preuvesDe(p).manques.join(' ; ')})` : ''}.`
+  const dp = pending ? null : p.publication_directe; // jamais un bouton « publier » sous une création « preuves à compléter »
+  const reco = dp
+    // Contrat du bouton unique : confirmer l'affaire + autoriser la publication + accepter la localisation et les réserves.
+    ? `→ VALIDER ET PUBLIER : je confirme cette affaire, j’autorise sa publication sur SNY, j’accepte la localisation (approximative, centre de commune) et les réserves ci-dessous. Stade judiciaire retenu : « ${p.stade_minimal || p.fiche?.statut_judiciaire} ».\nRéserves : ${(dp.reserves || []).join(' ; ') || 'aucune'}.\n🟡 REVIEW : mettre de côté, rien n’est créé · ⛔ REJECT : écarter.`
+    : !pending
+    ? `→ VALIDATE${p.non_publiable?.length ? ' (validation documentaire, SANS publication)' : ''} : ${p.independantes || p.medias} sources indépendantes recoupent les faits${preuvesDe(p).manques.length ? ` (réserve : ${preuvesDe(p).manques.join(' ; ')})` : ''}.`
     : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent. REVIEW : mettre de côté sans rien créer.`;
   return [
     `🆕 <b>DISCOVERY</b> · AFFAIRE POTENTIELLE · ${esc(p.commune)}`,
@@ -106,6 +110,7 @@ export function messageDecision(p, recommendation) {
     ...blocInstitutionnel(p),
     esc(sny),
     p.avertissement ? `\n⚠ ${esc(cut(p.avertissement, 200))}` : '',
+    !dp && p.non_publiable?.length ? `\n🚫 Publication non proposée : ${esc(cut(p.non_publiable.join(' ; '), 260))}.` : '',
     '',
     esc(reco),
   ].join('\n').replace(/\n{3,}/g, '\n\n');
@@ -180,7 +185,7 @@ export function boutons(recommendation, cle, payload = null) {
   }
   const creer = modeCreation(recommendation, payload || {}) === 'PENDING'
     ? { text: '⏳ CRÉER (preuves à compléter)', callback_data: `sny:NC:PENDING:${cle}` }
-    : { text: payload?.attach ? '🆕 CRÉER' : '✅ VALIDATE', callback_data: `sny:NC:VALIDATE:${cle}` };
+    : { text: payload?.attach ? '🆕 CRÉER' : payload?.publication_directe ? '📢 VALIDER ET PUBLIER' : '✅ VALIDATE', callback_data: `sny:NC:VALIDATE:${cle}` };
   if (payload ? !!payload.attach : recommendation === 'ATTACH_EXISTING') {
     return { inline_keyboard: [[{ text: '🔗 RAPPROCHER', callback_data: `sny:NC:ATTACH:${cle}` }, creer], r2] };
   }

@@ -4,7 +4,10 @@
 // Un territoire = un Hub existant (périmètre : commune ou département) ou un département sans Hub. Le diagnostic compare l'état courant
 // au PRÉCÉDENT (instantané) et rend UNE sortie :
 //   NO_ACTION · INTEGRER_HUB (affaire publique du périmètre absente du Hub) · ENRICHIR_HUB (matière nouvelle depuis l'instantané)
-//   · PROPOSER_NOUVEAU_HUB (≥ 3 affaires publiques, aucun Hub) · REVIEW (affaire non publique à arbitrer en plus).
+//   · PROPOSER_NOUVEAU_HUB (plusieurs affaires publiques, aucun Hub, ET une matière documentaire au-delà des fiches : événements validés,
+//     réactions institutionnelles) · REVIEW (affaire non publique à arbitrer en plus).
+// UN VOLUME NE FAIT PAS UN HUB : un territoire dense sans matière contextuelle, ou un territoire RÉSIDUEL (« Paris hors 11e » : reste d'un
+// découpage, pas un territoire compréhensible), ne produit aucune proposition (WATCH / NO_ACTION : Adrien n'est pas sollicité).
 // Ne notifie JAMAIS sans changement significatif : `significatif` n'est vrai que si les compteurs ont bougé depuis l'instantané.
 // =====================================================================
 
@@ -38,11 +41,11 @@ export function diagnostiquer(e, prev) {
       if (hausse('reactions')) pourquoi.push(`+${hausse('reactions')} réaction(s) institutionnelle(s) ou mobilisation(s)`);
       if (hausse('sources')) pourquoi.push(`+${hausse('sources')} source(s)`);
     } else if (hausse('reviewNonPublic')) { decision = 'REVIEW'; pourquoi.push(`+${hausse('reviewNonPublic')} affaire(s) mise(s) de côté (REVIEW) dans le périmètre`); }
-  } else if (e.publiques.length >= 3) {
+  } else if (!e.residuel && e.publiques.length >= 2 && (e.reactions > 0 || (e.avecMatiere ?? 0) >= 2)) {
+    // Matière au-delà des fiches = une réaction institutionnelle / mobilisation, OU une chronologie validée sur PLUSIEURS affaires du territoire
+    // (l'événement d'une seule affaire est de la matière de fiche, pas de territoire).
     decision = 'PROPOSER_NOUVEAU_HUB';
-    pourquoi.push(`${e.publiques.length} affaires publiques sans Hub`);
-  } else if (e.publiques.length + e.candidatesValidees >= 3 && hausse('candidatesValidees')) {
-    decision = 'REVIEW'; pourquoi.push('affaires publiques et candidates validées atteignent 3 : un Hub deviendrait possible');
+    pourquoi.push(`${e.publiques.length} affaires publiques sans Hub, avec de la matière au-delà des fiches : ${e.reactions} réaction(s)/mobilisation(s) institutionnelle(s), chronologie validée sur ${e.avecMatiere ?? 0} affaire(s) (${e.evenements} événement(s))`);
   }
   // Significatif = quelque chose a BOUGÉ depuis l'instantané (jamais au premier passage) ET la sortie appelle une décision.
   const bouge = !!prev && Object.keys(s).some((k) => s[k] !== prev[k]);
@@ -53,7 +56,7 @@ export function diagnostiquer(e, prev) {
 export function messageDiagnostic(terr, e, d) {
   const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
   const attendu = { INTEGRER_HUB: 'intégrer ces affaires au Hub existant (rédaction du dossier + validation)', ENRICHIR_HUB: 'décider si la matière nouvelle change le Hub (dossier, réponses publiques)',
-    PROPOSER_NOUVEAU_HUB: 'décider d’ouvrir un Hub pour ce territoire (aucun n’est publié sans ta validation)', REVIEW: 'arbitrer les affaires non publiques du territoire' }[d.decision];
+    PROPOSER_NOUVEAU_HUB: 'décider d’ouvrir un Hub pour ce territoire : l’angle est la chronologie et les réponses publiques documentées (sources réelles ci-dessus), apport = une lecture du territoire que les fiches individuelles ne donnent pas (aucun Hub n’est publié sans ta validation)', REVIEW: 'arbitrer les affaires non publiques du territoire' }[d.decision];
   return [
     `🗺 <b>TERRITOIRE · ${esc(d.decision)}</b> · ${esc(terr)}`,
     '', '<b>Pourquoi maintenant</b> : ' + d.pourquoi.map(esc).join(' ; '),

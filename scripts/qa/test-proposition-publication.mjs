@@ -83,7 +83,10 @@ t('aucune localisation → refus avant toute écriture', () => assert.throws(() 
 t('l’application : un seul appel à publier-affaire (liste d’arguments), AUCUNE écriture de statut ni de GO dans le handler', () => {
   const s = src('scripts/appliquer-nouvelles-affaires.mjs');
   const bloc = s.slice(s.indexOf('if (p.publication) {'), s.indexOf('// --- rapprochement'));
-  assert.ok(/execFileSync\(process\.execPath, args/.test(bloc) && /argsPublierAffaire/.test(bloc));
+  // L'exécution du GO vit dans UNE fonction (publierGo), partagée avec « VALIDER ET PUBLIER » : un seul appel, en liste d'arguments.
+  const helper = s.slice(s.indexOf('async function publierGo'), s.indexOf('async function publierGo') + 900);
+  assert.ok(/execFileSync\(process\.execPath, args/.test(helper) && /argsPublierAffaire/.test(helper) && /publierGo\(/.test(bloc));
+  assert.equal((s.match(/execFileSync\(/g) || []).length, 1, 'un seul appel à publier-affaire');
   assert.ok(!/update cases|publication_status|GO d'Adrien|delete from/i.test(bloc), 'pas de SQL de publication dupliqué');
 });
 t('REJECT : revue « à corriger » (jamais « retirer », jamais de suppression) ; REVIEW : rien d’écrit (HOLD existant)', () => {
@@ -111,7 +114,7 @@ t('erreur technique (réseau, base) → NON définitif : réessayée au passage 
 t('aucune localisation fiable → définitif, motif lisible', () => assert.deepEqual(motifRefus('Error: aucune localisation fiable : publication refusée'), { definitif: true, motif: 'aucune localisation fiable' }));
 t('refus définitif : applied_at posé et motif AJOUTÉ à decision_comment — la décision (ACCEPT, decided_by/at) n’est jamais effacée', () => {
   const s = src('scripts/appliquer-nouvelles-affaires.mjs');
-  const bloc = s.slice(s.indexOf('if (definitif && ECRIRE)'), s.indexOf('continue;', s.indexOf('if (definitif && ECRIRE)')));
+  const bloc = s.slice(s.indexOf("if (o.etat === 'refus') {"), s.indexOf('continue;', s.indexOf("if (o.etat === 'refus') {")));
   assert.ok(/applied_at = now\(\)/.test(bloc) && /decision_comment = left\(coalesce\(decision_comment/.test(bloc));
   assert.ok(!/decision\s*=|decided_by\s*=|decided_at\s*=|delete from/i.test(bloc));
 });
