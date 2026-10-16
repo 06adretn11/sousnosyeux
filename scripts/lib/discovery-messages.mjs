@@ -11,7 +11,7 @@ import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
-const jj = (d) => (d ? String(d).slice(0, 10).split('-').reverse().join('/') : 'date inconnue');
+const jj = (d) => (d ? (d instanceof Date ? d.toISOString() : String(d)).slice(0, 10).split('-').reverse().join('/') : 'date inconnue'); // un objet Date (colonne SQL) ne devient jamais « Thu Oct 15 »
 const lien = (a) => `📰 ${esc(a.media || 'média')} → ${esc(a.url)}`;
 
 /** Réaction ou mesure d'une institution (hors état judiciaire) : fait structuré, libellé public tiré d'une table fermée. */

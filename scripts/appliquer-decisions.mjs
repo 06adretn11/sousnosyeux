@@ -126,7 +126,7 @@ if (process.argv.includes('--generique')) {
   const { evenementDejaValide } = await import('./lib/routage-veille.mjs');
   const { detecterInstitutionnel } = await import('./lib/evenement-institutionnel.mjs');
   const { schemaBoucle } = await import('./lib/telegram-clics.mjs');
-  const { prevenir, prevenirUneFois, phrasePublication, esc } = await import('./lib/prevenir.mjs');
+  const { prevenir, prevenirUneFois, phrasePublication, phraseEnrichissement, esc } = await import('./lib/prevenir.mjs');
   const S = await schemaBoucle(sql);
   const rows = await sql`
     select p.proposal_id, left(p.proposal_id::text, 8) k, p.case_id, p.analysis_action aa,
@@ -207,7 +207,7 @@ if (process.argv.includes('--generique')) {
             dire(`      + événement ${inst.event_type} → ${String(ev).slice(0, 8)}${S.realisation ? '' : ' (colonne realisation absente : migration 019 non appliquée)'}`);
           }
           await sql`update state_proposals set applied_event_id = coalesce(applied_event_id, ${ev}) where proposal_id = ${p.proposal_id} and decision = 'ACCEPT'`;
-          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation ?? 'prise de parole'}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phrasePublication(p.pub)}`);
+          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation ?? 'prise de parole'}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phraseEnrichissement()}`);
         }
         continue;
       }

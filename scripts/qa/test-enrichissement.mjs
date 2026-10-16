@@ -72,6 +72,10 @@ await t('message « ENRICHISSEMENT PROPOSÉ » : nouveau, qui/quand, source, por
   for (const s of ['ENRICHISSEMENT PROPOSÉ', 'Ce qui est nouveau', 'Qui / quand', '15/10/2026', 'Source', 'https://media.example/article', 'Portée', 'établissement', 'Utilisation possible', 'fiche individuelle', 'Hub', 'VALIDATE', 'REVIEW', 'REJECT']) assert.ok(m.includes(s), s);
   assert.match(m, /aucune mise à jour publique immédiate/);
 });
+await t('la date de la source s’affiche JJ/MM/AAAA même si elle arrive comme un objet Date (défaut constaté sur le message réel : « Thu Oct 15 »)', () => {
+  const m = messageEnrichissement({ etablissement: ECOLE, commune: 'Ville-Test', courant: 'mise en examen', media: 'ICI', publication_date: new Date('2026-10-15T00:00:00Z'), url: 'https://media.example/a' }, rxB, false);
+  assert.ok(m.includes('ICI · 15/10/2026')); assert.ok(!/Thu|GMT/.test(m));
+});
 await t('mémoire persistable puis RÉCUPÉRABLE par une future fiche et un Hub (affaire sans fiche individuelle incluse), sans ressaisie', async () => {
   const fait = { ...mob, libelle_public: mob.libelle_public };
   const sql = fakeSql([{ proposal_id: 'p1', case_id: 'FR-2026-9001', applied_event_id: 'e1', fait, commune: 'Ville-Test', departement: 'Test', media: 'ICI', url: 'https://media.example/article', publie_le: '2026-10-15' }]);
@@ -148,7 +152,7 @@ await t('rejeu idempotent', () => assert.deepEqual(extraireReactions(`Parents et
 await t('Telegram : une information déjà consignée/validée ou déjà soumise, ou une source seule, ne produit AUCUN message ; une portée territoire a ses boutons', () => {
   const s = src('scripts/telegram-v0.mjs');
   assert.ok(s.includes('aucune information nouvelle à décider (source seule) : aucun message') && s.includes('même information déjà soumise à décision') && s.includes("q.decision = 'ACCEPT'"));
-  assert.ok(s.includes('messageEnrichissement(p, neufs, !propres.length), boutonsEtat(cle)'));
+  assert.ok(s.includes('messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length), boutonsEtat(cle)'));
 });
 await t('application : une portée territoire n’est jamais écrite comme événement de l’affaire ; mobilisation/mesure d’établissement → case_events (projetée par project-evenements)', () => {
   const a = src('scripts/appliquer-decisions.mjs');

@@ -11,7 +11,7 @@
 // (jusqu'à ~8 min). Succès → Telegram « publié et vérifié » ; délai dépassé → Telegram « projeté mais NON vérifié » et code de sortie 1.
 // =====================================================================
 import { readFileSync } from 'node:fs';
-import { prevenir } from './lib/prevenir.mjs';
+import { prevenir, texteVerifie } from './lib/prevenir.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
 
 const ID = /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/;
@@ -73,7 +73,7 @@ for (let essai = 1; essai <= ESSAIS; essai++) {
 }
 const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
 if (!dernier.length) {
-  if (TELEGRAM) await prevenir(`🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${SITE}).`);
+  if (TELEGRAM) await prevenir(texteVerifie({ ids, fiches, hubs, site: SITE })); // pages actualisées : URL de chacune
   console.log('site conforme');
   process.exit(0);
 }

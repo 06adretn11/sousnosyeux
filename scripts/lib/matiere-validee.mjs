@@ -27,7 +27,7 @@ export function surfacesDe(item) {
  */
 export async function lireMatiereValidee(sql, { case_id = null, commune = null, departement = null } = {}) {
   const rows = await sql`
-    select p.proposal_id::text proposal_id, p.case_id, p.applied_event_id::text applied_event_id, f.fait, c.commune, c.departement, a.media, a.url, a.publication_date::text publie_le
+    select p.proposal_id::text proposal_id, p.case_id, p.applied_event_id::text applied_event_id, f.fait, c.commune, c.departement, c.etablissement, a.media, a.url, a.publication_date::text publie_le
       from state_proposals p
       join cases c using (case_id)
       left join articles a on a.article_id = p.article_id
@@ -40,7 +40,7 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
     proposal_id: r.proposal_id, case_id: r.case_id, nature: r.fait.nature || 'mesure', mesure: r.fait.mesure, libelle: r.fait.libelle_public,
     realisation: r.fait.realisation ?? 'inconnue', portee: r.fait.portee || 'établissement', acteur: r.fait.acteur_nomme || r.fait.acteur || null, territoire: r.fait.territoire || null,
     date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,
-    source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, event_id: r.applied_event_id, _commune: r.commune, _dep: r.departement,
+    source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, event_id: r.applied_event_id, etablissement: r.etablissement, _commune: r.commune, _dep: r.departement,
   }));
   // Une information validée plusieurs fois (deux articles, même libellé, même affaire, MÊME jour ou période) ne compte qu'une fois : la plus ancienne fait foi.
   // Deux événements de jours différents au libellé identique (deux rassemblements) sont deux faits.

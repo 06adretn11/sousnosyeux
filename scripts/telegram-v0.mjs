@@ -197,7 +197,7 @@ async function decisionReactions(cle, p, faits) {
   const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
   const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
   if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
-  return envoyer(messageEnrichissement(p, neufs, !propres.length), boutonsEtat(cle));
+  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length), boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
 }
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);

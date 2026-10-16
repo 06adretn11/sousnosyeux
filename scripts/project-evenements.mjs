@@ -16,7 +16,7 @@ import { dossierFiche, hashDossier, ficheApprouvee, empreinteApprouvee } from '.
 import { connecter } from './lib/neon.mjs';
 import { lireMatiereValidee } from './lib/matiere-validee.mjs';
 import { construireMatiere } from './lib/destinations.mjs';
-import { prevenirUneFois, esc } from './lib/prevenir.mjs';
+import { prevenirUneFois, texteBloquee, texteConservee } from './lib/prevenir.mjs';
 
 const DIFF = process.argv.includes('--diff');
 const CHEMIN = new URL('../data/evenements.json', import.meta.url);
@@ -60,7 +60,7 @@ const lire = (fichier) => JSON.parse(readFileSync(new URL(`../${fichier}`, impor
 const casesPubliques = lire('data/cases.json').cases;
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
 const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
-const { matiere, bloques } = construireMatiere(await lireMatiereValidee(sql), {
+const { matiere, bloques, conservees } = construireMatiere(await lireMatiereValidee(sql), {
   publiques: new Set(ids), holds, approuvees: new Set(Object.keys(fiches)), cases: new Map(casesPubliques.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs,
 });
 const doc = { _meta: { projection: 'evenements-v0', note: 'Compilé depuis Neon (case_events, reviews, informations validées) par scripts/project-evenements.mjs. Ne pas éditer à la main.' }, affaires: parAffaire, fiches_approuvees: fiches, matiere };
@@ -82,9 +82,10 @@ hubs=${hubsConcernes.join(',')}
 `); };
 console.log(`${matiere.length} information(s) validée(s) projetée(s) (${changees.length} nouvelle(s) ou modifiée(s)) · pages concernées : fiches [${concernees.join(', ') || '—'}] hubs [${hubsConcernes.join(', ') || '—'}] · ${bloques.length} blocage(s)`);
 // Une information validée qu'aucun bloc existant ne peut accueillir : blocage EXPLICITE (une seule alerte), jamais d'insertion forcée.
-if (!DIFF) for (const b of bloques) await prevenirUneFois(sql, { cle: `matiere:${b.id}`, resultat: 'bloquee', texte: `⚠️ <b>Information validée NON intégrée</b> (${esc(b.id)})
-${esc(b.raison)}
-Elle reste conservée en mémoire ; aucune page n'a été modifiée.` });
+if (!DIFF) for (const b of bloques) await prevenirUneFois(sql, { cle: `matiere:${b.id}`, resultat: 'bloquee', texte: texteBloquee(b) });
+// Une information validée SANS page concernée (ni fiche approuvée, ni Hub publié) : confirmation de PERSISTANCE, une seule fois, sans promesse de publication.
+// L'issue vient du résultat réel de la projection ci-dessus, jamais du statut « publiée » de l'affaire.
+if (!DIFF) for (const f of conservees) await prevenirUneFois(sql, { cle: `matiere:conservee:${f.id}`, resultat: 'conservee', texte: texteConservee(f) });
 if (avant === texte) { console.log('NO_PUBLIC_CHANGE — data/evenements.json déjà conforme à Neon'); sortie(false); process.exit(0); }
 if (DIFF) { console.log('écart avec le fichier committé (rien écrit) · pages concernées : ' + (concernees.join(', ') || 'aucune')); process.exit(0); }
 writeFileSync(CHEMIN, texte, 'utf8');
