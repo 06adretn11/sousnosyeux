@@ -61,6 +61,21 @@ const SCENARIOS = [
     faits: [fait({ id: 'test-s1', case_id: 'FR-2026-0042', libelle: 'Selon la presse, des parents ont tenu un rassemblement.' })] },
   { nom: 'Cas 2 — Hub existant seul (mesure territoriale, Ville de Paris)', attendu: ['territoires/paris-11e/index.html'],
     faits: [fait({ id: 'test-s2', case_id: 'POC-05', nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur: 'Ville de Paris', date: null, periode: '2025-11', libelle: 'Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.' })] },
+  { nom: 'Cas 2b — Aqueduc réel (Paris 10e) : la mesure de la Ville de Paris garde son attribution municipale', attendu: ['territoires/paris-11e/index.html'],
+    faits: [fait({ id: 'test-s2b', case_id: 'FR-2026-0002', nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur: 'Ville de Paris', date: null, periode: '2025-11', libelle: 'Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.' })],
+    controle: (dist) => {
+      // HTML RÉEL du Hub : l'élément ajouté est dans le bloc municipal, attribué à la Ville de Paris, portée « Paris » ; jamais propre à Aqueduc ni à la mairie du 11e.
+      const page = readFileSync(join(dist, 'territoires/paris-11e/index.html'), 'utf8');
+      const i = page.indexOf('[TEST SNY — fictif]'); assert.ok(i > 0, 'élément présent');
+      const li = page.slice(page.lastIndexOf('<li', i), page.indexOf('</li>', i) + 5);
+      const section = page.slice(page.lastIndexOf('<section', i), page.indexOf('</section>', i));
+      assert.match(section, /<h3[^>]*>Ville de Paris et mairie du 11e<\/h3>/, 'bloc municipal existant');
+      assert.match(li, /<span class="acteur"[^>]*>Ville de Paris<\/span>/, 'acteur : la Ville de Paris');
+      assert.match(li, /Portée : Paris, non propre à une école/, 'portée territoriale explicite');
+      assert.match(li, /Novembre 2025/, 'période relative correcte, jour non inventé');
+      assert.ok(!/Aqueduc|mairie du 11e|11e arrondissement/i.test(li), 'jamais présentée comme propre à Aqueduc ni à la mairie du 11e');
+      console.log('  HTML réel (Hub Paris 11e) : ' + li.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 260));
+    } },
   { nom: 'Cas 3 — une information, deux surfaces (fiche ET Hub)', attendu: ['affaires/poc-09/index.html', 'territoires/paris-11e/index.html'],
     faits: [fait({ id: 'test-s3', case_id: 'POC-09', event_id: 'ev-test-s3', libelle: 'Selon la presse, des parents ont tenu un rassemblement.' })],
     evenement: { case_id: 'POC-09', event: { event_id: 'ev-test-s3', date: '2026-10-14', type: 'mobilisation', statut: null, libelle: TEST + 'Selon la presse, des parents ont tenu un rassemblement.', realisation: 'réalisée', source: SRC } } },
@@ -97,6 +112,7 @@ for (const s of SCENARIOS) {
     assert.ok(occurrences >= 1);
     if (s.evenement && f.startsWith('affaires/')) assert.equal(occurrences, 1, 'une fiche : l’information apparaît UNE fois (pas aussi dans le déroulé)');
   }
+  if (s.controle) s.controle(dist);
   // Rejeu idempotent : même projection → mêmes octets → aucune modification.
   const ev1 = lire('data/evenements.json'); const ev2 = lire('data/evenements.json');
   projeter(ev1, s.faits); projeter(ev2, s.faits);

@@ -164,7 +164,7 @@ await t('DEUX mobilisations distinctes (jours différents) d’une même affaire
   assert.deepEqual(planReactions(rx, memoire).neufs.map((x) => x.event_date), ['2026-07-20']);
   const sql = fakeSql([{ proposal_id: 'a', case_id: 'FR-2026-9001', applied_event_id: 'e1', fait: rx[0], commune: 'V', departement: 'T' }, { proposal_id: 'b', case_id: 'FR-2026-9001', applied_event_id: 'e2', fait: rx[1], commune: 'V', departement: 'T' }]);
   const lus = await lireMatiereValidee(sql, { case_id: 'FR-2026-9001' });
-  assert.equal(lus.length, 2);                                                                                                        // mémoire : deux faits distincts
+  assert.equal(lus.length, 2); assert.notEqual(lus[0].id, lus[1].id);   // mémoire : deux faits distincts, deux identités stables
 });
 await t('UNE mobilisation reprise par deux sources : un seul fait (article, mémoire validée, lecteur) — même jour, même libellé', async () => {
   const a = extraireReactions('Des parents se sont rassemblés ce jeudi devant l’école maternelle Les Tilleuls.', { etablissement: ECOLE, anneeRef: '2026-10-15' })[0];

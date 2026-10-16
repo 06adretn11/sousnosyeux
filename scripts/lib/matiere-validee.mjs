@@ -35,8 +35,8 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
      where p.decision = 'ACCEPT' and f.fait ? 'libelle_public'
      order by p.decided_at, p.proposal_id`;
   const items = rows.map((r) => ({
-    // Identité STABLE du fait (affaire + libellé fermé) : ne change pas au rejeu, n'expose aucun identifiant interne.
-    id: createHash('sha1').update(`${r.case_id}|${r.fait.libelle_public}`).digest('hex').slice(0, 12),
+    // Identité STABLE du fait (affaire + libellé fermé + jour ou période : deux rassemblements de jours différents sont deux faits) : ne change pas au rejeu, n'expose aucun identifiant interne.
+    id: createHash('sha1').update(`${r.case_id}|${r.fait.libelle_public}|${r.fait.event_date ?? r.fait.event_period ?? ""}`).digest('hex').slice(0, 12),
     proposal_id: r.proposal_id, case_id: r.case_id, nature: r.fait.nature || 'mesure', mesure: r.fait.mesure, libelle: r.fait.libelle_public,
     realisation: r.fait.realisation ?? 'inconnue', portee: r.fait.portee || 'établissement', acteur: r.fait.acteur_nomme || r.fait.acteur || null, territoire: r.fait.territoire || null,
     date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,

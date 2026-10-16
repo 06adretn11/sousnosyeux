@@ -106,4 +106,27 @@ t('Telegram : le blocage est signalé précisément (« Information validée NON
   assert.ok(src('scripts/project-evenements.mjs').includes('Information validée NON intégrée') && src('scripts/project-evenements.mjs').includes('Elle reste conservée en mémoire'));
 });
 
+console.log('\n  RÉCUPÉRABLE — la matière territoriale validée ne dépend pas de l’état public de l’affaire support');
+t('une information territoriale validée reste LISIBLE (mémoire) quand l’affaire support est candidate, retirée ou sous HOLD ; elle n’est exposée sur aucune page', async () => {
+  const { lireMatiereValidee } = await import('../lib/matiere-validee.mjs');
+  const fait0 = fait({ nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur: 'Ville de Paris', date: null, periode: '2025-11' });
+  for (const support of ['CANDIDATE', 'P-HOLD', 'RETIREE']) {
+    const sql = async () => [{ proposal_id: 'p', case_id: support, applied_event_id: null, fait: { nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur_nomme: 'Ville de Paris', event_period: '2025-11', libelle_public: fait0.libelle, mesure: 'plan_formation', evidence: ['citation privée'] }, commune: 'Paris 10e', departement: 'Paris', media: 'M', url: 'https://m.example/a', publie_le: '2026-03-21' }];
+    const lus = await lireMatiereValidee(sql, { departement: 'Paris' });
+    assert.equal(lus.length, 1); assert.equal(lus[0].periode, '2025-11');                                   // récupérable pour un futur Hub / diagnostic
+    assert.deepEqual(destinationsDe({ ...fait0, case_id: support }, ctx()), { fiche: null, hubs: [], bloques: [] });   // mais jamais exposée via une affaire non publique
+  }
+});
+t('la lecture ne filtre ni sur publication_status ni sur applied_at ; l’application d’une portée territoire n’écrit RIEN (la décision ACCEPT et le fait restent la mémoire)', () => {
+  const r = src('scripts/lib/matiere-validee.mjs');
+  assert.ok(r.includes("p.decision = 'ACCEPT'") && !/publication_status|applied_at|applied_event_id is/.test(r.slice(r.indexOf('export async function lireMatiereValidee'), r.indexOf('const items'))));
+  const a = src('scripts/appliquer-decisions.mjs'); const bloc = a.slice(a.indexOf("if (p.rat === 'OK' && structures.length && !insts.length)"), a.indexOf('if (insts.length)'));
+  assert.ok(bloc.includes('continue;') && !/insert|update/i.test(bloc), 'portée territoriale : aucune écriture à l’application');
+});
+t('l’affaire support devenue publique plus tard : la même information apparaît alors (destinations recalculées), sans nouvelle validation', () => {
+  const f1 = fait({ case_id: 'LATE', nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur: 'Ville de Paris' });
+  const avant = ctx(), apres = ctx({ publiques: new Set([...avant.publiques, 'LATE']), cases: new Map([...avant.cases, ['LATE', { commune: 'Paris 10e', departement: 'Paris', etablissement: 'École L' }]]) });
+  assert.deepEqual(destinationsDe(f1, avant).hubs, []); assert.equal(destinationsDe(f1, apres).hubs.length, 1);
+});
+
 console.log(`\n  ${n} contrôles : OK\n`);
