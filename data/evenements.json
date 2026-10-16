@@ -1,7 +1,7 @@
 {
   "_meta": {
     "projection": "evenements-v0",
-    "note": "Compilé depuis Neon (case_events, reviews) par scripts/project-evenements.mjs. Ne pas éditer à la main."
+    "note": "Compilé depuis Neon (case_events, reviews, informations validées) par scripts/project-evenements.mjs. Ne pas éditer à la main."
   },
   "affaires": {
     "FR-2026-0001": [
@@ -126,6 +126,21 @@
         "source": null
       }
     ],
+    "FR-2026-0137": [
+      {
+        "event_id": "d533f367-456e-4050-bc36-3458bdd0748a",
+        "date": "2026-10-15",
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Selon la presse, des parents et des enseignants ont tenu un rassemblement.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "ici",
+          "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/instituteur-interpelle-a-soyaux-nous-exigeons-de-la-transparence-parents-et-enseignants-rassembles-a-l-ecole-3444426",
+          "publie_le": "2026-10-15"
+        }
+      }
+    ],
     "POC-05": [
       {
         "event_id": "bf3e73ae-05f3-422a-ad50-246e164a3cff",
@@ -215,5 +230,6 @@
     "FR-2026-0114": {
       "hash": "e88bdcd643defd55"
     }
-  }
+  },
+  "matiere": []
 }
