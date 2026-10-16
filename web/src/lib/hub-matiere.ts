@@ -18,6 +18,7 @@
 // =====================================================================
 
 import { dateLongue } from './etat-wording';
+import evenementsDoc from '../../../data/evenements.json';
 
 const publics = import.meta.glob('../../../data/hub-matiere/*.json', { eager: true });
 const prives = import.meta.glob('../../../data/hub-prive/*.json', { eager: true });
@@ -27,9 +28,40 @@ const parId = (mods: Record<string, any>) =>
 const P = parId(publics);
 const V = parId(prives);
 
+// MATIÈRE VALIDÉE (data/evenements.json → `matiere`, projetée depuis Neon) : une information validée UNE fois, dont les destinations ont été
+// calculées à la projection. Ici, aucune décision : seul l'ajout dans un bloc EXISTANT désigné (`groupe`) ; l'angle et l'introduction du Hub
+// ne sont jamais réécrits, aucune rubrique n'est créée.
+const MATIERE: any[] = (evenementsDoc as any).matiere ?? [];
+export const matiereHub = (id: string): any[] => MATIERE.filter((m) => (m.destinations?.hubs ?? []).some((h: any) => h.hub === id));
+const periodeOuDate = (m: any) => ({ date: m.date ?? m.periode ?? null, date_nature: m.date || m.periode ? 'evenement' : 'inconnue' });
+const acteurLisible = (m: any): string => {
+  if (m.nature === 'mobilisation') {
+    const t = String(m.acteur ?? '').split(', ').filter(Boolean).sort().reverse().join(' et ');
+    return t ? t[0].toUpperCase() + t.slice(1) : 'Collectif';
+  }
+  return m.acteur && !/^(la ville|collectivite|la commune)$/i.test(m.acteur) ? m.acteur : 'Collectivité';
+};
+/** Carte du bloc « réponses » d'un Hub (contrat Reponses). */
+export const carteReponse = (m: any) => ({
+  ...periodeOuDate(m), acteur: acteurLisible(m),
+  texte: m.portee === 'territoire' ? `${m.libelle} Portée : ${m.territoire ?? 'territoire'}, non propre à une école.` : `${m.libelle}${m.etablissement ? ` (${m.etablissement})` : ''}`,
+  source: m.source ? { ...m.source, acces: 'libre' } : null,
+});
+/** Carte de la rubrique « Paroles et réactions » d'une fiche (contrat Paroles compact) : jamais de citation inventée, position attribuée au média. */
+export const carteReaction = (m: any) => ({
+  ...periodeOuDate(m), acteur: acteurLisible(m), qualite: m.nature === 'mobilisation' ? 'Mobilisation' : 'Mesure annoncée ou conduite',
+  attribution: 'POSITION_ATTRIBUEE', portee: 'affaire', rappel_territorial: m.portee === 'territoire',
+  ...(m.portee === 'territoire' ? { a_propos: `Mesure à portée territoriale (${m.territoire ?? 'territoire'}), non propre à cet établissement` } : {}),
+  paraphrase: m.libelle, source: m.source ? { ...m.source, acces: 'libre' } : null,
+});
+
 export function chargerHub(id: string): { matiere: any; prive: any | null } {
   if (!P[id]) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
-  return { matiere: P[id], prive: V[id] ?? null };
+  const m = P[id];
+  const ajouts = matiereHub(id);
+  if (!ajouts.length || !m.reponses) return { matiere: m, prive: V[id] ?? null };
+  const reponses = m.reponses.map((g: any) => ({ ...g, items: [...g.items, ...ajouts.filter((x) => x.destinations.hubs.some((h: any) => h.hub === id && h.groupe === g.titre)).map(carteReponse)] }));
+  return { matiere: { ...m, reponses }, prive: V[id] ?? null };
 }
 
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',

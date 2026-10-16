@@ -17,11 +17,13 @@ import { ecartsSite } from './lib/ecarts-site.mjs';
 const ID = /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/;
 const argv = process.argv.slice(2);
 const iF = argv.indexOf('--fiches');
+const iH = argv.indexOf('--hubs');
+const hubs = iH >= 0 ? (argv[iH + 1] || '').split(',').filter((h) => /^[a-z0-9-]+$/.test(h)) : [];
 const fiches = iF >= 0 ? (argv[iF + 1] || '').split(',').filter((i) => ID.test(i)) : [];
-const ids = argv.filter((a, i) => ID.test(a) && i !== iF + 1);
+const ids = argv.filter((a, i) => ID.test(a) && i !== iF + 1 && i !== iH + 1);
 const TELEGRAM = !argv.includes('--sans-telegram');
 const SITE = process.env.SNY_SITE_URL || 'https://sousnosyeux.org';
-if (!ids.length && !fiches.length) { console.error('rien à vérifier'); process.exit(2); }
+if (!ids.length && !fiches.length && !hubs.length) { console.error('rien à vérifier'); process.exit(2); }
 
 const doc = JSON.parse(readFileSync('data/cases.json', 'utf8'));
 const attendu = new Map((doc.cases || doc).map((c) => [c.case_id, c]));
@@ -36,6 +38,20 @@ async function ecartsFiche(id) {
   const out = [];
   if (!html.includes(`data-fiche="${id}"`)) out.push(`fiche ${id} : page sans le bon dossier`);
   if (!html.includes(`data-evenements="${n}"`)) out.push(`fiche ${id} : nombre d'événements différent de la projection (${n} attendus)`);
+  const m = (evenements.matiere || []).filter((x) => x.destinations?.fiche === id).length;
+  if (!html.includes(`data-matiere="${m}"`)) out.push(`fiche ${id} : informations validées différentes de la projection (${m} attendues)`);
+  return out;
+}
+
+/** Écarts d'un Hub servi : la page porte le bon nombre d'informations validées ET leur libellé (une information projetée est réellement affichée). */
+async function ecartsHub(hub) {
+  const r = await fetch(`${SITE}/territoires/${hub}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } });
+  if (!r.ok) return [`hub ${hub} : HTTP ${r.status}`];
+  const html = await r.text();
+  const items = (evenements.matiere || []).filter((x) => (x.destinations?.hubs || []).some((h) => h.hub === hub));
+  const out = [];
+  if (!html.includes(`data-matiere="${items.length}"`)) out.push(`hub ${hub} : informations validées différentes de la projection (${items.length} attendues)`);
+  for (const x of items) if (!html.includes(String(x.libelle).replace(/&/g, '&amp;').slice(0, 40))) out.push(`hub ${hub} : information ${x.id} absente de la page servie`);
   return out;
 }
 
@@ -49,12 +65,13 @@ for (let essai = 1; essai <= ESSAIS; essai++) {
       dernier.push(...(r.ok ? ecartsSite(await r.text(), ids, attendu) : [`HTTP ${r.status}`]));
     }
     for (const f of fiches) dernier.push(...(await ecartsFiche(f)));
+    for (const h of hubs) dernier.push(...(await ecartsHub(h)));
   } catch { dernier = ['site injoignable']; }
   console.log(`essai ${essai}/${ESSAIS} : ${dernier.length ? dernier.length + ' écart(s)' : 'conforme'}`);
   if (!dernier.length) break;
   if (essai < ESSAIS) await new Promise((res) => setTimeout(res, 40000));
 }
-const tout = [...ids, ...fiches.map((f) => `fiche ${f}`)].join(', ');
+const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
 if (!dernier.length) {
   if (TELEGRAM) await prevenir(`🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${SITE}).`);
   console.log('site conforme');

@@ -12,7 +12,7 @@
 import casesDoc from '../../../data/cases.json';
 import evenementsDoc from '../../../data/evenements.json';
 import holdsDoc from '../../../data/publication-holds.json';
-import { chargerHub } from './hub-matiere';
+import { chargerHub, carteReaction } from './hub-matiere';
 
 export const HUBS: Record<string, { titre: string; url: string }> = {
   'paris-11e': { titre: 'Paris 11e', url: '/territoires/paris-11e' },
@@ -29,6 +29,8 @@ const holds = new Set((holdsDoc as any).holds.map((h: any) => h.case_id));
 export const fichesApprouvees = (): string[] => Object.keys((evenementsDoc as any).fiches_approuvees ?? {});
 export const fichePubliee = (id: string): boolean => fichesApprouvees().includes(id);
 export const evenementsDe = (id: string): any[] => (evenementsDoc as any).affaires[id] ?? [];
+/** Informations validées destinées à CETTE fiche (rattachement explicite) : une seule information, jamais recopiée ; la fiche ne demande aucune nouvelle approbation. */
+export const matiereFiche = (id: string): any[] => ((evenementsDoc as any).matiere ?? []).filter((m: any) => m.destinations?.fiche === id);
 
 /** Dossier éditorial d'une affaire : celui de son hub, sinon celui des affaires isolées (même forme). */
 export function dossierDe(id: string): { hub: string | null; d: any | null } {
@@ -43,6 +45,7 @@ export function dossierDe(id: string): { hub: string | null; d: any | null } {
 /** Déroulé commun (fiche + Hub) : entrées du dossier, dates/types alignés sur Neon, événements validés manquants ajoutés. */
 export function derouleCommun(id: string, d: any): { items: any[]; divergences: string[] } {
   const evs = evenementsDe(id);
+  const dejaCartes = new Set(matiereFiche(id).map((m: any) => m.event_id).filter(Boolean)); // déjà restituée dans « Paroles et réactions » : pas deux fois
   const divergences: string[] = [];
   const portes = new Set<string>();
   const items = (d?.deroule ?? []).map((e: any) => {
@@ -57,7 +60,7 @@ export function derouleCommun(id: string, d: any): { items: any[]; divergences: 
   // Événements validés que le dossier ne porte pas encore : ajoutés À LA SUITE (chronologique par construction : un UPDATE est le plus récent).
   // Opt-in par dossier (`suivre_neon: true`) : un hub existant ne change jamais de lui-même.
   for (const ev of d?.suivre_neon ? evs : []) {
-    if (portes.has(ev.event_id)) continue;
+    if (portes.has(ev.event_id) || dejaCartes.has(ev.event_id)) continue;
     items.push({ date: ev.date, date_nature: ev.date ? 'evenement' : 'inconnue', type: TYPE_NEON[ev.type] ?? 'contexte', acteur: null,
       texte: ev.libelle, source: ev.source ? { ...ev.source, acces: 'libre' } : { media: 'source non conservée', url: null } });
   }
@@ -70,5 +73,7 @@ export function ficheDe(id: string) {
   if (holds.has(id)) throw new Error(`[fiche] ${id} est sous HOLD : jamais affichable`);
   const { hub, d } = dossierDe(id);
   const { items, divergences } = derouleCommun(id, d);
-  return { c, hub: hub ? { id: hub, ...HUBS[hub] } : null, d: d ?? {}, deroule: items, divergences };
+  const cartes = matiereFiche(id).map(carteReaction);
+  const dossier = { ...(d ?? {}), reactions: [...(d?.reactions ?? []), ...cartes] };
+  return { c, hub: hub ? { id: hub, ...HUBS[hub] } : null, d: dossier, deroule: items, divergences, matiere: cartes.length };
 }

@@ -7,6 +7,7 @@ import Habillage from '../../components/territoires/Habillage.astro';
 import Paris11e from '../../components/territoires/Paris11e.astro';
 import Bordeaux from '../../components/territoires/Bordeaux.astro';
 import HautesAlpes from '../../components/territoires/HautesAlpes.astro';
+import { matiereHub } from '../../lib/hub-matiere';
 
 export function getStaticPaths() {
   return [
@@ -16,11 +17,14 @@ export function getStaticPaths() {
   ];
 }
 const { hub, titre, description } = Astro.props as { hub: string; titre: string; description: string };
+const nMatiere = matiereHub(hub).length;
 ---
 
 <Layout title={`${titre} — territoires — sousnosyeux`} {description}>
   <Habillage />
-  {hub === 'paris-11e' && <Paris11e />}
-  {hub === 'bordeaux-gironde' && <Bordeaux />}
-  {hub === 'hautes-alpes' && <HautesAlpes />}
+  <div data-hub={hub} data-matiere={nMatiere} style="display: contents">
+    {hub === 'paris-11e' && <Paris11e />}
+    {hub === 'bordeaux-gironde' && <Bordeaux />}
+    {hub === 'hautes-alpes' && <HautesAlpes />}
+  </div>
 </Layout>

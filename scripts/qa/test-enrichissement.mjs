@@ -100,14 +100,16 @@ await t('dates relatives : « prochain » = futur ; sans date de publication = r
   assert.equal(dateEcrite('ce jeudi', '2026-10-15').date, '2026-10-15'); assert.equal(dateEcrite('mardi dernier', '2026-10-15').date, '2026-10-13');
   assert.equal(dateEcrite('le 12 novembre', '2026-03-21').date, '2025-11-12');
 });
-await t('une mesure territoriale concernant plusieurs affaires : UNE information, lue pour chaque affaire du périmètre (rappel attribué), sans copie', async () => {
+await t('une mesure territoriale : UNE information ; la fiche de l’affaire d’origine en reçoit le rappel attribué, une AUTRE affaire du même territoire n’est PAS modifiée ; le Hub la lit', async () => {
   const fait = { ...rxC[0] };
   const sql = fakeSql([{ proposal_id: 'p2', case_id: 'FR-2026-9002', applied_event_id: null, fait, commune: 'Paris 10e', departement: 'Paris', media: 'JDD', url: 'https://media.example/jdd', publie_le: '2026-03-21' }]);
-  const autre = await matierePourFiche(sql, { case_id: 'FR-2026-9003', departement: 'Paris' });          // une AUTRE affaire de Paris
-  assert.equal(autre.propres.length, 0); assert.equal(autre.rappelTerritorial.length, 1); assert.equal(autre.rappelTerritorial[0].portee, 'territoire');
-  assert.match(surfacesDe(autre.rappelTerritorial[0]).fiche, /non propre à cet établissement/); assert.match(surfacesDe(autre.rappelTerritorial[0]).hub, /matière du territoire/);
+  const origine = await matierePourFiche(sql, { case_id: 'FR-2026-9002', departement: 'Paris' });
+  assert.equal(origine.propres.length, 0); assert.equal(origine.rappelTerritorial.length, 1); assert.equal(origine.rappelTerritorial[0].portee, 'territoire');
+  assert.match(surfacesDe(origine.rappelTerritorial[0]).fiche, /non propre à cet établissement/); assert.match(surfacesDe(origine.rappelTerritorial[0]).hub, /matière du territoire/);
+  const autre = await matierePourFiche(sql, { case_id: 'FR-2026-9003', departement: 'Paris' });          // une AUTRE affaire de Paris : jamais modifiée « arbitrairement »
+  assert.equal(autre.propres.length + autre.rappelTerritorial.length, 0);
   const hub = await lireMatiereValidee(sql, { departement: 'Paris' });                                    // un Hub : le même fait
-  assert.equal(hub.length, 1); assert.equal(hub[0].periode, '2025-11'); assert.equal(hub[0].acteur, 'Ville de Paris');
+  assert.equal(hub.length, 1); assert.equal(hub[0].periode, '2025-11'); assert.equal(hub[0].acteur, 'Ville de Paris'); assert.match(hub[0].id, /^[0-9a-f]{12}$/);
 });
 await t('territoire SANS Hub : l’information reste lisible pour un futur diagnostic, aucun Hub créé', async () => {
   const sql = fakeSql([{ proposal_id: 'p3', case_id: 'FR-2026-9004', fait: { ...rxC[0], territoire: 'Ville-Sans-Hub' }, commune: 'Ville-Sans-Hub', departement: 'Test', applied_event_id: null }]);
@@ -162,7 +164,7 @@ await t('DEUX mobilisations distinctes (jours différents) d’une même affaire
   assert.deepEqual(planReactions(rx, memoire).neufs.map((x) => x.event_date), ['2026-07-20']);
   const sql = fakeSql([{ proposal_id: 'a', case_id: 'FR-2026-9001', applied_event_id: 'e1', fait: rx[0], commune: 'V', departement: 'T' }, { proposal_id: 'b', case_id: 'FR-2026-9001', applied_event_id: 'e2', fait: rx[1], commune: 'V', departement: 'T' }]);
   const lus = await lireMatiereValidee(sql, { case_id: 'FR-2026-9001' });
-  assert.equal(lus.length, 2);                                                                                                        // mémoire : deux faits distincts
+  assert.equal(lus.length, 2); assert.notEqual(lus[0].id, lus[1].id);   // mémoire : deux faits distincts, deux identités stables
 });
 await t('UNE mobilisation reprise par deux sources : un seul fait (article, mémoire validée, lecteur) — même jour, même libellé', async () => {
   const a = extraireReactions('Des parents se sont rassemblés ce jeudi devant l’école maternelle Les Tilleuls.', { etablissement: ECOLE, anneeRef: '2026-10-15' })[0];
