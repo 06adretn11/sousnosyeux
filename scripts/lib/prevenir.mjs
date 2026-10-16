@@ -19,6 +19,27 @@ export function phrasePublication(pub) {
   return 'Aucune publication.';
 }
 
+/**
+ * ENRICHISSEMENT validé (mobilisation, mesure, réaction) — messages selon l'issue RÉELLE, jamais selon le statut « publiée » de l'affaire :
+ *   à l'application        : persistance seulement, aucune promesse de publication (la projection n'a pas encore tourné) ;
+ *   projection sans page   : conservé en mémoire, aucune page modifiée (fiche approuvée / Hub absents) ;
+ *   projection bloquée     : motif exact, validation conservée, aucun nouveau GO ;
+ *   pages modifiées        : message « Publié et vérifié » de verifier-site, avec l'URL de chaque page.
+ * Une NOUVELLE affaire garde phrasePublication et ses messages (appliquer-nouvelles-affaires).
+ */
+export const phraseEnrichissement = () => 'Décision enregistrée : l’information est conservée en mémoire. Aucune publication n’est promise par ce message ; si une page publique est concernée, une confirmation suivra après vérification du site, sinon vous serez prévenu qu’aucune page n’est modifiée.';
+export function texteConservee(f) {
+  return `📌 <b>Enrichissement validé et conservé</b> — ${esc(f.etablissement || f.case_id)}\n${esc(f.libelle)}\n<b>Aucune page publique n’est modifiée</b> : aucune fiche approuvée ni Hub publié n’est concerné. L’information reste disponible pour une future fiche ou un Hub, sans nouvelle validation. Aucune publication n’est en cours.`;
+}
+export function texteBloquee(b) {
+  return `⚠️ <b>Enrichissement validé mais NON intégré aux pages</b> — ${esc(b.etablissement || b.case_id || b.id)}\n${esc(b.libelle || '')}\nMotif : ${esc(b.raison)}\nLa validation est conservée ; aucune page n’a été modifiée. Aucun nouveau GO n’est demandé : une revue ciblée de la page est nécessaire.`;
+}
+export function texteVerifie({ ids = [], fiches = [], hubs = [], site }) {
+  const pages = [...fiches.map((f) => `${site}/affaires/${String(f).toLowerCase()}/`), ...hubs.map((h) => `${site}/territoires/${h}/`)];
+  const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
+  return `🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${site}).${pages.length ? `\nPages actualisées :\n${pages.join('\n')}` : ''}`;
+}
+
 /** @returns {Promise<boolean>} true si le message est parti */
 export async function prevenir(texte) {
   const token = process.env.TELEGRAM_BOT_TOKEN;

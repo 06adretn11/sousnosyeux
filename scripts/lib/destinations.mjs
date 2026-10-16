@@ -62,16 +62,16 @@ export function destinationsDe(fait, ctx) {
 
 /** Projection publique : SEULES les informations qui ont au moins une destination ; le reste ne quitte jamais Neon. Pas de citation (preuve ≠ publication). */
 export function construireMatiere(faits, ctx) {
-  const matiere = [], bloques = [];
+  const matiere = [], bloques = [], conservees = [];
   for (const f of faits) {
     const d = destinationsDe(f, ctx);
-    for (const b of d.bloques) bloques.push({ id: f.id, raison: b });
-    if (!d.fiche && !d.hubs.length) continue;
+    for (const b of d.bloques) bloques.push({ id: f.id, case_id: f.case_id, etablissement: f.etablissement ?? null, libelle: f.libelle, raison: b });
+    if (!d.fiche && !d.hubs.length) { if (!d.bloques.length) conservees.push({ id: f.id, case_id: f.case_id, etablissement: f.etablissement ?? null, libelle: f.libelle }); continue; }
     matiere.push({
       id: f.id, nature: f.nature, libelle: f.libelle, realisation: f.realisation, portee: f.portee, acteur: f.acteur, territoire: f.territoire ?? null,
       date: f.date ?? null, periode: f.periode ?? null, source: f.source, ...(f.portee === 'territoire' ? {} : { etablissement: ctx.cases.get(f.case_id)?.etablissement ?? null }), case_id: f.case_id, event_id: f.event_id ?? null, destinations: { fiche: d.fiche, hubs: d.hubs },
     });
   }
   matiere.sort((a, b) => a.id.localeCompare(b.id));
-  return { matiere, bloques };
+  return { matiere, bloques, conservees };
 }

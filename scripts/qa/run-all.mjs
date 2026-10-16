@@ -74,6 +74,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Confirmation d’un enrichissement — message selon l’issue réelle (conservé · publié et vérifié avec URL · bloqué avec motif) ; nouvelle affaire inchangée',
+    script: 'scripts/qa/test-confirmation-enrichissement.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
     script: 'scripts/qa/test-boucle.mjs',
     bloquant: true,
