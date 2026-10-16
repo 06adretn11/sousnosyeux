@@ -154,6 +154,29 @@ await t('application : une portée territoire n’est jamais écrite comme évé
   assert.ok(src('scripts/project-evenements.mjs').includes("e.event_type::text <> 'rectification'"), 'les événements validés (mobilisation incluse) sont projetés vers fiche et Hub');
 });
 
+await t('DEUX mobilisations distinctes (jours différents) d’une même affaire : deux faits dans un article, jamais fusionnées ni tenues pour « connues » entre articles', async () => {
+  const rx = extraireReactions('Des parents se sont rassemblés le 9 juillet devant l’école maternelle Les Tilleuls. Des parents se sont de nouveau rassemblés le 20 juillet devant l’école maternelle Les Tilleuls.', { etablissement: ECOLE, anneeRef: '2026-07-21' });
+  assert.deepEqual(rx.map((x) => x.event_date), ['2026-07-09', '2026-07-20']); assert.equal(rx[0].libelle_public, rx[1].libelle_public);       // même libellé FERMÉ, deux faits
+  const memoire = [{ event_type: 'mobilisation', event_date: '2026-07-09', libelle_public: rx[0].libelle_public }];
+  assert.equal(dejaConnu(rx[0], memoire, { pubDate: '2026-07-21' }), true); assert.equal(dejaConnu(rx[1], memoire, { pubDate: '2026-07-21' }), false);
+  assert.deepEqual(planReactions(rx, memoire).neufs.map((x) => x.event_date), ['2026-07-20']);
+  const sql = fakeSql([{ proposal_id: 'a', case_id: 'FR-2026-9001', applied_event_id: 'e1', fait: rx[0], commune: 'V', departement: 'T' }, { proposal_id: 'b', case_id: 'FR-2026-9001', applied_event_id: 'e2', fait: rx[1], commune: 'V', departement: 'T' }]);
+  const lus = await lireMatiereValidee(sql, { case_id: 'FR-2026-9001' });
+  assert.equal(lus.length, 2);                                                                                                        // mémoire : deux faits distincts
+});
+await t('UNE mobilisation reprise par deux sources : un seul fait (article, mémoire validée, lecteur) — même jour, même libellé', async () => {
+  const a = extraireReactions('Des parents se sont rassemblés ce jeudi devant l’école maternelle Les Tilleuls.', { etablissement: ECOLE, anneeRef: '2026-10-15' })[0];
+  const b = extraireReactions('Une soixantaine de parents se sont réunis jeudi devant l’école maternelle Les Tilleuls.', { etablissement: ECOLE, anneeRef: '2026-10-16' })[0];
+  assert.equal(a.event_date, '2026-10-15'); assert.equal(b.event_date, '2026-10-15'); assert.equal(a.libelle_public, b.libelle_public);
+  assert.equal(dejaConnu(b, [{ event_type: 'mobilisation', event_date: a.event_date, libelle_public: a.libelle_public }], { pubDate: '2026-10-16' }), true);
+  const sql = fakeSql([{ proposal_id: 'a', case_id: 'FR-2026-9001', applied_event_id: 'e1', fait: a, commune: 'V', departement: 'T' }, { proposal_id: 'b', case_id: 'FR-2026-9001', applied_event_id: null, fait: b, commune: 'V', departement: 'T' }]);
+  assert.equal((await lireMatiereValidee(sql, { case_id: 'FR-2026-9001' })).length, 1);
+});
+await t('mobilisation d’un jour sans date reprise sans date : un seul fait ; une mesure annoncée puis rappelée sans date reste un seul fait (libellé)', () => {
+  const m = { event_type: 'réponse_institutionnelle', event_date: null, event_period: null, libelle_public: 'Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.' };
+  assert.equal(dejaConnu(m, [{ event_type: 'réponse_institutionnelle', event_date: null, libelle_public: m.libelle_public }]), true);
+});
+
 console.log(`\n  ${n} contrôles : OK\n`);
 
 /** Faux client SQL (gabarit étiqueté) : renvoie des lignes de state_proposals ACCEPT déjà jointes. */

@@ -22,7 +22,12 @@ const TYPE = (t) => (t === 'réaction_publique' ? 'mobilisation' : t);
 export function dejaConnu(fait, memoire = [], { pubDate = null } = {}) {
   const t = TYPE(fait.event_type);
   const memes = memoire.filter((e) => TYPE(e.event_type) === t);
-  if (fait.libelle_public && memoire.some((e) => e.libelle_public === fait.libelle_public)) return true;
+  // Le libellé public est FERMÉ : deux rassemblements de jours différents portent le même texte. Il n'identifie donc un fait que si les dates ne se
+  // CONTREDISENT pas (jour/jour, mois/jour, mois/mois) ; sans date de part et d'autre, le libellé suffit (une mesure annoncée puis rappelée).
+  const jf = fait.event_date ? jour(fait.event_date) : null, pf = fait.event_period || null;
+  const contredit = (e) => { const je = e.event_date ? jour(e.event_date) : null, pe = e.event_period || null;
+    if (jf && je) return jf !== je; if (pf && je) return je.slice(0, 7) !== pf; if (jf && pe) return jf.slice(0, 7) !== pe; if (pf && pe) return pf !== pe; return false; };
+  if (fait.libelle_public && memoire.some((e) => e.libelle_public === fait.libelle_public && !contredit(e))) return true;
   if (!memes.length) return false;
   if (fait.event_date) return memes.some((e) => jour(e.event_date) === jour(fait.event_date));
   if (fait.event_period) return memes.some((e) => jour(e.event_date).slice(0, 7) === fait.event_period);

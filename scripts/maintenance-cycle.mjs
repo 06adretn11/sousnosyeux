@@ -193,7 +193,7 @@ const noterFait = (case_id, f) => {
   memoireFaits.get(case_id).push(f);
 };
 for (const e of await sql`select case_id, event_type::text event_type, event_date::text event_date, libelle_public from case_events`) noterFait(e.case_id, e);
-for (const e of await sql`select p.case_id, f.fait->>'event_type' event_type, f.fait->>'event_date' event_date, f.fait->>'libelle_public' libelle_public
+for (const e of await sql`select p.case_id, f.fait->>'event_type' event_type, f.fait->>'event_date' event_date, f.fait->>'event_period' event_period, f.fait->>'libelle_public' libelle_public
                             from state_proposals p cross join lateral jsonb_array_elements(p.facts) f(fait) where p.decision = 'ACCEPT'`) noterFait(e.case_id, e);
 
 // ARBITRAGES HUMAINS PERSISTÉS. Un rattachement (affaire, article) déjà accepté par un humain

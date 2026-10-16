@@ -38,9 +38,10 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
     date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,
     source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, _commune: r.commune, _dep: r.departement,
   }));
-  // Une information validée plusieurs fois (deux articles, même libellé, même affaire) ne compte qu'une fois : la plus ancienne fait foi.
+  // Une information validée plusieurs fois (deux articles, même libellé, même affaire, MÊME jour ou période) ne compte qu'une fois : la plus ancienne fait foi.
+  // Deux événements de jours différents au libellé identique (deux rassemblements) sont deux faits.
   const vus = new Set();
-  const uniques = items.filter((i) => { const k = `${i.case_id}|${i.libelle}`; if (vus.has(k)) return false; vus.add(k); return true; });
+  const uniques = items.filter((i) => { const k = `${i.case_id}|${i.libelle}|${i.date ?? i.periode ?? ''}`; if (vus.has(k)) return false; vus.add(k); return true; });
   return uniques.filter((i) => (case_id ? i.case_id === case_id : true)
     && (commune ? norm(i._commune) === norm(commune) || (i.territoire && norm(i.territoire) === norm(commune)) : true)
     && (departement ? norm(i._dep) === norm(departement) || (i.territoire && norm(i.territoire) === norm(departement)) : true))
