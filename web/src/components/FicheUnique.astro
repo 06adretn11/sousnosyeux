@@ -11,13 +11,13 @@
 // d'introduction. Pas d'analyse comparative entre institutions dans les fiches V1.
 import Chronologie from './Chronologie.astro';
 import Paroles from './Paroles.astro';
-import { ficheDe, evenementsDe, fichePubliee } from '../lib/fiche';
+import { ficheDe, evenementsDe, fichePubliee, matiereFiche } from '../lib/fiche';
 import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
 import { dateLongue } from '../lib/etat-wording';
 
 interface Props { id: string; verifieLe: string }
 const { id, verifieLe } = Astro.props;
-const { c, hub, d, deroule } = ficheDe(id);
+const { c, hub, d, deroule, matiere } = ficheDe(id);
 
 const statut = d.statut_affiche ?? statutCourant(c);
 const cat = statutCat(statut);
@@ -53,11 +53,12 @@ for (const r of paroles) ajoute(r.source, r.source?.publie_le ?? null);
 const inconnues: string[] = d.inconnues ?? [];
 // Événements validés (Neon) que la rédaction du dossier ne porte pas : ils sont AJOUTÉS au déroulé, mais les blocs de situation sont rédigés → on le dit.
 const portes = new Set((d.deroule ?? []).map((e: any) => e.event_id).filter(Boolean));
-const nouveaux = d.suivre_neon ? evenementsDe(id).filter((e: any) => !portes.has(e.event_id)).length : 0;
+const cartes = new Set(matiereFiche(id).map((m: any) => m.event_id).filter(Boolean)); // déjà restitués dans « Paroles et réactions » : pas annoncés comme absents du déroulé
+const nouveaux = d.suivre_neon ? evenementsDe(id).filter((e: any) => !portes.has(e.event_id) && !cartes.has(e.event_id)).length : 0;
 const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 'paroles' : null, deroule.length ? 'deroule' : null, 'sources'].filter(Boolean).join(' ');
 ---
 
-<article class={`fiche ${cat}`} data-fiche={id} data-blocs={blocs} data-evenements={evenementsDe(id).length}>
+<article class={`fiche ${cat}`} data-fiche={id} data-blocs={blocs} data-evenements={evenementsDe(id).length} data-matiere={matiere}>
   <nav class="fil" aria-label="Fil d’Ariane">
     <a href="/">Carte</a>
     {hub && <><span aria-hidden="true">›</span> <a href={hub.url}>{hub.titre}</a></>}

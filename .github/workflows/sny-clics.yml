@@ -92,11 +92,13 @@ jobs:
         run: |
           ARGS="$(echo "$PROJ_IDS,$RECON_IDS" | tr ',' ' ')"
           if [ -n "$FICHES" ]; then ARGS="$ARGS --fiches $FICHES"; fi
+          if [ -n "$HUBS" ]; then ARGS="$ARGS --hubs $HUBS"; fi
           if [ -n "$(echo $ARGS)" ]; then node scripts/verifier-site.mjs $ARGS; else echo "aucune page à vérifier"; fi
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
           RECON_IDS: ${{ steps.reconcile.outputs.ids }}
           FICHES: ${{ steps.evenements.outputs.fiches }}
+          HUBS: ${{ steps.evenements.outputs.hubs }}
       - name: Contrôler le site réellement servi
         if: ${{ !cancelled() }}
         run: node scripts/reconcilier-publication.mjs --site

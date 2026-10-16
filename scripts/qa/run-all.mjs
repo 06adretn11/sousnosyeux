@@ -69,6 +69,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Information validée → pages existantes — destinations calculées (fiche approuvée, Hub publié), portée jamais devinée, rien d’exposé hors pages publiques',
+    script: 'scripts/qa/test-destinations.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
     script: 'scripts/qa/test-boucle.mjs',
     bloquant: true,

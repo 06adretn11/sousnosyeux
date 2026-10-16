@@ -9,6 +9,7 @@
 //                                           la rend à un Hub ou à un futur diagnostic territorial, et en rappel attribué dans une fiche.
 // Fonctions de lecture seule ; la DESTINATION est une question de lecture, jamais une seconde validation.
 // =====================================================================
+import { createHash } from 'node:crypto';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
 
 /** Où une information est-elle utile au lecteur ? (destination ≠ portée) */
@@ -31,12 +32,15 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
       join cases c using (case_id)
       left join articles a on a.article_id = p.article_id
       cross join lateral jsonb_array_elements(p.facts) as f(fait)
-     where p.decision = 'ACCEPT' and f.fait ? 'libelle_public'`;
+     where p.decision = 'ACCEPT' and f.fait ? 'libelle_public'
+     order by p.decided_at, p.proposal_id`;
   const items = rows.map((r) => ({
+    // Identité STABLE du fait (affaire + libellé fermé) : ne change pas au rejeu, n'expose aucun identifiant interne.
+    id: createHash('sha1').update(`${r.case_id}|${r.fait.libelle_public}`).digest('hex').slice(0, 12),
     proposal_id: r.proposal_id, case_id: r.case_id, nature: r.fait.nature || 'mesure', mesure: r.fait.mesure, libelle: r.fait.libelle_public,
     realisation: r.fait.realisation ?? 'inconnue', portee: r.fait.portee || 'établissement', acteur: r.fait.acteur_nomme || r.fait.acteur || null, territoire: r.fait.territoire || null,
     date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,
-    source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, _commune: r.commune, _dep: r.departement,
+    source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, event_id: r.applied_event_id, _commune: r.commune, _dep: r.departement,
   }));
   // Une information validée plusieurs fois (deux articles, même libellé, même affaire) ne compte qu'une fois : la plus ancienne fait foi.
   const vus = new Set();
@@ -48,11 +52,10 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
 }
 
 /**
- * Matière à restituer dans la FICHE d'une affaire : ses propres informations + les informations TERRITORIALES de son périmètre
- * (rappel attribué). Aucune écriture, aucune ressaisie : la même information, lue ailleurs.
+ * Matière à restituer dans la FICHE d'une affaire : les informations de CETTE affaire (rattachement explicite par la source), dont ses rappels
+ * territoriaux attribués. Jamais les informations d'une autre affaire du même département. Aucune écriture, aucune ressaisie.
  */
 export async function matierePourFiche(sql, c) {
-  const propres = await lireMatiereValidee(sql, { case_id: c.case_id });
-  const territoriales = (await lireMatiereValidee(sql, { departement: c.departement })).filter((i) => i.portee === 'territoire' && i.case_id !== c.case_id);
-  return { propres, rappelTerritorial: territoriales };
+  const siennes = await lireMatiereValidee(sql, { case_id: c.case_id });
+  return { propres: siennes.filter((i) => i.portee !== 'territoire'), rappelTerritorial: siennes.filter((i) => i.portee === 'territoire') };
 }
