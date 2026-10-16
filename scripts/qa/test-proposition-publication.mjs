@@ -122,11 +122,14 @@ t('refus définitif : applied_at posé et motif AJOUTÉ à decision_comment — 
 // --- « publié » seulement après le site servi ---------------------------------------------------------------------------------------------
 t('« Publié et vérifié » n’est émis QUE par verifier-site.mjs (après lecture du site servi)', () => {
   const dossier = new URL('../', import.meta.url);
-  const emetteurs = [];
+  const emetteurs = [], appelants = [];
   for (const f of [...readdirSync(dossier), ...readdirSync(new URL('lib/', dossier)).map((x) => 'lib/' + x)].filter((x) => x.endsWith('.mjs'))) {
-    if (/🌐 <b>Publié et vérifié/.test(readFileSync(new URL(f, dossier), 'utf8'))) emetteurs.push(f);
+    const code = readFileSync(new URL(f, dossier), 'utf8');
+    if (/🌐 <b>Publié et vérifié/.test(code)) emetteurs.push(f);
+    if (/texteVerifie\(/.test(code) && f !== 'lib/prevenir.mjs') appelants.push(f);
   }
-  assert.deepEqual(emetteurs, ['verifier-site.mjs']);
+  // Le TEXTE vit dans lib/prevenir.mjs (texteVerifie) ; le SEUL appelant est verifier-site.mjs, après lecture du site servi.
+  assert.deepEqual(emetteurs, ['lib/prevenir.mjs']); assert.deepEqual(appelants, ['verifier-site.mjs']);
 });
 t('l’accusé et le message d’application ne disent pas « publié » : autorisation enregistrée, pas encore visible', () => {
   const s = src('scripts/appliquer-nouvelles-affaires.mjs');

@@ -102,8 +102,9 @@ t('vérification du site : fiches ET Hubs (data-matiere + libellé présent) ; T
   assert.ok(v.includes('--hubs') && v.includes('data-matiere') && v.includes('absente de la page servie') && v.includes('Hub ${h}'));
   for (const w of ['sny-clics', 'sny-telegram']) { const y = src(`.github/workflows/${w}.yml`); assert.ok(y.includes('--hubs $HUBS') && y.includes('steps.evenements.outputs.hubs')); }
 });
-t('Telegram : le blocage est signalé précisément (« Information validée NON intégrée »), la validation est conservée', () => {
-  assert.ok(src('scripts/project-evenements.mjs').includes('Information validée NON intégrée') && src('scripts/project-evenements.mjs').includes('Elle reste conservée en mémoire'));
+t('Telegram : le blocage est signalé précisément (« NON intégré aux pages », motif exact), la validation est conservée, aucun nouveau GO', () => {
+  const p = src('scripts/lib/prevenir.mjs');
+  assert.ok(src('scripts/project-evenements.mjs').includes('texteBloquee(b)') && p.includes('NON intégré aux pages') && p.includes('La validation est conservée') && p.includes('Aucun nouveau GO'));
 });
 
 console.log('\n  RÉCUPÉRABLE — la matière territoriale validée ne dépend pas de l’état public de l’affaire support');
