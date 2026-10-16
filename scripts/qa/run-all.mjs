@@ -64,6 +64,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Enrichissement multi-surfaces — faits (pas articles) comparés à la mémoire, mobilisation, mesure territoriale à date relative, une information lue par fiche et Hub',
+    script: 'scripts/qa/test-enrichissement.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fermer la boucle — clics Telegram, rapprochements (géographie, sources), événements institutionnels, un fait = un événement',
     script: 'scripts/qa/test-boucle.mjs',
     bloquant: true,

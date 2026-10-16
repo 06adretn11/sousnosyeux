@@ -41,8 +41,9 @@ const MESURES = [
 ];
 
 const ANNONCE = /\b(annonc\w+|va|vont|sera|seront|serait|prevu\w*|prevoit|prevoient|projette\w*|compte|comptent|s'engage\w*|promet\w*|propos\w+|presente\w*\s+(?:un|une|des)\s+(?:plan|serie|mesures?)|presentera|decide\s+de|lancera|mettra|souhait\w+|envisag\w+|il y aura|veut|veulent)\b/;
-const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b/;
+const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\bont\s+(?:manifeste|defile)\w*/;
 /** Texte comparable : sans accents, minuscules, apostrophes unifiées. */
+import { dejaConnu } from './nouveaute.mjs';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’'`]/g, "'");
 
 // Libellés publics : table fermée. Jamais de nom (personne mise en cause, élu), jamais de détail des faits.
@@ -102,22 +103,43 @@ export function realisationDe(citation) {
 const MOIS = { janvier: '01', fevrier: '02', mars: '03', avril: '04', mai: '05', juin: '06', juillet: '07', aout: '08', septembre: '09', octobre: '10', novembre: '11', decembre: '12' };
 const NOMS_MOIS = Object.keys(MOIS).join('|');
 
+const JOURS = { dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6 };
+const FUTUR = /\b(prochain\w*|sera|seront|va|vont|prevu\w*|a venir)\b/; // « a annoncé » est un passé : ce n'est pas une marque d'avenir
+const parseRef = (r) => { const m = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?/.exec(String(r || '')); return m ? { y: Number(m[1]), m: m[2] ? Number(m[2]) : null, d: m[3] ? Number(m[3]) : null } : null; };
+const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
 /**
- * Date d'un fait telle que l'ÉCRIT la phrase — jamais inventée. Jour complet → `date` ; mois seul (« en juin 2026 », « depuis juillet »)
- * → `periode` AAAA-MM, `date` reste null. L'année manquante est celle de la publication (`anneeRef`), jamais devinée autrement.
+ * Date d'un fait telle que l'ÉCRIT la phrase, RAPPORTÉE à la date de PUBLICATION de l'article — jamais inventée.
+ *   jour complet (« 12 octobre ») → `date` ; jour de semaine (« ce jeudi ») → la date de CE jour relativement à la publication ;
+ *   mois seul (« en juin 2026 », « depuis juillet ») → `periode` AAAA-MM, `date` reste null.
+ * `ref` : date de publication « AAAA-MM-JJ » (ou seulement l'année). Un passé RELATIF (« en novembre dernier » dans un article de mars 2026
+ * = novembre 2025) n'est jamais daté du futur de l'article : sans marque d'avenir (« prochain », « sera »…), une date postérieure à la
+ * publication est ramenée à l'année précédente. Sans référence suffisante : null, jamais deviné.
  * @returns {{date:string|null, periode:string|null}}
  */
-export function dateEcrite(texte, anneeRef = null) {
-  const n = norm(texte);
+export function dateEcrite(texte, ref = null) {
+  const n = norm(texte), R = parseRef(ref), futur = FUTUR.test(n);
+  const apresRef = (y, m, d) => !!(R?.m && R?.d) && iso(y, m, d) > iso(R.y, R.m, R.d);
   const j = new RegExp(`\\b(\\d{1,2})(?:er)?\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?\\b`).exec(n);
   if (j) {
-    const an = j[3] || anneeRef;
-    if (an) return { date: `${an}-${MOIS[j[2]]}-${String(j[1]).padStart(2, '0')}`, periode: null };
+    const m = Number(MOIS[j[2]]), d = Number(j[1]);
+    let y = j[3] ? Number(j[3]) : R?.y;
+    if (y) { if (!j[3] && !futur && apresRef(y, m, d)) y -= 1; return { date: iso(y, m, d), periode: null }; }
   }
-  const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?\\b`).exec(n);
+  const w = new RegExp(`\\b(?:ce\\s+|le\\s+)?(${Object.keys(JOURS).join('|')})(\\s+dernier)?\\b`).exec(n);
+  if (w && R?.m && R?.d) {
+    const pub = new Date(Date.UTC(R.y, R.m - 1, R.d));
+    let ecart = (pub.getUTCDay() - JOURS[w[1]] + 7) % 7;
+    if (w[2] && ecart === 0) ecart = 7;
+    const dt = new Date(pub.getTime() - ecart * 864e5);
+    return { date: iso(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate()), periode: null };
+  }
+  const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?(\\s+(?:dernier|passe))?\\b`).exec(n);
   if (m) {
-    const an = m[2] || anneeRef;
-    if (an) return { date: null, periode: `${an}-${MOIS[m[1]]}` };
+    const mois = Number(MOIS[m[1]]);
+    let y = m[2] ? Number(m[2]) : R?.y;
+    if (y && !m[2] && R?.m && !futur) { const ecart = y * 12 + mois - (R.y * 12 + R.m); if (ecart > 0 || (m[3] && ecart >= 0)) y -= 1; }
+    if (y && !(m[3] && !m[2] && !R?.m)) return { date: null, periode: `${y}-${String(mois).padStart(2, '0')}` };
   }
   return { date: null, periode: null };
 }
@@ -130,14 +152,38 @@ export const moisFr = (p) => { const m = /^(\d{4})-(\d{2})$/.exec(p || ''); retu
  * Ce qu'une proposition « +reactions » demande vraiment : les mesures NOUVELLES (libellé absent de la mémoire de l'affaire), séparées
  * selon la portée. `propres` (établissement) peuvent devenir des événements de l'affaire ; `territoire` jamais.
  */
-export function planReactions(faits, connus = new Set()) {
-  const neufs = (faits || []).filter((f) => f?.libelle_public && !connus.has(f.libelle_public));
+export function planReactions(faits, memoire = []) {
+  // `memoire` : faits connus {event_type, event_date, event_period, libelle_public} (un Set de libellés reste accepté : comparaison par libellé seul).
+  const liste = memoire instanceof Set ? [...memoire].map((libelle_public) => ({ libelle_public })) : memoire;
+  const neufs = (faits || []).filter((f) => f?.libelle_public && !dejaConnu(f, liste.map((e) => ({ event_type: f.event_type, ...e }))));
   return { neufs, propres: neufs.filter((f) => f.portee !== 'territoire'), territoire: neufs.filter((f) => f.portee === 'territoire') };
 }
 
+// MOBILISATIONS de la société civile (parents, enseignants, collectifs…) : vocabulaire fermé, acteur COLLECTIF seulement. Un acteur
+// institutionnel dans la phrase n'est jamais une mobilisation. Le libellé public ne reprend ni parole ni citation de parent.
+const COLLECTIF = /\b(parents?(?: d'eleves)?|enseignants?|professeurs?|personnels?|collectifs?|associations?|riverains|habitants|syndicats?)\b/g;
+const MOBILISATIONS = [
+  ['rassemblement', /\b(?:se\s+sont\s+(?:reuni|rassembl|mobilis)\w*|rassembl\w+|manifest\w+|sit-in|veillee|marche blanche|cercle de silence|mobilis\w+)\b/, { annoncee: 'ont annoncé un rassemblement', realisee: 'ont tenu un rassemblement' }],
+  ['petition', /\bpetitions?\b/, { annoncee: 'ont annoncé une pétition', realisee: 'ont lancé une pétition' }],
+  ['lettre_ouverte', /\blettres? ouvertes?\b|\bcourrier\s+(?:au|a la|adresse)\b/, { annoncee: 'ont annoncé l’envoi d’une lettre', realisee: 'ont adressé une lettre aux autorités' }],
+];
+const acteursCollectifs = (n) => {
+  const s = new Set([...n.matchAll(COLLECTIF)].map((m) => (/parent/.test(m[1]) ? 'parents' : /enseignant|professeur|personnel/.test(m[1]) ? 'enseignants' : 'collectif')));
+  return [...s];
+};
+const GN_ACTEURS = (a) => (a.includes('parents') && a.includes('enseignants') ? 'des parents et des enseignants' : a.includes('parents') ? 'des parents' : a.includes('enseignants') ? 'des enseignants et personnels' : 'un collectif ou une association');
+export function libelleMobilisation(mesure, realisation, acteurs) {
+  const t = MOBILISATIONS.find(([m]) => m === mesure)?.[2];
+  return t ? `Selon la presse, ${GN_ACTEURS(acteurs || [])} ${realisation === 'réalisée' ? t.realisee : t.annoncee}.` : null;
+}
+// « la Ville de Paris », « la mairie de Villeurbanne » : acteur NOMMÉ et territoire de la mesure, tels qu'écrits.
+const ACTEUR_NOMME = /\b(?:la\s+)?([Vv]ille|[Mm]airie|[Mm]unicipalité|[Cc]ommune|[Pp]réfecture|[Rr]ectorat)\s+(?:de|d['’])\s*([A-ZÀ-Ý][\p{L}'’-]*(?:\s+[A-ZÀ-Ý][\p{L}'’-]*){0,2})/u;
+const acteurNomme = (phrase) => { const m = ACTEUR_NOMME.exec(phrase); return m ? { acteur_nomme: `${m[1][0].toUpperCase()}${m[1].slice(1)} de ${m[2]}`, territoire: m[2] } : {}; };
+
 const jetonsEtab = (e) => norm(e).split(/[^a-z0-9]+/).filter((w) => w.length > 3 && !['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'periscolaire', 'centre', 'loisirs'].includes(w));
 // Coupe aux fins de phrase seulement : les guillemets à espaces de la presse (« " texte " ») ne sont pas des frontières.
-const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => s.replace(/\s+/g, ' ').trim()).filter((s) => s.length >= 25);
+// Les crédits photo (« © Radio France – Prénom Nom ») collés à une phrase sont retirés : jamais un nom de journaliste dans une citation.
+const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => s.replace(/\s*©.*$/, '').replace(/\s+/g, ' ').trim()).filter((s) => s.length >= 25);
 
 /**
  * Réactions et mesures d'institutions rapportées par un ARTICLE ENTIER (et non seulement par la citation qui porte l'événement
@@ -149,10 +195,41 @@ const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"
  * @returns {Array<{event_type:string, mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement'|'territoire', acteur:string,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function extraireReactions(corps, { etablissement = '', anneeRef = null } = {}) {
+export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [] } = {}) {
   const jetons = jetonsEtab(etablissement);
+  // Jetons des AUTRES établissements du même territoire : une phrase qui les nomme parle de plusieurs structures (portée territoire).
+  const jetonsAutres = autres.flatMap((e) => jetonsEtab(e)).filter((t) => !jetons.includes(t));
   const parMesure = new Map();
   const phrases = decoupe(corps);
+  // Mobilisations collectives (parents, enseignants…) : un événement par type, acteur(s) COLLECTIF(S), jamais de parole citée.
+  for (const phrase of phrases) {
+    const n = norm(phrase);
+    const acteurs = acteursCollectifs(n);
+    if (!acteurs.length) continue;
+    for (const [mesure, motif] of MOBILISATIONS) {
+      if (!motif.test(n)) continue;
+      // Un titre (« … parents et enseignants rassemblés à l'école ») et la phrase du corps rapportent le MÊME rassemblement : « réalisé » dès
+      // qu'une phrase l'établit (participe passé ou verbe d'accomplissement) sans marque d'annonce ; sinon « annoncé » (doute = annoncé).
+      const passe = ACCOMPLI.test(n) || /\b(?:rassembl|reuni|mobilis)\w*s\b/.test(n);
+      const realisation = passe && !ANNONCE.test(n) ? 'réalisée' : 'annoncée';
+      const nomme = !!jetons.length && jetons.some((t) => n.includes(t));
+      const multi = jetonsAutres.some((t) => n.includes(t));
+      const d = dateEcrite(phrase, anneeRef);
+      // UN fait par (type, jour) : deux rassemblements de jours différents ne fusionnent pas ; une phrase sans date rejoint le fait déjà vu.
+      const cle = [...parMesure.keys()].find((k) => k.startsWith(`mob:${mesure}|`) && (!d.date || !parMesure.get(k).event_date || parMesure.get(k).event_date === d.date)) ?? `mob:${mesure}|${d.date ?? d.periode ?? parMesure.size}`;
+      const f = parMesure.get(cle);
+      if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: nomme && !multi ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], _nomme: nomme && !multi });
+      else {
+        f.event_date ||= d.date; f.event_period ||= d.periode;
+        for (const a of acteurs) if (!f.acteurs.includes(a)) f.acteurs.push(a);
+        if (realisation === 'réalisée') f.realisation = 'réalisée';
+        if (nomme && !multi && !f._nomme) { f._nomme = true; f.portee = 'établissement'; f.evidence.unshift(phrase); }
+        else if (f.evidence.length < 2) f.evidence.push(phrase);
+        f.evidence = f.evidence.slice(0, 2);
+        f.acteur = f.acteurs.join(', ');
+      }
+    }
+  }
   for (let i = 0; i < phrases.length; i++) {
     // Une mesure dont l'acteur est nommé dans la phrase SUIVANTE (« Une commission indépendante sera installée. Elle auditera les
     // processus de la commune. ») : les deux phrases forment alors UNE citation — jamais un acteur recoupé entre deux citations.
@@ -167,7 +244,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null }
       const portee = jetons.length && jetons.some((t) => n.includes(t)) ? 'établissement' : 'territoire';
       const d = dateEcrite(phrase, anneeRef);
       const f = parMesure.get(mesure);
-      if (!f) parMesure.set(mesure, { event_type: 'réponse_institutionnelle', mesure, realisation, portee, acteur, event_date: d.date, event_period: d.periode, evidence: [phrase] });
+      if (!f) parMesure.set(mesure, { event_type: 'réponse_institutionnelle', nature: 'mesure', mesure, realisation, portee, acteur, ...acteurNomme(phrase), event_date: d.date, event_period: d.periode, evidence: [phrase] });
       else {
         if (realisation === 'annoncée') f.realisation = 'annoncée';
         if (portee === 'établissement') f.portee = 'établissement';
@@ -176,7 +253,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null }
       }
     }
   }
-  return [...parMesure.values()].map((f) => ({ ...f, libelle_public: libelleInstitutionnel(f.mesure, f.realisation) }));
+  return [...parMesure.values()].map(({ _nomme, ...f }) => ({ ...f, libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
 }
 
 /**

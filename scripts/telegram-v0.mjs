@@ -16,7 +16,7 @@
 // VALIDATE n'écrit que state_proposals.decision. Aucune publication, ici ni ailleurs.
 // =====================================================================
 import { connecter } from './lib/neon.mjs';
-import { messageDecision, boutons, modeCreation } from './lib/discovery-messages.mjs';
+import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr } from './lib/evenement-institutionnel.mjs';
@@ -178,34 +178,26 @@ async function decision(cle) {
 const citationsDe = (p) => (Array.isArray(p.facts) ? p.facts.flatMap((f) => f?.evidence || []) : []);
 
 /**
- * ENRICHMENT dont la citation porte une réaction ou une mesure d'institution (mairie, rectorat, préfecture…) : décision avec
- * boutons. VALIDATE consigne un événement institutionnel (annoncé ou réalisé) — jamais une transition judiciaire.
- * Sans fait institutionnel net : message d'information, comme avant.
- */
-/**
- * Réponses publiques extraites d'un article entier (proposition « +reactions », faits structurés avec leur PORTÉE).
- * Une mesure « territoire » (politique de collectivité visant plusieurs structures) n'est jamais un événement de CETTE affaire :
- * seule la portée « établissement » donne des boutons ; le reste est dit en information et reste en mémoire privée.
+ * ENRICHISSEMENT PROPOSÉ — informations extraites d'un article entier (proposition « +reactions » : faits structurés avec leur PORTÉE).
+ * UNE décision par proposition : VALIDATE conserve l'information en mémoire (state_proposals, + case_events pour une portée affaire /
+ * établissement, que project-evenements projette vers fiche et Hub) ; REVIEW / REJECT n'écrivent rien. Aucune mise à jour publique n'est
+ * promise : elle dépend de l'existence de la surface. Les informations déjà validées ou déjà consignées ne sont JAMAIS redemandées.
  */
 async function decisionReactions(cle, p, faits) {
-  const connus = new Set((await sql`select libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null`).map((r) => r.libelle_public));
+  const connus = await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null
+                           union all select f.fait->>'event_type', f.fait->>'event_date', f.fait->>'event_period', f.fait->>'libelle_public' from state_proposals q cross join lateral jsonb_array_elements(q.facts) f(fait)
+                            where q.case_id = ${p.case_id} and q.decision = 'ACCEPT' and q.proposal_id <> ${p.proposal_id}`;
   const { neufs, propres, territoire } = planReactions(faits, connus);
-  if (!neufs.length) throw new Error('mesures déjà consignées pour cette affaire : aucune nouvelle demande');
-  const ligne = (f) => `• ${esc(f.libelle_public)} (${esc(f.realisation)}${f.event_period ? ', ' + esc(moisFr(f.event_period)) : f.event_date ? ', ' + esc(jour(f.event_date)) : ''})`;
-  const preuve = (f) => `« ${esc(cut(f.evidence[0], 240))} »`;
-  if (!propres.length) {
-    return envoyer(
-      `🔄 <b>MAINTENANCE</b> · 🏛 ${entete(p)}\n\nINFORMATIONS TERRITORIALES (non rattachées à l’affaire)\nL’article rapporte des mesures de la collectivité qui visent plusieurs structures :\n${territoire.map(ligne).join('\n')}` +
-        `\n\n${preuve(territoire[0])}\n\nAucun changement de la fiche : matière conservée en mémoire pour un éventuel Hub territorial.`,
-    );
-  }
-  return envoyer(
-    `🔄 <b>MAINTENANCE</b> · 🏛 ${entete(p)}\n\nÉVÉNEMENT(S) INSTITUTIONNEL(S) DE CET ÉTABLISSEMENT\n(sans effet sur l’état judiciaire : ${esc(p.courant)})\n${propres.map(ligne).join('\n')}` +
-      `\n\nPreuve :\n${preuve(propres[0])}` +
-      (territoire.length ? `\n\nNon rattaché à l’affaire (portée territoriale) : ${territoire.length} mesure(s) de la collectivité.` : '') +
-      `\n\nSNY a besoin de ta validation.`,
-    boutonsEtat(cle),
-  );
+  if (!neufs.length) throw new Error('informations déjà consignées ou validées pour cette affaire : aucune nouvelle demande');
+  // Une même information déjà soumise à décision (autre article, même libellé) : une seule demande.
+  const soeurs = await sql`
+    select q.facts from state_proposals q
+     where q.case_id = ${p.case_id} and q.proposal_id <> ${p.proposal_id} and q.decision is null and q.analysis_action = 'ENRICHMENT'
+       and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = q.proposal_id::text)`;
+  const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
+  const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
+  if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
+  return envoyer(messageEnrichissement(p, neufs, !propres.length), boutonsEtat(cle));
 }
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
@@ -213,7 +205,8 @@ async function decisionInstitutionnelle(cle) {
   const structures = Array.isArray(p.facts) ? p.facts.filter((f) => f?.mesure && f.libelle_public && f.evidence?.length) : [];
   if (p.rat === 'OK' && structures.length) return decisionReactions(cle, p, structures);
   const inst = p.rat === 'OK' ? detecterInstitutionnel(citationsDe(p)) : null;
-  if (!inst) return info(cle);
+  // Aucun fait nouveau à décider (nouvelle source, rappel, rejeu) : AUCUN message — jamais un clic ni une information inutile.
+  if (!inst) throw new Error('aucune information nouvelle à décider (source seule) : aucun message');
   const [deja] = await sql`select 1 x from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
   if (deja) throw new Error('mesure déjà consignée pour cette affaire : aucune nouvelle demande');
   const soeurs = await sql`
@@ -396,7 +389,7 @@ async function clicEtat(cb, d, cle) {
     returning decision::text`;
   if (maj.length) {
     console.log(`décision ${d} → ${VERS_DB[d]} enregistrée sur ${cle}`);
-    const quoi = p.analysis_action === 'STATE_CHANGE' && p.apres ? `${p.avant} → ${p.apres}` : 'événement institutionnel (état judiciaire inchangé)';
+    const quoi = p.analysis_action === 'STATE_CHANGE' && p.apres ? `${p.avant} → ${p.apres}` : 'enrichissement documentaire (état judiciaire inchangé)';
     await accuser(cb, `✅ <b>Décision enregistrée : ${LIBELLE_ACTION[d]}</b>\n${esc(p.etablissement)} — ${esc(p.commune)} : ${esc(quoi)} (${cle})` + (VERS_DB[d] === 'ACCEPT' ? SUITE : '\nAucune écriture sur la fiche.'));
     return 'enregistree';
   }

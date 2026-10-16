@@ -8,6 +8,7 @@
 // Les liens sont écrits en clair (aperçu désactivé à l'envoi) : un lien non cliquable reste copiable.
 // =====================================================================
 import { preuvesDe } from './preuves.mjs';
+import { moisFr } from './evenement-institutionnel.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 const jj = (d) => (d ? String(d).slice(0, 10).split('-').reverse().join('/') : 'date inconnue');
@@ -22,6 +23,41 @@ const blocInstitutionnel = (p) => (p.institutionnel
 function trois(articles, n = 3) {
   const vus = new Set();
   return (articles || []).filter((a) => /^https?:\/\//.test(a.url || '') && !vus.has(a.media) && vus.add(a.media)).slice(0, n);
+}
+
+/**
+ * ENRICHISSEMENT PROPOSÉ (Maintenance) — information NOUVELLE qui ne change pas l'état judiciaire : mobilisation, déclaration, mesure.
+ * Une décision : VALIDATE conserve en mémoire (aucune mise à jour publique immédiate n'est promise) · REVIEW · REJECT.
+ * @param {{etablissement, commune, courant, media, publication_date, url}} p   affaire + article source
+ * @param {object[]} neufs  faits NOUVEAUX (libellé fermé, acteur, date/période, portée, citation)
+ * @param {boolean} territorial  aucune information de portée affaire / établissement
+ */
+export function messageEnrichissement(p, neufs, territorial) {
+  const f1 = neufs[0];
+  const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : 'date non établie');
+  const lieu = territorial ? `Territoire : ${esc(f1.territoire || p.commune)} (information relevée via ${esc(p.etablissement)})` : `<b>${esc(p.etablissement)}</b> — ${esc(p.commune)}`;
+  const lienArticle = /^https?:\/\//.test(p.url || '') ? `\n${esc(p.url)}` : '';
+  return [
+    `🔄 <b>MAINTENANCE</b> · 📌 ENRICHISSEMENT PROPOSÉ`,
+    lieu + ` · état judiciaire inchangé (${esc(p.courant)})`,
+    '',
+    '<b>Ce qui est nouveau</b>',
+    ...neufs.slice(0, 2).map((f) => `• ${esc(f.libelle_public)}${f.realisation ? ` (${esc(f.realisation)})` : ''}`),
+    neufs.length > 2 ? `(+${neufs.length - 2} autre(s) information(s))` : '',
+    '',
+    '<b>Qui / quand</b>',
+    `${esc(f1.acteur_nomme || f1.acteur || 'acteur non précisé')} · ${esc(quand(f1))}`,
+    '',
+    '<b>Source</b>',
+    `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,
+    `« ${esc(cut(f1.evidence[0], 240))} »`,
+    '',
+    `<b>Portée</b> : ${territorial ? 'territoire (plusieurs structures ou politique de collectivité, non propre à cet établissement)' : 'établissement'}`,
+    `<b>Utilisation possible</b> : ${territorial ? 'Hub du territoire ; rappel attribué (portée territoriale) dans les fiches du territoire' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`,
+    '',
+    '<b>Décision</b>',
+    'VALIDATE : conserver en mémoire (aucune mise à jour publique immédiate n’est promise ; reprise automatique si la fiche ou le Hub existent) · REVIEW · REJECT',
+  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n');
 }
 
 /** PROPOSITION DE PUBLICATION d'une candidate examinée : synthèse (établissement, commune, état, preuves, sources, localisation). */

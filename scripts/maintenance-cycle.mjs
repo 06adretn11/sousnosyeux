@@ -57,6 +57,7 @@ import {
 } from './lib/routage-veille.mjs';
 import { trouverSources, canonique } from './lib/preuve-claim.mjs';
 import { extraireReactions, dateEcrite } from './lib/evenement-institutionnel.mjs';
+import { dejaConnu } from './lib/nouveaute.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const A = process.argv.slice(2);
@@ -135,7 +136,7 @@ const ctx = construireContexte({
   // `--ignorer-connus` (rejeu d'un rapport figé) : les événements validés APRÈS le rapport ne
   // doivent pas dater l'état — ce serait utiliser l'avenir pour exclure du passé.
   evenements: IGNORER_CONNUS ? [] : await sql`select case_id, event_type::text as event_type, event_date::text as event_date,
-                               statut_apres::text as statut_apres from case_events`,
+                               statut_apres::text as statut_apres, libelle_public from case_events`,
 });
 
 // MÉMOIRE RÉVOCABLE. On ne retient que les examens conduits par la version
@@ -182,10 +183,18 @@ const analysesFaites = new Map(
 
 // Réponses publiques DÉJÀ consignées (libellé public d'un événement institutionnel) : une information déjà connue n'est pas reproposée.
 const libellesConnus = new Map();
-for (const e of await sql`select case_id, libelle_public from case_events where libelle_public is not null`) {
-  if (!libellesConnus.has(e.case_id)) libellesConnus.set(e.case_id, new Set());
-  libellesConnus.get(e.case_id).add(e.libelle_public);
-}
+// MÉMOIRE DES FAITS d'une affaire = événements consignés (case_events) + faits structurés déjà VALIDÉS (state_proposals ACCEPT, y compris
+// ceux de portée territoire qui n'ont pas de ligne case_events) : on compare des FAITS, jamais des articles.
+const memoireFaits = new Map();
+const noterFait = (case_id, f) => {
+  if (!libellesConnus.has(case_id)) libellesConnus.set(case_id, new Set());
+  if (f.libelle_public) libellesConnus.get(case_id).add(f.libelle_public);
+  if (!memoireFaits.has(case_id)) memoireFaits.set(case_id, []);
+  memoireFaits.get(case_id).push(f);
+};
+for (const e of await sql`select case_id, event_type::text event_type, event_date::text event_date, libelle_public from case_events`) noterFait(e.case_id, e);
+for (const e of await sql`select p.case_id, f.fait->>'event_type' event_type, f.fait->>'event_date' event_date, f.fait->>'event_period' event_period, f.fait->>'libelle_public' libelle_public
+                            from state_proposals p cross join lateral jsonb_array_elements(p.facts) f(fait) where p.decision = 'ACCEPT'`) noterFait(e.case_id, e);
 
 // ARBITRAGES HUMAINS PERSISTÉS. Un rattachement (affaire, article) déjà accepté par un humain
 // (`state_proposals.decision = ACCEPT`, décideur non machine) n'est jamais redemandé : il remplace
@@ -344,7 +353,7 @@ async function viaModele({ fiche, article, modele, F }) {
         event_type: reponse.event_type, event_date: dateISO(reponse.event_date),
         // Fait rapporté sans jour (« en juin 2026 ») : la période est conservée telle qu'écrite, le jour n'est jamais inventé,
         // et la date de l'article n'est jamais prise pour celle du fait.
-        event_period: dateISO(reponse.event_date) ? null : dateEcrite(verifiees.join(' '), String(article.publication_date || '').slice(0, 4) || null).periode,
+        event_period: dateISO(reponse.event_date) ? null : dateEcrite(verifiees.join(' '), String(article.publication_date || '').slice(0, 10) || null).periode,
         resulting_state: etat(reponse.resulting_state), finality: etat(reponse.finality),
         appeal: reponse.appeal, evidence: verifiees,
       }];
@@ -359,7 +368,7 @@ const F = {
   url_non_resolue: 0, fetch_echoue: 0, qualifies: 0,
   NO_CHANGE: 0, NEW_SOURCE_NO_STATE_CHANGE: 0, STATE_CHANGE_CANDIDATE: 0,
   AMBIGUOUS: 0, SOURCE_ACCESS_BLOCKED: 0, SOURCE_REVIEW_REQUIRED: 0,
-  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0,
+  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, faits_deja_connus: 0,
   appels_llm: 0, fetches: 0, octets: 0,
   analyses_ecrites: 0, analyses_reutilisees: 0, evidence_inventee: 0,
   input_tokens: 0, output_tokens: 0, cout_usd: 0,
@@ -397,9 +406,11 @@ const dateCoherente = (eventDate, fenetre) => {
 
 /** Réponses publiques NOUVELLES d'un article (absentes de la mémoire de l'affaire). Pas de modèle : vocabulaire et libellés fermés. */
 function reactionsDe(fiche, article, corps) {
-  const connus = libellesConnus.get(fiche.case_id) || new Set();
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: String(article.publication_date || '').slice(0, 4) || null })
-    .filter((x) => x.libelle_public && !connus.has(x.libelle_public));
+  const memoire = memoireFaits.get(fiche.case_id) || [];
+  const pub = String(article.publication_date || '').slice(0, 10) || null;
+  const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
+  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres })
+    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }));
   F.reactions_nouvelles += r.length;
   return r;
 }
@@ -508,6 +519,19 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
       + (dejaTranche.rapproche_par_publication ? ' (date du fait non écrite : rapproché par la date de publication)' : '')];
     out.statut_propose = null; out.PROPOSED_CHANGE = 'NO_CHANGE'; out._action_modele = 'ENRICHMENT';
     F.decisions_deja_prises++;
+  }
+  // ÉTAT IDENTIQUE : « relaxe → relaxe » n'est pas un changement d'état (cas Baudin, 16/10/2026 : un article qui rappelle l'appel déjà connu
+  // proposait un STATE_CHANGE sans effet). Et un fait judiciaire DÉJÀ dans la mémoire (même type, même date ou rappel récent) n'est pas
+  // une information nouvelle : aucune proposition, donc aucun clic. Nouvelle SOURCE ≠ nouveau FAIT.
+  const f0 = (out._facts || [])[0];
+  const connuDeLaMemoire = !!f0 && dejaConnu({ ...f0, event_date: f0.event_date }, memoireFaits.get(fiche.case_id) || [], { pubDate: article.publication_date });
+  if (out.statut_propose && out.statut_propose === fiche.statut_judiciaire) {
+    out.review_reasons = [...(out.review_reasons || []), 'ETAT_IDENTIQUE — l’état proposé est déjà l’état enregistré : jamais un changement d’état'];
+    out.statut_propose = null; out.PROPOSED_CHANGE = 'NO_CHANGE'; out._action_modele = 'ENRICHMENT';
+  }
+  if (connuDeLaMemoire && !out.statut_propose && ['ENRICHMENT', 'STATE_CHANGE', 'AMBIGUOUS'].includes(out._action_modele)) {
+    out.review_reasons = [...(out.review_reasons || []), `FAIT_DEJA_CONNU — ${f0.event_type} déjà consigné : aucune nouvelle décision`];
+    out._action_modele = 'NO_CHANGE'; F.faits_deja_connus++;
   }
   F.qualifies++;
   F.docs_lus_par_modele += MOTEUR === 'rules' ? 0 : 1;
