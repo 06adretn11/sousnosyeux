@@ -184,9 +184,9 @@ const citationsDe = (p) => (Array.isArray(p.facts) ? p.facts.flatMap((f) => f?.e
  * promise : elle dépend de l'existence de la surface. Les informations déjà validées ou déjà consignées ne sont JAMAIS redemandées.
  */
 async function decisionReactions(cle, p, faits) {
-  const connus = new Set((await sql`select libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null
-                                    union select f.fait->>'libelle_public' from state_proposals q cross join lateral jsonb_array_elements(q.facts) f(fait)
-                                     where q.case_id = ${p.case_id} and q.decision = 'ACCEPT' and q.proposal_id <> ${p.proposal_id}`).map((r) => r.libelle_public));
+  const connus = await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null
+                           union all select f.fait->>'event_type', f.fait->>'event_date', f.fait->>'event_period', f.fait->>'libelle_public' from state_proposals q cross join lateral jsonb_array_elements(q.facts) f(fait)
+                            where q.case_id = ${p.case_id} and q.decision = 'ACCEPT' and q.proposal_id <> ${p.proposal_id}`;
   const { neufs, propres, territoire } = planReactions(faits, connus);
   if (!neufs.length) throw new Error('informations déjà consignées ou validées pour cette affaire : aucune nouvelle demande');
   // Une même information déjà soumise à décision (autre article, même libellé) : une seule demande.
@@ -194,8 +194,9 @@ async function decisionReactions(cle, p, faits) {
     select q.facts from state_proposals q
      where q.case_id = ${p.case_id} and q.proposal_id <> ${p.proposal_id} and q.decision is null and q.analysis_action = 'ENRICHMENT'
        and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = q.proposal_id::text)`;
-  const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map((f) => f?.libelle_public)));
-  if (neufs.every((f) => dejaSoumis.has(f.libelle_public))) throw new Error('même information déjà soumise à décision : une seule demande');
+  const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
+  const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
+  if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
   return envoyer(messageEnrichissement(p, neufs, !propres.length), boutonsEtat(cle));
 }
 async function decisionInstitutionnelle(cle) {

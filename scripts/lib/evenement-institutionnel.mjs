@@ -43,6 +43,7 @@ const MESURES = [
 const ANNONCE = /\b(annonc\w+|va|vont|sera|seront|serait|prevu\w*|prevoit|prevoient|projette\w*|compte|comptent|s'engage\w*|promet\w*|propos\w+|presente\w*\s+(?:un|une|des)\s+(?:plan|serie|mesures?)|presentera|decide\s+de|lancera|mettra|souhait\w+|envisag\w+|il y aura|veut|veulent)\b/;
 const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\bont\s+(?:manifeste|defile)\w*/;
 /** Texte comparable : sans accents, minuscules, apostrophes unifiées. */
+import { dejaConnu } from './nouveaute.mjs';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’'`]/g, "'");
 
 // Libellés publics : table fermée. Jamais de nom (personne mise en cause, élu), jamais de détail des faits.
@@ -151,8 +152,10 @@ export const moisFr = (p) => { const m = /^(\d{4})-(\d{2})$/.exec(p || ''); retu
  * Ce qu'une proposition « +reactions » demande vraiment : les mesures NOUVELLES (libellé absent de la mémoire de l'affaire), séparées
  * selon la portée. `propres` (établissement) peuvent devenir des événements de l'affaire ; `territoire` jamais.
  */
-export function planReactions(faits, connus = new Set()) {
-  const neufs = (faits || []).filter((f) => f?.libelle_public && !connus.has(f.libelle_public));
+export function planReactions(faits, memoire = []) {
+  // `memoire` : faits connus {event_type, event_date, event_period, libelle_public} (un Set de libellés reste accepté : comparaison par libellé seul).
+  const liste = memoire instanceof Set ? [...memoire].map((libelle_public) => ({ libelle_public })) : memoire;
+  const neufs = (faits || []).filter((f) => f?.libelle_public && !dejaConnu(f, liste.map((e) => ({ event_type: f.event_type, ...e }))));
   return { neufs, propres: neufs.filter((f) => f.portee !== 'territoire'), territoire: neufs.filter((f) => f.portee === 'territoire') };
 }
 
@@ -212,7 +215,8 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       const nomme = !!jetons.length && jetons.some((t) => n.includes(t));
       const multi = jetonsAutres.some((t) => n.includes(t));
       const d = dateEcrite(phrase, anneeRef);
-      const cle = `mob:${mesure}`;
+      // UN fait par (type, jour) : deux rassemblements de jours différents ne fusionnent pas ; une phrase sans date rejoint le fait déjà vu.
+      const cle = [...parMesure.keys()].find((k) => k.startsWith(`mob:${mesure}|`) && (!d.date || !parMesure.get(k).event_date || parMesure.get(k).event_date === d.date)) ?? `mob:${mesure}|${d.date ?? d.periode ?? parMesure.size}`;
       const f = parMesure.get(cle);
       if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: nomme && !multi ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], _nomme: nomme && !multi });
       else {
