@@ -158,7 +158,7 @@ function caseYear(c: typeof allCases[0]): string {
                 <span class="case-name">{c.etablissement}</span>
                 <span class="case-year">{caseYear(c)}</span>
               </span>
-              <span class="case-loc">{c.commune} · {c.type_structure}</span>
+              <span class="case-loc">{c.commune} · {c.type_structure}{c.role_mis_en_cause ? ` · ${c.role_mis_en_cause}` : ''}</span>
               <span class="case-tags">
                 <span class={`case-badge badge-${statutCat(c.statut_judiciaire)}`}>
                   {statutLabel(c.statut_judiciaire, c.etat)}
@@ -450,7 +450,7 @@ function caseYear(c: typeof allCases[0]): string {
 
       const html = `
         <div class="popup-b2" style="max-height:${popupMaxH}px">
-          <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}</p>
+          <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}${c.role_mis_en_cause ? " · " + escapeHtml(c.role_mis_en_cause) : ""}</p>
           <h3 class="popup-b2-title">${escapeHtml(c.etablissement)}</h3>
           <p class="popup-b2-loc">${escapeHtml(c.commune)}${c.source_date ? ' · ' + c.source_date.slice(0, 4) : ''}</p>
           ${c.etablissements && c.etablissements.length > 1
