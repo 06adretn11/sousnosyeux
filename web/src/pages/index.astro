@@ -158,7 +158,7 @@ function caseYear(c: typeof allCases[0]): string {
                 <span class="case-name">{c.etablissement}</span>
                 <span class="case-year">{caseYear(c)}</span>
               </span>
-              <span class="case-loc">{c.commune} · {c.type_structure}</span>
+              <span class="case-loc">{c.commune} · {c.type_structure}{c.role_mis_en_cause ? ` · ${c.role_mis_en_cause}` : ''}</span>
               <span class="case-tags">
                 <span class={`case-badge badge-${statutCat(c.statut_judiciaire)}`}>
                   {statutLabel(c.statut_judiciaire, c.etat)}
