@@ -441,8 +441,15 @@ function caseYear(c: typeof allCases[0]): string {
         ? '<p class="popup-b2-approx">📍 Localisation approximative (centre de commune/arrondissement).</p>'
         : '';
 
+      // La fiche doit tenir dans la carte : épingle posée vers le bas, popup ancrée
+      // au-dessus, hauteur plafonnée (défilement interne au-delà).
+      const mapH   = map.getContainer().clientHeight;
+      const pinY   = mapH < 520 ? mapH - 30 : Math.round(mapH * 0.7);
+      const offsetY = pinY - mapH / 2;
+      const popupMaxH = Math.max(160, pinY - 14 - 12);
+
       const html = `
-        <div class="popup-b2">
+        <div class="popup-b2" style="max-height:${popupMaxH}px">
           <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}</p>
           <h3 class="popup-b2-title">${escapeHtml(c.etablissement)}</h3>
           <p class="popup-b2-loc">${escapeHtml(c.commune)}${c.source_date ? ' · ' + c.source_date.slice(0, 4) : ''}</p>
@@ -468,13 +475,7 @@ function caseYear(c: typeof allCases[0]): string {
       // Fermer la popup existante si ouverte
       activePopup?.remove();
 
-      const mapH   = map.getContainer().clientHeight;
-      const pt     = map.project(coords);
-      const offsetY = pt.y < mapH * 0.35
-        ? Math.min(120, mapH * 0.25)
-        : -Math.min(100, mapH * 0.2);
-
-      activePopup = new maplibregl.Popup({ offset: 14, maxWidth: popupMaxWidth() })
+      activePopup = new maplibregl.Popup({ offset: 14, anchor: 'bottom', maxWidth: popupMaxWidth() })
         .setLngLat(coords)
         .setHTML(html);
 
@@ -839,7 +840,11 @@ function caseYear(c: typeof allCases[0]): string {
     /* ── POPUP ── */
     .maplibregl-popup-content { padding: 0; border-radius: 6px; overflow: hidden; }
 
-    .popup-b2 { padding: 0.9rem 1rem; font-family: var(--sans); max-width: 300px; }
+    .popup-b2 { padding: 0.9rem 1rem; font-family: var(--sans); max-width: 300px; overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box; }
+    @media (max-width: 480px) {
+      .popup-b2 { padding: 0.7rem 0.8rem; }
+      .popup-b2-facts, .popup-b2-phrase { font-size: 0.76rem; }
+    }
     .popup-b2-kicker {
       font-family: var(--mono);
       font-size: 0.65rem;
