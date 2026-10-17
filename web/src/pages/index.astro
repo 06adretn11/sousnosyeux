@@ -450,7 +450,7 @@ function caseYear(c: typeof allCases[0]): string {
 
       const html = `
         <div class="popup-b2" style="max-height:${popupMaxH}px">
-          <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}</p>
+          <p class="popup-b2-kicker">${escapeHtml(c.type_structure)}${c.role_mis_en_cause ? " · " + escapeHtml(c.role_mis_en_cause) : ""}</p>
           <h3 class="popup-b2-title">${escapeHtml(c.etablissement)}</h3>
           <p class="popup-b2-loc">${escapeHtml(c.commune)}${c.source_date ? ' · ' + c.source_date.slice(0, 4) : ''}</p>
           ${c.etablissements && c.etablissements.length > 1
