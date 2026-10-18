@@ -3,11 +3,11 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 65,
+    "total_cases": 66,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-15"
+    "generated_at": "2026-10-18"
   },
   "cases": [
     {
@@ -1681,6 +1681,37 @@
           "url": "https://www.ouest-france.fr/societe/faits-divers/en-charente-un-instituteur-mis-en-examen-pour-des-agressions-sexuelles-sur-quatre-enfants-08cb91a0-c7f8-11f1-9522-1f9ae0711c0a",
           "media": "Ouest-France",
           "publication_date": "2026-10-14",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0139",
+      "etablissement": "Les Tournesols",
+      "commune": "Lingolsheim",
+      "departement": "Bas-Rhin",
+      "type_structure": "autre",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 48.557865,
+      "lng": 7.688191,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.dna.fr/faits-divers-justice/2026/10/15/accuse-d-agressions-sexuelles-sur-des-enfants-un-animateur-du-periscolaire-de-lingolsheim-suspendu",
+          "media": "Les Dernières Nouvelles d'Alsace",
+          "publication_date": "2026-10-15",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+          "media": "ici",
+          "publication_date": "2026-10-16",
           "source_type": "presse",
           "is_primary": false
         }
