@@ -231,5 +231,33 @@
       "hash": "e88bdcd643defd55"
     }
   },
-  "matiere": []
+  "matiere": [
+    {
+      "id": "47242a094799",
+      "nature": "mesure",
+      "libelle": "Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.",
+      "realisation": "annoncée",
+      "portee": "territoire",
+      "acteur": "Ville de Paris",
+      "territoire": "Paris",
+      "date": null,
+      "periode": "2025-11",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+        "publie_le": "2026-03-21"
+      },
+      "case_id": "FR-2026-0001",
+      "event_id": null,
+      "destinations": {
+        "fiche": null,
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
+    }
+  ]
 }
