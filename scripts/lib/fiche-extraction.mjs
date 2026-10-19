@@ -206,6 +206,12 @@ export function citationEntreGuillemets(corps, citation) {
 // Âge du mis en cause (même par tranche) : un détail qui identifie sans informer.
 export const RE_AGE_MIS_EN_CAUSE = /\b(?:d['’]une|dans la) (?:vingtaine|trentaine|quarantaine|cinquantaine|soixantaine) d['’]ann[ée]es|\b(?:trentenaire|quadragénaire|quinquagénaire|sexagénaire|septuagénaire|vingtenaire)s?\b|\bâgé(?:e)? de \d+ ans|,\s*\d{2} ans\s*,/i;
 
+// Âge d'un ENFANT (« fillette de 5 ans », « fillettes âgées de 4 et 5 ans ») : recoupe l'identité d'une famille, jamais publié.
+export const RE_AGE_ENFANT = /\b(?:fillettes?|garçons?|enfants?|élèves?|eleves?|bébés?|filles?|mineures?|mineurs?)\s+(?:âgé(?:e)?s?\s+)?de\s+\d+(?:\s+et\s+\d+)?\s+ans\b|\bâgé(?:e)?s?\s+de\s+\d+(?:\s+et\s+\d+)?\s+ans\b/i;
+
+// Propos d'une autorité qui rapportent l'état ou les craintes d'un proche de victime (« la mère d'une fillette s'inquiétait pour sa fille ») : détail de famille, jamais cité.
+export const RE_PROCHE_VICTIME = /\b(?:sa|leur|ma|mon|son)\s+(?:fille|fils|enfant|petite)\b|\b(?:la|une)\s+(?:mère|maman)\s+d['’]une?\b|\b(?:le|un)\s+(?:père|papa)\s+d['’]une?\b/i;
+
 const DETAIL_GRAPHIQUE = /\b(?:fellation|sodomi|penetr|masturb|attouchement|caress|zizi|sexe de|parties intimes|culotte|dechir|saign)/;
 
 const nettoyerTexte = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
@@ -237,6 +243,7 @@ export function verifier(rep, { corps, publieLe = null }) {
     if (n.length) { ecarte(element, 'NOM_MIS_EN_CAUSE', texte); return false; }
     if (RE_NOMBRE_ENFANTS.test(texte)) { ecarte(element, 'NOMBRE_EXACT_ENFANTS', texte); return false; }
     if (RE_AGE_MIS_EN_CAUSE.test(texte)) { ecarte(element, 'AGE_MIS_EN_CAUSE', texte); return false; }
+    if (RE_AGE_ENFANT.test(texte)) { ecarte(element, 'AGE_ENFANT', texte); return false; }
     if (DETAIL_GRAPHIQUE.test(plat(texte))) { ecarte(element, 'DETAIL_GRAPHIQUE', texte); return false; }
     return true;
   };
@@ -308,6 +315,7 @@ export function verifier(rep, { corps, publieLe = null }) {
     if (!citationPresente(corps, citation)) { ecarte('declaration', 'CITATION_ABSENTE_DU_CORPS', citation); continue; }
     if (!citationEntreGuillemets(corps, citation)) { ecarte('declaration', 'PROPOS_NON_ENTRE_GUILLEMETS', citation); continue; }
     if (!dansLePerimetre('declaration', d.portee, citation)) continue;
+    if (RE_PROCHE_VICTIME.test(citation)) { ecarte('declaration', 'PROCHE_DE_VICTIME', citation); continue; }
     if (!gardeTexte('declaration', citation) || !gardeTexte('declaration', d.acteur)) continue;
     sortie.declarations.push({ acteur: nettoyerTexte(d.acteur), type_acteur: d.type_acteur, a_propos: nettoyerTexte(d.a_propos) || null, citation });
   }

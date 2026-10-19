@@ -9,7 +9,7 @@
 //   READY                — proposable sans réserve majeure (l'humain reste seul à décider)
 // =====================================================================
 import { createHash } from 'node:crypto';
-import { nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
+import { nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
 
 const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const jetons = (s) => new Set(plat(s).split(' ').filter((t) => t.length > 3));
@@ -66,7 +66,8 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const g = groupes.find((g) => famille(g.type) === famille(type) && (
       UNIQUES.has(type) ||
       // Un événement sans date écrite se range sous un événement daté du même type dès qu'ils partagent un peu de vocabulaire.
-      ((!e.date || !g.rep.date) && jaccard(g.rep.texte, e.texte) >= 0.15) ||
+      // (seuil plus haut pour les mesures : deux mesures distinctes d'un même article partagent vite des mots)
+      ((!e.date || !g.rep.date) && jaccard(g.rep.texte, e.texte) >= (famille(type) === 'mesure' ? 0.22 : 0.15)) ||
       (PROCEDURAL.has(type) && e.date_nature === 'evenement' && g.membres.some((m) => m.date_nature === 'evenement' && m.date === e.date)) ||
       (jaccard(g.rep.texte, e.texte) >= 0.34 && (!g.rep.date || !e.date || g.rep.date === e.date || g.rep.date.slice(0, 7) === e.date.slice(0, 7)))));
     if (g) g.membres.push(e);
@@ -192,6 +193,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   const publie = JSON.stringify(dossier);
   const nomsFuite = nomsPresents(publie, noms);
   if (nomsFuite.length) bloque('NOM_MIS_EN_CAUSE_DANS_LA_FICHE', `Un nom de mis en cause figure dans la fiche produite (${nomsFuite.length}).`);
+  if (RE_AGE_ENFANT.test(publie)) bloque('AGE_ENFANT_DANS_LA_FICHE', 'Un âge d’enfant figure dans la fiche produite.');
   if (RE_AGE_MIS_EN_CAUSE.test(publie)) bloque('AGE_MIS_EN_CAUSE_DANS_LA_FICHE', 'Un âge du mis en cause figure dans la fiche produite.');
   if (RE_NOMBRE_ENFANTS.test(publie)) bloque('NOMBRE_ENFANTS_DANS_LA_FICHE', 'Un nombre exact d’enfants figure dans la fiche produite.');
 

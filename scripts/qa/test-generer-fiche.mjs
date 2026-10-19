@@ -297,6 +297,17 @@ t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une décla
   assert.deepEqual(r.ecartes.map((e) => e.raison), ['DECLARATION_REDONDANTE_AVEC_LE_DEROULE', 'ACTEUR_DEJA_REPRESENTE']);
 });
 
+t('âge d’un enfant et propos sur un proche de victime : écartés ; deux mesures distinctes d’un même article ne fusionnent pas', () => {
+  const corps = "Le parquet précise : « la mère d'une fillette de 5 ans s'inquiétait pour sa fille ». Plaintes de parents de fillettes âgées de 4 et 5 ans. « Le service reste ouvert à toutes les familles concernées » a dit le maire.";
+  const r = verifier(base({ faits_rapportes: [{ portee: 'affaire', texte: 'Des parents de fillettes âgées de 4 et 5 ans ont porté plainte.', citation: 'Plaintes de parents de fillettes âgées de 4 et 5 ans' }], declarations: [
+    { acteur: 'Le parquet', type_acteur: 'parquet', a_propos: 'x', portee: 'affaire', citation: "la mère d'une fillette de 5 ans s'inquiétait pour sa fille" },
+    { acteur: 'Le maire', type_acteur: 'collectivite', a_propos: 'x', portee: 'affaire', citation: 'Le service reste ouvert à toutes les familles concernées' }] }), { corps, publieLe: PUB });
+  assert.deepEqual(r.ecartes.map((e) => e.raison), ['AGE_ENFANT', 'PROCHE_DE_VICTIME']); assert.equal(r.declarations.length, 1);
+  const m = (texte, c) => E({ type: 'mesure_collectivite', acteur: 'Mairie', texte, date: null, date_nature: 'article', realisation: 'realisee', citation: c });
+  const c = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [m('La mairie a organisé une réunion publique avec les parents.', 'a'), m('La mairie a mis en place une cellule d’écoute pour les parents.', 'b'), E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' })] })] });
+  assert.equal(c.dossier.deroule.filter((e) => /^mesure_/.test(e.type)).length, 2);
+});
+
 // ---------------- promotion après approbation ----------------
 const D1 = { etat_actuel: ['x'], deroule: [], inconnues: [], statut_affiche: 'enquête' };
 const gen = (d = D1, proposable = true) => ({ d, proposable });

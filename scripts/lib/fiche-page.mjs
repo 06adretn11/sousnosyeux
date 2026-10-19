@@ -13,6 +13,7 @@ import { createHash } from 'node:crypto';
 const DATA = new URL('../../data/', import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(new URL(f, DATA), 'utf8'));
 export const MEDIAS_PAYANTS = ['Mediapart', 'Libération'];
+export const REVUE_GENEREE_BASE = 'https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees';
 
 /** Dossier éditorial d'une affaire : celui de son hub, sinon celui des affaires isolées. */
 export function dossierFiche(id) {
@@ -75,7 +76,8 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
       nouveautes, sources_directes: directes.slice(0, 6), sources_a_rattacher: aRattacher,
       inconnues: (d.inconnues || []).slice(0, 4), nb_evenements_neon: nbEvenements,
       // Sans base d’aperçu accessible depuis Telegram (jamais localhost), pas d’URL : l’aperçu est joint au message sous forme de captures.
-      preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : null,
+      // Fiche générée : pas de page d'aperçu (le dossier n'est pas encore dans data/hub-matiere) ; la lecture se fait sur le rendu Markdown du dépôt, qui porte la même empreinte.
+      preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : generation ? `${REVUE_GENEREE_BASE}/${c.case_id}.md` : null,
       diff_public: diff, verifie_le: dossier.verifie_le,
       // Présent seulement pour une fiche PRODUITE par le circuit de génération : l'humain approuve en sachant qu'elle est automatique.
       ...(generation ? { generation: resumeGeneration(generation) } : {}),
