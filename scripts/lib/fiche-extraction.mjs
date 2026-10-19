@@ -195,6 +195,28 @@ export function nomsPresents(texte, noms) {
 const RE_ANNONCE = /\b(?:va|vont|devrait|devraient|devra|devront|sera|seront|serait|seraient|envisage\w*|souhait\w*|prevoi\w*|prevu\w*|annonce\w*|compte|comptent|projet|promet\w*|s'engage\w*|a l'intention|dans les prochains)\b/;
 export const sembleAnnoncee = (citation) => RE_ANNONCE.test(plat(citation).replace(/\s+/g, ' ')) ;
 
+/**
+ * Une citation du modèle qui commence bien dans le corps mais dérive ensuite (deux phrases accolées, un mot changé) n'est pas rejetée d'emblée si
+ * la PHRASE qu'elle désigne est dans la source : on retient cette phrase, littérale, comme preuve. Trois conditions : un ancrage de ~45 caractères
+ * retrouvé tel quel dans une phrase du corps, le texte rédigé soutenu par cette phrase (≥ 60 % de ses mots significatifs), et les mêmes gardes
+ * (quantités, issues) que pour une citation exacte, appliquées à la phrase retenue.
+ */
+export function recupererCitation(corps, citation, texte) {
+  const c = plat(citation);
+  if (c.length < 40) return null;
+  let ancre = '';
+  for (const m of c.split(' ')) { if ((ancre + ' ' + m).trim().length > 45) break; ancre = (ancre + ' ' + m).trim(); }
+  if (ancre.length < 30) return null;
+  const phrases = String(corps).split(/\n+|(?<=[.!?…»])\s+(?=[A-ZÀ-Ý«"“])/).map((x) => x.trim()).filter((x) => x.length > 20);
+  const i = phrases.findIndex((x) => plat(x).includes(ancre));
+  if (i < 0) return null;
+  const rec = phrases[i];
+  const radicaux = (t) => plat(t.replace(/^Selon [^,]{1,60},\s*/i, '')).split(' ').filter((w) => w.length > 3).map((w) => w.slice(0, 5));
+  const voulus = radicaux(texte), vus = new Set(radicaux(rec));
+  if (!voulus.length || voulus.filter((w) => vus.has(w)).length / voulus.length < 0.6) return null;
+  return rec.length > 600 ? null : rec;
+}
+
 /** Un propos n'est attribuable que s'il est placé ENTRE GUILLEMETS dans le document : la citation doit tenir entièrement dans un segment « … » ou "…". */
 export function citationEntreGuillemets(corps, citation) {
   const c = plat(citation);
@@ -226,7 +248,7 @@ export function verifier(rep, { corps, publieLe = null }) {
   const ecarte = (element, raison, extrait) => ecartes.push({ element, raison, ...(extrait ? { extrait: String(extrait).slice(0, 140) } : {}) });
   const noms = (rep?.personnes_mises_en_cause_nommees || []).map(nettoyerTexte).filter(Boolean);
   const sortie = { pertinence: ['CETTE_AFFAIRE', 'AFFAIRE_SOEUR', 'AUTRE_AFFAIRE', 'AMBIGU'].includes(rep?.pertinence) ? rep.pertinence : 'AMBIGU', pertinence_raison: nettoyerTexte(rep?.pertinence_raison), noms,
-    faits: [], evenements: [], issue: null, declarations: [], lacunes: [], hors_perimetre: [], ecartes };
+    faits: [], evenements: [], issue: null, declarations: [], lacunes: [], hors_perimetre: [], recuperees: 0, ecartes };
   if (sortie.pertinence !== 'CETTE_AFFAIRE') return sortie;
   // PORTÉE : seuls « affaire » et « établissement » entrent dans la fiche. Une portée absente ou inconnue est écartée (échec fermé).
   // Les éléments d'une autre affaire ou d'un territoire ne sont pas des erreurs du modèle : ils sont classés à part (matière possible d'un Hub).
@@ -248,20 +270,27 @@ export function verifier(rep, { corps, publieLe = null }) {
     return true;
   };
   // Le texte rédigé doit être soutenu par SA citation : citation entière dans le corps, quantités, issues.
+  // Rend la citation RETENUE (la citation du modèle, ou à défaut la phrase de la source qu'elle désigne), ou null si rien ne soutient le texte.
   const gardeSoutien = (element, texte, citation) => {
-    if (!citationPresente(corps, citation)) { ecarte(element, 'CITATION_ABSENTE_DU_CORPS', citation); return false; }
-    const q = quantitesNonAttestees(texte, citation);
-    if (q.length) { ecarte(element, `QUANTITE_NON_ATTESTEE(${q.join(',')})`, texte); return false; }
-    const i = issuesNonAttestees(texte, citation);
-    if (i.length) { ecarte(element, `ISSUE_NON_ATTESTEE(${i.join(',')})`, texte); return false; }
-    return true;
+    let cit = citation;
+    if (!citationPresente(corps, cit)) {
+      const rec = recupererCitation(corps, cit, texte);
+      if (!rec) { ecarte(element, 'CITATION_ABSENTE_DU_CORPS', citation); return null; }
+      cit = rec; sortie.recuperees += 1;
+    }
+    const q = quantitesNonAttestees(texte, cit);
+    if (q.length) { ecarte(element, `QUANTITE_NON_ATTESTEE(${q.join(',')})`, texte); return null; }
+    const i = issuesNonAttestees(texte, cit);
+    if (i.length) { ecarte(element, `ISSUE_NON_ATTESTEE(${i.join(',')})`, texte); return null; }
+    return cit;
   };
 
   for (const f of rep.faits_rapportes || []) {
     const texte = nettoyerTexte(f?.texte);
     if (!texte || !dansLePerimetre('fait_rapporte', f?.portee, texte)) continue;
-    if (!gardeSoutien('fait_rapporte', texte, f?.citation) || !gardeTexte('fait_rapporte', texte)) continue;
-    sortie.faits.push({ texte, citation: nettoyerTexte(f.citation) });
+    const cit = gardeSoutien('fait_rapporte', texte, f?.citation);
+    if (!cit || !gardeTexte('fait_rapporte', texte)) continue;
+    sortie.faits.push({ texte, citation: nettoyerTexte(cit) });
   }
 
   for (const e of rep.evenements || []) {
@@ -269,19 +298,20 @@ export function verifier(rep, { corps, publieLe = null }) {
     const type = TYPES_EVENEMENT.includes(e?.type) ? e.type : null;
     if (!texte || !type) { ecarte('evenement', 'TYPE_OU_TEXTE_INVALIDE', texte || e?.type); continue; }
     if (!dansLePerimetre(`evenement:${type}`, e.portee, texte)) continue;
-    if (!gardeSoutien(`evenement:${type}`, texte, e.citation) || !gardeTexte(`evenement:${type}`, texte)) continue;
+    const cit = gardeSoutien(`evenement:${type}`, texte, e.citation);
+    if (!cit || !gardeTexte(`evenement:${type}`, texte)) continue;
     // Mesure : « réalisée » est rabaissée en « annoncée » dès que la citation annonce.
     let realisation = ['realisee', 'annoncee', 'non_applicable'].includes(e.realisation) ? e.realisation : 'non_applicable';
-    if (/^mesure_/.test(type) && realisation === 'realisee' && sembleAnnoncee(e.citation)) realisation = 'annoncee';
+    if (/^mesure_/.test(type) && realisation === 'realisee' && sembleAnnoncee(cit)) realisation = 'annoncee';
     // Réquisitions : jamais une décision.
     let typeFinal = type;
-    if (type === 'decision' && /\brequis|requisition|requiert|requerir/.test(plat(e.citation)) && !/\bcondamn|relax|acquitt|non lieu/.test(plat(e.citation))) typeFinal = 'audience';
+    if (type === 'decision' && /\brequis|requisition|requiert|requerir/.test(plat(cit)) && !/\bcondamn|relax|acquitt|non lieu/.test(plat(cit))) typeFinal = 'audience';
     let date = isoOuNull(e.date), nature = 'article';
     if (date) {
       if (e.citation_date && citationPresente(corps, e.citation_date) && dateAttestee(date, e.citation_date, publieLe)) nature = date.length === 10 ? 'evenement' : 'approximative';
       else { ecarte(`evenement:${type}`, 'DATE_NON_ECRITE_DANS_LA_SOURCE', `${date} / ${e.citation_date ?? ''}`); date = null; }
     }
-    sortie.evenements.push({ type: typeFinal, acteur: nettoyerTexte(e.acteur) || null, texte, date, date_nature: date ? nature : 'article', realisation, citation: nettoyerTexte(e.citation) });
+    sortie.evenements.push({ type: typeFinal, acteur: nettoyerTexte(e.acteur) || null, texte, date, date_nature: date ? nature : 'article', realisation, citation: nettoyerTexte(cit) });
   }
 
   const ij = rep.issue_judiciaire;

@@ -26,6 +26,14 @@ const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso ||
 const RANG = { plainte: 1, 'enquête': 2, 'mise en examen': 3, 'procès': 4, 'condamnation non définitive': 5, 'condamnation définitive': 5, 'relaxe / non-lieu / classement': 5 };
 const SUJET_INSTITUTIONNEL = /^(selon|d['’]après|le tribunal|la cour|le parquet|la procureure|le procureur|le rectorat|la rectrice|le recteur|l['’]académie|la mairie|le maire|la ville|le conseil|l['’]établissement|l['’]inspection|le ministère|le ministre|la ministre|la direction|le juge|la juge|les juges|le département|la préfecture|le préfet|la préfète|l['’]enseignement|la justice)\b/i;
 export const attribue = (texte, media) => (SUJET_INSTITUTIONNEL.test(texte) ? recaser(texte) : `Selon ${media}, ${MIN(texte)}`);
+// Mesures qu'un même mot-clé désigne (lexique de mesures, pas d'affaire) : « mis à pied », « suspendu », « écarté » = la même mise à l'écart du poste.
+const CLES_MESURE = [
+  ['ecartement', /mis(?:e|es)? a pied|suspen[dsc]|ecarte|dispens(?:e|ee) de (?:se presenter|travail)|relev(?:e|ee) de ses fonctions/],
+  ['licenciement', /licenci/], ['revocation', /revoqu/], ['mutation', /\bmute\b|mutation|change d ecole/],
+  ['cellule_ecoute', /cellule d ecoute/], ['reunion_publique', /reunions? publiques?/], ['groupes_parole', /groupes? de parole/], ['partie_civile', /partie civile/],
+];
+const cleMesure = (t) => (CLES_MESURE.find(([, re]) => re.test(plat(t))) || [null])[0];
+const TYPE_FR = { plainte: 'plainte', enquete: 'enquête', garde_a_vue: 'garde à vue', mise_en_examen: 'mise en examen', audience: 'audience', decision: 'décision', appel: 'appel', renvoi: 'renvoi', signalement: 'signalement' };
 const SOURCE = (d) => ({ media: d.media, url: d.url, publie_le: d.publication_date ?? null, acces: 'libre' });
 const TYPE_PAGE = { requisitions: 'audience' };
 const PROCEDURAL = new Set(['plainte', 'garde_a_vue', 'mise_en_examen', 'audience', 'decision', 'appel', 'renvoi']);
@@ -63,8 +71,11 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const type = TYPE_PAGE[e.type] ?? e.type;
     // Une même mesure rapportée par deux médias sous deux étiquettes (établissement / État / collectivité) est un seul fait.
     const famille = (t) => (/^mesure_/.test(t) ? 'mesure' : t);
+    // Même mesure nommée par le même mot-clé (« mis à pied » / « suspendu »), même état de réalisation (annoncée ≠ mise en œuvre : deux faits), dates compatibles.
+    const datesCompatibles = (a, b) => !a || !b || a === b || a.slice(0, 7) === b.slice(0, 7);
+    const memeMesure = (g) => famille(type) === 'mesure' && cleMesure(e.texte) && cleMesure(e.texte) === cleMesure(g.rep.texte) && g.membres.every((m) => m.realisation === e.realisation) && datesCompatibles(g.rep.date, e.date);
     const g = groupes.find((g) => famille(g.type) === famille(type) && (
-      UNIQUES.has(type) ||
+      UNIQUES.has(type) || memeMesure(g) ||
       // Un événement sans date écrite se range sous un événement daté du même type dès qu'ils partagent un peu de vocabulaire.
       // (seuil plus haut pour les mesures : deux mesures distinctes d'un même article partagent vite des mots)
       ((!e.date || !g.rep.date) && jaccard(g.rep.texte, e.texte) >= (famille(type) === 'mesure' ? 0.22 : 0.15)) ||
@@ -81,10 +92,10 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const ordre = [...g.membres].sort((a, b) => (b.date_nature === 'evenement') - (a.date_nature === 'evenement') || b.texte.length - a.texte.length || String(a.doc.publication_date).localeCompare(String(b.doc.publication_date)));
     const e = ordre[0];
     const autresDates = new Set(g.membres.filter((m) => m.date).map((m) => m.date));
-    if (autresDates.size > 1) contradictions.push(`${g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
+    if (autresDates.size > 1) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
     // Quantités divergentes entre sources pour un même fait (peine : « un an avec sursis » / « trois ans ferme »).
     const divergent = g.membres.length > 1 && g.membres.some((m) => quantitesNonAttestees(e.texte, m.citation).length && quantitesNonAttestees(m.texte, e.citation).length);
-    if (divergent) contradictions.push(`${g.type} : chiffres divergents selon les sources (${g.membres.map((m) => `${m.doc.media} : « ${m.texte.slice(0, 120)} »`).join(' ; ')})`);
+    if (divergent) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : chiffres divergents selon les sources (${g.membres.map((m) => `${m.doc.media} : « ${m.texte.slice(0, 120)} »`).join(' ; ')})`);
     let texte = attribue(e.texte, e.doc.media);
     if (/^mesure_/.test(g.type) && g.membres.every((m) => m.realisation === 'annoncee')) texte = `Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : ${MIN(texte)}`;
     if (/^(audience|renvoi)$/.test(g.type) && e.date && e.date > aujourdhui) texte = `À venir : ${MIN(texte)}`;
@@ -148,12 +159,41 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     etat_actuel.push(issue.appel === 'OUI'
       ? `Un appel est rapporté (${issue.doc.media}) : la décision n’est pas définitive.`
       : issue.definitive === 'OUI' ? 'Une source indique que la décision est devenue définitive.'
-        : 'Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive.');
+        : issue.nature === 'condamnation' ? 'Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive.'
+          : 'Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.');
   } else if (deroule.length) {
     // La phrase d'état est celle de l'étape qui FAIT l'état (mise en examen, enquête, plainte, procès), pas la dernière mentionnée.
     const TYPE_ETAT = { 'procès': 'audience', 'mise en examen': 'mise_en_examen', 'enquête': 'enquete', plainte: 'plainte' }[etatSources];
     const dernier = [...deroule].reverse().find((d) => d.type === TYPE_ETAT) ?? [...deroule].reverse().find((d) => ['mise_en_examen', 'enquete', 'plainte', 'garde_a_vue', 'audience', 'renvoi'].includes(d.type));
     if (dernier) etat_actuel.push(dernier.texte);
+  }
+  // ---- synthèse visuelle (composants existants de FicheUnique : `dossier.situation`, comme les pilotes) ---------------------------------
+  // Tout vient de données déjà vérifiées : nature de l'issue ou état, date écrite, autorité qui agit, appel/finalité, mesures du déroulé.
+  // Couleur = nature de l'information (mêmes règles que statutCat du site), jamais une appréciation de culpabilité. Rien n'est inventé : pas d'état établi → pas de bloc.
+  let situation;
+  if (etatSources && etat_actuel.length) {
+    const CAT = { 'condamnation non définitive': 'red', 'condamnation définitive': 'red', 'mise en examen': 'blue', 'enquête': 'blue', 'procès': 'blue', plainte: 'orange', 'relaxe / non-lieu / classement': 'green' };
+    const NOM_ISSUE_TITRE = { condamnation: 'Condamnation', relaxe: 'Relaxe', non_lieu: 'Non-lieu', classement: 'Classement sans suite', acquittement: 'Acquittement' };
+    const NOM_ETAT_TITRE = { 'mise en examen': 'Mise en examen', 'enquête': 'Enquête', plainte: 'Plainte', 'procès': 'Audience tenue' };
+    const TYPE_DE_L_ETAT = { 'procès': 'audience', 'mise en examen': 'mise_en_examen', 'enquête': 'enquete', plainte: 'plainte' }[etatSources];
+    const evtEtat = issue ? decisionEvt : [...deroule].reverse().find((d) => d.type === TYPE_DE_L_ETAT);
+    const dateDe = (nature, date) => (!date ? null : nature === 'evenement' ? dateFr(date) : nature === 'approximative' ? `vers ${dateFr(date)}` : null);
+    const typeEtat = issue ? 'decision' : TYPE_DE_L_ETAT;
+    const divergente = contradictions.some((x) => x.startsWith(TYPE_FR[typeEtat] ?? typeEtat));
+    const quand = divergente ? null : issue ? dateDe(issue.date_nature, issue.date) : dateDe(evtEtat?.date_nature, evtEtat?.date);
+    const meta = [quand, evtEtat?.acteur ? MAJ(evtEtat.acteur) : null].filter(Boolean).join(' · ');
+    const mesures = deroule.filter((d) => /^mesure_/.test(d.type)).slice(0, 2)
+      .map((d) => (/^Mesure annoncée/.test(d.texte) ? d.texte : `Mesure institutionnelle (distincte de la décision judiciaire) : ${MIN(d.texte)}`));
+    const futureAudience = !issue && deroule.find((d) => d.type === 'audience' && d.date && d.date > aujourdhui);
+    const suite = issue
+      ? (issue.appel === 'OUI' ? { label: 'Suite · recours', titre: 'Appel rapporté', meta: `selon ${issue.doc.media}`, cat: 'orange', lignes: ['Décision non définitive.'] }
+        : issue.definitive === 'OUI' ? { label: 'Suite · recours', titre: 'Décision devenue définitive', meta: `selon ${issue.doc.media}`, cat: 'blue', lignes: [] }
+          : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })
+      : futureAudience ? { label: 'Prochaine étape', titre: `Audience le ${dateFr(futureAudience.date)}`, meta: 'à venir · le procès n’a pas eu lieu', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] }
+        : { label: 'Suite', titre: 'Aucune décision rendue', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] };
+    suite.lignes = [...suite.lignes, ...mesures];
+    if (!suite.lignes.length) delete suite.lignes;
+    situation = { decision: { label: issue ? 'Décision' : 'Situation judiciaire', titre: issue ? NOM_ISSUE_TITRE[issue.nature] : NOM_ETAT_TITRE[etatSources], ...(meta ? { meta } : {}), cat: CAT[etatSources], texte: etat_actuel[0] }, suite };
   }
   const faits = [];
   for (const x of [...pertinentes].sort((a, b) => b.v.faits.length - a.v.faits.length)) for (const f of x.v.faits) if (faits.length < 2 && !faits.some((t) => jaccard(t.texte, f.texte) > 0.4)) faits.push({ texte: attribue(f.texte, x.doc.media) });
@@ -169,7 +209,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
 
   // ---- inconnues : calculées, jamais rédigées pour remplir ---------------------------------------------------------
   const inconnues = [];
-  if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push('Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.');
+  if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push(issue.nature === 'condamnation' ? 'Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.' : 'Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.');
   if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push('Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.');
   if (pertinentes.length && !deroule.some((d) => /^mesure_/.test(d.type))) inconnues.push('Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.');
   // Les lacunes que déclarent les articles (« une 7e plainte pourrait être déposée… ») sont datées par nature : conservées dans la trace, pas publiées comme inconnues durables.
@@ -187,7 +227,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   const noms = [...new Set(extractions.flatMap((x) => x.v.noms || []))];
   const dossier = {
     etat_actuel, appel: issue?.appel === 'OUI', ...(faits.length ? { faits: faits.map((f) => f.texte).join(' ') } : {}), deroule: deroule.map(({ _tri, _preuves, ...d }) => d), inconnues,
-    synthese: etat_actuel.length ? { decision: etat_actuel[0], ...(etat_actuel[1] ? { ouvert: etat_actuel[1] } : {}) } : undefined, reactions, statut_affiche: carte,
+    synthese: etat_actuel.length ? { decision: etat_actuel[0], ...(etat_actuel[1] ? { ouvert: etat_actuel[1] } : {}) } : undefined, reactions, statut_affiche: carte, ...(situation ? { situation } : {}),
   };
   if (!dossier.synthese) delete dossier.synthese;
   const publie = JSON.stringify(dossier);
