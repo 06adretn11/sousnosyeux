@@ -12,6 +12,7 @@ import { messageFiche } from '../lib/discovery-messages.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
 import { requetesDecouverte, affairesSoeurs } from '../lib/fiche-sources.mjs';
 import { rendreMarkdown } from '../lib/fiche-rendu.mjs';
+import { decider, inscrire } from '../lib/promouvoir-fiche.mjs';
 
 let n = 0; const t = (nom, f) => { f(); n++; console.log(`  ✓ ${nom}`); };
 const CORPS = `Le tribunal correctionnel de Rouen a condamné mardi l'enseignant à quatre ans de prison dont un an avec sursis, le 4 décembre 2025. Le parquet avait requis cinq ans. La rectrice a déclaré : « Nous avons suspendu l'enseignant dès le signalement et nous accompagnons les familles ». Le prévenu, Jean Dupont, 45 ans, conteste. Trois élèves avaient porté plainte. Le rectorat va mettre en place une cellule d'écoute dans les prochaines semaines.`;
@@ -294,6 +295,45 @@ t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une décla
   assert.equal(r.dossier.deroule.filter((e) => /^mesure_/.test(e.type)).length, 1);
   assert.equal(r.dossier.reactions.length, 2);
   assert.deepEqual(r.ecartes.map((e) => e.raison), ['DECLARATION_REDONDANTE_AVEC_LE_DEROULE', 'ACTEUR_DEJA_REPRESENTE']);
+});
+
+t('âge d’un enfant et propos sur un proche de victime : écartés ; deux mesures distinctes d’un même article ne fusionnent pas', () => {
+  const corps = "Le parquet précise : « la mère d'une fillette de 5 ans s'inquiétait pour sa fille ». Plaintes de parents de fillettes âgées de 4 et 5 ans. « Le service reste ouvert à toutes les familles concernées » a dit le maire.";
+  const r = verifier(base({ faits_rapportes: [{ portee: 'affaire', texte: 'Des parents de fillettes âgées de 4 et 5 ans ont porté plainte.', citation: 'Plaintes de parents de fillettes âgées de 4 et 5 ans' }], declarations: [
+    { acteur: 'Le parquet', type_acteur: 'parquet', a_propos: 'x', portee: 'affaire', citation: "la mère d'une fillette de 5 ans s'inquiétait pour sa fille" },
+    { acteur: 'Le maire', type_acteur: 'collectivite', a_propos: 'x', portee: 'affaire', citation: 'Le service reste ouvert à toutes les familles concernées' }] }), { corps, publieLe: PUB });
+  assert.deepEqual(r.ecartes.map((e) => e.raison), ['AGE_ENFANT', 'PROCHE_DE_VICTIME']); assert.equal(r.declarations.length, 1);
+  const m = (texte, c) => E({ type: 'mesure_collectivite', acteur: 'Mairie', texte, date: null, date_nature: 'article', realisation: 'realisee', citation: c });
+  const c = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [m('La mairie a organisé une réunion publique avec les parents.', 'a'), m('La mairie a mis en place une cellule d’écoute pour les parents.', 'b'), E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' })] })] });
+  assert.equal(c.dossier.deroule.filter((e) => /^mesure_/.test(e.type)).length, 2);
+});
+
+// ---------------- promotion après approbation ----------------
+const D1 = { etat_actuel: ['x'], deroule: [], inconnues: [], statut_affiche: 'enquête' };
+const gen = (d = D1, proposable = true) => ({ d, proposable });
+const rev = (h, by = 'Adrien (Telegram, fiche)', dec = 'validé') => [{ reviewed_by: by, decision: dec, comment: `[Fiche approuvée 1a2b3c4d] FR-T-1 hash=${h}` }];
+const ctx = (o = {}) => ({ id: 'FR-T-1', generee: gen(), revues: rev(hashDossier(D1)), isoles: { dossiers: {} }, hubs: [], cases: [{ case_id: 'FR-T-1' }], holds: new Set(), ...o });
+t('promotion : permise seulement si l’approbation d’Adrien porte l’empreinte exacte du dossier généré', () => {
+  const r = decider(ctx()); assert.equal(r.ok, true); assert.equal(r.hash, hashDossier(D1));
+  assert.equal(decider(ctx({ revues: [] })).motif, 'AUCUNE_APPROBATION');
+  assert.equal(decider(ctx({ revues: rev('0000000000000000') })).motif, 'EMPREINTE_APPROUVEE_DIFFERENTE');
+  assert.equal(decider(ctx({ revues: rev(hashDossier(D1), 'import-script') })).motif, 'AUCUNE_APPROBATION', 'un tiers n’approuve rien');
+  assert.equal(decider(ctx({ revues: rev(hashDossier(D1), 'Adrien (x)', 'à corriger') })).motif, 'AUCUNE_APPROBATION');
+});
+t('promotion : fiche non proposable, affaire non publique, HOLD, dossier déjà présent (jamais d’écrasement) → refus', () => {
+  assert.equal(decider(ctx({ generee: gen(D1, false) })).motif, 'FICHE_GENEREE_ABSENTE_OU_NON_PROPOSABLE');
+  assert.equal(decider(ctx({ generee: null })).motif, 'FICHE_GENEREE_ABSENTE_OU_NON_PROPOSABLE');
+  assert.equal(decider(ctx({ cases: [] })).motif, 'AFFAIRE_NON_PUBLIQUE');
+  assert.equal(decider(ctx({ holds: new Set(['FR-T-1']) })).motif, 'HOLD');
+  assert.equal(decider(ctx({ isoles: { dossiers: { 'FR-T-1': {} } } })).motif, 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT');
+  assert.equal(decider(ctx({ hubs: [{ dossiers: { 'FR-T-1': {} } }] })).motif, 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT');
+});
+t('promotion : le dossier inscrit garde l’empreinte approuvée, les autres dossiers sont intacts', () => {
+  const avant = { _meta: { a: 1 }, dossiers: { AUTRE: { x: 1 } } };
+  const apres = inscrire(avant, 'FR-T-1', D1, hashDossier(D1));
+  assert.equal(hashDossier(apres.dossiers['FR-T-1']), hashDossier(D1)); assert.deepEqual(apres.dossiers.AUTRE, { x: 1 }); assert.equal(apres._meta.a, 1);
+  assert.equal(avant.dossiers['FR-T-1'], undefined, 'entrée non mutée');
+  assert.throws(() => inscrire(avant, 'FR-T-1', D1, '0000000000000000'));
 });
 
 // ---------------- découverte & identité ----------------

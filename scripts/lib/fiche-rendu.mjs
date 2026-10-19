@@ -2,6 +2,7 @@
 // scripts/lib/fiche-rendu.mjs — rendu Markdown LISIBLE d'une fiche générée (revue humaine, restitution) : blocs, sources, inconnues, points d'attention,
 // puis traçabilité (chaque ligne → l'extrait littéral qui la soutient). Lecture seule : ce n'est pas la page publique.
 // =====================================================================
+import { hashDossier } from './fiche-page.mjs';
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso || ''); return m ? `${m[3] ? `${Number(m[3])} ` : ''}${MOIS[Number(m[2]) - 1]} ${m[1]}` : null; };
 const TYPE = { fait_rapporte: 'Faits rapportés', signalement: 'Signalement', plainte: 'Plainte', enquete: 'Enquête', garde_a_vue: 'Garde à vue', mise_en_examen: 'Mise en examen', renvoi: 'Renvoi', audience: 'Audience', decision: 'Décision', appel: 'Appel',
@@ -11,9 +12,10 @@ const BADGE = { READY: '🟢 READY', A_REVOIR: '🟠 À REVOIR', BLOQUE: '🔴 B
 // `complet:false` (rendu destiné au dépôt public) n'inclut NI les extraits littéraux NI le détail des éléments écartés : ils peuvent contenir un nom
 // de mis en cause ou un nombre d'enfants, précisément ce que les gardes ont retiré de la fiche.
 export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = true } = {}) {
+  const empreinte = hashDossier(d);
   const L = [];
   const quand = (e) => (e.date_nature === 'evenement' ? dateFr(e.date) : e.date_nature === 'approximative' ? `vers ${dateFr(e.date)}` : `date non écrite · paru le ${dateFr(e.source?.publie_le) ?? '?'}`);
-  L.push(`# ${c.etablissement} — ${c.commune}`, '', `\`${c.case_id}\` · ${c.type_structure} · rôle : ${c.role_mis_en_cause} · état de la carte : **${c.statut_judiciaire}**`, '', `**Qualification : ${BADGE[g.qualification]}** — fiche générée le ${g.genere_le} (contrat \`${g.contrat}\`, modèle \`${g.modele}\`). *Aperçu de revue : ce n’est pas la page publique.*`, '');
+  L.push(`# ${c.etablissement} — ${c.commune}`, '', `\`${c.case_id}\` · ${c.type_structure} · rôle : ${c.role_mis_en_cause} · état de la carte : **${c.statut_judiciaire}**`, '', `**Qualification : ${BADGE[g.qualification]}** — fiche générée le ${g.genere_le} (contrat \`${g.contrat}\`, modèle \`${g.modele}\`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : \`${empreinte}\`.`, '');
   if (g.blocages.length) L.push('### Blocages', ...g.blocages.map((b) => `- **${b.code}** — ${b.texte}`), '');
   if (g.proposition_etat) L.push(`> Proposition à transmettre à la Maintenance (non appliquée) : « ${g.proposition_etat.de} » → « ${g.proposition_etat.vers} »${g.proposition_etat.preuve ? ` — preuve : ${g.proposition_etat.preuve.media}, ${g.proposition_etat.preuve.url}` : ''}`, '');
   L.push('## Situation judiciaire', '');
