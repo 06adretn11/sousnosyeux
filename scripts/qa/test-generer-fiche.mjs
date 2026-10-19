@@ -5,7 +5,7 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
+import { recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
 import { composer, attribue } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
@@ -306,6 +306,53 @@ t('âge d’un enfant et propos sur un proche de victime : écartés ; deux mesu
   const m = (texte, c) => E({ type: 'mesure_collectivite', acteur: 'Mairie', texte, date: null, date_nature: 'article', realisation: 'realisee', citation: c });
   const c = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [m('La mairie a organisé une réunion publique avec les parents.', 'a'), m('La mairie a mis en place une cellule d’écoute pour les parents.', 'b'), E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' })] })] });
   assert.equal(c.dossier.deroule.filter((e) => /^mesure_/.test(e.type)).length, 2);
+});
+
+// ---------------- synthèse visuelle, mesures, citations récupérées ----------------
+const SIT = (r) => r.dossier.situation;
+t('synthèse : condamnation → bloc rouge « Condamnation » (date + autorité), suite « Aucun appel rapporté » ; relaxe → vert ; appel rapporté → orange', () => {
+  const cond = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E({ acteur: 'Tribunal correctionnel de Rouen' }), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.deepEqual([SIT(cond).decision.titre, SIT(cond).decision.cat, SIT(cond).decision.meta, SIT(cond).suite.titre, SIT(cond).suite.cat], ['Condamnation', 'red', '4 décembre 2025 · Tribunal correctionnel de Rouen', 'Aucun appel rapporté', 'blue']);
+  const rel = composer({ c: carte('relaxe / non-lieu / classement'), extractions: [ext(doc(), { issue: ISSUE({ nature: 'relaxe' }), evenements: [E({ texte: 'Le tribunal a relaxé l’enseignant.', citation: 'relaxé' }), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.deepEqual([SIT(rel).decision.titre, SIT(rel).decision.cat], ['Relaxe', 'green']);
+  assert.ok(SIT(rel).suite.lignes[0].includes('ne mentionne de recours') && !/non définitive/.test(JSON.stringify(SIT(rel))), 'pas de « non définitive » appliqué à une relaxe ou un classement');
+  const app = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.deepEqual([SIT(app).suite.titre, SIT(app).suite.cat], ['Appel rapporté', 'orange']);
+});
+t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Aucune décision rendue » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
+  const mee = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', acteur: 'parquet de Rennes', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] })] });
+  assert.deepEqual([SIT(mee).decision.titre, SIT(mee).decision.cat, SIT(mee).decision.meta, SIT(mee).suite.titre], ['Mise en examen', 'blue', '10 juillet 2026 · Parquet de Rennes', 'Aucune décision rendue']);
+  assert.ok(!/condamn/i.test(JSON.stringify(SIT(mee))) && SIT(mee).suite.lignes.some((l) => /présumée innocente/.test(l)));
+  const fut = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'audience', texte: 'Le procès est fixé au 22 février.', date: '2027-02-22', citation: 'p' })] })] });
+  assert.deepEqual([SIT(fut).suite.label, SIT(fut).suite.titre], ['Prochaine étape', 'Audience le 22 février 2027']);
+});
+t('synthèse : date omise si les sources divergent ; aucune mesure connue → aucune ligne de mesure ; aucun état établi → aucun bloc', () => {
+  const div = composer({ c: carte('mise en examen'), extractions: [ext(doc('A', 'https://x.test/a'), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-09-22', citation: 'm' })] }), ext(doc('B', 'https://x.test/b'), { evenements: [E({ type: 'mise_en_examen', texte: 'L’animateur a été mis en examen par le juge.', date: '2026-09-21', citation: 'n' })] })] });
+  assert.ok(!/2026/.test(SIT(div).decision.meta ?? ''));
+  assert.ok(!(SIT(div).suite.lignes || []).some((l) => /Mesure/.test(l)));
+  const rien = composer({ c: carte('enquête'), extractions: [ext(doc(), {})] });
+  assert.equal(rien.dossier.situation, undefined);
+});
+t('synthèse : une mesure documentée apparaît en ligne distincte de la décision ; une mesure annoncée est dite annoncée', () => {
+  const r = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E(), E({ type: 'mesure_etablissement', acteur: 'Rectorat', texte: 'Le rectorat a suspendu l’enseignant en mars.', date: null, date_nature: 'article', realisation: 'realisee', citation: 's' }), E({ type: 'mesure_collectivite', acteur: 'Mairie', texte: 'La mairie va ouvrir une cellule d’écoute.', date: null, date_nature: 'article', realisation: 'annoncee', citation: 'c' })] })] });
+  const l = SIT(r).suite.lignes.join(' | ');
+  assert.match(l, /Mesure institutionnelle \(distincte de la décision judiciaire\) : le rectorat a suspendu/); assert.match(l, /Mesure annoncée, sans confirmation/);
+});
+t('mesures : même mot-clé (mis à pied / suspendu), même réalisation → un seul fait ; annonce ≠ mise en œuvre → deux faits ; mots-clés différents → deux faits', () => {
+  const m = (texte, realisation, date = null) => E({ type: 'mesure_collectivite', acteur: 'Mairie', texte, date, date_nature: date ? 'evenement' : 'article', realisation, citation: 'x' });
+  const n = (...evs) => composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), ...evs] })] }).dossier.deroule.filter((e) => /^mesure_/.test(e.type)).length;
+  assert.equal(n(m('L’animateur a été mis à pied à titre conservatoire le 28 juin.', 'realisee', '2026-06-28'), m('L’animateur a été suspendu quand l’affaire a éclaté en juin.', 'realisee')), 1);
+  assert.equal(n(m('L’animateur a été suspendu.', 'realisee'), m('La mairie annonce la suspension de l’animateur.', 'annoncee')), 2);
+  assert.equal(n(m('L’animateur a été suspendu.', 'realisee'), m('La mairie a ouvert une cellule d’écoute.', 'realisee')), 2);
+});
+t('citation récupérée : la phrase de la source désignée par un ancrage est retenue si elle soutient le texte ; sinon refus', () => {
+  const corps = "La mairie a publié un communiqué. Elle y annonce la suspension d'un animateur du centre de loisirs dès vendredi. Le conseil se réunira plus tard.";
+  const cit = "Elle y annonce la suspension d'un animateur du centre de loisirs dès vendredi, après avoir reçu les parents";
+  assert.equal(recupererCitation(corps, cit, "Selon Sud Ouest, la mairie annonce la suspension d'un animateur du centre de loisirs."), "Elle y annonce la suspension d'un animateur du centre de loisirs dès vendredi.");
+  assert.equal(recupererCitation(corps, cit, "Selon Sud Ouest, la mairie a licencié le directeur et fermé définitivement l'école."), null, 'texte non soutenu par la phrase');
+  assert.equal(recupererCitation(corps, "Le préfet a ordonné la fermeture immédiate de tous les centres de loisirs du département", 'Le préfet a ordonné la fermeture de tous les centres.'), null, 'ancrage absent de la source');
+  const r = verifier(base({ evenements: [evt({ type: 'mesure_etablissement', realisation: 'realisee', texte: "Selon Sud Ouest, la mairie annonce la suspension d'un animateur du centre de loisirs.", citation: cit, acteur: 'Mairie' })] }), { corps, publieLe: PUB });
+  assert.equal(r.evenements.length, 1); assert.equal(r.recuperees, 1); assert.equal(r.evenements[0].realisation, 'annoncee'); assert.ok(corps.includes(r.evenements[0].citation));
 });
 
 // ---------------- promotion après approbation ----------------

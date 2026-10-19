@@ -88,7 +88,7 @@ for (const id of ids) {
   const r = composer({ c, extractions, holds });
   const generation = {
     contrat: CONTRAT_VERSION, modele: MODELE, genere_le: new Date().toISOString().slice(0, 10), qualification: r.qualification, blocages: r.blocages, attention: r.attention, proposition_etat: r.proposition_etat,
-    requetes_decouverte: requetes, erreurs_decouverte: erreurs, stats: r.stats, cout, ecartes: r.ecartes, hors_perimetre: r.hors_perimetre, trace: r.trace,
+    citations_recuperees: extractions.reduce((a, x) => a + (x.v.recuperees || 0), 0), requetes_decouverte: requetes, erreurs_decouverte: erreurs, stats: r.stats, cout, ecartes: r.ecartes, hors_perimetre: r.hors_perimetre, trace: r.trace,
     sources: extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined })),
   };
   mkdirSync(SORTIE, { recursive: true });
