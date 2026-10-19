@@ -9,10 +9,11 @@
 //   READY                — proposable sans réserve majeure (l'humain reste seul à décider)
 // =====================================================================
 import { createHash } from 'node:crypto';
-import { nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
+import { quantites, nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
 
 const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
-const jetons = (s) => new Set(plat(s).split(' ').filter((t) => t.length > 3));
+// Mots significatifs d'une phrase : radicaux de 5 lettres (« déposée » ≈ « déposé »), sans l'attribution « Selon X, » (le média n'est pas le sujet du fait).
+const jetons = (s) => new Set(plat(String(s).replace(/^(?:Mesure[^:]*:\s*)?(?:À venir : )?selon [^,]{1,60},\s*/i, '')).split(' ').filter((t) => t.length > 3).map((t) => t.slice(0, 5)));
 const jaccard = (a, b) => { const A = jetons(a), B = jetons(b); if (!A.size || !B.size) return 0; let i = 0; for (const x of A) if (B.has(x)) i++; return i / (A.size + B.size - i); };
 const MAJ = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 // Minuscule initiale seulement si le premier mot est un mot courant : « Anne Hidalgo », « Ville de Paris », « Sénat » gardent leur majuscule.
@@ -25,7 +26,15 @@ const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso ||
 
 const RANG = { plainte: 1, 'enquête': 2, 'mise en examen': 3, 'procès': 4, 'condamnation non définitive': 5, 'condamnation définitive': 5, 'relaxe / non-lieu / classement': 5 };
 const SUJET_INSTITUTIONNEL = /^(selon|d['’]après|le tribunal|la cour|le parquet|la procureure|le procureur|le rectorat|la rectrice|le recteur|l['’]académie|la mairie|le maire|la ville|le conseil|l['’]établissement|l['’]inspection|le ministère|le ministre|la ministre|la direction|le juge|la juge|les juges|le département|la préfecture|le préfet|la préfète|l['’]enseignement|la justice)\b/i;
-export const attribue = (texte, media) => (SUJET_INSTITUTIONNEL.test(texte) ? recaser(texte) : `Selon ${media}, ${MIN(texte)}`);
+// « le document indique que » n'est pas une attribution : on ne garde que le média. Un reproche fait à une institution (« n'a engagé aucune poursuite ») n'est jamais écrit comme un
+// fait établi : il est TOUJOURS attribué au média, même quand le sujet est une institution.
+const nettoyerDocument = (t) => String(t).replace(/^selon (?:le|ce) document,?\s*/i, '').replace(/\b(?:le|ce) document (?:indique|précise|rapporte|mentionne|fait état|évoque) que /gi, '').trim();
+export const RE_REPROCHE_INSTITUTION = /\b(?:n['’](?:a|ont|avait|avaient)|ne)\s+(?:\w+\s+){0,3}(?:pas|aucun|aucune|jamais|rien)\b|\baucun(?:e)?\s+(?:signalement|poursuite|mesure|suite|action)\b|\bdéfaillances?\b/i;
+export const attribue = (texte, media) => {
+  const t = nettoyerDocument(texte);
+  if (SUJET_INSTITUTIONNEL.test(t) && !(RE_REPROCHE_INSTITUTION.test(t) && !/^selon\b/i.test(t))) return recaser(t);
+  return `Selon ${media}, ${MIN(t.replace(/^selon [^,]{1,60},\s*/i, ''))}`;
+};
 // Mesures qu'un même mot-clé désigne (lexique de mesures, pas d'affaire) : « mis à pied », « suspendu », « écarté » = la même mise à l'écart du poste.
 const CLES_MESURE = [
   ['ecartement', /mis(?:e|es)? a pied|suspen[dsc]|ecarte|dispens(?:e|ee) de (?:se presenter|travail)|relev(?:e|ee) de ses fonctions/],
@@ -36,6 +45,9 @@ const cleMesure = (t) => (CLES_MESURE.find(([, re]) => re.test(plat(t))) || [nul
 const TYPE_FR = { plainte: 'plainte', enquete: 'enquête', garde_a_vue: 'garde à vue', mise_en_examen: 'mise en examen', audience: 'audience', decision: 'décision', appel: 'appel', renvoi: 'renvoi', signalement: 'signalement' };
 const SOURCE = (d) => ({ media: d.media, url: d.url, publie_le: d.publication_date ?? null, acces: 'libre' });
 const TYPE_PAGE = { requisitions: 'audience' };
+// Types « souples » : un même fait est volontiers étiqueté différemment d'un article à l'autre (interpellation = fait rapporté ou garde à vue ; signalement ou plainte). Le regroupement du
+// modèle peut les réunir (sous garde) ; jamais une décision, une mise en examen, un appel, une audience ou une mesure avec autre chose.
+const SOUPLES = ['garde_a_vue', 'plainte', 'signalement', 'enquete', 'communication_parquet', 'fait_rapporte', 'contexte']; // du plus spécifique au plus générique
 const PROCEDURAL = new Set(['plainte', 'garde_a_vue', 'mise_en_examen', 'audience', 'decision', 'appel', 'renvoi']);
 // Actes qui n'ont lieu qu'une fois dans une affaire : toutes les mentions d'un même type sont un seul fait (un désaccord de date est signalé, pas dupliqué).
 const UNIQUES = new Set(['garde_a_vue', 'mise_en_examen', 'enquete', 'renvoi']);
@@ -43,7 +55,10 @@ const UNIQUES = new Set(['garde_a_vue', 'mise_en_examen', 'enquete', 'renvoi']);
 /**
  * @param {{c:object, extractions:{doc:object, v:object}[], aujourdhui?:string, holds?:Set<string>}} o
  */
-export function composer({ c, extractions, aujourdhui = new Date().toISOString().slice(0, 10), holds = new Set() }) {
+/** Les événements bruts, dans l'ordre où la composition les voit (ce que le regroupement du modèle indexe). */
+export const evenementsBruts = (extractions) => extractions.filter((x) => x.doc.acces === 'libre' && x.v.pertinence === 'CETTE_AFFAIRE').flatMap((x) => x.v.evenements.map((e) => ({ ...e, doc: x.doc })));
+
+export function composer({ c, extractions, aujourdhui = new Date().toISOString().slice(0, 10), holds = new Set(), fusionsModele = [] }) {
   const blocages = [], attention = [], ecartesComposition = [];
   const bloque = (code, texte) => blocages.push({ code, texte });
   const signale = (niveau, code, texte) => attention.push({ niveau, code, texte });
@@ -62,8 +77,10 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   if (inaccessibles.length) signale(pertinentes.length ? 'mineur' : 'majeur', 'SOURCES_MEMOIRE_INACCESSIBLES', `${inaccessibles.length} source(s) de la mémoire n’ont pu être lues (${[...new Set(inaccessibles.map((x) => x.doc.motif))].join(' ; ')}) : leur contenu n’est pas pris en compte.`);
 
   // ---- événements : un fait = une entrée, corroborée par les autres sources ----------------------------------
-  const brut = [];
-  for (const x of pertinentes) for (const e of x.v.evenements) brut.push({ ...e, doc: x.doc });
+  const brut = evenementsBruts(extractions);
+  brut.forEach((e, i) => { e._i = i; });
+  const groupeModele = new Map();
+  fusionsModele.forEach((grp, gi) => grp.forEach((i) => groupeModele.set(i, gi)));
   const groupes = [];
   for (const e of brut) {
     // Même acte procédural, même jour écrit = un seul fait (l'extraction regroupe le dispositif complet d'une décision en une phrase).
@@ -73,15 +90,24 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const famille = (t) => (/^mesure_/.test(t) ? 'mesure' : t);
     // Même mesure nommée par le même mot-clé (« mis à pied » / « suspendu »), même état de réalisation (annoncée ≠ mise en œuvre : deux faits), dates compatibles.
     const datesCompatibles = (a, b) => !a || !b || a === b || a.slice(0, 7) === b.slice(0, 7);
+    // Même fait selon le regroupement du modèle, APPLIQUÉ SOUS GARDES : même type, dates compatibles, chiffres non contradictoires (annonce ≠ réalisation est déjà exigé plus bas).
+    const memeSelonModele = (g) => {
+      const k = groupeModele.get(e._i);
+      if (k === undefined || !g.membres.some((m) => groupeModele.get(m._i) === k)) return false;
+      const qa = [...quantites(e.texte)].sort().join(), qb = [...quantites(g.rep.texte)].sort().join();
+      return datesCompatibles(g.rep.date, e.date) && (!qa || !qb || qa === qb);
+    };
     const memeMesure = (g) => famille(type) === 'mesure' && cleMesure(e.texte) && cleMesure(e.texte) === cleMesure(g.rep.texte) && g.membres.every((m) => m.realisation === e.realisation) && datesCompatibles(g.rep.date, e.date);
-    const g = groupes.find((g) => famille(g.type) === famille(type) && (
-      UNIQUES.has(type) || memeMesure(g) ||
+    // Le MEILLEUR groupe compatible (pas le premier) : un événement ne se range pas sous un autre fait simplement parce qu'il est arrivé après lui.
+    // Une mesure ANNONCÉE et sa MISE EN ŒUVRE sont deux faits : aucune règle de fusion ne les rapproche.
+    const g = groupes.filter((g) => (famille(g.type) === famille(type) || (SOUPLES.includes(g.type) && SOUPLES.includes(type) && memeSelonModele(g))) && (famille(type) !== 'mesure' || g.membres.every((m) => m.realisation === e.realisation)) && (
+      UNIQUES.has(type) || memeMesure(g) || memeSelonModele(g) ||
       // Un événement sans date écrite se range sous un événement daté du même type dès qu'ils partagent un peu de vocabulaire.
       // (seuil plus haut pour les mesures : deux mesures distinctes d'un même article partagent vite des mots)
       ((!e.date || !g.rep.date) && jaccard(g.rep.texte, e.texte) >= (famille(type) === 'mesure' ? 0.22 : 0.15)) ||
       (PROCEDURAL.has(type) && e.date_nature === 'evenement' && g.membres.some((m) => m.date_nature === 'evenement' && m.date === e.date)) ||
-      (jaccard(g.rep.texte, e.texte) >= 0.34 && (!g.rep.date || !e.date || g.rep.date === e.date || g.rep.date.slice(0, 7) === e.date.slice(0, 7)))));
-    if (g) g.membres.push(e);
+      (jaccard(g.rep.texte, e.texte) >= 0.34 && (!g.rep.date || !e.date || g.rep.date === e.date || g.rep.date.slice(0, 7) === e.date.slice(0, 7))))).sort((x, y) => jaccard(y.rep.texte, e.texte) - jaccard(x.rep.texte, e.texte))[0];
+    if (g) { g.membres.push(e); if (SOUPLES.includes(g.type) && SOUPLES.includes(type) && SOUPLES.indexOf(type) < SOUPLES.indexOf(g.type)) g.type = type; }
     else groupes.push({ type: TYPE_PAGE[e.type] ?? e.type, rep: e, membres: [e] });
   }
   const deroule = [];
@@ -129,8 +155,16 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   if (issue) {
     etatSources = issue.nature === 'condamnation' ? (issue.definitive === 'OUI' ? 'condamnation définitive' : 'condamnation non définitive') : ['relaxe', 'non_lieu', 'classement', 'acquittement'].includes(issue.nature) ? 'relaxe / non-lieu / classement' : null;
   } else {
+    // L'ÉTAT judiciaire ne vient que d'actes judiciaires : une enquête purement administrative (inspection, enquête interne de la Ville ou du rectorat) n'est pas une « enquête » au sens de l'état.
+    const JUDICIAIRE = /parquet|procureur|police|gendarm|brigade|juge d['’]instruction|information judiciaire|enquête (?:préliminaire|pénale|judiciaire)|enquêteurs/i;
+    const ADMINISTRATIVE = /administrative|inspection|enquête interne|disciplinaire/i;
+    const enqueteJudiciaire = deroule.some((d) => d.type === 'enquete' && !(ADMINISTRATIVE.test(d.texte) && !JUDICIAIRE.test(d.texte)));
     const types = new Set(deroule.map((d) => d.type));
-    etatSources = deroule.some((d) => d.type === 'audience' && d.date && d.date <= aujourdhui) ? 'procès' : types.has('mise_en_examen') ? 'mise en examen' : types.has('enquete') || types.has('garde_a_vue') ? 'enquête' : types.has('plainte') ? 'plainte' : null;
+    // « Procès » = une audience de JUGEMENT tenue (tribunal correctionnel, assises…), pas une audience de remise en liberté ou de chambre de l'instruction.
+    const JUGEMENT = /tribunal correctionnel|tribunal pour enfants|cour d['’]assises|cour criminelle|jugé|jugée|comparu|procès|à la barre|audience de jugement/i;
+    const DETENTION = /remise en liberté|détention|chambre de l['’]instruction|contrôle judiciaire|libertés et de la détention|demande de mise en liberté/i;
+    const procesTenu = deroule.some((d) => d.type === 'audience' && d.date && d.date <= aujourdhui && JUGEMENT.test(d.texte) && !DETENTION.test(d.texte));
+    etatSources = procesTenu ? 'procès' : types.has('mise_en_examen') ? 'mise en examen' : enqueteJudiciaire || types.has('garde_a_vue') ? 'enquête' : types.has('plainte') ? 'plainte' : null;
   }
   const carte = c.statut_judiciaire;
   let propositionEtat = null;
@@ -143,12 +177,15 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
       else if (r2 >= 3) bloque('ETAT_NON_ETAYE', `La carte affiche « ${carte} » ; les sources lues n’établissent que « ${etatSources} ».`);
       else signale('majeur', 'ETAT_PLUS_HAUT_QUE_LES_SOURCES', `La carte affiche « ${carte} » ; les sources lues n’établissent que « ${etatSources} ».`);
     } else if (!etatSources && RANG[carte] >= 3) bloque('ETAT_NON_ETAYE', `La carte affiche « ${carte} » ; aucune source lue ne l’établit.`);
+    else if (!etatSources) signale('majeur', 'ETAT_NON_ETAYE_PAR_LES_SOURCES', `La carte affiche « ${carte} » ; aucune source lue n’établit un acte judiciaire (plainte, garde à vue, enquête du parquet) : la fiche ne porte pas de bloc de situation.`);
   }
 
   // ---- blocs --------------------------------------------------------------------------------------------------
   const NATURE_STEM = { condamnation: 'condamnation', relaxe: 'relaxe', non_lieu: 'non_lieu', classement: 'classement', acquittement: 'acquittement' };
   const decisionEvt = issue && (deroule.find((d) => d.type === 'decision' && (!issue.date || d.date === issue.date) && issuesPortees(d.texte).includes(NATURE_STEM[issue.nature]))
     ?? deroule.find((d) => d.type === 'decision' && issuesPortees(d.texte).includes(NATURE_STEM[issue.nature])));
+  // Un appel ANNONCÉ (« l'avocat a annoncé qu'il ferait appel ») n'est pas un appel interjeté : la fiche le dit sans l'affirmer, et ne prétend pas « aucun appel rapporté ».
+  const appelAnnonce = issue && issue.appel !== 'OUI' ? deroule.find((d) => d.type === 'appel') : null;
   const etat_actuel = [];
   if (issue) {
     // Sans phrase de décision extraite : phrase STRUCTURÉE (nature + date écrite), jamais la citation brute (elle peut contenir un âge, un nom, un nombre d'enfants).
@@ -158,6 +195,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     else signale('majeur', 'DECISION_NON_RESTITUABLE', 'La décision est établie mais sa formulation source contient un nom ou un nombre d’enfants : phrase à rédiger par un humain.');
     etat_actuel.push(issue.appel === 'OUI'
       ? `Un appel est rapporté (${issue.doc.media}) : la décision n’est pas définitive.`
+      : appelAnnonce ? `Un appel est annoncé (${appelAnnonce.source.media}) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive.`
       : issue.definitive === 'OUI' ? 'Une source indique que la décision est devenue définitive.'
         : issue.nature === 'condamnation' ? 'Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive.'
           : 'Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.');
@@ -187,6 +225,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const futureAudience = !issue && deroule.find((d) => d.type === 'audience' && d.date && d.date > aujourdhui);
     const suite = issue
       ? (issue.appel === 'OUI' ? { label: 'Suite · recours', titre: 'Appel rapporté', meta: `selon ${issue.doc.media}`, cat: 'orange', lignes: ['Décision non définitive.'] }
+        : appelAnnonce ? { label: 'Suite · recours', titre: 'Appel annoncé', meta: `selon ${appelAnnonce.source.media}`, cat: 'orange', lignes: [etat_actuel[1]] }
         : issue.definitive === 'OUI' ? { label: 'Suite · recours', titre: 'Décision devenue définitive', meta: `selon ${issue.doc.media}`, cat: 'blue', lignes: [] }
           : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })
       : futureAudience ? { label: 'Prochaine étape', titre: `Audience le ${dateFr(futureAudience.date)}`, meta: 'à venir · le procès n’a pas eu lieu', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] }
@@ -202,26 +241,43 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     if (reactions.some((r) => jaccard(r.citations[0].texte, d.citation) > 0.6)) continue;
     // Une déclaration qui ne fait que répéter une étape du déroulé n'apporte pas de parole : elle est écartée. Deux déclarations par acteur au plus.
     if (deroule.some((e) => jaccard(e.texte, d.citation) >= 0.5)) { ecartesComposition.push({ element: 'declaration', raison: 'DECLARATION_REDONDANTE_AVEC_LE_DEROULE', source: x.doc.url }); continue; }
+    if (reactions.length >= 8) { ecartesComposition.push({ element: 'declaration', raison: 'PLAFOND_DE_REACTIONS', source: x.doc.url }); continue; }
     if (reactions.filter((r) => plat(r.acteur) === plat(d.acteur)).length >= 2) { ecartesComposition.push({ element: 'declaration', raison: 'ACTEUR_DEJA_REPRESENTE', source: x.doc.url }); continue; }
-    reactions.push({ acteur: d.acteur, qualite: `propos rapportés par ${x.doc.media}`, date: x.doc.publication_date, date_nature: 'article', portee: 'affaire', attribution: 'POSITION_ATTRIBUEE', a_propos: d.a_propos,
+    reactions.push({ ...(d.contexte ? { paraphrase: `Contexte dans l’article (${x.doc.media}) : ${d.contexte}` } : {}), acteur: d.acteur, qualite: `propos rapportés par ${x.doc.media}`, date: x.doc.publication_date, date_nature: 'article', portee: 'affaire', attribution: 'POSITION_ATTRIBUEE', a_propos: d.a_propos,
       citations: [{ texte: d.citation, pour: d.a_propos ?? 'à propos de l’affaire' }], etabli: `Établi : propos rapportés par ${x.doc.media}. Une prise de parole n’établit pas son contenu.`, source: SOURCE(x.doc), validation: 'POSITION_ATTRIBUEE' });
   }
 
   // ---- inconnues : calculées, jamais rédigées pour remplir ---------------------------------------------------------
   const inconnues = [];
-  if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push(issue.nature === 'condamnation' ? 'Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.' : 'Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.');
+  if (appelAnnonce && issue.definitive !== 'OUI') inconnues.push(`Appel : annoncé (${appelAnnonce.source.media}) ; dépôt effectif et suites non confirmés dans les sources lues.`);
+  else if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push(issue.nature === 'condamnation' ? 'Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.' : 'Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.');
   if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push('Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.');
   if (pertinentes.length && !deroule.some((d) => /^mesure_/.test(d.type))) inconnues.push('Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.');
   // Les lacunes que déclarent les articles (« une 7e plainte pourrait être déposée… ») sont datées par nature : conservées dans la trace, pas publiées comme inconnues durables.
   for (const cc of contradictions) inconnues.push(`Divergence entre sources — ${cc}.`);
-  const mediasLus = [...new Set(pertinentes.map((x) => x.doc.media))];
-  if (pertinentes.length) inconnues.push(`Le dossier ne repose que sur ${pertinentes.length} article${pertinentes.length > 1 ? 's' : ''} lu${pertinentes.length > 1 ? 's' : ''} (${mediasLus.join(', ')}).`);
+  // Seules comptent les sources qui ont APPORTÉ quelque chose à la fiche : une page jugée pertinente mais sans aucun élément retenu (palmarès, page de série) n'est pas un « article lu » de ce dossier.
+  const contribuent = pertinentes.filter((x) => x.v.evenements.length || x.v.faits.length || x.v.declarations.length || x.v.issue);
+  const mediasLus = [...new Set(contribuent.map((x) => x.doc.media))];
+  if (contribuent.length) inconnues.push(`Le dossier ne repose que sur ${contribuent.length} article${contribuent.length > 1 ? 's' : ''} lu${contribuent.length > 1 ? 's' : ''} (${mediasLus.join(', ')}).`);
   if (contradictions.length) signale('majeur', 'DIVERGENCE_ENTRE_SOURCES', contradictions.join(' | '));
   if (deroule.some((d) => d.date && d.date > aujourdhui)) signale('mineur', 'ECHEANCE_A_VENIR', `Échéance à venir : ${deroule.filter((d) => d.date > aujourdhui).map((d) => `${dateFr(d.date)} (${d.type})`).join(', ')} : à mettre à jour après la date.`);
   if (reactions.length) signale('mineur', 'CITATIONS_A_RELIRE', 'Les citations sont reproduites telles que publiées : à relire sous l’angle de la protection des enfants et des familles.');
-  if (pertinentes.length === 1 && pertinentes.length) signale('mineur', 'SOURCE_UNIQUE', 'Le dossier repose sur un seul article lu.');
+  // Une issue FAVORABLE (relaxe, non-lieu, classement, acquittement) établie par une seule source n'est jamais READY (doctrine R5 : jamais sans preuve).
+  if (issue && issue.nature !== 'condamnation' && new Set(pertinentes.filter((x) => x.v.issue && x.v.issue.nature === issue.nature).map((x) => x.doc.media)).size < 2) signale('majeur', 'ISSUE_FAVORABLE_SOURCE_UNIQUE', `L’issue « ${issue.nature} » ne repose que sur ${issue.doc.media} : à confirmer par une seconde source ou par l’autorité qui l’a rendue.`);
+  if (contribuent.length === 1) signale('mineur', 'SOURCE_UNIQUE', 'Le dossier repose sur un seul article lu.');
   const partielles = deroule.filter((d) => d.date_nature === 'article').length;
   if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées avec la date de parution.`);
+
+  // Une FONCTION UNIQUE au sein d'un établissement (« le chef des animateurs », « le directeur ») rattachée à une accusation ou à une mesure disciplinaire identifie
+  // la personne sans la nommer : pas un blocage (une direction peut aussi agir ou parler), mais jamais READY sans regard humain.
+  const FONCTION_UNIQUE = /\b(?:le|la|l['’])\s*(?:chef|responsable|directeur|directrice|proviseure?|principale?|gardien(?:ne)?|surveillant(?:e)?|infirmier|infirmière)\b/i;
+  const ACCUSATION = /\b(?:plainte|violences?|agressions?|viols?|suspendu|suspendue|mis(?:e)? en examen|garde à vue|interpell|mis(?:e)? à pied|licenci|écart)/i;
+  const identifies = [...deroule.map((e) => e.texte), faits.map((f) => f.texte).join(' ')].filter((t) => FONCTION_UNIQUE.test(t) && ACCUSATION.test(t));
+  if (identifies.length) signale('majeur', 'FONCTION_IDENTIFIANTE', `${identifies.length} ligne(s) rattachent une accusation ou une mesure à une fonction unique de l’établissement (ex. « ${(identifies[0].match(FONCTION_UNIQUE) || [''])[0]} … ») : à vérifier — elle peut identifier la personne mise en cause sans la nommer.`);
+
+  const SUJET_INSTITUTION = /\b(?:rectorat|académie|mairie|municipalité|ville|direction|établissement|école|préfecture|justice|ministère|institution|employeur|éducation nationale|hiérarchie|autorités?|services?)\b/i;
+  const reproches = [...deroule.map((e) => e.texte), faits.map((f) => f.texte).join(' ')].filter((t) => RE_REPROCHE_INSTITUTION.test(t) && SUJET_INSTITUTION.test(t));
+  if (reproches.length) signale('majeur', 'REPROCHE_A_UNE_INSTITUTION', `${reproches.length} ligne(s) rapportent un reproche fait à une institution (« ${(reproches[0].match(RE_REPROCHE_INSTITUTION) || [''])[0]} … ») : attribué au média, à vérifier (qui le formule ? est-il contesté ?).`);
 
   // ---- garde finale sur la page produite : noms, nombres d'enfants, mesure annoncée ≠ réalisée ----------------------------
   const noms = [...new Set(extractions.flatMap((x) => x.v.noms || []))];
@@ -257,5 +313,5 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     ...(issue ? [{ ref: 'issue_judiciaire', texte: `${issue.nature} ${issue.date ?? ''}`.trim(), preuves: [{ url: issue.doc.url, media: issue.doc.media, citation: issue.citation }, ...(issue.citation_appel ? [{ url: issue.doc.url, media: issue.doc.media, citation: issue.citation_appel }] : []), ...(issue.citation_definitive ? [{ url: issue.doc.url, media: issue.doc.media, citation: issue.citation_definitive }] : [])] }] : []),
   ];
   const empreinte = createHash('sha256').update(JSON.stringify(dossier)).digest('hex').slice(0, 16);
-  return { dossier, qualification, blocages, attention, proposition_etat: propositionEtat, trace, ecartes, hors_perimetre, stats: { sources_pertinentes: pertinentes.length, etapes, reactions: reactions.length, inconnues: inconnues.length, empreinte } };
+  return { dossier, qualification, blocages, attention, proposition_etat: propositionEtat, trace, ecartes, hors_perimetre, stats: { sources_pertinentes: pertinentes.length, sources_contributrices: contribuent.length, etapes, reactions: reactions.length, inconnues: inconnues.length, empreinte } };
 }

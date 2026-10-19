@@ -144,7 +144,7 @@ const UNITES = '(?:an|ans|annee|annees|mois|semaine|semaines|jour|jours|euros?|h
 const MOTS_NOMBRE = { zero: 0, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15, seize: 16, vingt: 20, trente: 30, quarante: 40, cinquante: 50, soixante: 60, cent: 100, mille: 1000 };
 const MOTS_UN = /^(?:un|une|1)$/;
 /** Valeurs chiffrées « N <unité> » d'un texte (mots ou chiffres, un/une compris quand une unité suit). */
-function quantites(texte) {
+export function quantites(texte) {
   const t = plat(texte).replace(/(\d)\s(\d{3})\b/g, '$1$2');
   const out = new Set();
   for (const m of t.matchAll(new RegExp(`\\b(\\d+|un|une|${Object.keys(MOTS_NOMBRE).join('|')})\\s+${UNITES}\\b`, 'g'))) {
@@ -176,7 +176,11 @@ export function issuesNonAttestees(texte, citation) {
 }
 
 // Nombre exact d'enfants / d'élèves (jamais publié) — mots ou chiffres suivis d'un nom d'enfant. « plusieurs » est la forme autorisée.
-export const RE_NOMBRE_ENFANTS = /\b(\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|vingt|une? dizaine|une? quinzaine)\s+(?:autres?\s+|jeunes?\s+|petites?\s+|premiers?\s+)?(?:enfants?|élèves?|eleves?|fillettes?|garçons|garcons|filles|mineurs?|mineures?|victimes|collégiens|collegiens|lycéens|lyceens|bébés|bebes|tout-petits|plaignants?|plaignantes?|écoliers|ecoliers|familles|parents)\b/i;
+const RE_ENFANTS_BRUT = /\b(\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|vingt|une? (?:dizaine|quinzaine|vingtaine|trentaine|quarantaine|cinquantaine))\s+(?:de\s+|d['’])?(?:[\p{L}'’-]{2,14}\s+){0,2}(?:enfants?|élèves?|eleves?|fillettes?|garçons|garcons|filles|mineurs?|mineures?|victimes|collégiens|collegiens|lycéens|lyceens|bébés|bebes|tout-petits|plaignants?|plaignantes?|écoliers|ecoliers|familles|parents)\b/iu;
+// Un décompte élevé de plaintes (≥ 10, ou « une trentaine ») est un décompte de victimes déguisé : jamais publié (quelques plaintes restent dites).
+const RE_NOMBRE_PLAINTES = /\b(?:1\d|[2-9]\d|\d{3,}|dix|onze|douze|treize|quatorze|quinze|vingt|trente|quarante|cinquante|une? (?:dizaine|quinzaine|vingtaine|trentaine|quarantaine))\s+(?:de\s+)?plaintes\b/i;
+/** Nombre exact d'enfants/familles/élèves OU décompte élevé de plaintes : jamais publié. Même interface que l'ancienne expression (test). */
+export const RE_NOMBRE_ENFANTS = { test: (t) => RE_ENFANTS_BRUT.test(t) || RE_NOMBRE_PLAINTES.test(t), exec: (t) => RE_ENFANTS_BRUT.exec(t) || RE_NOMBRE_PLAINTES.exec(t) };
 
 const echapper = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** Occurrences d'un nom de mis en cause (ou de ses éléments de plus de 2 lettres) dans un texte. */
@@ -217,6 +221,52 @@ export function recupererCitation(corps, citation, texte) {
   return rec.length > 600 ? null : rec;
 }
 
+/** La phrase du corps qui contient la citation (ou null). */
+export function phraseContenant(corps, citation) {
+  const c = plat(citation);
+  if (c.length < 12) return null;
+  const phrases = String(corps).split(/\n+|(?<=[.!?…»])\s+(?=[A-ZÀ-Ý«"“])/).map((x) => x.trim()).filter((x) => x.length > 20);
+  return phrases.find((x) => plat(x).includes(c)) ?? null;
+}
+
+/**
+ * Fusion de plusieurs extractions VÉRIFIÉES d'un même document (le modèle n'extrait pas deux fois les mêmes faits : mesuré 69 % d'événements appariés entre deux
+ * passes, dont des décisions et recours présents dans une seule). Union des éléments — la déduplication est celle de la composition —, pertinence prudente
+ * (accord de toutes les passes, sinon la plus réservée), issue conservée seulement si les passes ne se contredisent pas.
+ */
+export function fusionnerPasses(vs) {
+  if (vs.length === 1) return vs[0];
+  const ORDRE = ['AUTRE_AFFAIRE', 'AFFAIRE_SOEUR', 'AMBIGU', 'CETTE_AFFAIRE'];
+  const pertinence = ORDRE.find((p) => vs.some((v) => v.pertinence === p)); // la plus réservée
+  const out = { pertinence, pertinence_raison: vs.map((v) => v.pertinence_raison).filter(Boolean)[0] || '', noms: [...new Set(vs.flatMap((v) => v.noms))],
+    faits: vs.flatMap((v) => v.faits), evenements: vs.flatMap((v) => v.evenements), declarations: vs.flatMap((v) => v.declarations), lacunes: vs.flatMap((v) => v.lacunes),
+    hors_perimetre: vs.flatMap((v) => v.hors_perimetre || []), recuperees: vs.reduce((a, v) => a + (v.recuperees || 0), 0), ecartes: vs.flatMap((v) => v.ecartes), issue: null };
+  if (pertinence !== 'CETTE_AFFAIRE') return { ...out, faits: [], evenements: [], declarations: [], lacunes: [] };
+  const issues = vs.map((v) => v.issue).filter(Boolean);
+  if (new Set(issues.map((i) => i.nature)).size > 1) out.ecartes.push({ element: 'issue_judiciaire', raison: 'ISSUE_INSTABLE_ENTRE_PASSES' });
+  else if (issues.length) out.issue = issues.find((i) => i.date) ?? issues[0];
+  return out;
+}
+
+/**
+ * Regroupement des événements d'une affaire qui décrivent le MÊME fait (le lexique ne suffit pas : « une plainte est déposée » / « la lycéenne a porté plainte »).
+ * Le modèle ne rédige rien : il rend des groupes d'indices ; la composition n'applique un groupe que sous garde déterministe (même type, dates et chiffres compatibles,
+ * annonce ≠ réalisation). Mesuré sur 8 sources : 35 étapes dont ~15 doublons sans cette étape.
+ */
+export const SYSTEME_REGROUPEMENT = `Tu reçois la liste numérotée des événements retenus pour UNE affaire (type | date | phrase). Des articles différents décrivent souvent le même fait avec d'autres mots.
+Rends les groupes d'indices qui désignent EXACTEMENT le même fait : même acte, mêmes acteurs, même moment.
+NE REGROUPE PAS : deux plaintes de personnes différentes, une annonce et sa mise en œuvre, deux mesures distinctes, deux décisions différentes (détention puis remise en liberté), des chiffres ou des dates différents.
+En cas de doute, ne regroupe pas. Réponds UNIQUEMENT par {"groupes":[[i,j],[k,l,m]]} — des groupes d'au moins 2 indices, sans chevauchement ; {"groupes":[]} s'il n'y a rien à regrouper.`;
+export const invitesRegroupement = (evts) => evts.map((e, i) => `${i} | ${e.type} | ${e.date || '—'} | ${String(e.texte).replace(/^selon [^,]{1,60},\s*/i, '').slice(0, 220)}`).join('\n');
+export function groupesValides(rep, n) {
+  const vus = new Set(); const out = [];
+  for (const g of Array.isArray(rep?.groupes) ? rep.groupes : []) {
+    const idx = [...new Set((Array.isArray(g) ? g : []).map(Number))].filter((i) => Number.isInteger(i) && i >= 0 && i < n && !vus.has(i));
+    if (idx.length >= 2) { idx.forEach((i) => vus.add(i)); out.push(idx); }
+  }
+  return out;
+}
+
 /** Un propos n'est attribuable que s'il est placé ENTRE GUILLEMETS dans le document : la citation doit tenir entièrement dans un segment « … » ou "…". */
 export function citationEntreGuillemets(corps, citation) {
   const c = plat(citation);
@@ -229,12 +279,13 @@ export function citationEntreGuillemets(corps, citation) {
 export const RE_AGE_MIS_EN_CAUSE = /\b(?:d['’]une|dans la) (?:vingtaine|trentaine|quarantaine|cinquantaine|soixantaine) d['’]ann[ée]es|\b(?:trentenaire|quadragénaire|quinquagénaire|sexagénaire|septuagénaire|vingtenaire)s?\b|\bâgé(?:e)? de \d+ ans|,\s*\d{2} ans\s*,/i;
 
 // Âge d'un ENFANT (« fillette de 5 ans », « fillettes âgées de 4 et 5 ans ») : recoupe l'identité d'une famille, jamais publié.
-export const RE_AGE_ENFANT = /\b(?:fillettes?|garçons?|enfants?|élèves?|eleves?|bébés?|filles?|mineures?|mineurs?)\s+(?:âgé(?:e)?s?\s+)?de\s+\d+(?:\s+et\s+\d+)?\s+ans\b|\bâgé(?:e)?s?\s+de\s+\d+(?:\s+et\s+\d+)?\s+ans\b/i;
+export const RE_AGE_ENFANT = /\b(?:fillettes?|garçons?|enfants?|élèves?|eleves?|bébés?|filles?|mineures?|mineurs?)\s+(?:âgé(?:e)?s?\s+)?de\s+\d+(?:\s+et\s+\d+)?\s+ans\b|\bâgé(?:e)?s?\s+de\s+\d+(?:\s+et\s+\d+)?\s+ans\b|\bnée?s?\s+en\s+(?:19|20)\d{2}\b/i;
 
 // Propos d'une autorité qui rapportent l'état ou les craintes d'un proche de victime (« la mère d'une fillette s'inquiétait pour sa fille ») : détail de famille, jamais cité.
 export const RE_PROCHE_VICTIME = /\b(?:sa|leur|ma|mon|son)\s+(?:fille|fils|enfant|petite)\b|\b(?:la|une)\s+(?:mère|maman)\s+d['’]une?\b|\b(?:le|un)\s+(?:père|papa)\s+d['’]une?\b/i;
 
-const DETAIL_GRAPHIQUE = /\b(?:fellation|sodomi|penetr|masturb|attouchement|caress|zizi|sexe de|parties intimes|culotte|dechir|saign)/;
+// Détail graphique ou chiffré du contenu des faits (jamais publié) ; le décompte de fichiers/images est testé sur le texte normalisé (accents retirés).
+const DETAIL_GRAPHIQUE = /\b(?:\d[\d ]*\s+(?:fichiers|images|photos|videos)|fellation|sodomi|penetr|masturb|attouchement|caress|zizi|sexe de|parties intimes|culotte|dechir|saign)/;
 
 const nettoyerTexte = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
 const isoOuNull = (d) => (/^\d{4}-\d{2}(-\d{2})?$/.test(String(d || '')) ? d : null);
@@ -317,12 +368,19 @@ export function verifier(rep, { corps, publieLe = null }) {
   const ij = rep.issue_judiciaire;
   if (ij && ij.citation) {
     if (!citationPresente(corps, ij.citation)) ecarte('issue_judiciaire', 'CITATION_ABSENTE_DU_CORPS', ij.citation);
+    // Une décision rapportée au conditionnel (« aurait été classée sans suite ») n'est pas établie : jamais une issue (le conditionnel des FAITS, « se seraient déroulés », n'est pas visé).
+    else if (/\b(?:aurait|auraient|serait|seraient)\s+(?:ete\s+)?(?:\w+\s+){0,2}(?:classee?s?|relaxee?s?|condamnee?s?|acquittee?s?)\b/.test(plat(ij.citation))) ecarte('issue_judiciaire', 'ISSUE_AU_CONDITIONNEL', ij.citation);
     else {
       let date = isoOuNull(ij.date); let nature = 'article';
       if (date) { if (ij.citation_date && citationPresente(corps, ij.citation_date) && dateAttestee(date, ij.citation_date, publieLe)) nature = date.length === 10 ? 'evenement' : 'approximative'; else { ecarte('issue_judiciaire', 'DATE_NON_ECRITE_DANS_LA_SOURCE', date); date = null; } }
       // Appel / caractère définitif : établis par un acte écrit, jamais par une absence (doctrine DOCTRINE_JUDICIAIRE_VERDICTS_1).
       let appel = ['OUI', 'NON_RAPPORTE', 'INCONNU'].includes(ij.appel) ? ij.appel : 'INCONNU';
-      if (appel === 'OUI' && !(ij.citation_appel && citationPresente(corps, ij.citation_appel) && /\b(?:fait appel|interjete|a ete interjete|ont fait appel|a fait appel|font appel|fera appel|ont interjete|appel (?:de la|du|des|a ete))\b/.test(plat(ij.citation_appel)))) { ecarte('issue_judiciaire', 'APPEL_NON_ETABLI_PAR_ACTE', ij.citation_appel); appel = 'INCONNU'; }
+      // Un appel est ÉTABLI par un acte accompli (« a fait appel », « appel interjeté », « le parquet a interjeté appel ») ; une INTENTION (« ferait appel », « souhaite faire appel », « va faire appel »,
+      // « annonce qu'il fera appel ») ne l'établit pas — elle reste un événement « appel annoncé ».
+      const citAppel = plat(ij.citation_appel);
+      const acteAppel = /\b(?:ont|a|avait|avaient)\s+(?:fait|interjete)\s+appel|\bfait appel\b|\binterjete\b|\bappel (?:a ete|est) (?:interjete|forme|depose)|\bfont appel\b|\bfaisant appel\b/.test(citAppel);
+      const intentionAppel = /\b(?:ferait|fera|feront|feraient|va|vont|souhaite|souhaitent|compte|comptent|entend|entendent|envisage\w*|veut|veulent|pourrait|devrait|annonce\w*|indique\w* que \w+ (?:ferait|fera))\b(?:\s+\w+){0,4}\s+(?:faire\s+)?appel\b/.test(citAppel) && !/\b(?:ont|a|avait)\s+(?:fait|interjete)\s+appel/.test(citAppel);
+      if (appel === 'OUI' && !(ij.citation_appel && citationPresente(corps, ij.citation_appel) && acteAppel && !intentionAppel)) { ecarte('issue_judiciaire', 'APPEL_NON_ETABLI_PAR_ACTE', ij.citation_appel); appel = 'INCONNU'; }
       let definitive = ij.definitive === 'OUI' ? 'OUI' : 'INCONNU';
       if (definitive === 'OUI') {
         const c = plat(ij.citation_definitive);
@@ -347,7 +405,17 @@ export function verifier(rep, { corps, publieLe = null }) {
     if (!dansLePerimetre('declaration', d.portee, citation)) continue;
     if (RE_PROCHE_VICTIME.test(citation)) { ecarte('declaration', 'PROCHE_DE_VICTIME', citation); continue; }
     if (!gardeTexte('declaration', citation) || !gardeTexte('declaration', d.acteur)) continue;
-    sortie.declarations.push({ acteur: nettoyerTexte(d.acteur), type_acteur: d.type_acteur, a_propos: nettoyerTexte(d.a_propos) || null, citation });
+    // Un propos COURT est souvent un fragment de phrase (« condamner avec la plus grande fermeté ») : on joint la phrase de l'article qui le contient,
+    // si elle est sûre (aucun nom, nombre d'enfants, âge, détail) — le lecteur comprend alors de quoi il est question.
+    let contexte = null;
+    if (citation.length < 100 && /^[a-zà-ÿ]/.test(citation)) {
+      const phrase = phraseContenant(corps, citation);
+      const sur = (t) => !nomsPresents(t, noms).length && !RE_NOMBRE_ENFANTS.test(t) && !RE_AGE_MIS_EN_CAUSE.test(t) && !RE_AGE_ENFANT.test(t) && !DETAIL_GRAPHIQUE.test(plat(t)) && !RE_PROCHE_VICTIME.test(t);
+      if (phrase && phrase.length <= 420 && plat(phrase).length > plat(citation).length * 1.3 && sur(phrase)) contexte = phrase;
+    }
+    // Un fragment (commence en minuscule, < 60 caractères) sans phrase de contexte sûre n'a pas de sens isolé (« de différentes enquêtes préliminaires ») : écarté.
+    if (citation.length < 100 && /^[a-zà-ÿ]/.test(citation) && !contexte) { ecarte('declaration', 'FRAGMENT_SANS_CONTEXTE', citation); continue; }
+    sortie.declarations.push({ acteur: nettoyerTexte(d.acteur), type_acteur: d.type_acteur, a_propos: nettoyerTexte(d.a_propos) || null, citation, ...(contexte ? { contexte } : {}) });
   }
 
   for (const l of rep.lacunes_declarees || []) {

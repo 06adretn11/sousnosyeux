@@ -5,7 +5,7 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
+import { RE_NOMBRE_ENFANTS, fusionnerPasses, recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
 import { composer, attribue } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
@@ -353,6 +353,142 @@ t('citation récupérée : la phrase de la source désignée par un ancrage est 
   assert.equal(recupererCitation(corps, "Le préfet a ordonné la fermeture immédiate de tous les centres de loisirs du département", 'Le préfet a ordonné la fermeture de tous les centres.'), null, 'ancrage absent de la source');
   const r = verifier(base({ evenements: [evt({ type: 'mesure_etablissement', realisation: 'realisee', texte: "Selon Sud Ouest, la mairie annonce la suspension d'un animateur du centre de loisirs.", citation: cit, acteur: 'Mairie' })] }), { corps, publieLe: PUB });
   assert.equal(r.evenements.length, 1); assert.equal(r.recuperees, 1); assert.equal(r.evenements[0].realisation, 'annoncee'); assert.ok(corps.includes(r.evenements[0].citation));
+});
+
+// ---------------- qualité : fragments, sources contributrices, issue favorable, décomptes, meilleur groupe ----------------
+t('propos-fragment : la phrase de la source est jointe si elle est sûre, sinon le fragment est écarté ; un propos complet reste', () => {
+  const corps = "La direction diocésaine prend acte de cette décision et dit condamner avec la plus grande fermeté ces comportements, a-t-elle écrit. Le maire a déclaré : « Il y aura un avant et un après ». L'avocat a ajouté : « de différentes enquêtes préliminaires » sont ouvertes selon lui, dit Jean Dupont.";
+  const d = (acteur, citation, type_acteur = 'institution') => ({ acteur, type_acteur, a_propos: 'x', portee: 'affaire', citation });
+  const corpsGuil = corps.replace('dit condamner avec la plus grande fermeté ces comportements', 'dit « condamner avec la plus grande fermeté » ces comportements').replace('« de différentes enquêtes préliminaires » sont ouvertes selon lui, dit Jean Dupont', '« de différentes enquêtes préliminaires » sont ouvertes selon Jean Dupont');
+  const r = verifier(base({ declarations: [d('La direction diocésaine', 'condamner avec la plus grande fermeté'), d('Le maire', 'Il y aura un avant et un après', 'collectivite'), d('L’avocat', 'de différentes enquêtes préliminaires', 'avocat_victimes')] }), { corps: corpsGuil, publieLe: PUB });
+  assert.equal(r.declarations.length, 2);
+  assert.ok(r.declarations[0].contexte && r.declarations[0].contexte.includes('prend acte'), 'contexte joint au fragment');
+  assert.equal(r.declarations[1].contexte, undefined, 'propos complet : pas de contexte');
+  assert.deepEqual(r.ecartes.map((e) => e.raison), ['FRAGMENT_SANS_CONTEXTE'], 'le contexte contient un nom de mis en cause → fragment écarté');
+  const c = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })], declarations: [r.declarations[0]] })] });
+  assert.match(c.dossier.reactions[0].paraphrase, /^Contexte dans l’article \(France 3\) : La direction diocésaine prend acte/);
+});
+t('sources contributrices : une page jugée pertinente sans aucun élément retenu (palmarès) n’est pas un « article lu » du dossier', () => {
+  const r = composer({ c: carte('mise en examen'), extractions: [ext(doc('A', 'https://x.test/a'), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] }), ext(doc('Palmarès', 'https://x.test/p'), {})] });
+  assert.ok(r.dossier.inconnues.some((i) => /ne repose que sur 1 article lu \(A\)/.test(i)), JSON.stringify(r.dossier.inconnues));
+  assert.equal(r.stats.sources_contributrices, 1);
+});
+t('issue favorable (relaxe/non-lieu/classement) portée par une seule source : A_REVOIR ; deux sources : pas de réserve ; condamnation unique : pas de réserve', () => {
+  const rel = (m, u) => ext(doc(m, u), { issue: ISSUE({ nature: 'classement' }), evenements: [E({ texte: 'Le parquet a classé l’affaire sans suite.', citation: 'classé sans suite' }), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] });
+  const un = composer({ c: carte('relaxe / non-lieu / classement'), extractions: [rel('Blog', 'https://x.test/1')] });
+  assert.ok(un.attention.some((a) => a.code === 'ISSUE_FAVORABLE_SOURCE_UNIQUE')); assert.equal(un.qualification, 'A_REVOIR');
+  const deux = composer({ c: carte('relaxe / non-lieu / classement'), extractions: [rel('Blog', 'https://x.test/1'), rel('Presse', 'https://x.test/2')] });
+  assert.ok(!deux.attention.some((a) => a.code === 'ISSUE_FAVORABLE_SOURCE_UNIQUE'));
+  const cond = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.ok(!cond.attention.some((a) => a.code === 'ISSUE_FAVORABLE_SOURCE_UNIQUE'));
+});
+t('décomptes : un nombre élevé de plaintes est écarté (victimes déguisées) ; « au moins deux plaintes » reste', () => {
+  const corps = "Vingt-deux plaintes, soit 22 plaintes, ont été recensées. L'animateur est visé par au moins deux plaintes.";
+  const f = (texte, citation) => ({ portee: 'affaire', texte, citation });
+  const r = verifier(base({ faits_rapportes: [f('22 plaintes ont été recensées.', '22 plaintes, ont été recensées'), f('L’animateur est visé par au moins deux plaintes.', "L'animateur est visé par au moins deux plaintes")] }), { corps, publieLe: PUB });
+  assert.equal(r.faits.length, 1); assert.equal(r.ecartes[0].raison, 'NOMBRE_EXACT_ENFANTS');
+});
+t('fusion : un événement rejoint le groupe le PLUS proche, pas le premier compatible (détention provisoire ≠ remise en liberté)', () => {
+  const dec = (texte, date = null) => E({ type: 'decision', texte, date, date_nature: date ? 'evenement' : 'article', citation: 'x' });
+  const r = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’Atsem.', date: '2025-07-31', citation: 'm' }),
+    dec('L’Atsem a été placée en détention provisoire à la maison d’arrêt de Nîmes.'), dec('La cour d’appel a ordonné la remise en liberté sous contrôle judiciaire de l’Atsem.', '2025-08-14'), dec('L’Atsem a été remise en liberté le 14 août, en attendant les conclusions de l’enquête.')] })] });
+  const ds = r.dossier.deroule.filter((e) => e.type === 'decision');
+  assert.equal(ds.length, 2, JSON.stringify(ds.map((x) => x.texte)));
+  assert.ok(ds.some((x) => /détention provisoire/.test(x.texte)) && ds.some((x) => /remise en liberté/.test(x.texte)));
+});
+
+t('issue au conditionnel (« aurait été classée sans suite ») : jamais une issue ; le conditionnel des FAITS (« se seraient déroulés ») ne la bloque pas', () => {
+  const corps = "L'enquête aurait été classée sans suite faute d'éléments. Le tribunal a condamné l'enseignant pour des faits qui se seraient déroulés entre 2017 et 2019.";
+  const ij = (nature, citation) => ({ nature, date: null, citation_date: null, appel: 'INCONNU', definitive: 'INCONNU', citation });
+  const a = verifier(base({ issue_judiciaire: ij('classement', "L'enquête aurait été classée sans suite faute d'éléments") }), { corps, publieLe: PUB });
+  assert.equal(a.issue, null); assert.equal(a.ecartes[0].raison, 'ISSUE_AU_CONDITIONNEL');
+  const b = verifier(base({ issue_judiciaire: ij('condamnation', "Le tribunal a condamné l'enseignant pour des faits qui se seraient déroulés entre 2017 et 2019") }), { corps, publieLe: PUB });
+  assert.equal(b.issue.nature, 'condamnation');
+});
+
+t('deux passes : union des éléments vérifiés (une décision vue par une seule passe est gardée), pertinence la plus réservée, issue instable écartée', () => {
+  const corps = "Le tribunal a condamné l'enseignant le 4 décembre 2025. La cour d'appel a ordonné la remise en liberté de l'enseignant le 14 août.";
+  const p1 = verifier(base({ evenements: [evt({ texte: "Le tribunal a condamné l'enseignant.", citation: "Le tribunal a condamné l'enseignant le 4 décembre 2025" })] }), { corps, publieLe: PUB });
+  const p2 = verifier(base({ evenements: [evt({ texte: "La cour d'appel a ordonné la remise en liberté de l'enseignant.", citation: "La cour d'appel a ordonné la remise en liberté de l'enseignant le 14 août" })] }), { corps, publieLe: PUB });
+  const f = fusionnerPasses([p1, p2]);
+  assert.equal(f.evenements.length, 2, 'la décision vue par une seule passe est conservée');
+  assert.equal(fusionnerPasses([p1]).evenements.length, 1);
+  const ambigu = verifier(base({ pertinence: 'AMBIGU' }), { corps, publieLe: PUB });
+  const g = fusionnerPasses([p1, ambigu]);
+  assert.equal(g.pertinence, 'AMBIGU'); assert.equal(g.evenements.length, 0, 'désaccord de pertinence : rien n’est utilisé');
+  const iss = (nature, cit) => verifier(base({ issue_judiciaire: { nature, date: null, citation_date: null, appel: 'INCONNU', definitive: 'INCONNU', citation: cit } }), { corps, publieLe: PUB });
+  const h = fusionnerPasses([iss('condamnation', "Le tribunal a condamné l'enseignant le 4 décembre 2025"), iss('condamnation', "Le tribunal a condamné l'enseignant le 4 décembre 2025")]);
+  assert.equal(h.issue.nature, 'condamnation');
+  const fauxCorps = "Le tribunal a condamné l'enseignant. Il a aussi relaxé l'enseignant pour un autre fait.";
+  const i1 = verifier(base({ issue_judiciaire: { nature: 'condamnation', date: null, citation_date: null, appel: 'INCONNU', definitive: 'INCONNU', citation: "Le tribunal a condamné l'enseignant" } }), { corps: fauxCorps, publieLe: PUB });
+  const i2 = verifier(base({ issue_judiciaire: { nature: 'relaxe', date: null, citation_date: null, appel: 'INCONNU', definitive: 'INCONNU', citation: "Il a aussi relaxé l'enseignant pour un autre fait" } }), { corps: fauxCorps, publieLe: PUB });
+  const k = fusionnerPasses([i1, i2]);
+  assert.equal(k.issue, null); assert.ok(k.ecartes.some((e) => e.raison === 'ISSUE_INSTABLE_ENTRE_PASSES'));
+});
+
+t('fonction unique + accusation (« la plainte visant le chef des animateurs ») : jamais READY sans regard humain ; une direction qui agit ou parle ne déclenche rien', () => {
+  const ev = (texte) => [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'plainte', texte, date: '2026-07-01', citation: 'p' })];
+  const a = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: ev('Les parents ont déposé une plainte visant le chef des animateurs de l’école.') })] });
+  assert.ok(a.attention.some((x) => x.code === 'FONCTION_IDENTIFIANTE')); assert.equal(a.qualification, 'A_REVOIR');
+  const b = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: ev('Les parents ont déposé une plainte visant l’animateur de l’école.') })] });
+  assert.ok(!b.attention.some((x) => x.code === 'FONCTION_IDENTIFIANTE')); assert.equal(b.qualification, 'READY');
+  const c = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [...ev('Les parents ont déposé une plainte.'), E({ type: 'mesure_etablissement', texte: 'Le directeur a annoncé une réunion avec les familles.', date: null, date_nature: 'article', realisation: 'realisee', citation: 'r' })] })] });
+  assert.ok(!c.attention.some((x) => x.code === 'FONCTION_IDENTIFIANTE'), 'le directeur qui agit, sans accusation : rien');
+});
+
+t('appel ANNONCÉ : la synthèse le dit (orange « Appel annoncé »), pas « Aucun appel rapporté » ; appel interjeté prouvé : inchangé', () => {
+  const ann = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E(), E({ type: 'appel', acteur: 'Avocat', texte: 'L’avocat a annoncé qu’il ferait appel.', date: null, date_nature: 'article', citation: 'a' })] })] });
+  assert.deepEqual([ann.dossier.situation.suite.titre, ann.dossier.situation.suite.cat], ['Appel annoncé', 'orange']);
+  assert.ok(ann.dossier.inconnues.some((i) => /Appel : annoncé/.test(i)) && !ann.dossier.inconnues.some((i) => /aucun article consulté ne dit si la décision a été contestée/.test(i)));
+  assert.match(ann.dossier.etat_actuel[1], /appel est annoncé/);
+  const non = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.equal(non.dossier.situation.suite.titre, 'Aucun appel rapporté');
+});
+t('attribution : « le document indique » retiré ; un reproche fait à une institution est toujours attribué au média (jamais écrit comme un fait) et signalé', () => {
+  assert.equal(attribue('Selon le document, une plainte a été déposée', 'Le Parisien'), 'Selon Le Parisien, une plainte a été déposée');
+  assert.equal(attribue('Le document indique que l’enquête est ouverte', 'ici'), 'Selon ici, l’enquête est ouverte');
+  assert.equal(attribue('Le rectorat n’a engagé aucune poursuite.', 'La Voix'), 'Selon La Voix, le rectorat n’a engagé aucune poursuite.');
+  assert.equal(attribue('Le rectorat a suspendu l’enseignant.', 'La Voix'), 'Le rectorat a suspendu l’enseignant.');
+  const r = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'fait_rapporte', texte: 'Le rectorat n’a engagé aucune poursuite.', date: null, date_nature: 'article', citation: 'f' })] })] });
+  assert.ok(r.attention.some((a) => a.code === 'REPROCHE_A_UNE_INSTITUTION')); assert.equal(r.qualification, 'A_REVOIR');
+});
+t('année de naissance d’une victime et décompte de fichiers : écartés (identité, détail)', () => {
+  const corps = "Une ancienne élève, née en 2004, a porté plainte. Les policiers ont trouvé 2 800 fichiers sur son ordinateur. Elle a porté plainte.";
+  const f = (texte, citation) => ({ portee: 'affaire', texte, citation });
+  const r = verifier(base({ faits_rapportes: [f('Une ancienne élève, née en 2004, a porté plainte.', 'Une ancienne élève, née en 2004, a porté plainte'), f('Les policiers ont trouvé 2 800 fichiers.', 'Les policiers ont trouvé 2 800 fichiers sur son ordinateur'), f('Une plainte a été déposée.', 'Elle a porté plainte')] }), { corps, publieLe: PUB });
+  assert.equal(r.faits.length, 1); assert.deepEqual(r.ecartes.map((e) => e.raison), ['AGE_ENFANT', 'DETAIL_GRAPHIQUE']);
+});
+
+t('nombre d’enfants avec mots intercalés (« les deux premières fillettes », « une trentaine d’enfants ») : détecté ; « deux jours avant les élèves » : non', () => {
+  for (const t1 of ['les deux premières fillettes disent', 'trois jeunes élèves', 'une trentaine d’enfants', 'une dizaine de jeunes élèves']) assert.ok(RE_NOMBRE_ENFANTS.test(t1), t1);
+  for (const t2 of ['deux jours avant les élèves', 'plusieurs enfants', 'trois membres du personnel', 'cinq ans de prison']) assert.ok(!RE_NOMBRE_ENFANTS.test(t2), t2);
+});
+t('une enquête ADMINISTRATIVE n’établit pas l’état judiciaire « enquête » (la carte « enquête » n’est alors pas étayée) ; une enquête du parquet, si', () => {
+  const adm = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [E({ type: 'enquete', acteur: 'Ville de Paris', texte: 'Une enquête administrative a été lancée par la Ville.', date: '2025-08-01', citation: 'e' }), E({ type: 'signalement', texte: 'Un signalement a été fait au service départemental.', date: '2025-08-02', citation: 's' })] })] });
+  assert.notEqual(adm.dossier.situation?.decision?.titre, 'Enquête');
+  const jud = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [E({ type: 'enquete', acteur: 'Parquet', texte: 'Le parquet a ouvert une enquête préliminaire.', date: '2025-08-01', citation: 'e' }), E({ type: 'signalement', texte: 'Un signalement a été fait au service départemental.', date: '2025-08-02', citation: 's' })] })] });
+  assert.equal(jud.dossier.situation.decision.titre, 'Enquête');
+});
+
+t('« procès » = audience de JUGEMENT tenue : une audience de remise en liberté ne fait pas passer l’état à « Audience tenue »', () => {
+  const base2 = [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' })];
+  const lib = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [...base2, E({ type: 'audience', texte: 'La chambre de l’instruction a examiné la demande de remise en liberté.', date: '2026-08-14', citation: 'a' })] })] });
+  assert.equal(lib.dossier.situation.decision.titre, 'Mise en examen'); assert.ok(!lib.blocages.length, JSON.stringify(lib.blocages));
+  const jug = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [...base2, E({ type: 'audience', texte: 'L’animateur a comparu devant le tribunal correctionnel.', date: '2026-09-02', citation: 'a' })] })] });
+  assert.equal(jug.dossier.situation.decision.titre, 'Audience tenue');
+});
+t('carte « enquête » sans aucun acte judiciaire dans les sources (seulement administratif) : réserve majeure, pas de bloc de situation, jamais READY ; un reproche visant une PERSONNE (« n’a pas été déféré ») ne déclenche pas le signal institutionnel', () => {
+  const r = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [E({ type: 'enquete', acteur: 'Ville', texte: 'Une enquête administrative a été lancée par la Ville.', date: '2025-08-01', citation: 'e' }), E({ type: 'signalement', texte: 'Un signalement a été fait au service départemental.', date: '2025-08-02', citation: 's' }), E({ type: 'fait_rapporte', texte: 'L’animateur n’a pas été déféré.', date: null, date_nature: 'article', citation: 'd' })] })] });
+  assert.equal(r.dossier.situation, undefined); assert.ok(r.attention.some((a) => a.code === 'ETAT_NON_ETAYE_PAR_LES_SOURCES')); assert.equal(r.qualification, 'A_REVOIR');
+  assert.ok(!r.attention.some((a) => a.code === 'REPROCHE_A_UNE_INSTITUTION'));
+});
+
+t('appel : « a fait appel », « interjeté appel » l’établissent ; « ferait appel », « souhaite faire appel », « appel de la décision » non (intention)', () => {
+  const corps = "Le tribunal a condamné l'enseignant à quatre ans de prison. L'avocat a indiqué que son client ferait appel de la décision. Le parquet a interjeté appel de la peine. L'enseignant souhaite faire appel.";
+  const ij = (cit) => verifier(base({ issue_judiciaire: { nature: 'condamnation', date: null, citation_date: null, appel: 'OUI', citation_appel: cit, definitive: 'INCONNU', citation: "Le tribunal a condamné l'enseignant à quatre ans de prison" } }), { corps, publieLe: PUB }).issue.appel;
+  assert.equal(ij("L'avocat a indiqué que son client ferait appel de la décision"), 'INCONNU');
+  assert.equal(ij("L'enseignant souhaite faire appel"), 'INCONNU');
+  assert.equal(ij("Le parquet a interjeté appel de la peine"), 'OUI');
 });
 
 // ---------------- promotion après approbation ----------------
