@@ -124,6 +124,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Génération des fiches — gardes d’extraction (citation entière, date écrite, quantités, issue, nom, nombre d’enfants, appel/finalité), état contredit ou non étayé ⇒ jamais READY, proposition Telegram',
+    script: 'scripts/qa/test-generer-fiche.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Diagnostic territorial — évolue avec la mémoire, aucune notification sans changement',
     script: 'scripts/qa/test-diagnostic.mjs',
     bloquant: true,

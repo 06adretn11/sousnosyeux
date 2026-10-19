@@ -59,3 +59,6 @@ data/maintenance-funnel.json
 
 # Matière éditoriale sur affaires validées NON publiées : le dépôt est public, jamais de commit.
 data/hub-prive/
+
+# --- Fiches générées (traçabilité = extraits littéraux pouvant contenir un nom de mis en cause) : jamais dans le dépôt public ---
+data/fiches-generees/

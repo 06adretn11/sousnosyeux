@@ -48,7 +48,7 @@ const urlsDe = (d) => {
  * Payload de la proposition (new_case_proposals.payload). Tout est DÉRIVÉ des données : rien n'est saisi à la main.
  * @param {{c:object, dossier:{hub:string|null,d:object,verifie_le:string}, sourcesNeon:string[], nbEvenements:number, previewBase:string, hubTitre?:string}} o
  */
-export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBase, hubTitre = null }) {
+export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBase, hubTitre = null, generation = null }) {
   const d = dossier.d;
   const directes = urlsDe(d);
   const connues = new Set(sourcesNeon);
@@ -77,6 +77,8 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
       // Sans base d’aperçu accessible depuis Telegram (jamais localhost), pas d’URL : l’aperçu est joint au message sous forme de captures.
       preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : null,
       diff_public: diff, verifie_le: dossier.verifie_le,
+      // Présent seulement pour une fiche PRODUITE par le circuit de génération : l'humain approuve en sachant qu'elle est automatique.
+      ...(generation ? { generation: resumeGeneration(generation) } : {}),
     },
   };
 }
@@ -87,4 +89,25 @@ export const cleDedupFiche = (case_id) => `fiche|${case_id}`;
 export function empreinteApprouvee(revues, id, dossier) {
   const h = ficheApprouvee(revues, id);
   return h && dossier && hashDossier(dossier.d) === h ? h : null;
+}
+
+/**
+ * Dossier PRODUIT par le circuit de génération (scripts/generer-fiche.mjs), pas encore dans data/hub-matiere : même forme que `dossierFiche`,
+ * plus la qualification. Source : data/fiches-generees/<ID>.json (ignoré par Git). Une fiche BLOQUÉE ou sans enrichissement n'est jamais proposée.
+ */
+export function dossierGeneree(id, dossiersDir = new URL('fiches-generees/', DATA)) {
+  let f;
+  try { f = JSON.parse(readFileSync(new URL(`${id}.json`, dossiersDir), 'utf8')); } catch { return null; }
+  if (f.version !== 'fiche-generee-1' || f.case_id !== id) return null;
+  return { hub: null, d: f.dossier, verifie_le: f.generation.genere_le, generation: f.generation, proposable: ['READY', 'A_REVOIR'].includes(f.generation.qualification) };
+}
+
+/** Résumé de génération porté par la proposition : qualification, points d'attention, mesures — ce que l'humain doit savoir avant d'approuver. */
+export function resumeGeneration(g) {
+  return {
+    qualification: g.qualification, contrat: g.contrat, modele: g.modele,
+    sources_lues: g.sources.filter((s) => s.acces === 'libre' && s.pertinence === 'CETTE_AFFAIRE').length, sources_total: g.sources.length,
+    elements_ecartes: g.ecartes.length,
+    attention: g.attention.filter((a) => a.niveau !== 'mineur').concat(g.attention.filter((a) => a.niveau === 'mineur')).slice(0, 6).map((a) => ({ niveau: a.niveau, texte: a.texte.slice(0, 240) })),
+  };
 }
