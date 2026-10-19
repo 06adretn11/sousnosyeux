@@ -17,6 +17,10 @@ import { rattacher } from './etat-affaire.mjs';
 const CACHE = new URL('../../.cache/fiches/pages/', import.meta.url);
 const MIN_CORPS = 600; // en dessous : chapeau seul / mur de paiement partiel — pas une source lisible
 
+// Paragraphes de bruit (scripts, publicités) : jamais envoyés au modèle ni cités.
+const BRUIT = /runonuserconsent|sponsoris[ée]|pageenvironment|function\s*\(|googletag/i;
+const sansBruit = (corps) => String(corps).split(/\n\n/).filter((p) => !BRUIT.test(p)).join('\n\n');
+
 const empreinteUrl = (u) => createHash('sha1').update(u).digest('hex').slice(0, 20);
 
 /** Lit une page (cache disque d'abord). Rend { ok, corps, titre, motif, acces } ; acces ∈ libre | partiel | inaccessible. */
@@ -35,6 +39,7 @@ export async function lireDocument(url, { memoire = new Map(), reessayerEchecs =
     writeFileSync(fichier, JSON.stringify(page));
   }
   if (!page.ok) return { ...page, acces: 'inaccessible' };
+  page = { ...page, corps: sansBruit(page.corps) };
   return { ...page, acces: page.corps.length >= MIN_CORPS ? 'libre' : 'partiel', motif: page.corps.length >= MIN_CORPS ? undefined : `corps trop court (${page.corps.length} car.)` };
 }
 
