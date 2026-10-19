@@ -50,7 +50,8 @@ const fiches = {};
 for (const id of new Set(revues.map((r) => r.case_id))) {
   const h = ficheApprouvee(revues.filter((r) => r.case_id === id), id);
   const dossier = dossierFiche(id);
-  if (empreinteApprouvee(revues.filter((r) => r.case_id === id), id, dossier)) fiches[id] = { hash: h };
+  const servie = empreinteApprouvee(revues.filter((r) => r.case_id === id), id, dossier); // empreinte du dossier RÉELLEMENT servi (approuvée)
+  if (servie) fiches[id] = { hash: servie };
   else if (h) console.log(`· ${id} : fiche approuvée mais dossier modifié depuis (empreinte différente) — NON publique, nouvelle approbation requise`);
 }
 // INFORMATIONS VALIDÉES (mobilisations, mesures, réactions) : UNE information dans la mémoire (state_proposals.facts), ses DESTINATIONS calculées ici

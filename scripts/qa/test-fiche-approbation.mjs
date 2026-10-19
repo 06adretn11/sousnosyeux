@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { ficheApprouvee, hashDossier, payloadFiche, dossierFiche, REVUE_FICHE, empreinteApprouvee } from '../lib/fiche-page.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
 import { boutons, messageFiche, messageDecision } from '../lib/discovery-messages.mjs';
+import { decider, inscrire } from '../lib/promouvoir-fiche.mjs';
 import { detecterInstitutionnel } from '../lib/evenement-institutionnel.mjs';
 
 const lire = (f) => JSON.parse(readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8'));
@@ -82,4 +83,45 @@ t('génériques : les trois fiches V1 produisent le même gabarit de proposition
     assert.ok(q.page.diff_public.some((l) => /Fiche →/.test(l)), id);
   }
 });
+
+// ---------------- remplacement d'une fiche PUBLIÉE (V1 → V2) : la page ne tombe jamais entre l'approbation et la promotion ----------------
+{
+  const V1 = { etat_actuel: ['v1'], deroule: [], inconnues: [], statut_affiche: 'enquête' };
+  const V2 = { ...V1, etat_actuel: ['v2'], situation: { decision: { titre: 'x' } } };
+  const V1bis = { ...V1, etat_actuel: ['v1 modifiée sans approbation'] };
+  const h = (d) => hashDossier(d);
+  const R = (d, by = 'Adrien (Telegram, fiche)', dec = 'validé') => ({ reviewed_by: by, decision: dec, comment: `[Fiche approuvée 1a2b3c4d] FR-T-9 hash=${h(d)}` });
+  const sert = (revues, d) => empreinteApprouvee(revues, 'FR-T-9', d ? { d } : null); // ce que la projection publie : l'empreinte du dossier SERVI, ou rien
+  const ctx = (o = {}) => ({ id: 'FR-T-9', generee: { d: V2, proposable: true }, revues: [R(V1), R(V2)], isoles: { dossiers: { 'FR-T-9': V1 } }, hubs: [], cases: [{ case_id: 'FR-T-9' }], holds: new Set(), ...o });
+
+  t('remplacement · aucune approbation → jamais publique (première publication)', () => { assert.equal(sert([], V1), null); assert.equal(sert([R(V1, 'import-script')], V1), null); assert.equal(sert([R(V1, 'Adrien (x)', 'à corriger')], V1), null); });
+  t('remplacement · V1 approuvée et dans le dossier → V1 servie', () => { assert.equal(sert([R(V1)], V1), h(V1)); });
+  t('remplacement · V2 approuvée mais non promue : V1 reste servie, reprojections répétées stables (pas de 404, pas d’alternance)', () => {
+    const revues = [R(V1), R(V2)];
+    for (let i = 0; i < 3; i++) assert.equal(sert(revues, V1), h(V1));
+  });
+  t('remplacement · promotion V2 : permise (elle remplace une version approuvée), V2 servie, rejouage idempotent', () => {
+    const d = decider(ctx()); assert.equal(d.ok, true); assert.equal(d.remplace, h(V1)); assert.equal(d.hash, h(V2));
+    const apres = inscrire({ dossiers: { 'FR-T-9': V1 } }, 'FR-T-9', d.dossier, d.hash);
+    assert.equal(sert([R(V1), R(V2)], apres.dossiers['FR-T-9']), h(V2));
+    assert.equal(decider(ctx({ isoles: apres })).motif, 'DEJA_PROMUE', 'rejouer la promotion ne fait rien');
+    assert.equal(sert([R(V1), R(V2)], apres.dossiers['FR-T-9']), h(V2), 'reprojection répétée : stable');
+  });
+  t('remplacement · promotion ou déploiement interrompu : le dossier committé reste V1, donc V1 reste servie', () => {
+    assert.equal(sert([R(V1), R(V2)], ctx().isoles.dossiers['FR-T-9']), h(V1));
+  });
+  t('remplacement · refus de V2 (aucune revue écrite) : V1 reste servie, V2 non promouvable', () => {
+    assert.equal(sert([R(V1)], V1), h(V1));
+    assert.equal(decider(ctx({ revues: [R(V1)] })).motif, 'EMPREINTE_APPROUVEE_DIFFERENTE');
+  });
+  t('remplacement · intégrité : un dossier modifié SANS approbation n’est pas servi (échec fermé) ; jamais d’écrasement d’une rédaction non approuvée', () => {
+    assert.equal(sert([R(V1), R(V2)], V1bis), null);
+    assert.equal(decider(ctx({ isoles: { dossiers: { 'FR-T-9': V1bis } } })).motif, 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT');
+    assert.equal(decider(ctx({ hubs: [{ dossiers: { 'FR-T-9': V1 } }] })).motif, 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT', 'un dossier de Hub n’est jamais remplacé');
+  });
+  t('remplacement · HOLD et affaire retirée gardent la priorité : promotion refusée', () => {
+    assert.equal(decider(ctx({ holds: new Set(['FR-T-9']) })).motif, 'HOLD');
+    assert.equal(decider(ctx({ cases: [] })).motif, 'AFFAIRE_NON_PUBLIQUE');
+  });
+}
 console.log(`\n${n} contrôles approbation de fiche : OK`);
