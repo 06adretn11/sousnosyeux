@@ -201,6 +201,243 @@
         }
       },
       "suivre_neon": true
+    },
+    "FR-2026-0117": {
+      "etat_actuel": [
+        "Selon le parquet de Rennes, un animateur périscolaire d'une école de Saint-Aubin-d'Aubigné a été mis en examen pour viols et agressions sexuelles sur des mineures par personne ayant autorité et placé sous contrôle judiciaire, avec notamment l'interdiction d'exercer une activité professionnelle impliquant un contact habituel avec des mineurs et d'entrer en relation avec les victimes."
+      ],
+      "appel": false,
+      "faits": "Selon 20 Minutes, l'animateur périscolaire est mis en cause pour viols et agressions sexuelles sur mineurs. Selon 20 Minutes, trois collègues du périscolaire avaient reçu de sa part une vidéo à caractère sexuel et avaient dénoncé son comportement inapproprié.",
+      "deroule": [
+        {
+          "date": "2026-06",
+          "date_nature": "approximative",
+          "type": "signalement",
+          "acteur": "personnel du service périscolaire de la commune",
+          "texte": "Selon La Croix (AFP), en juin, trois membres du personnel du service périscolaire de la commune avaient signalé aux gendarmes le comportement inapproprié de l'animateur, après avoir reçu une vidéo à caractère sexuel de sa part.",
+          "source": {
+            "media": "La Croix (AFP)",
+            "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "TF1 INFO",
+              "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "20 Minutes",
+              "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": "2026-06",
+          "date_nature": "approximative",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon Ouest-France, un animateur périscolaire de Saint-Aubin-d'Aubigné est visé par au moins deux plaintes pour des faits d'agression sexuelle et de viol commis à l'encontre d'enfants.",
+          "source": {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-06-28",
+          "date_nature": "evenement",
+          "type": "mesure_collectivite",
+          "acteur": "mairie",
+          "texte": "Selon Ouest-France, l'animateur mis en cause a été mis à pied à titre conservatoire le 28 juin 2026, lorsque la mairie a appris l'existence d'une première plainte le concernant.",
+          "source": {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-09-21",
+          "date_nature": "evenement",
+          "type": "garde_a_vue",
+          "acteur": null,
+          "texte": "Selon Ouest-France, l'homme mis en cause a été placé en garde à vue le lundi 21 septembre 2026.",
+          "source": {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "20 Minutes",
+              "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "La Croix (AFP)",
+              "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "TF1 INFO",
+              "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon La Croix (AFP), des plaintes ont été déposées par les parents de plusieurs enfants, à l'origine de la garde à vue.",
+          "source": {
+            "media": "La Croix (AFP)",
+            "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "20 Minutes",
+              "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "TF1 INFO",
+              "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "enquete",
+          "acteur": "parquet de Rennes",
+          "texte": "Selon 20 Minutes, les investigations se poursuivent pour identifier d'autres éventuelles victimes.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Ouest-France",
+              "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-22",
+          "date_nature": "evenement",
+          "type": "mise_en_examen",
+          "acteur": "parquet de Rennes",
+          "texte": "Selon le parquet de Rennes, un animateur périscolaire d'une école de Saint-Aubin-d'Aubigné a été mis en examen pour viols et agressions sexuelles sur des mineures par personne ayant autorité et placé sous contrôle judiciaire, avec notamment l'interdiction d'exercer une activité professionnelle impliquant un contact habituel avec des mineurs et d'entrer en relation avec les victimes.",
+          "source": {
+            "media": "TF1 INFO",
+            "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "La Croix (AFP)",
+              "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "Ouest-France",
+              "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "20 Minutes",
+              "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_etablissement",
+          "acteur": null,
+          "texte": "Selon 20 Minutes, l'animateur avait été mis à pied quand l'affaire a éclaté en juin.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "La Croix (AFP)",
+              "url": "https://www.la-croix.com/societe/periscolaire-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-pres-de-rennes-20260923",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            },
+            {
+              "media": "TF1 INFO",
+              "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+              "publie_le": "2026-09-22",
+              "acces": "libre"
+            }
+          ]
+        }
+      ],
+      "inconnues": [
+        "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Divergence entre sources — mise_en_examen : dates divergentes selon les sources (22 septembre 2026 / 21 septembre 2026).",
+        "Le dossier ne repose que sur 5 articles lus (La Croix (AFP), Ouest-France, Rennes Infos Autrement, TF1 INFO, 20 Minutes)."
+      ],
+      "synthese": {
+        "decision": "Selon le parquet de Rennes, un animateur périscolaire d'une école de Saint-Aubin-d'Aubigné a été mis en examen pour viols et agressions sexuelles sur des mineures par personne ayant autorité et placé sous contrôle judiciaire, avec notamment l'interdiction d'exercer une activité professionnelle impliquant un contact habituel avec des mineurs et d'entrer en relation avec les victimes."
+      },
+      "reactions": [
+        {
+          "acteur": "parquet de Rennes",
+          "qualite": "propos rapportés par 20 Minutes",
+          "date": "2026-09-22",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "les déclarations de l'animateur lors de sa garde à vue",
+          "citations": [
+            {
+              "texte": "a contesté l’ensemble des faits reprochés",
+              "pour": "les déclarations de l'animateur lors de sa garde à vue"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+            "publie_le": "2026-09-22",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        }
+      ],
+      "statut_affiche": "mise en examen"
     }
   }
 }
