@@ -3,12 +3,13 @@
 //
 // Fonction PURE : elle décide, elle n'écrit rien. Refus par défaut (échec fermé) : la promotion n'a lieu que si
 //   - la fiche générée existe, est proposable (READY / A_REVOIR) et son empreinte est celle du dossier à promouvoir ;
-//   - la DERNIÈRE approbation d'Adrien (revue « [Fiche approuvée …] ») porte exactement cette empreinte ;
-//   - l'affaire est publique, hors HOLD, et n'a pas déjà un dossier (jamais d'écrasement d'une rédaction humaine) ;
+//   - une approbation d'Adrien (revue « [Fiche approuvée …] ») porte exactement cette empreinte ;
+//   - l'affaire est publique, hors HOLD ; un dossier déjà présent n'est remplacé QUE s'il est lui-même un dossier approuvé (V1 → V2) : jamais d'écrasement
+//     d'une rédaction non approuvée, jamais dans un Hub ;
 // Le dossier est écrit à l'identique : son empreinte dans data/hub-matiere/isoles.json est celle qui a été approuvée, donc la page devient
 // publique par le circuit existant (projection → QA → déploiement), sans second GO.
 // =====================================================================
-import { hashDossier, ficheApprouvee } from './fiche-page.mjs';
+import { hashDossier, empreintesApprouvees } from './fiche-page.mjs';
 
 /**
  * @param {{id:string, generee:object|null, revues:object[], isoles:{dossiers:object}, hubs?:Record<string,object>[], cases:{case_id:string}[], holds:Set<string>}} o
@@ -18,11 +19,18 @@ export function decider({ id, generee, revues, isoles, hubs = [], cases, holds }
   if (!generee?.proposable) return { ok: false, motif: 'FICHE_GENEREE_ABSENTE_OU_NON_PROPOSABLE' };
   if (!cases.some((c) => c.case_id === id)) return { ok: false, motif: 'AFFAIRE_NON_PUBLIQUE' };
   if (holds.has(id)) return { ok: false, motif: 'HOLD' };
-  if ([isoles, ...hubs].some((m) => m?.dossiers?.[id])) return { ok: false, motif: 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT' };
+  if (hubs.some((m) => m?.dossiers?.[id])) return { ok: false, motif: 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT' };
   const hash = hashDossier(generee.d);
-  const approuve = ficheApprouvee(revues, id);
-  if (!approuve) return { ok: false, motif: 'AUCUNE_APPROBATION', hash };
-  if (approuve !== hash) return { ok: false, motif: 'EMPREINTE_APPROUVEE_DIFFERENTE', hash };
+  const approuvees = empreintesApprouvees(revues, id);
+  if (!approuvees.length) return { ok: false, motif: 'AUCUNE_APPROBATION', hash };
+  if (!approuvees.includes(hash)) return { ok: false, motif: 'EMPREINTE_APPROUVEE_DIFFERENTE', hash };
+  const present = isoles?.dossiers?.[id];
+  if (present) {
+    const h0 = hashDossier(present);
+    if (h0 === hash) return { ok: false, motif: 'DEJA_PROMUE', hash };
+    if (!approuvees.includes(h0)) return { ok: false, motif: 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT', hash };
+    return { ok: true, hash, dossier: generee.d, remplace: h0 };
+  }
   return { ok: true, hash, dossier: generee.d };
 }
 

@@ -37,6 +37,11 @@ export function ficheApprouvee(revues, id) {
   return r ? REVUE_FICHE.exec(r.comment)[2] : null;
 }
 
+/** TOUTES les empreintes que la revue d'Adrien a approuvées pour cette affaire (une approbation plus récente n'en révoque aucune). */
+export function empreintesApprouvees(revues, id) {
+  return [...new Set((revues || []).filter((x) => /^Adrien/.test(x.reviewed_by || '') && x.decision === 'validé' && REVUE_FICHE.test(x.comment || '') && REVUE_FICHE.exec(x.comment)[1] === id).map((x) => REVUE_FICHE.exec(x.comment)[2]))];
+}
+
 const urlsDe = (d) => {
   const vus = new Map();
   const ajoute = (s) => { if (s?.url && !MEDIAS_PAYANTS.includes(s.media) && !vus.has(s.url)) vus.set(s.url, { url: s.url, media: s.media, d: s.publie_le ?? null }); };
@@ -87,10 +92,15 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
 
 export const cleDedupFiche = (case_id) => `fiche|${case_id}`;
 
-/** La fiche est publique si la dernière approbation d'Adrien porte l'empreinte du dossier ACTUEL. Les événements Neon ne font pas partie de l'empreinte : un UPDATE validé ne retire jamais une fiche. */
+/**
+ * La fiche est publique si le dossier ACTUEL a été approuvé par Adrien — une approbation, pas forcément la dernière : approuver une V2 n'ôte pas à
+ * la V1 en ligne le droit d'être servie tant que la V2 n'est pas dans le dossier (sinon la page tombe en 404 entre l'approbation et la promotion).
+ * Un dossier modifié SANS approbation reste NON public (échec fermé). Les événements Neon ne font pas partie de l'empreinte : un UPDATE validé ne retire jamais une fiche.
+ * Retrait : HOLD et affaire retirée (hors de l'artefact public) gardent leur priorité, ailleurs dans la chaîne.
+ */
 export function empreinteApprouvee(revues, id, dossier) {
-  const h = ficheApprouvee(revues, id);
-  return h && dossier && hashDossier(dossier.d) === h ? h : null;
+  const h = dossier ? hashDossier(dossier.d) : null;
+  return h && empreintesApprouvees(revues, id).includes(h) ? h : null;
 }
 
 /**

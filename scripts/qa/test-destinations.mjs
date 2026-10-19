@@ -95,7 +95,7 @@ t('une fiche déjà approuvée ne demande AUCUNE nouvelle approbation : l’empr
   const p = src('scripts/lib/fiche-page.mjs');
   const h = p.slice(p.indexOf('export function hashDossier'), p.indexOf('/** Revue d'));                  // l'empreinte ne dépend que du dossier passé en argument
   assert.ok(h.includes('hashDossier(d)') && !/evenements|matiere/.test(h));
-  assert.ok(p.includes('hashDossier(dossier.d) === h'), 'approbation = empreinte du dossier éditorial seul');
+  assert.ok(p.includes('const h = dossier ? hashDossier(dossier.d) : null') && p.includes('empreintesApprouvees(revues, id).includes(h)'), 'approbation = empreinte du dossier éditorial seul');
 });
 t('vérification du site : fiches ET Hubs (data-matiere + libellé présent) ; Telegram nomme les pages ; mêmes workflows (aucun scheduler)', () => {
   const v = src('scripts/verifier-site.mjs');

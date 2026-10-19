@@ -29,7 +29,7 @@ let ecrit = 0;
 for (const id of ids) {
   const revues = await sql`select reviewed_by, decision::text decision, comment from reviews where case_id = ${id} and comment like '[Fiche approuvée %' order by reviewed_at`;
   const r = decider({ id, generee: dossierGeneree(id), revues, isoles, hubs, cases, holds });
-  console.log(`· ${id} : ${r.ok ? `promotion PERMISE (empreinte ${r.hash})` : `refusée — ${r.motif}${r.hash ? ` (empreinte ${r.hash})` : ''}`}`);
+  console.log(`· ${id} : ${r.ok ? `promotion PERMISE (empreinte ${r.hash}${r.remplace ? `, remplace la version approuvée ${r.remplace}` : ''})` : `refusée — ${r.motif}${r.hash ? ` (empreinte ${r.hash})` : ''}`}`);
   if (!r.ok || !ECRIRE) continue;
   isoles = inscrire(isoles, id, r.dossier, r.hash);
   ecrit++;
