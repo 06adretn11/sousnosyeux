@@ -2,7 +2,7 @@
 
 `POC-02` · maternelle · rôle : enseignant · état de la carte : **condamnation non définitive**
 
-**Qualification : 🟢 READY** — fiche générée le 2026-10-19 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `b1cdf82e22234035`.
+**Qualification : 🟢 READY** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `b1cdf82e22234035`.
 
 ## Situation judiciaire
 

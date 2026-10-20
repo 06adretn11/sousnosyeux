@@ -2,7 +2,7 @@
 
 `POC-04` · périscolaire · rôle : intervenant extérieur · état de la carte : **mise en examen**
 
-**Qualification : 🟢 READY** — fiche générée le 2026-10-19 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `46ff477b1565dc60`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `46ff477b1565dc60`.
 
 ## Situation judiciaire
 
@@ -74,6 +74,7 @@ Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçon
 - **mineur** · CITATIONS_A_RELIRE — Les citations sont reproduites telles que publiées : à relire sous l’angle de la protection des enfants et des familles.
 - **mineur** · SOURCE_UNIQUE — Le dossier repose sur un seul article lu.
 - **mineur** · DATES_NON_ECRITES — 5 étape(s) sans date d’événement écrite dans la source : affichées avec la date de parution.
+- **majeur** · FONCTION_IDENTIFIANTE — 1 ligne(s) rattachent une accusation ou une mesure à une fonction unique de l’établissement (ex. « bibliothécaire … ») : à vérifier — elle peut identifier la personne mise en cause sans la nommer.
 - **mineur** · ELEMENTS_ECARTES_PAR_LES_GARDES — 14 élément(s) proposé(s) par le modèle ont été écartés par les gardes : NOMBRE_EXACT_ENFANTS ×5, ACTEUR_OU_CITATION_INVALIDE ×3, CITATION_ABSENTE_OU_TEXTE_INTERDIT ×2, DETAIL_GRAPHIQUE ×1, ACTEUR_NON_PUBLIABLE ×3.
 
 ## Mesures de génération
