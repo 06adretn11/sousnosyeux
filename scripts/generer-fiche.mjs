@@ -71,7 +71,7 @@ for (const id of ids) {
   if (sql) for (const r of await sql`select url, media, publication_date::text publication_date from sources where case_id = ${id}`) if (r.url && !sourcesMemoire.has(r.url)) sourcesMemoire.set(r.url, r);
   // Hors ligne, la recherche Bing n'est pas rejouable : on reprend les URL déjà découvertes lors de la dernière génération (leurs pages sont dans le cache disque).
   let precedentes = [];
-  if (SOURCES_FIGEES && existsSync(new URL(`${id}.json`, SORTIE))) precedentes = JSON.parse(readFileSync(new URL(`${id}.json`, SORTIE), 'utf8')).generation.sources.filter((s) => s.origine === 'decouverte').map((s) => ({ url: s.url, media: s.media, publication_date: s.publication_date, origine: 'decouverte' }));
+  if (SOURCES_FIGEES && existsSync(new URL(`${id}.json`, SORTIE))) precedentes = JSON.parse(readFileSync(new URL(`${id}.json`, SORTIE), 'utf8')).generation.sources.map((s) => ({ url: s.url, media: s.media, publication_date: s.publication_date, origine: s.origine }));
   const { documents, requetes, erreurs } = SOURCES_FIGEES
     ? await reunirSources({ c, sourcesMemoire: [...sourcesMemoire.values()], extra: [...(extraParAffaire[id] || []), ...precedentes], decouvrir: false, log: console.log })
     : await reunirSources({ c, sourcesMemoire: [...sourcesMemoire.values()], extra: extraParAffaire[id] || [], decouvrir: A.includes('--decouvrir'), log: console.log });

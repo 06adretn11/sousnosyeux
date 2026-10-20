@@ -19,7 +19,16 @@ const MIN_CORPS = 600; // en dessous : chapeau seul / mur de paiement partiel �
 
 // Paragraphes de bruit (scripts, publicités) : jamais envoyés au modèle ni cités.
 const BRUIT = /runonuserconsent|sponsoris[ée]|pageenvironment|function\s*\(|googletag/i;
-const sansBruit = (corps) => String(corps).split(/\n\n/).filter((p) => !BRUIT.test(p)).join('\n\n');
+// Entités HTML laissées par l'extraction (« &laquo; », « &ecirc; », « &thinsp; ») : 29 % des pages en contenaient (mesuré sur 252) ; elles faisaient échouer la citation littérale et la détection
+// des propos entre guillemets, donc perdre des faits et des déclarations. Table des entités françaises usuelles + numériques.
+const ENTITES = { laquo: '«', raquo: '»', ecirc: 'ê', Ecirc: 'Ê', eacute: 'é', Eacute: 'É', egrave: 'è', Egrave: 'È', euml: 'ë', agrave: 'à', Agrave: 'À', acirc: 'â', Acirc: 'Â', ccedil: 'ç', Ccedil: 'Ç',
+  ocirc: 'ô', Ocirc: 'Ô', icirc: 'î', Icirc: 'Î', iuml: 'ï', ucirc: 'û', Ucirc: 'Û', ugrave: 'ù', Ugrave: 'Ù', oelig: 'œ', OElig: 'Œ', thinsp: ' ', nbsp: ' ', ensp: ' ', emsp: ' ', hellip: '…',
+  ndash: '–', mdash: '—', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“', copy: '©', euro: '€', middot: '·', deg: '°', amp: '&', quot: '"', apos: "'", lt: '<', gt: '>' };
+export const decoderEntites = (t) => String(t)
+  .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+  .replace(/&([a-zA-Z]+);/g, (m, n) => ENTITES[n] ?? m);
+const sansBruit = (corps) => decoderEntites(String(corps)).split(/\n\n/).filter((p) => !BRUIT.test(p)).join('\n\n');
 
 const empreinteUrl = (u) => createHash('sha1').update(u).digest('hex').slice(0, 20);
 

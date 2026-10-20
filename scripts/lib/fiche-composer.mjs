@@ -182,8 +182,17 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
 
   // ---- blocs --------------------------------------------------------------------------------------------------
   const NATURE_STEM = { condamnation: 'condamnation', relaxe: 'relaxe', non_lieu: 'non_lieu', classement: 'classement', acquittement: 'acquittement' };
-  const decisionEvt = issue && (deroule.find((d) => d.type === 'decision' && (!issue.date || d.date === issue.date) && issuesPortees(d.texte).includes(NATURE_STEM[issue.nature]))
+  let decisionEvt = issue && (deroule.find((d) => d.type === 'decision' && (!issue.date || d.date === issue.date) && issuesPortees(d.texte).includes(NATURE_STEM[issue.nature]))
     ?? deroule.find((d) => d.type === 'decision' && issuesPortees(d.texte).includes(NATURE_STEM[issue.nature])));
+  // Une issue établie mais sans étape « décision » dans le déroulé (le modèle n'a rendu que l'issue) : la chronologie la porte quand même, en phrase STRUCTURÉE (nature + date écrite).
+  if (issue && !decisionEvt) {
+    const NOM = { condamnation: 'une condamnation', relaxe: 'une relaxe', non_lieu: 'un non-lieu', classement: 'un classement sans suite', acquittement: 'un acquittement' };
+    decisionEvt = { date: issue.date, date_nature: issue.date_nature, type: 'decision', acteur: null, source: SOURCE(issue.doc), _tri: issue.date || issue.doc.publication_date || '',
+      texte: `Selon ${issue.doc.media}, ${NOM[issue.nature]} est rapporté${issue.nature === 'condamnation' || issue.nature === 'relaxe' ? 'e' : ''}${issue.date && issue.date_nature === 'evenement' ? ` (décision du ${dateFr(issue.date)})` : ''}.`,
+      _preuves: [{ url: issue.doc.url, media: issue.doc.media, citation: issue.citation }] };
+    deroule.push(decisionEvt);
+    deroule.sort((a, b) => a._tri.localeCompare(b._tri) || ORDRE_TYPE.indexOf(a.type) - ORDRE_TYPE.indexOf(b.type));
+  }
   // Un appel ANNONCÉ (« l'avocat a annoncé qu'il ferait appel ») n'est pas un appel interjeté : la fiche le dit sans l'affirmer, et ne prétend pas « aucun appel rapporté ».
   const appelAnnonce = issue && issue.appel !== 'OUI' ? deroule.find((d) => d.type === 'appel') : null;
   const etat_actuel = [];
@@ -270,8 +279,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
 
   // Une FONCTION UNIQUE au sein d'un établissement (« le chef des animateurs », « le directeur ») rattachée à une accusation ou à une mesure disciplinaire identifie
   // la personne sans la nommer : pas un blocage (une direction peut aussi agir ou parler), mais jamais READY sans regard humain.
-  const FONCTION_UNIQUE = /\b(?:le|la|l['’])\s*(?:chef|responsable|directeur|directrice|proviseure?|principale?|gardien(?:ne)?|surveillant(?:e)?|infirmier|infirmière)\b/i;
-  const ACCUSATION = /\b(?:plainte|violences?|agressions?|viols?|suspendu|suspendue|mis(?:e)? en examen|garde à vue|interpell|mis(?:e)? à pied|licenci|écart)/i;
+  // Fonctions nommées SANS déterminant aussi (« devenu proviseur », « ancien censeur », « ex-directeur ») : le déterminant n'est pas ce qui identifie.
+  const FONCTION_UNIQUE = /\b(?:(?:le|la|l['’])\s*(?:chef|responsable)|(?:chef des|responsable éducatif|responsable du périscolaire)|directeur|directrice|proviseure?|proviseur adjoint|principale?|censeur|gardien(?:ne)?|surveillant(?:e)?(?: général(?:e)?)?|infirmier|infirmière|bibliothécaire|aumônier|maître d['’]internat|économe)\b/i;
+  const ACCUSATION = /\b(?:plainte|violences?|agressions?|viols?|suspendu|suspendue|mis(?:e)? en examen|garde à vue|interpell|mis(?:e)? à pied|licenci|écart|retrait|révoqu)/i;
   const identifies = [...deroule.map((e) => e.texte), faits.map((f) => f.texte).join(' ')].filter((t) => FONCTION_UNIQUE.test(t) && ACCUSATION.test(t));
   if (identifies.length) signale('majeur', 'FONCTION_IDENTIFIANTE', `${identifies.length} ligne(s) rattachent une accusation ou une mesure à une fonction unique de l’établissement (ex. « ${(identifies[0].match(FONCTION_UNIQUE) || [''])[0]} … ») : à vérifier — elle peut identifier la personne mise en cause sans la nommer.`);
 
