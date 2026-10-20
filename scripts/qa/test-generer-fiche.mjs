@@ -10,7 +10,7 @@ import { composer, attribue } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
-import { requetesDecouverte, affairesSoeurs } from '../lib/fiche-sources.mjs';
+import { decoderEntites, requetesDecouverte, affairesSoeurs } from '../lib/fiche-sources.mjs';
 import { rendreMarkdown } from '../lib/fiche-rendu.mjs';
 import { decider, inscrire } from '../lib/promouvoir-fiche.mjs';
 
@@ -489,6 +489,31 @@ t('appel : « a fait appel », « interjeté appel » l’établissent ; « fera
   assert.equal(ij("L'avocat a indiqué que son client ferait appel de la décision"), 'INCONNU');
   assert.equal(ij("L'enseignant souhaite faire appel"), 'INCONNU');
   assert.equal(ij("Le parquet a interjeté appel de la peine"), 'OUI');
+});
+
+t('fonction identifiante SANS déterminant (« devenu proviseur », « ancien censeur ») + mesure disciplinaire : signal majeur, jamais READY', () => {
+  const r = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [E({ type: 'enquete', acteur: 'Parquet', texte: 'Le parquet a ouvert une enquête préliminaire.', date: '2026-03-15', citation: 'e' }), E({ type: 'mesure_etablissement', texte: 'Un ancien censeur, devenu proviseur dans deux établissements, a été mis en retrait conservatoire à titre temporaire.', date: null, date_nature: 'article', realisation: 'realisee', citation: 'm' }), E({ type: 'plainte', texte: 'Deux plaintes ont été déposées.', date: '2026-03-10', citation: 'p' })] })] });
+  assert.ok(r.attention.some((a) => a.code === 'FONCTION_IDENTIFIANTE')); assert.equal(r.qualification, 'A_REVOIR');
+});
+
+t('entités HTML (laquo, ocirc, thinsp…) décodées : une citation ou un propos entre guillemets n’échoue plus à cause d’elles', () => {
+  const corps = decoderEntites('Le contr&ocirc;le judiciaire impose un &eacute;loignement. Il a dit : &laquo;&thinsp;Je ne sais pas&thinsp;&raquo; &#233; &#x2019;');
+  assert.ok(corps.startsWith('Le contrôle judiciaire impose un éloignement.') && /«\s*Je ne sais pas\s*»/.test(corps) && corps.endsWith('é ’'));
+  assert.ok(!/&[a-z#0-9]+;/i.test(corps));
+  const f = (texte, citation) => ({ portee: 'affaire', texte, citation });
+  const r = verifier(base({ faits_rapportes: [f('Un contrôle judiciaire impose un éloignement.', 'Le contrôle judiciaire impose un éloignement')] }), { corps, publieLe: PUB });
+  assert.equal(r.faits.length, 1);
+  const d = verifier(base({ declarations: [{ acteur: 'Le maire', type_acteur: 'collectivite', a_propos: 'x', portee: 'affaire', citation: 'Je ne sais pas du tout comment faire' }] }), { corps: decoderEntites('Il a dit : &laquo;&thinsp;Je ne sais pas du tout comment faire&thinsp;&raquo; hier.'), publieLe: PUB });
+  assert.equal(d.declarations.length, 1);
+});
+
+t('issue établie sans étape « décision » extraite : la chronologie porte la décision (phrase structurée, source, date écrite) ; pas de doublon si l’étape existe', () => {
+  const sans = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' }), E({ type: 'audience', texte: 'Le procès s’est tenu devant le tribunal correctionnel.', date: '2025-11-03' })] })] });
+  const ds = sans.dossier.deroule.filter((e) => e.type === 'decision');
+  assert.equal(ds.length, 1); assert.equal(ds[0].texte, 'Selon France 3, une condamnation est rapportée (décision du 4 décembre 2025).'); assert.equal(ds[0].date, '2025-12-04');
+  assert.ok(sans.trace.some((t1) => t1.ref.startsWith('deroule') && t1.preuves?.[0]?.citation === 'condamné à quatre ans'));
+  const avec = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE(), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.equal(avec.dossier.deroule.filter((e) => e.type === 'decision').length, 1);
 });
 
 // ---------------- promotion après approbation ----------------
