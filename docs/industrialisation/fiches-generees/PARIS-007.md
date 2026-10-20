@@ -2,7 +2,7 @@
 
 `PARIS-007` · périscolaire · rôle : animateur périscolaire · état de la carte : **enquête**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-19 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `707e7612c3019da4`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `707e7612c3019da4`.
 
 ## Situation judiciaire
 
