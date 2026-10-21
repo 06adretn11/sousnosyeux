@@ -261,6 +261,33 @@
           }
         ]
       }
+    },
+    {
+      "id": "aa9d4eb1d5fd",
+      "nature": "mesure",
+      "libelle": "Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.",
+      "realisation": "réalisée",
+      "portee": "territoire",
+      "acteur": "Mairie de Paris",
+      "territoire": "Paris",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/periscolaire-a-paris-un-animateur-de-21-ans-ecroue-apres-des-soupcons-d-abus-sexuels-sur-trois-enfants-dans-une-ecole-maternelle_AN-202605120597.html",
+        "publie_le": "2026-05-12"
+      },
+      "case_id": "POC-07",
+      "event_id": null,
+      "destinations": {
+        "fiche": null,
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
     }
   ]
 }
