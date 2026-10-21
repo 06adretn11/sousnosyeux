@@ -20,7 +20,7 @@
 // =====================================================================
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { reunirSources, affairesSoeurs } from './lib/fiche-sources.mjs';
+import { reunirSources, affairesSoeurs, rattachementInsuffisant } from './lib/fiche-sources.mjs';
 import { SYSTEME_REGROUPEMENT, invitesRegroupement, groupesValides, SYSTEME, invite, CONTRAT_VERSION, appelerModele, verifier, fusionnerPasses } from './lib/fiche-extraction.mjs';
 import { composer, evenementsBruts } from './lib/fiche-composer.mjs';
 import { rendreMarkdown } from './lib/fiche-rendu.mjs';
@@ -85,6 +85,8 @@ for (const id of ids) {
     for (let i = suivant++; i < documents.length; i = suivant++) {
       const doc = documents[i];
       if (doc.acces !== 'libre' || doc.ecarte) { extractions[i] = { doc, v: vide(doc.ecarte ?? doc.motif ?? 'non lue') }; continue; }
+      const faible = rattachementInsuffisant({ c, corps: doc.corps, toutes: cases });
+      if (faible) { extractions[i] = { doc, v: vide(`rattachement non établi : ${faible}`) }; console.log(`  ◦ ${doc.media} : AMBIGU (${faible}) — non envoyée au modèle`); continue; }
       // PASSES : une extraction par sel (défaut : une seule, sel vide) ; SNY_PASSES=,bis → deux extractions indépendantes dont on fait l'union (voir fusionnerPasses).
       const vs = [];
       for (const sel of PASSES) {

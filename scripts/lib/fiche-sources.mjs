@@ -13,6 +13,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { lirePage, rechercherBing, admissible, canonique, domaine } from './preuve-claim.mjs';
 import { rattacher } from './etat-affaire.mjs';
+import { normEtab } from '../qa/lib/rules.mjs';
 
 const CACHE = new URL('../../.cache/fiches/pages/', import.meta.url);
 const MIN_CORPS = 600; // en dessous : chapeau seul / mur de paiement partiel — pas une source lisible
@@ -28,7 +29,18 @@ export const decoderEntites = (t) => String(t)
   .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
   .replace(/&([a-zA-Z]+);/g, (m, n) => ENTITES[n] ?? m);
-const sansBruit = (corps) => decoderEntites(String(corps)).split(/\n\n/).filter((p) => !BRUIT.test(p)).join('\n\n');
+// Feuilles de style / scripts incrustés : un paragraphe de 30 000 caractères de CSS repoussait le texte de l'article au-delà de la fenêtre envoyée au modèle (Le Figaro : article lisible,
+// jugé « ambigu » faute de texte). Mur de paiement : tout ce qui suit le marqueur (commentaires de lecteurs, articles « à lire aussi » d'AUTRES affaires) n'est pas l'article.
+// Un paragraphe n'est écarté que s'il ne contient aucune prose (≥ 2 phrases lisibles) : un texte d'article mêlé à du JavaScript (La Montagne, Rennes Infos Autrement) est conservé tel quel.
+const PHRASE = /[A-ZÉ][a-zéèêàçùôûîï’' ,]{40,}[.!?]/g;
+const CODE = (p) => p.length > 200 && (p.match(/[{};]/g) || []).length / p.length > 0.01 && (p.match(PHRASE) || []).length < 2;
+const MUR_DE_PAIEMENT = /il vous reste \d+\s?% (?:de cet article )?à (?:lire|découvrir)/i; // « Réservé aux abonnés » seul ne suffit pas : Sud Ouest l'affiche EN TÊTE d'un article qui suit
+export const sansBruit = (corps) => {
+  const ps = decoderEntites(String(corps)).split(/\n\n/).filter((p) => !BRUIT.test(p) && !CODE(p));
+  const mur = ps.findIndex((p) => MUR_DE_PAIEMENT.test(p));
+  const avant = mur > 0 ? ps.slice(0, mur).join('\n\n') : '';
+  return avant.length >= MIN_CORPS ? avant : ps.join('\n\n');
+};
 
 const empreinteUrl = (u) => createHash('sha1').update(u).digest('hex').slice(0, 20);
 
@@ -75,6 +87,25 @@ export function affairesSoeurs(c, toutes) {
     (ville && !/non pr[ée]cis/.test(ville) && sansArrondissement(x.commune).toLowerCase() === ville) ||
     (mine.size && jetons(x.etablissement).some((j) => mine.has(j)))
   )).slice(0, 5);
+}
+
+const MOTS_GENERIQUES = ['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'centre', 'loisirs', 'primaire', 'periscolaire', 'non', 'nommee', 'nomme'];
+const jetonsEtab = (e) => normEtab(e).split(/\s+/).filter((j) => j.length > 3 && !MOTS_GENERIQUES.includes(j));
+const aplati = (t) => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ');
+
+/**
+ * Rattachement insuffisant : la structure est NOMMÉE dans l'affaire, aucun de ses mots distinctifs n'apparaît dans le document, et une autre affaire de la même commune
+ * (arrondissement compris) porte une autre structure. Commune + rôle ne distinguent alors pas les affaires (un article sur trois interpellations parisiennes « était »
+ * l'affaire de chacune des trois écoles). Le nom littéral n'est pas exigé si la structure n'a pas de sœur dans la commune, ni si un mot distinctif la désigne.
+ */
+export function rattachementInsuffisant({ c, corps, toutes }) {
+  if (nonNomme(c.etablissement)) return null;
+  const mes = jetonsEtab(c.etablissement);
+  if (!mes.length) return null;
+  const texte = aplati(corps);
+  if (mes.some((j) => texte.includes(j))) return null;
+  const distinctes = toutes.filter((x) => x.case_id !== c.case_id && x.commune === c.commune && !nonNomme(x.etablissement) && !jetonsEtab(x.etablissement).some((j) => mes.includes(j)));
+  return distinctes.length ? `la structure (« ${c.etablissement} ») n'est pas nommée et ${distinctes.length} autre(s) affaire(s) de ${c.commune} portent une autre structure` : null;
 }
 
 /**

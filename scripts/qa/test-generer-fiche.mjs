@@ -10,7 +10,7 @@ import { composer, attribue } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
-import { decoderEntites, requetesDecouverte, affairesSoeurs } from '../lib/fiche-sources.mjs';
+import { decoderEntites, requetesDecouverte, affairesSoeurs, rattachementInsuffisant, sansBruit } from '../lib/fiche-sources.mjs';
 import { rendreMarkdown } from '../lib/fiche-rendu.mjs';
 import { decider, inscrire } from '../lib/promouvoir-fiche.mjs';
 
@@ -555,5 +555,42 @@ t('affaires sœurs : même commune (arrondissements confondus) ou même structur
   const toutes = [{ case_id: 'A', etablissement: 'École Aqueduc', commune: 'Paris 10e' }, { case_id: 'B', etablissement: 'École Aqueduc', commune: 'Paris 10e' }, { case_id: 'C', etablissement: 'École Boulard', commune: 'Paris 14e' }, { case_id: 'D', etablissement: 'Lycée Test', commune: 'Rouen' }];
   assert.deepEqual(affairesSoeurs(toutes[0], toutes).map((x) => x.case_id), ['B', 'C']);
   assert.deepEqual(affairesSoeurs(toutes[3], toutes), []);
+});
+// ---------------- rattachement source ↔ affaire ----------------
+const A15 = { case_id: 'A', etablissement: 'École Vigée Lebrun', commune: 'Paris 15e' };
+const B15 = { case_id: 'B', etablissement: 'École Émeriau', commune: 'Paris 15e' };
+const D15 = { case_id: 'D', etablissement: 'École Vigée-Lebrun (doublon)', commune: 'Paris 15e' };
+const SEUL = { case_id: 'S', etablissement: 'École maternelle Julie-Victoire Daubié', commune: 'Soyaux' };
+const MULTI = 'Trois hommes, dont deux animateurs périscolaires, ont été interpellés dans trois écoles de plusieurs arrondissements, dont le XVe.';
+t('rattachement : sans le nom de la structure et avec une affaire sœur d’une autre structure dans la commune, la source n’établit rien', () => {
+  assert.match(rattachementInsuffisant({ c: A15, corps: MULTI, toutes: [A15, B15] }), /n'est pas nommée/);
+  assert.ok(rattachementInsuffisant({ c: B15, corps: MULTI, toutes: [A15, B15] }), 'symétrique : le même article n’est pas l’affaire des deux');
+});
+t('rattachement : article multi-affaires qui nomme la structure → exploitable pour cette affaire seulement', () => {
+  const corps = `${MULTI} Les faits concernent notamment l’école Vigée Lebrun et l’école Émeriau.`;
+  assert.equal(rattachementInsuffisant({ c: A15, corps, toutes: [A15, B15] }), null);
+  assert.equal(rattachementInsuffisant({ c: B15, corps, toutes: [A15, B15] }), null);
+  assert.ok(rattachementInsuffisant({ c: A15, corps: 'Une école Émeriau est visée.', toutes: [A15, B15] }), 'une autre structure nommée ne prouve pas celle-ci');
+});
+t('rattachement : le nom littéral n’est PAS exigé sans sœur dans la commune, ni pour une structure non nommée, ni sur un mot distinctif partiel', () => {
+  assert.equal(rattachementInsuffisant({ c: SEUL, corps: 'Un instituteur est mis en examen à Soyaux.', toutes: [SEUL, A15] }), null);
+  assert.equal(rattachementInsuffisant({ c: { ...A15, etablissement: 'École non nommée' }, corps: MULTI, toutes: [A15, B15] }), null);
+  assert.equal(rattachementInsuffisant({ c: A15, corps: 'Dans l’école Lebrun, un animateur…', toutes: [A15, B15] }), null);
+});
+t('rattachement : une autre fiche de la même structure (doublon) n’est pas une sœur ; autre commune ou arrondissement : aucune gêne', () => {
+  assert.equal(rattachementInsuffisant({ c: A15, corps: MULTI, toutes: [A15, D15] }), null);
+  assert.equal(rattachementInsuffisant({ c: A15, corps: MULTI, toutes: [A15, { ...B15, commune: 'Paris 20e' }] }), null);
+});
+t('lecture : une feuille de style géante ne repousse plus l’article ; le texte qui suit « Il vous reste N % à découvrir » (commentaires, autres affaires) est écarté', () => {
+  const css = '@font-face{font-family:a;src:url(x)}'.repeat(40);
+  const lede = 'Deux plaintes ont été déposées contre un animateur du périscolaire à Colombes. '.repeat(10);
+  const brut = ['Titre', css, lede, 'Cet article est réservé aux abonnés. Il vous reste 91% à découvrir.', 'Commentaire de lecteur.', 'COMPTE RENDU D’AUDIENCE - une autre affaire dans une école du 15e.'].join('\n\n');
+  const lu = sansBruit(brut);
+  assert.ok(lu.includes('Deux plaintes') && !/font-face/.test(lu) && !/autre affaire|Commentaire/.test(lu));
+});
+t('lecture : « Réservé aux abonnés » en tête d’un article, ou un extrait trop court avant le marqueur, ne coupent rien', () => {
+  const article = 'L’animateur a été placé en garde à vue à Tarnos. '.repeat(30);
+  assert.ok(sansBruit(['Article réservé aux abonnés', article].join('\n\n')).includes('garde à vue'));
+  assert.ok(sansBruit(['Court chapeau.', 'Il vous reste 80 % à lire', article].join('\n\n')).includes('garde à vue'), 'avant le marqueur < 600 caractères : on garde tout');
 });
 console.log(`\n${n} contrôles génération de fiches : OK`);
