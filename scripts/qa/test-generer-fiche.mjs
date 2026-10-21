@@ -5,8 +5,8 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { RE_NOMBRE_ENFANTS, fusionnerPasses, recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
-import { composer, attribue } from '../lib/fiche-composer.mjs';
+import { SYSTEME, RE_NOMBRE_ENFANTS, fusionnerPasses, recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
+import { composer, attribue, regressionJudiciaire } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
@@ -592,5 +592,29 @@ t('lecture : « Réservé aux abonnés » en tête d’un article, ou un extrait
   const article = 'L’animateur a été placé en garde à vue à Tarnos. '.repeat(30);
   assert.ok(sansBruit(['Article réservé aux abonnés', article].join('\n\n')).includes('garde à vue'));
   assert.ok(sansBruit(['Court chapeau.', 'Il vous reste 80 % à lire', article].join('\n\n')).includes('garde à vue'), 'avant le marqueur < 600 caractères : on garde tout');
+});
+// ---------------- énoncés collectifs, garde-fou judiciaire ----------------
+const genIssue = (issue, ...urls) => ({ trace: issue ? [{ ref: 'issue_judiciaire', texte: issue, preuves: [{ url: 'https://x/a' }] }] : [], sources: urls.map((u) => ({ url: u, pertinence: 'CETTE_AFFAIRE' })) });
+t('contrat d’extraction : l’énoncé collectif est étiqueté « territoire » sauf désignation nommée ; un passage nommé dans un article multi-affaires reste « affaire »', () => {
+  assert.match(SYSTEME, /ÉNONCÉ COLLECTIF[^]*"territoire"[^]*sauf si la phrase nomme cette affaire[^]*au singulier[^]*JAMAIS collective/);
+  assert.match(SYSTEME, /passage consacré à cette affaire[^]*restent "affaire"/);
+});
+t('chronologie qui rapporte un classement/verdict sans issue établie → point majeur (jamais READY avec « Aucune décision rendue ») ; décision de procédure → rien', () => {
+  const classement = E({ type: 'decision', texte: 'Selon 20 Minutes, l’enquête a été classée sans suite en juin 2019.', date: '2019-06', citation: 'x' });
+  const r = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [classement, E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2019-02-09' })] })] });
+  assert.ok(r.attention.some((a) => a.code === 'DECISION_SANS_ISSUE_ETABLIE' && a.niveau === 'majeur'));
+  assert.notEqual(r.qualification, 'READY');
+  const procedure = E({ type: 'decision', texte: 'Le juge a placé l’animateur sous contrôle judiciaire.', date: '2025-12-04', citation: 'x' });
+  const p = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [procedure, E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  assert.ok(!p.attention.some((a) => a.code === 'DECISION_SANS_ISSUE_ETABLIE'));
+});
+t('garde-fou judiciaire : issue perdue alors que sa source est toujours retenue → régression (variance), version précédente conservée', () => {
+  assert.deepEqual(regressionJudiciaire(genIssue('classement 2019-06', 'https://x/a'), genIssue(null, 'https://x/a')), { avant: 'classement 2019-06', apres: null });
+  assert.ok(regressionJudiciaire(genIssue('condamnation 2026-03-27', 'https://x/a'), genIssue('relaxe 2026-04-01', 'https://x/a')), 'issue contredite sans raison');
+});
+t('garde-fou judiciaire : disparition justifiée (source plus retenue), issue identique ou absente avant → rien à signaler', () => {
+  assert.equal(regressionJudiciaire(genIssue('classement 2019-06', 'https://x/a'), genIssue(null, 'https://x/b')), null, 'la source de l’issue n’est plus rattachée à l’affaire');
+  assert.equal(regressionJudiciaire(genIssue('condamnation 2026-03-27', 'https://x/a'), genIssue('condamnation 2026-03-28', 'https://x/a')), null);
+  assert.equal(regressionJudiciaire(genIssue(null, 'https://x/a'), genIssue('condamnation 2026-03-27', 'https://x/a')), null, 'une issue gagnée n’est pas une régression');
 });
 console.log(`\n${n} contrôles génération de fiches : OK`);

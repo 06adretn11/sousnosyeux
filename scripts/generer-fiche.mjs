@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { reunirSources, affairesSoeurs, rattachementInsuffisant } from './lib/fiche-sources.mjs';
 import { SYSTEME_REGROUPEMENT, invitesRegroupement, groupesValides, SYSTEME, invite, CONTRAT_VERSION, appelerModele, verifier, fusionnerPasses } from './lib/fiche-extraction.mjs';
-import { composer, evenementsBruts } from './lib/fiche-composer.mjs';
+import { composer, evenementsBruts, regressionJudiciaire } from './lib/fiche-composer.mjs';
 import { rendreMarkdown } from './lib/fiche-rendu.mjs';
 
 const A = process.argv.slice(2);
@@ -126,6 +126,16 @@ for (const id of ids) {
     sources: extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined })),
   };
   mkdirSync(SORTIE, { recursive: true });
+  // Garde-fou judiciaire : une régénération ne remplace jamais une issue établie (classement, relaxe, condamnation) par une version qui l'a perdue ou contredite alors que sa source est toujours retenue.
+  const fichierPrecedent = new URL(`${id}.json`, SORTIE);
+  const precedente = existsSync(fichierPrecedent) ? JSON.parse(readFileSync(fichierPrecedent, 'utf8')).generation : null;
+  const regression = precedente ? regressionJudiciaire(precedente, generation) : null;
+  if (regression) {
+    writeFileSync(new URL(`${id}.regression.json`, SORTIE), JSON.stringify({ version: 'fiche-generee-1', case_id: id, regression, dossier: r.dossier, generation }, null, 2));
+    console.log(`  ⚠ RÉGRESSION JUDICIAIRE : « ${regression.avant} » → ${regression.apres ? `« ${regression.apres} »` : 'aucune issue'} alors que sa source est toujours retenue : version précédente CONSERVÉE, nouvelle version écrite dans ${id}.regression.json`);
+    bilan.push({ id, qualification: precedente.qualification, cout, regression });
+    continue;
+  }
   writeFileSync(new URL(`${id}.json`, SORTIE), JSON.stringify({ version: 'fiche-generee-1', case_id: id, dossier: r.dossier, generation }, null, 2));
   writeFileSync(new URL(`${id}.revue.md`, SORTIE), rendreMarkdown({ c, dossier: r.dossier, generation }, { complet: true }));
   // Rendu destiné au dépôt (sans extraits littéraux) : écrit dans docs/ SEULEMENT sur demande (--docs) et seulement pour une fiche proposable — la relecture d'une fiche non approuvée ne part pas
