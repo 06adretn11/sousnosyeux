@@ -55,6 +55,25 @@ const UNIQUES = new Set(['garde_a_vue', 'mise_en_examen', 'enquete', 'renvoi']);
 /**
  * @param {{c:object, extractions:{doc:object, v:object}[], aujourdhui?:string, holds?:Set<string>}} o
  */
+/**
+ * Une régénération ne remplace jamais une issue judiciaire établie par une version qui l'a perdue (ou contredite) sans raison.
+ * La disparition est JUSTIFIÉE si aucune source qui portait l'issue n'est plus retenue comme « cette affaire » ; sinon c'est de la variance du modèle : on garde la version précédente.
+ * @param {{trace?:object[], sources?:object[]}} precedente  generation précédente
+ * @param {{trace?:object[], sources?:object[]}} nouvelle    generation qui la remplacerait
+ * @returns {null|{avant:string, apres:string|null}} null = rien à signaler
+ */
+export function regressionJudiciaire(precedente, nouvelle) {
+  const issue = (g) => (g?.trace || []).find((t) => t.ref === 'issue_judiciaire');
+  const avant = issue(precedente);
+  if (!avant) return null;
+  const apres = issue(nouvelle);
+  const famille = (t) => (/^condamnation/.test(t.texte) ? 'condamnation' : 'favorable');
+  if (apres && famille(apres) === famille(avant)) return null;
+  const pertinentes = new Set((nouvelle?.sources || []).filter((s) => s.pertinence === 'CETTE_AFFAIRE').map((s) => s.url));
+  const encore = (avant.preuves || []).some((p) => pertinentes.has(p.url));
+  return encore ? { avant: avant.texte, apres: apres?.texte ?? null } : null;
+}
+
 /** Les événements bruts, dans l'ordre où la composition les voit (ce que le regroupement du modèle indexe). */
 export const evenementsBruts = (extractions) => extractions.filter((x) => x.doc.acces === 'libre' && x.v.pertinence === 'CETTE_AFFAIRE').flatMap((x) => x.v.evenements.map((e) => ({ ...e, doc: x.doc })));
 
@@ -273,6 +292,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   if (reactions.length) signale('mineur', 'CITATIONS_A_RELIRE', 'Les citations sont reproduites telles que publiées : à relire sous l’angle de la protection des enfants et des familles.');
   // Une issue FAVORABLE (relaxe, non-lieu, classement, acquittement) établie par une seule source n'est jamais READY (doctrine R5 : jamais sans preuve).
   if (issue && issue.nature !== 'condamnation' && new Set(pertinentes.filter((x) => x.v.issue && x.v.issue.nature === issue.nature).map((x) => x.doc.media)).size < 2) signale('majeur', 'ISSUE_FAVORABLE_SOURCE_UNIQUE', `L’issue « ${issue.nature} » ne repose que sur ${issue.doc.media} : à confirmer par une seconde source ou par l’autorité qui l’a rendue.`);
+  // La chronologie rapporte un verdict ou un classement que la synthèse n'établit pas (le modèle l'a rangé en événement sans renseigner l'issue) : « Aucune décision rendue » ne doit pas voisiner avec « classée sans suite ».
+  const verdict = !issue && deroule.find((d) => d.type === 'decision' && /class[ée]e? sans suite|non-lieu|relax[ée]|acquitt[ée]|condamn[ée]/i.test(d.texte));
+  if (verdict) signale('majeur', 'DECISION_SANS_ISSUE_ETABLIE', `La chronologie rapporte une décision de fond (« ${verdict.texte.slice(0, 120)} ») que la synthèse n'établit pas : à vérifier avant toute proposition.`);
   if (contribuent.length === 1) signale('mineur', 'SOURCE_UNIQUE', 'Le dossier repose sur un seul article lu.');
   const partielles = deroule.filter((d) => d.date_nature === 'article').length;
   if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées avec la date de parution.`);
