@@ -2,83 +2,107 @@
 
 *Document unique de suivi · lecture sur téléphone · aucune approbation, publication ni envoi Telegram : valider ici = noter la décision humaine ; la promotion passe ensuite par le circuit existant (`proposer-fiche` → approbation Telegram → `promouvoir-fiche`). Une ancienne approbation ne vaut jamais pour une autre empreinte.*
 
-**Statuts** : ⬜ non relue · ✏️ relue avec corrections · ✅ validée humainement · ⏸ différée · ⛔ exclue du circuit · ❓ retour transmis, à saisir (provisoire).
+**Statuts** : ⬜ non relue · ✏️ relue avec corrections · ✅ validée humainement · ⏸ différée · ⛔ exclue du circuit.
+
+> **Erratum de STOCK_RELECTURE_1** : pour FR-2026-0012, la référence est la **version validée par la relecture humaine** (`c0463bb37a56ab7f`) et non la nouvelle ; une validation humaine n’est jamais écrasée par une régénération.
 
 **Comptes** : 35 fiches proposables (dont 17 READY), 2 arbitrages ciblés, 14 hors circuit, FR-2026-0117 publiée. Index détaillé : [STOCK_RELECTURE_1](./STOCK_RELECTURE_1.md) · rendus : [fiches-generees](./fiches-generees/INDEX.md).
 
 ## 0. Programme de la journée
 
-1. **Saisir les 10 retours du lot #1** (§1) — bloque la lecture des faux READY / faux A_REVOIR.
+1. **Lot #1 : retours intégrés** (§1) — 2 validées, 7 relues avec corrections, 1 différée (question éditoriale). Reste à décider quoi faire des corrections (§1 bis).
 2. **Lire le lot #2** (§2) : 10 fiches, 3 à 5 min chacune, en suivant le point d’attention de la fiche.
 3. **Revue documentaire ciblée** de FR-2026-0002 et FR-2026-0137 (§3) : aucune version n’est choisie à votre place.
 4. Ne rien faire sur les 14 fiches hors circuit (§4) sauf décision de les reprendre.
 5. Mettre à jour la colonne « statut » du suivi (§5) ; les décisions « validée » partent ensuite au circuit existant.
 
-## 1. Lot #1 — retours humains à rattacher aux versions exactes
+## 1. Lot #1 — les 10 retours rattachés aux versions exactes
 
-> **Les dix retours transmis ne figurent pas dans le dépôt ni dans cette conversation** : je n’ai pu rattacher que les observations de sources rapportées pour FR-2026-0124 et PARIS-007. Les cases « Retour » sont donc **vides** ; collez les 10 lignes (format du lot #1) et elles seront rattachées à la version indiquée ici — rien n’est inventé.
+*Retours humains reçus le 21/10/2026, repris tels qu’exprimés (résumés, sans en changer le sens). Les statuts ✅/✏️/⏸ sont déduits de votre retour : aucune décision d’approbation formelle n’est enregistrée — elle passe par le circuit Telegram.*
 
-**FR-2026-0115** — Centre de loisirs municipal de Tarnos, Tarnos
+**FR-2026-0115** — Centre de loisirs municipal de Tarnos, Tarnos · statut : ✅
 - Version relue (lot #1) : `884059fe59b45573` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0115.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟢 READY · `884059fe59b45573` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0115.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟢 READY) — le retour s’applique tel quel.
+- **Retour** : Très complète. RAS. Aucun doute sur la capacité à produire un rendu de qualité.
+- À vérifier / corriger : aucune
 
-**FR-2026-0046** — Deux écoles maternelles non nommées, Rezé
+**FR-2026-0046** — Deux écoles maternelles non nommées, Rezé · statut : ✏️
 - Version relue (lot #1) : `d98feaedd130e5f1` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0046.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟢 READY · `d98feaedd130e5f1` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0046.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟢 READY) — le retour s’applique tel quel.
+- **Retour** : Deux articles, mais suffisamment complet pour publication. L’avertissement de 2018 (école maternelle d’Ouche-Dinier, La Nouvelle République) doit figurer dans le **contexte** de l’affaire, pas dans les mesures institutionnelles.
+- À vérifier / corriger : Dans la fiche, cette phrase est typée « mesure d’établissement » : à replacer en contexte (correction éditoriale du dossier, ou tolérée à la relecture).
 
-**POC-02** — École maternelle Charlie-Chaplin, La Courneuve
+**POC-02** — École maternelle Charlie-Chaplin, La Courneuve · statut : ✏️
 - Version relue (lot #1) : `b1cdf82e22234035` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/POC-02.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟢 READY · `b1cdf82e22234035` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/POC-02.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟢 READY) — le retour s’applique tel quel.
+- **Retour** : Les deux réactions de l’avocat de la défense, antérieures à la condamnation, ne semblent plus pertinentes dans la présentation actuelle.
+- À vérifier / corriger : Les deux réactions (Me Curiel, 17 décembre 2025, avant le procès renvoyé au 27 mars 2026) sont encore affichées sous une synthèse « Condamnation / Appel annoncé » : à retirer ou à dater.
 
-**FR-2026-0025** — École Saint-Martin-de-France, Pontoise
+**FR-2026-0025** — École Saint-Martin-de-France, Pontoise · statut : ✏️
 - Version relue (lot #1) : `7ac88f870a7076e6` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0025.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟢 READY · `7ac88f870a7076e6` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0025.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟢 READY) — le retour s’applique tel quel.
+- **Retour** : Fiche conservable, sous réserve : l’établissement est un **collège-lycée** et non une école ; les faits datent de **2001**, 2024 étant la mise en examen ; l’erreur concerne aussi la Home. Une recherche d’actualisation serait bienvenue.
+- À vérifier / corriger : La carte porte « École Saint-Martin-de-France » (type internat) et la fiche une synthèse datée 14 février 2024 : vérifier le nom/type de l’établissement et la date des faits sur la carte (Home) comme sur la fiche ; lancer une recherche d’actualisation (suites de la mise en examen).
 
-**FR-2026-0036** — Crèche Chat Perché, Lyon 3e
+**FR-2026-0036** — Crèche Chat Perché, Lyon 3e · statut : ✏️
 - Version relue (lot #1) : `abeb8fff8aa7ac80` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0036.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟢 READY · `abeb8fff8aa7ac80` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0036.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟢 READY) — le retour s’applique tel quel.
+- **Retour** : L’article du Progrès est accessible et contient bien plus de matière que celle exploitée : mesures immédiates (mise à pied, procédure disciplinaire, non-réintégration dans une crèche du groupe), signalements (PMI, cellule départementale de recueil des informations préoccupantes), contexte inter-affaires (Joyeuse Tribu, plainte d’une famille), position de People & Baby (enquête antérieure classée sans suite, reprise de fonctions, encadrement renforcé : jamais seul avec un enfant, exclu des changes et de la sieste), plainte annoncée contre le professionnel.
+- À vérifier / corriger : Le Progrès est **inaccessible au pipeline** (HTTP 403) alors qu’il est lisible par vous : la fiche ne repose que sur Lyon Capitale. Ces éléments ne peuvent entrer qu’après lecture humaine ou autre accès légitime — décision à prendre (§1 bis).
 
-**FR-2026-0027** — École maternelle Les Aresquiers, Vic-la-Gardiole
+**FR-2026-0027** — École maternelle Les Aresquiers, Vic-la-Gardiole · statut : ✏️
 - Version relue (lot #1) : `347b5720c337ad99` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0027.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟠 A_REVOIR · `347b5720c337ad99` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0027.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification A_REVOIR : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟠 A_REVOIR) — le retour s’applique tel quel.
+- **Retour** : Beaucoup de matière, peut-être trop d’étapes ; classer les sources par qualité. Le Parisien du 12 août 2025 apporte de la clarté (demande de remise en liberté devant la chambre de l’instruction, position de la défense, déclarations des parties civiles, expertises en cours). Une information plus récente serait utile pour comprendre la suite judiciaire.
+- À vérifier / corriger : Hiérarchiser plutôt qu’ajouter (22 étapes, 8 réactions, 7 sources) ; rechercher une évolution judiciaire postérieure à août 2025.
 
-**FR-2026-0012** — Collège-lycée Saint-Jean-de-Passy, Paris 16e
+**FR-2026-0012** — Collège-lycée Saint-Jean-de-Passy, Paris 16e · statut : ✅
 - Version relue (lot #1) : `c0463bb37a56ab7f` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0012.md)
-- Version de référence aujourd’hui : **nouvelle** · 🟠 A_REVOIR · `af070d82b0235729` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0012.md)
-- ⚠ **Version différente de celle relue : le retour s’applique à `c0463bb37a56ab7f` ; la nouvelle empreinte demande une nouvelle vérification** (recours gagné : « Appel annoncé » ; 1 étape(s) judiciaire(s) gagnée(s) : appel —).
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification A_REVOIR : juste / trop optimiste / trop prudente … · statut : ❓
+- ⚠ Référence aujourd’hui **différente** : 🟠 A_REVOIR · `af070d82b0235729` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0012.md) — le retour ci-dessous s’applique à `c0463bb37a56ab7f`.
+- **Retour** : Bonne fiche, sans problème particulier signalé.
+- À vérifier / corriger : **La version validée est celle relue (c0463bb37a56ab7f) : elle reste la référence.** La nouvelle génération (af070d82b0235729) ajoute « Appel annoncé » : candidate à revérifier, elle ne remplace rien sans votre décision.
 
-**FR-2026-0035** — Crèche Joyeuse Tribu, Lyon 6e
+**FR-2026-0035** — Crèche Joyeuse Tribu, Lyon 6e · statut : ⏸
 - Version relue (lot #1) : `28fe51908463933f` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0035.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟠 A_REVOIR · `28fe51908463933f` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0035.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification A_REVOIR : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟠 A_REVOIR) — le retour s’applique tel quel.
+- **Retour** : Vraie question éditoriale : signalement de parents et réaction préventive de la crèche, pas une affaire judiciaire de même nature que celles avec plainte et procédure lourde. Intérêt réel pour documenter le traitement du signalement par l’organisme et la police. Ne devrait peut-être pas être présentée au même niveau que les affaires judiciaires avancées.
+- À vérifier / corriger : Décision éditoriale : niveau de présentation d’un signalement sans procédure lourde (et le bloc vert « Classement sans suite », au conditionnel, issue favorable à source unique).
 
-**PARIS-007** — École maternelle Reuilly, Paris 12e
+**PARIS-007** — École maternelle Reuilly, Paris 12e · statut : ✏️
 - Version relue (lot #1) : `707e7612c3019da4` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/PARIS-007.md)
-- Version de référence aujourd’hui : précédente (identique) · 🟠 A_REVOIR · `707e7612c3019da4` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/PARIS-007.md)
-- ✔ Même empreinte que celle relue : le retour s’applique tel quel.
-- Observations déjà transmises : observations transmises : sources citant l’établissement / évoquant une école du 11e / Rochechouart / nid de frelons → seule la source nommant l’école est utilisée (PR 25).
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification A_REVOIR : juste / trop optimiste / trop prudente … · statut : ❓
+- Référence aujourd’hui : identique (🟠 A_REVOIR) — le retour s’applique tel quel.
+- **Retour** : Pas de suites judiciaires connues, mais une gestion par la collectivité (déroulé, actions) qui mérite une page — exemple intéressant de gestion institutionnelle. Vigilance majeure sur les sources associées : certaines concernent d’autres écoles ou des sujets sans rapport.
+- À vérifier / corriger : Vérifié dans les caches : seule la source 20 Minutes (qui nomme Reuilly, 12e) est utilisée. L’Indépendant cite l’école **Bullourde** (11e, autre école) et BFM une école du 11e sans lien établi : écartées ; Le Parisien « nid de frelons » : autre affaire ; Libération (2 liens, dont celui du 30 janvier sur Rochechouart) et Le Télégramme : inaccessibles, non utilisés. Le tableau « Sources » du rendu relu les listait sous « Pertinence » : relire la version de référence, dont le tableau dit « NON utilisée ».
 
-**FR-2026-0124** — École maternelle Gustave-Bienvêtu, Colombes
+**FR-2026-0124** — École maternelle Gustave-Bienvêtu, Colombes · statut : ✏️
 - Version relue (lot #1) : `09abd77d3205ac6d` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0124.md)
-- Version de référence aujourd’hui : **nouvelle** · 🟢 READY · `16071cfe70469bad` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0124.md)
-- ⚠ **Version différente de celle relue : le retour s’applique à `09abd77d3205ac6d` ; la nouvelle empreinte demande une nouvelle vérification** (qualification A_REVOIR → READY).
-- Observations déjà transmises : observations transmises : sources pertinentes = Le Figaro 16 juin 2026 et actu.fr ; à exclure = La Dépêche 17 mai et 7 juillet 2026, Le Parisien 6 déc. 2024, Sud Ouest (appel après relaxe) → traitées par la PR 25 (Figaro désormais lu et retenu).
-- Retour : exactitude … · richesse … · lisibilité … · sources … · décision … · qualification READY : juste / trop optimiste / trop prudente … · statut : ❓
+- ⚠ Référence aujourd’hui **différente** : 🟢 READY · `16071cfe70469bad` · [rendu](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0124.md) — le retour ci-dessous s’applique à `09abd77d3205ac6d`.
+- **Retour** : Affaire intéressante (citations associatives, gestion par la police jugée étonnante). Plusieurs sources associées sans lien direct avec l’affaire. Le Figaro 16 juin 2026 et Actu.fr liées ; La Dépêche (17 mai et 7 juillet 2026), Le Parisien (6 décembre 2024) et Sud Ouest (appel après relaxe) sans lien. Les déclarations associatives intéressent la Maintenance.
+- À vérifier / corriger : **Version modifiée depuis la relecture** : référence actuelle 16071cfe70469bad (READY ; Figaro rattaché et utilisé, 3 sources utilisées, les quatre sources sans lien non utilisées). Le retour s’applique à 09abd77d3205ac6d ; revérifier la nouvelle, notamment la réaction attribuée en moins (2 → 1).
+
+## 1 bis. Ce que les dix retours enseignent (synthèse, pas dix nouvelles décisions)
+
+| Enseignement | Fiches révélatrices |
+|---|---|
+| La génération produit déjà des fiches qualitatives et publiables | Tarnos, Rezé, Saint-Jean-de-Passy |
+| Chaque information dans le bon bloc (contexte, mesures, réactions) | Rezé, Chat Perché |
+| La chronologie privilégie les événements significatifs | Vic-la-Gardiole |
+| Les réactions doivent être pertinentes pour l’état actuel de l’affaire | La Courneuve |
+| Métadonnées et temporalité exactes, y compris sur la Home | Saint-Martin-de-France |
+| La qualification éditoriale distingue situations judiciaires et réponses institutionnelles | Joyeuse Tribu, Reuilly |
+| Le rattachement source ↔ affaire conditionne la crédibilité (PR 25 et 26) | Reuilly, Colombes |
+| Les informations associatives et institutionnelles sont une valeur à développer | Colombes, Chat Perché, Reuilly |
+
+**Arbitrages posés** : (1) la validation humaine reste le circuit du stock initial, affaire par affaire (une dizaine par jour) — **pas de nouveau moteur de décision éditoriale** ; (2) une source est liée correctement à une ou plusieurs affaires, ou n’est pas utilisée : une information vraie d’une autre affaire est aussi grave qu’une information inventée. Les développements se concentrent sur les défauts transversaux démontrés.
+
+**Corrections soulevées par le lot #1, à instruire sans les développer ici** (aucune action dans cette session) :
+
+- Type d’étape : « avertissement antérieur » rangé en mesure d’établissement (0046) → contexte.
+- Pertinence temporelle des réactions antérieures à la décision (POC-02).
+- Source lisible par un humain mais bloquée au pipeline (Le Progrès, 0036) : voie d’accès légitime ou saisie éditoriale à décider.
+- Hiérarchie des étapes et des sources (0027).
+- Niveau de présentation d’un signalement sans procédure lourde (0035, PARIS-007).
+- Exactitude des métadonnées de la carte (type d’établissement, date des faits, 0025).
 
 ## 2. Lot #2 — 10 fiches non relues
 
@@ -196,16 +220,16 @@
 | Fiche | Lot | Réf. | Qualif. | Empreinte | Statut |
 |---|---|---|---|---|---|
 | **FR-2026-0117** | publiée | approuvée | 🟢 | (en ligne) | ✅ validée |
-| [FR-2026-0115](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0115.md) | 1 | préc. | 🟢 READY | `884059fe59b45573` | ❓ |
-| [FR-2026-0046](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0046.md) | 1 | préc. | 🟢 READY | `d98feaedd130e5f1` | ❓ |
-| [POC-02](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/POC-02.md) | 1 | préc. | 🟢 READY | `b1cdf82e22234035` | ❓ |
-| [FR-2026-0025](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0025.md) | 1 | préc. | 🟢 READY | `7ac88f870a7076e6` | ❓ |
-| [FR-2026-0036](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0036.md) | 1 | préc. | 🟢 READY | `abeb8fff8aa7ac80` | ❓ |
-| [FR-2026-0027](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0027.md) | 1 | préc. | 🟠 A_REV. | `347b5720c337ad99` | ❓ |
-| [FR-2026-0012](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0012.md) | 1 | nouv. | 🟠 A_REV. | `af070d82b0235729` | ❓ |
-| [FR-2026-0035](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0035.md) | 1 | préc. | 🟠 A_REV. | `28fe51908463933f` | ❓ |
-| [PARIS-007](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/PARIS-007.md) | 1 | préc. | 🟠 A_REV. | `707e7612c3019da4` | ❓ |
-| [FR-2026-0124](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0124.md) | 1 | nouv. | 🟢 READY | `16071cfe70469bad` | ❓ |
+| [FR-2026-0115](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0115.md) | 1 | préc. | 🟢 READY | `884059fe59b45573` | ✅ |
+| [FR-2026-0046](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0046.md) | 1 | préc. | 🟢 READY | `d98feaedd130e5f1` | ✏️ |
+| [POC-02](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/POC-02.md) | 1 | préc. | 🟢 READY | `b1cdf82e22234035` | ✏️ |
+| [FR-2026-0025](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0025.md) | 1 | préc. | 🟢 READY | `7ac88f870a7076e6` | ✏️ |
+| [FR-2026-0036](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0036.md) | 1 | préc. | 🟢 READY | `abeb8fff8aa7ac80` | ✏️ |
+| [FR-2026-0027](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0027.md) | 1 | préc. | 🟠 A_REV. | `347b5720c337ad99` | ✏️ |
+| [FR-2026-0012](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0012.md) | 1 | **validée** | 🟠 A_REV. | `c0463bb37a56ab7f` | ✅ (nouvelle af070d82… à revérifier) |
+| [FR-2026-0035](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0035.md) | 1 | préc. | 🟠 A_REV. | `28fe51908463933f` | ⏸ |
+| [PARIS-007](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/PARIS-007.md) | 1 | préc. | 🟠 A_REV. | `707e7612c3019da4` | ✏️ |
+| [FR-2026-0124](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0124.md) | 1 | nouv. | 🟢 READY | `16071cfe70469bad` | ✏️ |
 | [FR-2026-0043](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0043.md) | 2 | préc. | 🟢 READY | `afba7bb178861d20` | ⬜ |
 | [FR-2026-0038](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0038.md) | 2 | préc. | 🟢 READY | `161dba70870f535c` | ⬜ |
 | [FR-2026-0139](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0139.md) | 2 | préc. | 🟢 READY | `7bea2f3e47af82bf` | ⬜ |
