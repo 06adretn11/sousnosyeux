@@ -4,6 +4,8 @@
 
 **Statuts** : ⬜ non relue · ✏️ relue avec corrections · ✅ validée humainement · ⏸ différée · ⛔ exclue du circuit.
 
+> **Erratum de STOCK_RELECTURE_1** : pour FR-2026-0012, la référence est la **version validée par la relecture humaine** (`c0463bb37a56ab7f`) et non la nouvelle ; une validation humaine n’est jamais écrasée par une régénération.
+
 **Comptes** : 35 fiches proposables (dont 17 READY), 2 arbitrages ciblés, 14 hors circuit, FR-2026-0117 publiée. Index détaillé : [STOCK_RELECTURE_1](./STOCK_RELECTURE_1.md) · rendus : [fiches-generees](./fiches-generees/INDEX.md).
 
 ## 0. Programme de la journée
@@ -224,7 +226,7 @@
 | [FR-2026-0025](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0025.md) | 1 | préc. | 🟢 READY | `7ac88f870a7076e6` | ✏️ |
 | [FR-2026-0036](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0036.md) | 1 | préc. | 🟢 READY | `abeb8fff8aa7ac80` | ✏️ |
 | [FR-2026-0027](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0027.md) | 1 | préc. | 🟠 A_REV. | `347b5720c337ad99` | ✏️ |
-| [FR-2026-0012](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0012.md) | 1 | nouv. | 🟠 A_REV. | `af070d82b0235729` | ✅ (sur c0463bb3…) |
+| [FR-2026-0012](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0012.md) | 1 | **validée** | 🟠 A_REV. | `c0463bb37a56ab7f` | ✅ (nouvelle af070d82… à revérifier) |
 | [FR-2026-0035](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/FR-2026-0035.md) | 1 | préc. | 🟠 A_REV. | `28fe51908463933f` | ⏸ |
 | [PARIS-007](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/PARIS-007.md) | 1 | préc. | 🟠 A_REV. | `707e7612c3019da4` | ✏️ |
 | [FR-2026-0124](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v3/FR-2026-0124.md) | 1 | nouv. | 🟢 READY | `16071cfe70469bad` | ✏️ |
