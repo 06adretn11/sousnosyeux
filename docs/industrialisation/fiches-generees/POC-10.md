@@ -31,15 +31,15 @@ Selon ELLE, un animateur de l'école Volontaires, dans le 15e arrondissement de 
 
 ## Sources
 
-| Source | Accès | Origine | Pertinence |
+| Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600) (date ?) | libre | memoire | CETTE_AFFAIRE |
-| [Le Parisien](https://www.leparisien.fr/faits-divers/scandale-du-periscolaire-a-paris-une-nouvelle-plainte-va-etre-deposee-contre-la-mairie-10-10-2026-B3R5T52FP5AQ7HYPY7LXVNQHBU.php) (2026-10-10) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Le Parisien](https://www.leparisien.fr/paris-75/il-y-a-une-complicite-passive-apres-le-scandale-du-periscolaire-a-paris-ces-parents-portent-plainte-contre-la-mairie-12-10-2026-IWW2SJAZTBH6XGFA5VT3MGOZKA.php) (2026-10-12) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Libération](https://www.liberation.fr/politique/elections/violences-sexuelles-dans-le-periscolaire-a-paris-le-deplacement-dun-animateur-entre-deux-ecoles-revele-une-chaine-de-defaillances-20260320_KYX3MFULHJFQ5B5NWUXTHSX6WM/) (2026-03-20) | inaccessible — HTTP 403 | decouverte | — |
-| [France Info](https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/une-nouvelle-plainte-collective-deposee-dans-le-scandale-du-periscolaire-a-paris-pour-combattre-l-impunite-de-tous-les-responsables-de-l-administration-de-la-ville_8232583.html) (2026-10-11) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [ici](https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315) (2026-10-11) | libre | decouverte | CETTE_AFFAIRE |
-| [L'Humanité](https://www.humanite.fr/societe-2/mineurs/violences-sexuelles-dans-le-periscolaire-24-familles-annoncent-porter-plainte-contre-la-ville-de-paris) (2026-10-11) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
+| [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600) (date ?) | libre | memoire | rattachement établi — utilisée |
+| [Le Parisien](https://www.leparisien.fr/faits-divers/scandale-du-periscolaire-a-paris-une-nouvelle-plainte-va-etre-deposee-contre-la-mairie-10-10-2026-B3R5T52FP5AQ7HYPY7LXVNQHBU.php) (2026-10-10) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Le Parisien](https://www.leparisien.fr/paris-75/il-y-a-une-complicite-passive-apres-le-scandale-du-periscolaire-a-paris-ces-parents-portent-plainte-contre-la-mairie-12-10-2026-IWW2SJAZTBH6XGFA5VT3MGOZKA.php) (2026-10-12) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Libération](https://www.liberation.fr/politique/elections/violences-sexuelles-dans-le-periscolaire-a-paris-le-deplacement-dun-animateur-entre-deux-ecoles-revele-une-chaine-de-defaillances-20260320_KYX3MFULHJFQ5B5NWUXTHSX6WM/) (2026-03-20) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
+| [France Info](https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/une-nouvelle-plainte-collective-deposee-dans-le-scandale-du-periscolaire-a-paris-pour-combattre-l-impunite-de-tous-les-responsables-de-l-administration-de-la-ville_8232583.html) (2026-10-11) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [ici](https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315) (2026-10-11) | libre | decouverte | rattachement établi — utilisée |
+| [L'Humanité](https://www.humanite.fr/societe-2/mineurs/violences-sexuelles-dans-le-periscolaire-24-familles-annoncent-porter-plainte-contre-la-ville-de-paris) (2026-10-11) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 
 ## Inconnues et limites documentaires
 

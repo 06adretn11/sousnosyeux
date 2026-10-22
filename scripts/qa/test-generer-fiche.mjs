@@ -617,4 +617,23 @@ t('garde-fou judiciaire : disparition justifiée (source plus retenue), issue id
   assert.equal(regressionJudiciaire(genIssue('condamnation 2026-03-27', 'https://x/a'), genIssue('condamnation 2026-03-28', 'https://x/a')), null);
   assert.equal(regressionJudiciaire(genIssue(null, 'https://x/a'), genIssue('condamnation 2026-03-27', 'https://x/a')), null, 'une issue gagnée n’est pas une régression');
 });
+// ---------------- état et dates (retours de relecture du stock) ----------------
+t('état « mis en examen et écroué » + remise en liberté rapportée : la fiche porte l’évolution (jamais l’état de détention seul)', () => {
+  const d1 = doc('Midi Libre', 'https://x.test/ml', '2025-08-14');
+  const avec = [E({ type: 'mise_en_examen', acteur: null, texte: 'L’employée a été mise en examen puis écrouée.', date: '2025-07-31', citation: 'a' }),
+    E({ type: 'decision', acteur: 'Cour d’appel', texte: 'La cour d’appel a ordonné la remise en liberté sous contrôle judiciaire de l’employée.', date: '2025-08-14', citation: 'b' })];
+  const r = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(d1, { evenements: avec })] });
+  assert.match(r.dossier.etat_actuel[0], /écrouée/);
+  assert.match(r.dossier.etat_actuel[1], /^Évolution rapportée : .*remise en liberté/);
+  assert.ok(r.dossier.situation.suite.lignes.some((l) => /^Évolution rapportée/.test(l)));
+  const sans = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(d1, { evenements: [avec[0]] })] });
+  assert.equal(sans.dossier.etat_actuel.length, 1, 'pas de libération rapportée → rien n’est ajouté');
+});
+t('« mars 2019 » et « 14 mars 2019 » ne sont pas une divergence ; « 10 juin » et « 21 juin » en sont une', () => {
+  const ev = (date, media, url, texte) => ext(doc(media, url, '2025-12-05'), { evenements: [E({ type: 'garde_a_vue', acteur: null, texte, date, date_nature: date.length === 10 ? 'evenement' : 'approximative', citation: 'g' })] });
+  const compatibles = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-03-14', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 14 mars 2019.'), ev('2019-03', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue en mars 2019.')] });
+  assert.ok(!compatibles.dossier.inconnues.some((i) => /dates divergentes/.test(i)));
+  const divergentes = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-06-10', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 10 juin 2019.'), ev('2019-06-21', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue le 21 juin 2019.')] });
+  assert.ok(divergentes.dossier.inconnues.some((i) => /dates divergentes/.test(i)));
+});
 console.log(`\n${n} contrôles génération de fiches : OK`);

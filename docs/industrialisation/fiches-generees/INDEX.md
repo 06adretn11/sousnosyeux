@@ -2,6 +2,8 @@
 
 Rendus Markdown **sans extraits littéraux** des fiches READY / A_REVOIR du catalogue éligible (état du 20/10/2026). **Aucune n’est approuvée ni publiée** ; READY ≠ validation éditoriale. Rapport et décision : [GENERALISATION_QUALITATIVE_1.md](../GENERALISATION_QUALITATIVE_1.md). Chaque rendu porte l’empreinte du dossier qu’une proposition Telegram approuverait.
 
+**Versions corrigées après relecture (22/10/2026, dossier [`v4/`](./v4/))** : [FR-2026-0115](./v4/FR-2026-0115.md) · [FR-2026-0046](./v4/FR-2026-0046.md) · [POC-02](./v4/POC-02.md) · [FR-2026-0025](./v4/FR-2026-0025.md) · [FR-2026-0036](./v4/FR-2026-0036.md) · [FR-2026-0027](./v4/FR-2026-0027.md). Elles remplacent, pour la relecture, les rendus du même nom ci-dessous (conservés : ce sont les versions relues). Détail et empreintes : [VALIDATION_STOCK_1](../VALIDATION_STOCK_1.md) §1 ter.
+
 | Fiche | Carte | Qualification | Étapes | Réserve |
 |---|---|---|---:|---|
 | [FR-2026-0006](./FR-2026-0006.md) École maternelle Rochechouart, Paris 9e | plainte | READY | 4 | — |

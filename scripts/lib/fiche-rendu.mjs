@@ -35,7 +35,7 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   // Une source listée n'est pas une source utilisée : seule « établi » alimente la fiche.
   const USAGE = { CETTE_AFFAIRE: 'rattachement établi — utilisée', AUTRE_AFFAIRE: 'autre affaire — NON utilisée', AFFAIRE_SOEUR: 'affaire proche — NON utilisée', AMBIGU: 'rattachement non établi — NON utilisée' };
   L.push('## Sources', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|');
-  for (const s of g.sources) L.push(`| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : '—')} |`);
+  for (const s of g.sources) L.push(`| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : (s.acces !== 'libre' ? 'non lue (inaccessible) — NON utilisée' : '—'))} |`);
   L.push('');
   L.push('## Inconnues et limites documentaires', '', ...(d.inconnues?.length ? d.inconnues.map((x) => `- ${x}`) : ['*Aucune.*']), '');
   L.push('## Points nécessitant une attention particulière', '', ...(g.attention.length ? g.attention.map((a) => `- **${a.niveau}** · ${a.code} — ${a.texte}`) : ['*Aucun.*']), '');

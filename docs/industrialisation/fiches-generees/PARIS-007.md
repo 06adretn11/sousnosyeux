@@ -51,15 +51,15 @@ Selon 20 Minutes, un animateur du périscolaire de l'école maternelle du 59 rue
 
 ## Sources
 
-| Source | Accès | Origine | Pertinence |
+| Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle) (2025-09-19) | libre | memoire | CETTE_AFFAIRE |
-| [Libération](https://www.liberation.fr/societe/police-justice/a-paris-trois-animateurs-decole-maternelle-suspendus-apres-des-soupcons-de-faits-a-caractere-sexuel-20251016_KD3N3P4B4ZA5JCD7MGL6QXERLE/) (2025-10-16) | inaccessible — HTTP 403 | decouverte | — |
-| [L'indépendant](https://www.lindependant.fr/2025/10/15/plusieurs-enfants-auraient-ete-agresses-trois-animateurs-suspendus-dans-une-ecole-maternelle-a-paris-pour-violences-sexuelles-sur-mineurs-12994519.php) (2025-10-15) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Le télégramme](https://www.letelegramme.fr/france/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-6799285.php) (2025-04-14) | inaccessible — HTTP 403 | decouverte | — |
-| [Le Parisien](https://www.leparisien.fr/paris-75/ne-pas-mettre-les-enfants-face-au-danger-a-paris-un-nid-de-frelons-decouvert-dans-la-cour-dune-ecole-08-10-2026-PIAFZTOI5BAPHE7HC54ZJHZKEU.php) (2026-10-08) | libre | decouverte | AUTRE_AFFAIRE |
-| [BFMTV](https://www.bfmtv.com/paris/paris-suspecte-de-faits-a-caractere-sexuel-un-animateur-d-ecole-maternelle-suspendu_AD-202504140774.html) (2025-04-14) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Libération](https://www.liberation.fr/societe/police-justice/paris-une-plainte-deposee-pour-un-soupcon-dagression-sexuelle-sur-une-enfant-autiste-de-4-ans-dans-une-ecole-maternelle-20260130_2C7NQU4D4JAA7GZZ4SHKZUGECI/) (2026-01-30) | inaccessible — HTTP 403 | decouverte | — |
+| [20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle) (2025-09-19) | libre | memoire | rattachement établi — utilisée |
+| [Libération](https://www.liberation.fr/societe/police-justice/a-paris-trois-animateurs-decole-maternelle-suspendus-apres-des-soupcons-de-faits-a-caractere-sexuel-20251016_KD3N3P4B4ZA5JCD7MGL6QXERLE/) (2025-10-16) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
+| [L'indépendant](https://www.lindependant.fr/2025/10/15/plusieurs-enfants-auraient-ete-agresses-trois-animateurs-suspendus-dans-une-ecole-maternelle-a-paris-pour-violences-sexuelles-sur-mineurs-12994519.php) (2025-10-15) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Le télégramme](https://www.letelegramme.fr/france/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-6799285.php) (2025-04-14) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
+| [Le Parisien](https://www.leparisien.fr/paris-75/ne-pas-mettre-les-enfants-face-au-danger-a-paris-un-nid-de-frelons-decouvert-dans-la-cour-dune-ecole-08-10-2026-PIAFZTOI5BAPHE7HC54ZJHZKEU.php) (2026-10-08) | libre | decouverte | autre affaire — NON utilisée |
+| [BFMTV](https://www.bfmtv.com/paris/paris-suspecte-de-faits-a-caractere-sexuel-un-animateur-d-ecole-maternelle-suspendu_AD-202504140774.html) (2025-04-14) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Libération](https://www.liberation.fr/societe/police-justice/paris-une-plainte-deposee-pour-un-soupcon-dagression-sexuelle-sur-une-enfant-autiste-de-4-ans-dans-une-ecole-maternelle-20260130_2C7NQU4D4JAA7GZZ4SHKZUGECI/) (2026-01-30) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
 
 ## Inconnues et limites documentaires
 
