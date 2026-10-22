@@ -34,15 +34,15 @@ Selon Le Parisien, trois animateurs vacataires de l'école Boulard (Paris XIVe) 
 
 ## Sources
 
-| Source | Accès | Origine | Pertinence |
+| Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php) (2026-03-11) | libre | memoire | CETTE_AFFAIRE |
-| [Libération](https://www.liberation.fr/societe/police-justice/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-20250415_Y6EGQBLKZVGINJYR75OHPHMQLQ/) (2025-04-15) | inaccessible — HTTP 403 | decouverte | — |
-| [Le Parisien](https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-paris-linterminable-attente-de-deux-familles-de-lecole-maternelle-rochechouart-16-10-2026-V5ONJN4FCZHHRLL3HL234VGSWY.php) (2026-10-16) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Le Figaro](https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924) (2026-09-24) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [Libération](https://www.liberation.fr/societe/education/pedocriminalite-trois-enseignants-de-maternelle-suspendus-a-paris-20251106_ELLHRJ2U3FHIFO6N7ZHGBN7A3I/) (2025-11-06) | inaccessible — HTTP 403 | decouverte | — |
-| [BFMTV](https://www.bfmtv.com/paris/paris-suspecte-de-faits-a-caractere-sexuel-un-animateur-d-ecole-maternelle-suspendu_AD-202504140774.html) (2025-04-14) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [BFM Business](https://rmc.bfmtv.com/actualites/societe/education/une-nouvelle-affaire-de-viol-aggrave-en-maternelle-a-paris-eclate-ce-que-repond-la-mairie_AV-202511190371.html) (2025-11-19) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
+| [Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php) (2026-03-11) | libre | memoire | rattachement établi — utilisée |
+| [Libération](https://www.liberation.fr/societe/police-justice/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-20250415_Y6EGQBLKZVGINJYR75OHPHMQLQ/) (2025-04-15) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
+| [Le Parisien](https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-paris-linterminable-attente-de-deux-familles-de-lecole-maternelle-rochechouart-16-10-2026-V5ONJN4FCZHHRLL3HL234VGSWY.php) (2026-10-16) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Le Figaro](https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924) (2026-09-24) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [Libération](https://www.liberation.fr/societe/education/pedocriminalite-trois-enseignants-de-maternelle-suspendus-a-paris-20251106_ELLHRJ2U3FHIFO6N7ZHGBN7A3I/) (2025-11-06) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
+| [BFMTV](https://www.bfmtv.com/paris/paris-suspecte-de-faits-a-caractere-sexuel-un-animateur-d-ecole-maternelle-suspendu_AD-202504140774.html) (2025-04-14) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [BFM Business](https://rmc.bfmtv.com/actualites/societe/education/une-nouvelle-affaire-de-viol-aggrave-en-maternelle-a-paris-eclate-ce-que-repond-la-mairie_AV-202511190371.html) (2025-11-19) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 
 ## Inconnues et limites documentaires
 

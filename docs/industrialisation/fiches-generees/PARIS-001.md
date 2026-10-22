@@ -36,15 +36,15 @@ Selon Le Journal du Dimanche, des faits de violences physiques et sexuelles ont 
 
 ## Sources
 
-| Source | Accès | Origine | Pertinence |
+| Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [MSN / reprise presse](https://www.msn.com/fr-fr/actualite/france/violences-dans-le-p%C3%A9riscolaire-16-personnes-de-l-%C3%A9cole-saint-dominique-interpell%C3%A9es-et-plac%C3%A9es-en-garde/ar-AA23DX3R) (2026-05-20) | inaccessible — structure de page non reconnue | memoire | — |
-| [Magic Maman](https://www.magicmaman.com/violences-sexuelles-et-physiques-dans-le-periscolaire-16-personnes-interpellees-a-l-ecole-maternelle-saint-dominique-a-paris,3783071.asp) (2026-05-21) | libre | decouverte | CETTE_AFFAIRE |
-| [Le Parisien](https://www.leparisien.fr/faits-divers/scandale-du-periscolaire-a-paris-une-nouvelle-plainte-va-etre-deposee-contre-la-mairie-10-10-2026-B3R5T52FP5AQ7HYPY7LXVNQHBU.php) (2026-10-10) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [lecanardenchaine](https://www.lecanardenchaine.fr/societe/55183-paris-merite-la-medaille-de-l-omerta) (2026-10-13) | libre | decouverte | AFFAIRE_SOEUR |
-| [Le Journal du Dimanche](https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447) (2026-05-20) | libre | decouverte | CETTE_AFFAIRE |
-| [Le Figaro](https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-une-vingtaine-de-familles-portent-plainte-contre-la-mairie-pour-une-decennie-d-omerta-20261011) (2026-10-11) | libre | decouverte | écartée : NE_NOMME_PAS_LA_STRUCTURE_ET_LA_COMMUNE |
-| [La Croix](https://www.la-croix.com/societe/violences-dans-le-periscolaire-neuf-animateurs-d-une-ecole-maternelle-suspendus-a-paris-20260216) (2026-02-16) | libre | decouverte | AFFAIRE_SOEUR |
+| [MSN / reprise presse](https://www.msn.com/fr-fr/actualite/france/violences-dans-le-p%C3%A9riscolaire-16-personnes-de-l-%C3%A9cole-saint-dominique-interpell%C3%A9es-et-plac%C3%A9es-en-garde/ar-AA23DX3R) (2026-05-20) | inaccessible — structure de page non reconnue | memoire | non lue (inaccessible) — NON utilisée |
+| [Magic Maman](https://www.magicmaman.com/violences-sexuelles-et-physiques-dans-le-periscolaire-16-personnes-interpellees-a-l-ecole-maternelle-saint-dominique-a-paris,3783071.asp) (2026-05-21) | libre | decouverte | rattachement établi — utilisée |
+| [Le Parisien](https://www.leparisien.fr/faits-divers/scandale-du-periscolaire-a-paris-une-nouvelle-plainte-va-etre-deposee-contre-la-mairie-10-10-2026-B3R5T52FP5AQ7HYPY7LXVNQHBU.php) (2026-10-10) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [lecanardenchaine](https://www.lecanardenchaine.fr/societe/55183-paris-merite-la-medaille-de-l-omerta) (2026-10-13) | libre | decouverte | affaire proche — NON utilisée |
+| [Le Journal du Dimanche](https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447) (2026-05-20) | libre | decouverte | rattachement établi — utilisée |
+| [Le Figaro](https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-une-vingtaine-de-familles-portent-plainte-contre-la-mairie-pour-une-decennie-d-omerta-20261011) (2026-10-11) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [La Croix](https://www.la-croix.com/societe/violences-dans-le-periscolaire-neuf-animateurs-d-une-ecole-maternelle-suspendus-a-paris-20260216) (2026-02-16) | libre | decouverte | affaire proche — NON utilisée |
 
 ## Inconnues et limites documentaires
 

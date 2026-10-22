@@ -53,11 +53,11 @@ Selon Ouest-France, les faits sont survenus dans une école maternelle de La Cou
 
 ## Sources
 
-| Source | Accès | Origine | Pertinence |
+| Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [Ouest-France](https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da) (date ?) | libre | memoire | CETTE_AFFAIRE |
-| [Femme Actuelle](https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908) (2026-03-28) | libre | decouverte | CETTE_AFFAIRE |
-| [Le Parisien](https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php) (2025-12-17) | libre | decouverte | CETTE_AFFAIRE |
+| [Ouest-France](https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da) (date ?) | libre | memoire | rattachement établi — utilisée |
+| [Femme Actuelle](https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908) (2026-03-28) | libre | decouverte | rattachement établi — utilisée |
+| [Le Parisien](https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php) (2025-12-17) | libre | decouverte | rattachement établi — utilisée |
 
 ## Inconnues et limites documentaires
 

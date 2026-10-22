@@ -15,6 +15,11 @@ const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 // Mots significatifs d'une phrase : radicaux de 5 lettres (« déposée » ≈ « déposé »), sans l'attribution « Selon X, » (le média n'est pas le sujet du fait).
 const jetons = (s) => new Set(plat(String(s).replace(/^(?:Mesure[^:]*:\s*)?(?:À venir : )?selon [^,]{1,60},\s*/i, '')).split(' ').filter((t) => t.length > 3).map((t) => t.slice(0, 5)));
 const jaccard = (a, b) => { const A = jetons(a), B = jetons(b); if (!A.size || !B.size) return 0; let i = 0; for (const x of A) if (B.has(x)) i++; return i / (A.size + B.size - i); };
+/** La décision de remise en liberté (étape « decision ») qui corrige une phrase d'état parlant de détention, ou null. Pure : sert aussi à contrôler un dossier déjà généré. */
+export function liberationPosterieure(phraseEtat, deroule) {
+  if (!/détention|écrou|incarcér/i.test(phraseEtat)) return null;
+  return (deroule || []).find((d) => d.type === 'decision' && /remise en liberté|remis(?:e)?\b[^.]{0,40}\ben liberté|libéré|libération/i.test(d.texte)) ?? null;
+}
 const MAJ = (s) => (s ? s[0].toUpperCase() + s.slice(1) : s);
 // Minuscule initiale seulement si le premier mot est un mot courant : « Anne Hidalgo », « Ville de Paris », « Sénat » gardent leur majuscule.
 const MOTS_COURANTS = new Set("le la les l un une des du de d deux trois quatre cinq six plusieurs ce cet cette ces il elle ils elles on selon après apres lors en dans pour avec sans aucun aucune certains certaines chaque tous toutes son sa ses leur leurs notamment puis ensuite depuis dès au aux à".split(' '));
@@ -136,7 +141,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     // Représentant : date écrite d'abord, puis la phrase la plus complète, puis la plus ancienne parution.
     const ordre = [...g.membres].sort((a, b) => (b.date_nature === 'evenement') - (a.date_nature === 'evenement') || b.texte.length - a.texte.length || String(a.doc.publication_date).localeCompare(String(b.doc.publication_date)));
     const e = ordre[0];
-    const autresDates = new Set(g.membres.filter((m) => m.date).map((m) => m.date));
+    // « mars 2019 » et « 14 mars 2019 » ne divergent pas : une date moins précise qui contient la date plus précise est compatible avec elle.
+    const toutes = new Set(g.membres.filter((m) => m.date).map((m) => m.date));
+    const autresDates = new Set([...toutes].filter((d) => ![...toutes].some((o) => o.length > d.length && o.startsWith(d))));
     if (autresDates.size > 1) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
     // Quantités divergentes entre sources pour un même fait (peine : « un an avec sursis » / « trois ans ferme »).
     const divergent = g.membres.length > 1 && g.membres.some((m) => quantitesNonAttestees(e.texte, m.citation).length && quantitesNonAttestees(m.texte, e.citation).length);
@@ -215,6 +222,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   // Un appel ANNONCÉ (« l'avocat a annoncé qu'il ferait appel ») n'est pas un appel interjeté : la fiche le dit sans l'affirmer, et ne prétend pas « aucun appel rapporté ».
   const appelAnnonce = issue && issue.appel !== 'OUI' ? deroule.find((d) => d.type === 'appel') : null;
   const etat_actuel = [];
+  let liberation = null;
   if (issue) {
     // Sans phrase de décision extraite : phrase STRUCTURÉE (nature + date écrite), jamais la citation brute (elle peut contenir un âge, un nom, un nombre d'enfants).
     const NOM_ISSUE = { condamnation: 'une condamnation', relaxe: 'une relaxe', non_lieu: 'un non-lieu', classement: 'un classement sans suite', acquittement: 'un acquittement' };
@@ -232,6 +240,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     const TYPE_ETAT = { 'procès': 'audience', 'mise en examen': 'mise_en_examen', 'enquête': 'enquete', plainte: 'plainte' }[etatSources];
     const dernier = [...deroule].reverse().find((d) => d.type === TYPE_ETAT) ?? [...deroule].reverse().find((d) => ['mise_en_examen', 'enquete', 'plainte', 'garde_a_vue', 'audience', 'renvoi'].includes(d.type));
     if (dernier) etat_actuel.push(dernier.texte);
+    // Une phrase d'état qui parle de détention (« écroué », « placée en détention provisoire ») ne doit pas rester seule quand une décision de remise en liberté est rapportée : l'état n'est plus celui de la phrase.
+    liberation = dernier ? liberationPosterieure(dernier.texte, deroule) : null;
+    if (liberation) etat_actuel.push(`Évolution rapportée : ${liberation.texte}`);
   }
   // ---- synthèse visuelle (composants existants de FicheUnique : `dossier.situation`, comme les pilotes) ---------------------------------
   // Tout vient de données déjà vérifiées : nature de l'issue ou état, date écrite, autorité qui agit, appel/finalité, mesures du déroulé.
@@ -258,7 +269,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
           : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })
       : futureAudience ? { label: 'Prochaine étape', titre: `Audience le ${dateFr(futureAudience.date)}`, meta: 'à venir · le procès n’a pas eu lieu', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] }
         : { label: 'Suite', titre: 'Aucune décision rendue', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] };
-    suite.lignes = [...suite.lignes, ...mesures];
+    suite.lignes = [...(liberation ? [`Évolution rapportée : ${liberation.texte}`] : []), ...suite.lignes, ...mesures];
     if (!suite.lignes.length) delete suite.lignes;
     situation = { decision: { label: issue ? 'Décision' : 'Situation judiciaire', titre: issue ? NOM_ISSUE_TITRE[issue.nature] : NOM_ETAT_TITRE[etatSources], ...(meta ? { meta } : {}), cat: CAT[etatSources], texte: etat_actuel[0] }, suite };
   }
