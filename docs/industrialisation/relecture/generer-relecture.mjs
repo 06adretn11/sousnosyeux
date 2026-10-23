@@ -17,7 +17,7 @@ const FICHES = [
   [1,'FR-2026-0012','v5/','v5 : « appel annoncé » + 3 sources reconnues rattachées (v3 : af070d82b0235729 ; relue validée : c0463bb37a56ab7f)','564a9a72a6a0c45e','confirmer le passage à cette version'],
   [1,'FR-2026-0046','v4/','v4 corrigée (relue : d98feaedd130e5f1)','e984bd7210939752','à relire · titre de la carte à corriger (Chêne-Creux)'],
   [1,'POC-02','v4/','v4 corrigée (relue : b1cdf82e22234035)','850af5e2f4b7b042','à relire'],
-  [1,'FR-2026-0025','v5/','v5 : date de la mise en examen corrigée, procédure distincte séparée (v4 : 4dfa78f7161d3105 ; relue : 7ac88f870a7076e6)','479e446bac41eca5','à relire · fiche faible · correction de la Home à décider'],
+  [1,'FR-2026-0025','v5/','v5 recentrée sur Pontoise (arbitrage 24/10 ; v5 précédente : 479e446bac41eca5 ; v4 : 4dfa78f7161d3105 ; relue : 7ac88f870a7076e6)','a328daccc2ffef42','à relire · arbitrage appliqué : l’empreinte reste à approuver · correction de la Home à décider'],
   [1,'FR-2026-0036','v4/','v4 corrigée (relue : abeb8fff8aa7ac80)','6b23273bc88028fe','à relire · une ou deux fiches (Chat Perché / Joyeuse Tribu) à arbitrer'],
   [1,'FR-2026-0027','v4/','v4 corrigée (relue : 347b5720c337ad99)','04ca3c7a38e157eb','à relire'],
   [1,'FR-2026-0035','','inchangée (rendu rafraîchi)','28fe51908463933f','⏸ décision éditoriale · une ou deux fiches à arbitrer'],
@@ -83,7 +83,7 @@ const V5 = [
   ['FR-2026-0030', 'e00891c50069b9f0', 'Approuver le retrait des 3 étapes issues d’un article sur une autre affaire du lycée, et la corroboration par BFMTV.'],
   ['FR-2026-0008', '3230d301346dcfee', 'Approuver la correction de provenance (France Culture, pas Wikipédia). La donnée source se corrige après votre GO (migration 021, préparée).'],
   ['FR-2026-0012', 'c0463bb37a56ab7f', 'Confirmer le passage de la version validée à celle-ci : ajout de « appel annoncé » (et correction de la phrase « aucun article ne dit… »), 3 sources de corroboration. Réserve « fonction identifiante » inchangée.'],
-  ['FR-2026-0025', '7ac88f870a7076e6', 'Approuver (1) la date de mise en examen « 26 janvier 2024 » (et non le 14 février, jour de la révélation) ; (2) la mention, en étape de contexte, de la procédure distincte de Valenciennes (condamnation pour violences à Stanislas) — risque d’identification à apprécier ; (3) la qualification À REVOIR.'],
+  ['FR-2026-0025', '7ac88f870a7076e6', 'Approuver (ou non) cette empreinte : fiche recentrée sur Pontoise (faits de 2001, mise en examen du 26 janvier 2024, contrôle judiciaire) ; le parcours à Stanislas n’occupe plus le déroulé (une note de contexte attribuée, sans condamnation). Votre arbitrage d’inclusion n’est pas une approbation.'],
   ['FR-2026-0119', 'a4cd40da505e3220', 'Approuver la date de la plainte « vers juin 2026 » (jours divergents 10 / 21 juin) et la source principale nationale.'],
   ['FR-2026-0045', '94512e13f4f8b9cb', 'Approuver « appel / caractère définitif non documentés » (la carte reste « condamnation non définitive » : sujet de Maintenance).'],
 ];

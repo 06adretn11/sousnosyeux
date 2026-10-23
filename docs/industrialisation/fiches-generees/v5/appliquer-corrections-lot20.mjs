@@ -234,19 +234,33 @@ const CORRECTIONS = {
     await verifier(EU.url, ['a été mis en examen le 26 janvier dans une autre affaire', 'au sein de l\'internat Saint-Martin-De-France de Pontoise', 'Placé "sous contrôle judiciaire"']);
     note(c, { operation: 'date', cible: `mise en examen · ${mee.date}`, apres: 'janvier 2024 (26 janvier selon l’AFP)', motif: 'Le 14 février est la date à laquelle franceinfo a appris la mise en examen, pas celle de l’acte : l’AFP (Europe 1) écrit « mis en examen le 26 janvier ».', preuves: [{ media: 'France info', url: mee.source.url, citation: 'a appris franceinfo, mercredi 14 février, de source proche du dossier' }, { media: 'Europe 1', url: EU.url, citation: 'a été mis en examen le 26 janvier dans une autre affaire' }] });
     mee.date = '2024-01'; mee.date_nature = 'approximative'; mee.sources_complementaires = [EU];
-    mee.texte = 'Selon franceinfo, un ancien cadre éducatif du collège-lycée privé Stanislas a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d\'Oise), et a été placé sous contrôle judiciaire ; selon l\'AFP (Europe 1), la mise en examen date du 26 janvier et l\'affaire est instruite à Valenciennes.';
-    await verifier(EU.url, ['devant le tribunal correctionnel de Valenciennes']);
-    c.d.situation.decision.meta = 'Mise en examen fin janvier 2024 (26 janvier selon l’AFP), révélée le 14 février 2024 par franceinfo · pour des faits datant de 2001';
-    ajouterSource(c, EU, 'Source ajoutée (recherche ciblée) : AFP via Europe 1, 2024 — date de la mise en examen, parquet de Valenciennes.');
-    const ctx = evt({ type: 'contexte', acteur: 'tribunal correctionnel de Valenciennes', texte: 'Procédure distincte (violences à Stanislas, faits de 2012-2018, sans lien avec les faits de Pontoise) : selon Europe 1, la même personne devait être jugée pour des violences commises sur des élèves de classes préparatoires de Stanislas ; selon Linfo.re, le tribunal de Valenciennes l\'a ensuite reconnue coupable de violences et condamnée à un an d\'emprisonnement avec sursis. Cette condamnation ne concerne pas les faits de Pontoise.', source: c.d.deroule.find((e) => e.source.media === 'Linfo.re').source, sources_complementaires: [EU] });
+    // Arbitrage éditorial (24/10/2026) : la fiche raconte l'affaire de PONTOISE ; le parcours ultérieur de la personne (Stanislas) n'occupe pas le déroulé.
+    const SANS_STAN = (t) => t.split(' du collège-lycée privé Stanislas').join('');
+    const linfo = c.d.deroule.find((e) => e.source.media === 'Linfo.re');
+    await verifier(linfo.source.url, ['jeune de 17 ans qui était sous sa responsabilité à l’internat Saint-Martin-de-France']);
+    await verifier(EU.url, ['pour des faits commis entre le 30 juin et le 1er juillet 2001 au sein de l\'internat Saint-Martin-De-France de Pontoise', 'l\'interdiction d\'entrer en contact avec la victime']);
+    await verifier(mee.source.url, ['où est instruite l’affaire']);
+    const avantFaits = linfo.texte;
+    linfo.texte = 'Selon Linfo.re, l\'homme est poursuivi pour viol et agression sexuelle par personne abusant de sa fonction, pour des faits qui se seraient déroulés les 30 juin et 1er juillet 2001 à Pontoise (Val-d\'Oise), la victime étant un jeune de 17 ans sous sa responsabilité à l\'internat Saint-Martin-de-France.';
+    linfo.sources_complementaires = [EU];
+    note(c, { operation: 'reformulation', cible: avantFaits, apres: linfo.texte, motif: 'Le « aussi poursuivi » renvoyait au parcours de Stanislas : le fait de 2001 est énoncé pour lui-même, corroboré par l’AFP (Europe 1).', preuves: [{ media: 'Europe 1', url: EU.url, citation: 'pour des faits commis entre le 30 juin et le 1er juillet 2001 au sein de l\'internat Saint-Martin-De-France de Pontoise' }] });
+    mee.texte = 'Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d\'Oise), et placé sous contrôle judiciaire ; l\'affaire est instruite à Valenciennes. Selon l\'AFP (Europe 1), la mise en examen date du 26 janvier et la personne a l\'interdiction d\'entrer en contact avec la victime, selon le parquet de Valenciennes. Note de contexte : selon Europe 1, la même personne devait aussi être jugée à Valenciennes pour des violences commises à Stanislas ; cette procédure est distincte et ne concerne pas les faits de Pontoise.';
     await verifier(EU.url, ['sera jugé en septembre pour des violences commises entre 2012 et 2018']);
-    await verifier(ctx.source.url, ['un an d’emprisonnement avec sursis', 'reconnu coupable de violences envers six élèves']);
-    c.d.deroule.push(ctx);
-    note(c, { operation: 'ajout_etape', cible: ctx.texte, motif: 'Distinction explicite entre les faits de Pontoise et la procédure de Valenciennes concernant Stanislas : un lien par la même personne n’autorise pas à fusionner les faits.', preuves: [{ media: 'Europe 1', url: EU.url, citation: 'sera jugé en septembre pour des violences commises entre 2012 et 2018' }, { media: 'Linfo.re', url: ctx.source.url, citation: 'reconnu coupable de violences envers six élèves' }] });
+    note(c, { operation: 'reformulation', cible: 'mise en examen (texte)', apres: mee.texte, motif: 'Établissement de la carrière ultérieure retiré de la phrase ; contrôle judiciaire précisé (interdiction de contact avec la victime) ; procédure Stanislas réduite à une note de contexte attribuée, sans condamnation.', preuves: [{ media: 'Europe 1', url: EU.url, citation: 'l\'interdiction d\'entrer en contact avec la victime' }, { media: 'Europe 1', url: EU.url, citation: 'sera jugé en septembre pour des violences commises entre 2012 et 2018' }, { media: 'France info', url: mee.source.url, citation: 'où est instruite l’affaire' }] });
+    c.d.etat_actuel = c.d.etat_actuel.map(SANS_STAN);
+    c.d.synthese = { ...c.d.synthese, decision: SANS_STAN(c.d.synthese.decision) };
+    c.d.situation.decision.texte = SANS_STAN(c.d.situation.decision.texte);
+    const faitsAvant = c.d.faits;
+    c.d.faits = SANS_STAN(c.d.faits).replace(', souligne que cette mise en examen n\'a rien à voir avec Stanislas et se dit humilié et effondré', ' et se dit humilié et effondré');
+    note(c, { operation: 'reformulation', cible: 'faits publiquement rapportés / situation', apres: c.d.faits, motif: 'Arbitrage éditorial : la fiche raconte l’affaire de Pontoise ; l’emploi ultérieur de la personne à Stanislas n’est plus dans la situation ni dans les faits.', preuves: [{ media: 'France info', url: mee.source.url, citation: 'nie avec fermeté l\'accusation de viol' }] });
+    void faitsAvant;
+    await verifier(mee.source.url, ['nie avec fermeté l\'accusation de viol']);
+    c.d.situation.decision.meta = 'Mise en examen fin janvier 2024 (26 janvier selon l’AFP), révélée le 14 février 2024 par franceinfo · pour des faits datant de 2001 à Pontoise';
+    ajouterSource(c, EU, 'Source ajoutée (recherche ciblée) : AFP via Europe 1, 2024 — date de la mise en examen, contrôle judiciaire, parquet de Valenciennes.');
     reformulerAppel(c);
-    c.g.attention.unshift({ niveau: 'majeur', code: 'MATIERE_FAIBLE', texte: 'Matière limitée (jugement de la relecture : « fiche faible ») : une seule source sur la mise en examen, aucune décision, aucune mesure, aucune réaction. Recherches ciblées à mener (relais dans Le Monde, suites de l’instruction à Valenciennes) avant toute approbation.' });
-    note(c, { operation: 'qualification', cible: 'READY', apres: 'A_REVOIR', motif: 'Jugement de la relecture : fiche faible. La qualification automatique READY ne mesure pas la richesse de la matière.' });
-    ecrire(c, 'FR-2026-0025', { qualification: 'A_REVOIR' });
+    // Arbitrage éditorial (24/10/2026) : trois articles pertinents et rattachés = matière suffisante ; pas de recherche exhaustive supplémentaire. La réserve « matière faible » est levée.
+    note(c, { operation: 'qualification', cible: 'À REVOIR (matière faible, v5 précédente)', apres: 'READY', motif: 'Arbitrage de l’éditeur : l’affaire a sa place dans SNY et trois articles correctement rattachés constituent une matière suffisante. Ce n’est PAS une approbation de l’empreinte.' });
+    ecrire(c, 'FR-2026-0025', { qualification: 'READY' });
   },
 };
 function ajouterSource(c, s, raison) { if (!c.g.sources.some((x) => x.url === s.url)) c.g.sources.push({ url: s.url, media: s.media, publication_date: s.publie_le ?? null, origine: 'fournie', acces: 'libre', pertinence: 'CETTE_AFFAIRE', raison }); }
