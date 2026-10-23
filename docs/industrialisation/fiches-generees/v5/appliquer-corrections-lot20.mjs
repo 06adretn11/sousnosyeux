@@ -74,7 +74,9 @@ function corroborer(c, regen, medias, nomsSources) {
     if (!cible) continue;
     for (const s of sr) if (![cible.source, ...(cible.sources_complementaires || [])].some((x) => x.url === s.url)) {
       cible.sources_complementaires = [...(cible.sources_complementaires || []), s]; n++;
-      note(c, { operation: 'corroboration', cible: cible.texte, apres: `+ ${s.media}`, motif: 'Source reconnue rattachée par l’éditeur, lue par le pipeline (mêmes gardes) : même fait.', preuves: [{ media: s.media, url: s.url }] });
+      const idx = regen.dossier.deroule.indexOf(r);
+      const cit = (regen.generation.trace.find((t) => t.ref === `deroule[${idx}]`)?.preuves || []).find((p) => p.url === s.url)?.citation ?? null;
+      note(c, { operation: 'corroboration', cible: cible.texte, apres: `+ ${s.media}`, motif: 'Source reconnue rattachée par l’éditeur, lue par le pipeline (mêmes gardes) : même fait.', preuves: [{ media: s.media, url: s.url, citation: cit }] });
     }
   }
   for (const s of regen.generation.sources) if (nomsSources.includes(s.media) && !c.g.sources.some((x) => x.url === s.url)) c.g.sources.push({ ...s, origine: 'fournie', raison: 'Rattachement reconnu par l’éditeur (relecture) ; lue et extraite par le pipeline existant.' });
@@ -209,6 +211,14 @@ const CORRECTIONS = {
     const c = charger('FR-2026-0012', 'af070d82b0235729', join(RACINE, '.cache/sortie-v3/FR-2026-0012.json'));
     const n = corroborer(c, regen('FR-2026-0012'), ['BFMTV', 'Le Figaro', 'Marianne'], ['BFMTV', 'Le Figaro', 'Marianne']);
     if (!n) throw new Error('0012 : aucune corroboration');
+    // Équilibre : la version relue portait la réaction de l'avocat de la défense, perdue dans la régénération v3. Rétablie telle quelle (même extrait, même source).
+    const yak = JSON.parse(readFileSync(join(VERS, 'FR-2026-0012.c0463bb37a56ab7f.json'), 'utf8')).dossier.reactions.find((r) => /Yakouti/.test(r.acteur));
+    if (!yak) throw new Error('0012 : réaction de la défense introuvable dans la version relue');
+    await verifier(yak.source.url, [yak.citations[0].texte.slice(0, 60)]);
+    if (!c.d.reactions.some((r) => /Yakouti/.test(r.acteur))) {
+      c.d.reactions.push(yak);
+      note(c, { operation: 'ajout_reaction', cible: `${yak.acteur} — « ${yak.citations[0].texte} »`, motif: 'Réaction de la défense présente dans la version relue, perdue à la régénération : rétablie pour l’équilibre (même extrait, même source).', preuves: [{ media: yak.source.media, url: yak.source.url, citation: yak.citations[0].texte }] });
+    }
     for (const s of c.g.sources.filter((s) => /lemonde\.fr|lepoint\.fr/.test(s.url))) {
       if (/lepoint/.test(s.url)) { s.pertinence = 'HORS_SUJET'; s.raison = 'Article immobilier sur les « bonnes écoles » (Le Point) : hors sujet ; inaccessible (403).'; }
     }
