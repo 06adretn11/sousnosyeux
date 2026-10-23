@@ -16,6 +16,47 @@
 4. Ne rien faire sur les 14 fiches hors circuit (§4) sauf décision de les reprendre.
 5. Mettre à jour la colonne « statut » du suivi (§5) ; les décisions « validée » partent ensuite au circuit existant.
 
+## 0 bis. Premier lot d'approbation (24/10/2026) — une version de référence par affaire
+
+*Aucune approbation, publication, écriture Neon ni envoi Telegram. Versions de référence : [RELECTURE_20_FICHES.md](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.md) (les empreintes de ce tableau ont été revérifiées contre les dossiers locaux et contre le circuit : `proposer-fiche --generee --simuler`). L'avis favorable de la deuxième relecture porte sur l'empreinte exacte que vous aviez sous les yeux ; il ne vaut jamais pour une autre.*
+
+**A — Prêtes pour approbation (9)** : avis favorable sur l'empreinte actuelle, aucune correction depuis, aucune réserve bloquante connue ; chacune est « publiée » dans Neon, hors HOLD, jamais proposée, sans approbation antérieure.
+
+| Affaire | Empreinte | Avis humain |
+|---|---|---|
+| FR-2026-0115 Tarnos | `4af66277ad3e802e` | « excellente fiche » (v4) |
+| POC-02 La Courneuve | `850af5e2f4b7b042` | « bonne fiche, RAS » (v4) |
+| FR-2026-0025 Pontoise | `a328daccc2ffef42` | arbitrage définitif du 24/10 : « me convient telle quelle », note Stanislas acceptée (GO d'inclusion ≠ approbation) |
+| FR-2026-0027 Vic-la-Gardiole | `04ca3c7a38e157eb` | « excellente fiche très documentée » (v4) ; divergence de date de l'enquête affichée en « inconnue » |
+| FR-2026-0124 Colombes | `16071cfe70469bad` | « bonne fiche » (v3) |
+| FR-2026-0038 Saché | `161dba70870f535c` | « très bonne fiche multisource » |
+| FR-2026-0139 Lingolsheim | `7bea2f3e47af82bf` | « bonne fiche au stade de l'affaire » |
+| FR-2026-0006 Rochechouart | `fb80fca964705d6e` | « bonne fiche vu le stade de l'affaire » |
+| FR-2026-0028 Lucenay | `cc4d35f3858e5324` | « très bonne fiche multisources » |
+
+Les cartes de Pontoise (« École ») et de Rezé (voir B) ne seront alignées sur la fiche qu'après le GO de la migration 021 (préparée, non appliquée).
+
+**B — Confirmation ciblée (6)** : seulement le changement ou le point précisé ; différentiel complet avec preuves dans la section « À valider » du [HTML](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.html).
+
+| Affaire | Empreinte | Ce qu'il faut confirmer |
+|---|---|---|
+| FR-2026-0012 Passy | `564a9a72a6a0c45e` | passage de la version validée `c0463bb3…` à celle-ci (« appel annoncé », 3 sources de corroboration, réaction de la défense conservée) ; fonction « directeur » identifiante |
+| FR-2026-0046 Rezé | `e984bd7210939752` | contenu identique à celui jugé « bonne » ; reste le titre de la carte (« Deux écoles… ») : GO de la migration 021 avant ou avec l'approbation |
+| FR-2026-0123 Terra Amata | `75b201bd44522a61` | « très bonne » ; une réserve à trancher : 2 lignes rattachent une accusation ou une mesure à la fonction unique de « directeur » (identification possible) |
+| FR-2026-0119 Morières | `d887a53e930a8f49` | date de la plainte « vers juin 2026 » et Le Parisien en source principale (vos deux demandes) |
+| FR-2026-0030 Saint-Gaudens | `09c7f15cd8d7af1a` | retrait de 3 étapes d'un article sur une autre affaire du lycée ; BFMTV ajouté ; réserve : fonction « proviseur adjoint » (6 lignes) et signalement juin/juillet 2025 divergent |
+| FR-2026-0008 Boulard | `d613e70a3d0a0212` | provenance France Culture (et non Wikipédia) ; réserve : la carte dit « enquête » alors qu'aucun acte judiciaire n'est rapporté (enquête administrative seulement) |
+
+**C — En attente (5)** :
+
+| Affaire | Blocage exact |
+|---|---|
+| FR-2026-0036 Chat Perché | arbitrage deux fiches liées / une affaire à deux établissements ; carte « plainte » non étayée (aucune plainte déposée rapportée) |
+| FR-2026-0035 Joyeuse Tribu | même arbitrage ; niveau de présentation d'un signalement sans procédure lourde ; bloc « classement sans suite » à source unique |
+| PARIS-007 Reuilly | carte « enquête » non étayée (enquête administrative seulement) |
+| FR-2026-0043 Annonay | périmètre éditorial (aucune victime élève rapportée) |
+| FR-2026-0045 Saint-Valéry | carte « condamnation non définitive » alors que l'appel n'est pas documenté |
+
 ## 1. Lot #1 — les 10 retours rattachés aux versions exactes
 
 *Retours humains reçus le 21/10/2026, repris tels qu’exprimés (résumés, sans en changer le sens). Les statuts ✅/✏️/⏸ sont déduits de votre retour : aucune décision d’approbation formelle n’est enregistrée — elle passe par le circuit Telegram.*
