@@ -38,7 +38,7 @@ Selon Ouest-France, les faits sont survenus dans une école maternelle de La Cou
 - **date non écrite · paru le 28 mars 2026** · Appel — Selon Femme Actuelle, l'enseignant souhaite faire appel de cette décision de justice, ce qu'a confirmé son avocat.  
   Source : [Femme Actuelle](https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908) · aussi : [Ouest-France](https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da)
 
-## Mesures institutionnelles
+## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
 - Selon Le Parisien, l'enseignant mis en cause a été immédiatement suspendu. ([Le Parisien](https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php))
 
@@ -51,7 +51,7 @@ Selon Ouest-France, les faits sont survenus dans une école maternelle de La Cou
   > « Mon client travaille depuis des années comme professeur auprès des enfants dans cette école et n’a jamais eu de souci ou fait l’objet d’un signalement quelconque »  
   Source : [Le Parisien](https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php)
 
-## Sources
+## Sources utilisées
 
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|

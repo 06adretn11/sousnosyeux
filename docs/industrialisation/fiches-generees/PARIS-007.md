@@ -33,7 +33,7 @@ Selon 20 Minutes, un animateur du périscolaire de l'école maternelle du 59 rue
 - **date non écrite · paru le 19 septembre 2025** · Mesure de la collectivité — Selon le ministère de l'Education nationale, l'animateur concerné n'a alors plus été laissé seul en présence d'enfants et plus aucun fait n'a été signalé par la suite.  
   Source : [20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle)
 
-## Mesures institutionnelles
+## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
 - Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon le courrier de la Dasco, l'animateur a été retiré du terrain à partir d'août 2025, l'ensemble de l'histoire n'étant remonté à la direction des affaires scolaires de la Ville de Paris qu'à ce moment-là. ([20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle))
 - Selon 20 Minutes, en septembre 2025, la mairie s'est décidée à organiser une réunion avec l'équipe d'animation afin de procéder aux rappels quant aux postures éducatives attendues et aux précautions à prendre en matière de recueil de la parole de l'enfant. ([20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle))
@@ -49,11 +49,16 @@ Selon 20 Minutes, un animateur du périscolaire de l'école maternelle du 59 rue
   > « plus laissé seul en présence d’enfants »  
   Source : [20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle)
 
-## Sources
+## Sources utilisées
 
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
 | [20 Minutes](https://www.20minutes.fr/faits_divers/faits-divers-paris/4174086-20250919-paris-animateur-ecole-maternelle-suspendu-apres-soupcons-agression-sexuelle) (2025-09-19) | libre | memoire | rattachement établi — utilisée |
+
+## Inventaire des autres sources (écartées, non lues ou sans apport)
+
+| Source | Accès | Origine | Rattachement à l’affaire |
+|---|---|---|---|
 | [Libération](https://www.liberation.fr/societe/police-justice/a-paris-trois-animateurs-decole-maternelle-suspendus-apres-des-soupcons-de-faits-a-caractere-sexuel-20251016_KD3N3P4B4ZA5JCD7MGL6QXERLE/) (2025-10-16) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
 | [L'indépendant](https://www.lindependant.fr/2025/10/15/plusieurs-enfants-auraient-ete-agresses-trois-animateurs-suspendus-dans-une-ecole-maternelle-a-paris-pour-violences-sexuelles-sur-mineurs-12994519.php) (2025-10-15) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 | [Le télégramme](https://www.letelegramme.fr/france/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-6799285.php) (2025-04-14) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |

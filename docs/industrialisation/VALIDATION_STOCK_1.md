@@ -131,7 +131,65 @@
 
 **Corrections du moteur (deux défauts, plusieurs cas chacun, tests ajoutés)** : (1) une phrase d’état qui parle de détention (« écroué ») porte désormais la remise en liberté rapportée (Tarnos, Vic-la-Gardiole) ; (2) « mars 2019 » et « 14 mars 2019 » ne sont plus une « divergence de dates » (Vic-la-Gardiole, Rezé en rejeu). Aucune règle propre à une affaire ; le contrat d’extraction (donc les caches du modèle) est inchangé.
 
+## 1 quater. Suites des 20 relectures (23/10/2026)
+
+*Aucune approbation, publication, écriture Neon ni envoi Telegram. Lecture intégrale des 20 versions : [RELECTURE_20_FICHES.html](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.html) (fichier autonome à télécharger) · index à liens GitHub : [RELECTURE_20_FICHES.md](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.md). Corrections rejouables : [appliquer-corrections-lot20.mjs](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/fiches-generees/v5/appliquer-corrections-lot20.mjs) (chaque opération, son motif et son extrait sont dans `generation.corrections`).*
+
+**Trois niveaux, désormais distingués dans chaque rendu** : *listée* (inventaire) · *utilisée* (rattachement établi) · *citée* (une étape ou une réaction en provient). Le rendu a deux tableaux : « Sources utilisées » (= citées) et « Inventaire des autres sources » ; une source rattachée dont rien n’est cité est dite « NON utilisée » ; la rubrique devient « Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut) ».
+
+| Fiche | Appréciation | Correction exécutée | Sources réconciliées | Version · empreinte | Réserve |
+|---|---|---|---|---|---|
+| 0115 Tarnos | excellente | état « écroué » complété (v4) | Libération 403 : rattachée, non lue | v4 `4af66277…` | choix relue / v4 |
+| 0012 Passy | bonne, 1 seule source citée | **BFMTV, Le Figaro, Marianne reconnues rattachées, lues et extraites** : corroborent décision, audience, appel (Marianne : aucun fait citable) ; Le Point (immobilier) classé hors sujet | Le Monde 402 : rattachée, non lue | **v5 `bc30390d…`** (v3 `af070d82…`, relue `c0463bb3…`) | confirmer le passage `c0463` → v5 |
+| 0046 Rezé | bonne ; titre ≠ résumé | Ouche-Dinier = contexte (v4) ; titre de la carte à corriger (Home, §E) | 6 articles Paris/Angers/Rennes : correctement non utilisés | v4 `e984bd72…` | titre « Deux écoles… » |
+| POC-02 | RAS | — | — | v4 `850af5e2…` | — |
+| 0025 Pontoise | **faible** | **date de la mise en examen corrigée** : 26 janvier 2024 selon l’AFP (Europe 1) ; le 14 février est la date où franceinfo l’a apprise — ma v4 reprenait à tort le 14 février ; procédure Valenciennes/Stanislas séparée en étape « procédure distincte » ; qualification **READY → À REVOIR** (matière faible) | Europe 1 ajoutée | **v5 `479e446b…`** | recherches ciblées (relais Le Monde ; suites à Valenciennes / Val-d’Oise) : rien de plus trouvé. **Le lien Pontoise ↔ Saint-Jean-de-Passy n’est pas dans l’article Linfo.re** (il lie Pontoise à Stanislas ; seul France 3 écrit que l’ex-directeur de Passy « a aussi dirigé Stanislas ») : non reporté |
+| 0036 Chat Perché | bonne ; plus de sources possible | v4 (France 3, Médiacités ajoutés) | Ladepeche.fr ×2 hors sujet (inventaire) ; Le Progrès 403 : rattaché, citation employeur retrouvée via Lyon Capitale | v4 `6b23273b…` | une ou deux fiches (§D) · carte « plainte » |
+| 0027 Vic-la-Gardiole | excellente | v4 (hiérarchisée, actualisée) | Nice-Matin 406 : rattachée, non lue | v4 `04ca3c7a…` | — |
+| PARIS-007 | bonne ; 1 seule source | aucune (confirmée) : **Libération 2025-10-16 et L’Indépendant parlent de l’école Bullourde (11e)** — vérifié dans le texte de L’Indépendant : non rattachés à Reuilly (12e) ; Libération 2026-01-30 → Rochechouart (FR-2026-0006) | Télégramme / Libération 403 : non lues | `707e7612…` | recherche spécifique sur Reuilly à mener |
+| 0124 Colombes | bonne | aucune | Le Parisien 2024 hors sujet ; Le Point 403 : rattaché, non lu ; Ladepeche / Sud Ouest ×4 = affaire Alphonse-Baudin (11e) : à rattacher à cette affaire, pas à Colombes | v3 `16071cfe…` | — |
+| 0043 Annonay | frontière du périmètre | **2 sources « utilisées » hors sujet détachées** (rentrée du lycée ; palmarès) — aucune étape n’en provenait ; **nature des faits dite d’emblée** (téléchargement d’images, hors établissement, aucune victime élève rapportée) ; appel « non documenté » | 4 articles d’actualité du lycée ou de la ville : hors sujet | **v5 `bd580687…`** | catégorisation (§D) |
+| 0038 Saché | très bonne | — | Le Monde.fr 2024 = POC-03 (Plaisir) : autre affaire | `161dba70…` | — |
+| 0139 Lingolsheim | bonne | — | — | `7bea2f3e…` | suivi de l’affaire |
+| 0006 Rochechouart | bonne | — | Libération 02-03 et 01-30 : rattachées, non lues ; Le Monde → Grands-Champs ; Le Figaro → Saint-Laurent ; BFM Business : lien possible avec Paris 11e **non démontré** | `fb80fca9…` | suivi de l’affaire |
+| 0028 Lucenay | très bonne | — | Le Progrès ×2, La Voix du Nord ×2 : hors sujet (même nom de commune ou d’établissement) | `cc4d35f3…` | — |
+| 0123 Terra Amata | très bonne | — | Nice-Matin ×2 hors sujet | `75b201bd…` | Saint-Ouen (§D) |
+| 0119 Morières | bonne | **jours divergents d’un même mois → date au mois** (10 / 21 juin → « vers juin 2026 ») ; source principale : Le Parisien (national) plutôt que L’Alsace.fr | CNews 403 : rattaché (Cenon), non lu | **v5 `d887a53e…`** | — |
+| 0045 Saint-Valéry | très bonne | **« appel / caractère définitif non documentés »** au lieu de « présentée comme non définitive » | Paris-Normandie 2025-09-15 : **ambigu après lecture** (corps tronqué par le mur d’abonnement, aucun nom de collège ni de commune) — non utilisé ; Paris-Normandie 2015 hors sujet | **v5 `d5181579…`** | — |
+| 0030 Saint-Gaudens | bonne | **Ladepeche.fr 2026-07-05 détaché** (autre affaire du lycée : sanctions contre un enseignant, propos homophobes et racistes ; il alimentait 3 étapes, 1 corroboration et le point « reproche à une institution ») ; **BFMTV reconnu rattaché, lu, corrobore des étapes** | La Dépêche 2026-10-13 hors sujet | **v5 `09c7f15c…`** | — |
+| 0008 Boulard | bonne après correction | **« Wikipédia » → France Culture (Radio France)** : l’URL est bien France Culture (page lue) ; l’étiquette « Wikipédia » est une erreur de la mémoire ; les étapes et la réaction citaient « Selon Wikipédia » | 6 articles dont Vigée-Lebrun et Rochechouart : autres affaires | **v5 `d613e70a…`** | corriger l’étiquette dans la source de données (§E) |
+| 0035 Joyeuse Tribu | ⏸ | — | — | `28fe5190…` | §D |
+
+**B. Précision du rattachement (comptes sur les 20 fiches, sans statistique globale)** : sources qualifiées « utilisées » mais hors sujet : **3** (Annonay ×2, Saint-Gaudens ×1), dont **1 seule contaminait du contenu** (Saint-Gaudens : 3 étapes) ; **1 mauvaise attribution de média alimentant du contenu** (Boulard : « Wikipédia ») ; bonnes sources récupérées, lues et extraites : **4** (Passy ×3, Saint-Gaudens ×1) ; sources reconnues rattachées par vous mais **inaccessibles** (402/403/406), conservées dans l’inventaire sans nouveau fait : **8** ; lignes d’inventaire désignées hors sujet ou d’une autre affaire : **40** (comptées à la main dans vos annotations), **toutes déjà non utilisées** sauf les 3 ci-dessus, désormais regroupées sous « Inventaire » ; cas ambigus : Paris-Normandie 2025 (Saint-Valéry), BFM Business (Paris 11e), Ladepeche multi-affaires (matière de Hub). Aucune source « découverte » n’est stockée en base : rien à supprimer hors la mémoire (étiquette Wikipédia).
+
+**Pourquoi aucune règle d’admission plus large n’a été ajoutée** : l’admission des sources découvertes exige la structure et la commune. Un assouplissement testé sur les 202 sources découvertes déjà lues (nom d’établissement d’un seul tenant + ville) récupérait 2 des sources de Passy mais admettait ~20 articles sans rapport (classements de lycées, nids d’hirondelles, pages d’agenda, articles multi-affaires parisiens) : rejeté, code non modifié. Les rattachements que vous reconnaissez entrent par le chemin existant `--sources-extra` ([data/fiches-sources-extra-lot20.json](https://github.com/06adretn11/sousnosyeux/blob/main/data/fiches-sources-extra-lot20.json)), avec les mêmes gardes. **Corrections du moteur (tests positifs et négatifs)** : phrase d’appel « non documentés » ; jours divergents d’un même mois → date au mois ; rendu en trois niveaux de source.
+
+**C. Preuves P0 (avant → après)** : *Annonay* : « Dauphiné 2026-09-04 » et « Le Parisien palmarès » : « rattachement établi — utilisée » → inventaire « hors sujet » ; faits et chronologie inchangés (aucune étape n’en venait) ; nature des faits ajoutée. *Saint-Gaudens* : l’article « les communistes brisent le silence » alimentait 3 étapes (« aucun signalement », prises de position politiques, « rectorat alerté depuis 2022 ») : retirées ; le point « reproche à une institution » est levé ; BFMTV : « NON utilisée » → utilisée. *Boulard* : « Selon Wikipédia » → « Selon France Culture » partout. *Reuilly* : contenu inchangé (20 Minutes seule) ; articles Bullourde **non** rattachés. *Non-régressions* : Passy garde toutes ses étapes avec davantage de sources ; Colombes, Tarnos, Vic-la-Gardiole inchangées ; QA verte.
+
+### D. Décisions humaines (question exacte, options)
+
+1. **Joyeuse Tribu (Lyon 6e) / Chat Perché (Lyon 3e)** : même gestionnaire, même salarié mis en cause, traités ensemble par la presse. *Une affaire multi-établissements, ou deux fiches liées ?* **(a)** deux fiches liées (état actuel : chaque fiche garde son lieu, ses mesures, ses réactions ; Chat Perché porte déjà des étapes « affaire distincte » ; il faudrait la réciproque dans Joyeuse Tribu) — aucune perte, deux pins ; **(b)** une seule affaire à deux lieux — une narration, comme la presse, mais un `case_id` porte aujourd’hui un seul établissement : il faut un ou deux points de carte et trancher entre les deux « cartes » (plainte ? signalement ?). Rien n’est fusionné.
+2. **Annonay (0043)** : *cette affaire reste-t-elle dans la carte, et sous quelle mention ?* **(a)** inchangée avec la mention de nature (déjà dans la v5) ; **(b)** catégorie distincte « faits hors établissement, sans victime élève » (nouvelle catégorie : votre accord) ; **(c)** retrait de la carte publique.
+3. **Saint-Ouen** : *créer une proposition Discovery ?* Aucune affaire Saint-Ouen en base (publiée, candidate ou rejetée), aucune proposition en cours (Neon lu, jamais écrit). Matière lisible : France 3 Régions (juin 2026 : 11 signalements recensés par la mairie, 6 animateurs suspendus, plaintes de parents). Libération (3 juillet 2026, texte que vous avez fourni ; non citable par le pipeline, 403) précise l’école Nelson-Mandela et un autre centre de loisirs de la commune (3 animateurs suspendus depuis mars). **(a)** une affaire « école Nelson-Mandela » ; **(b)** deux affaires (les deux centres) ; **(c)** matière de Hub / territoire seulement (mesures municipales). Rien n’est créé.
+4. **Déjà posées** : passage de 0012 à la v5 · relue ou v4 pour 0115 · 0035.
+5. **À arbitrer par la Maintenance** : cartes de 0036 (« plainte »), PARIS-007 (« enquête »), titre de 0046.
+
+### E. Propositions de correction de données (Home / mémoire) — à passer par le circuit de décision, rien n’est écrit
+
+| Affaire | Champ | Aujourd’hui | Proposé | Preuve |
+|---|---|---|---|---|
+| FR-2026-0008 | `sources[0].media` | Wikipédia | France Culture | URL `radiofrance.fr/franceculture/…` (page lue) |
+| FR-2026-0046 | `etablissement` | Deux écoles maternelles non nommées | École maternelle du Chêne-Creux | France 3 Régions, La Nouvelle République, ICI |
+| FR-2026-0025 | `etablissement` / `type_structure` | École Saint-Martin-de-France / internat | Collège-lycée Saint-Martin-de-France / collège | franceinfo (déjà proposé en §1 ter) |
+| FR-2026-0026 | `sources[].media` | Le Parisien pour `cabinetlombard.net` | à vérifier (hors des 20 ; trouvé par un contrôle host ≠ média sur les 136 sources publiées) | host ≠ média |
+
+### Pistes de Maintenance (candidats, aucun branchement)
+
+Associations à suivre : **collectif SOS Périscolaire** (cité à Colombes, FR-2026-0124), **Colosses aux pieds d’argile** (Tarnos, FR-2026-0115). Source à suivre : **newsletter Faits divers de La Dépêche** (hebdomadaire). Observation de fond : beaucoup d’affaires ne rapportent aucune décision finale ni information d’appel (visible dans les rendus : « Aucune décision rendue » ; 0043 et 0045 : appel non documenté) : c’est le premier objet d’un suivi.
+
 ## 2. Lot #2 — 10 fiches non relues
+
+> **Mise à jour du 23/10/2026** : les rendus de référence de 0043, 0119, 0045, 0030 et 0008 ont été remplacés par leur version v5 (voir §1 quater) ; les empreintes ci-dessous sont celles des versions précédentes.
 
 *Lot confirmé le 22/10/2026 (empreintes et qualifications revérifiées contre les dossiers ; les trois défauts du lot #1 — état de détention non actualisé, réaction antérieure à la décision, contexte rangé en mesure — ne se retrouvent dans aucune de ces dix fiches). 5 READY + 5 A_REVOIR ; situations : condamnation (0043, 0045), mise en examen (0038, 0028, 0123, 0119, 0030), enquête (0139, 0008), plainte (0006) ; fiches courtes et denses ; nom d’école présent ou non ; réserves variées. Aucune fiche déjà relue ni de doublon d’une fiche du lot #1.*
 
@@ -243,6 +301,8 @@
 - ⛔ **POC-03** — École élémentaire Jules-Vallès, Plaisir · carte : condamnation non définitive · 🔴 BLOQUÉE · `13d568f0da03b865` · motif : carte non étayée par les sources ; une source non rattachée (non utilisée)
 
 ## 5. Suivi unique
+
+> **Mise à jour du 23/10/2026** : versions de référence actuelles des 20 fiches relues = [RELECTURE_20_FICHES.md](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.md) (nouvelles empreintes : 0012 `bc30390d…`, 0025 `479e446b…`, 0043 `bd580687…`, 0119 `d887a53e…`, 0045 `d5181579…`, 0030 `09c7f15c…`, 0008 `d613e70a…`). Les empreintes du tableau ci-dessous pour ces sept fiches sont celles des versions antérieures, conservées.
 
 | Fiche | Lot | Réf. | Qualif. | Empreinte | Statut |
 |---|---|---|---|---|---|

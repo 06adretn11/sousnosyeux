@@ -328,7 +328,7 @@ t('synthèse : une mise en examen n’est jamais présentée comme une condamnat
 });
 t('synthèse : date omise si les sources divergent ; aucune mesure connue → aucune ligne de mesure ; aucun état établi → aucun bloc', () => {
   const div = composer({ c: carte('mise en examen'), extractions: [ext(doc('A', 'https://x.test/a'), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-09-22', citation: 'm' })] }), ext(doc('B', 'https://x.test/b'), { evenements: [E({ type: 'mise_en_examen', texte: 'L’animateur a été mis en examen par le juge.', date: '2026-09-21', citation: 'n' })] })] });
-  assert.ok(!/2026/.test(SIT(div).decision.meta ?? ''));
+  assert.ok(!/2[12] septembre/.test(SIT(div).decision.meta ?? ''), 'aucun jour choisi entre deux sources : la synthèse affiche au plus le mois');
   assert.ok(!(SIT(div).suite.lignes || []).some((l) => /Mesure/.test(l)));
   const rien = composer({ c: carte('enquête'), extractions: [ext(doc(), {})] });
   assert.equal(rien.dossier.situation, undefined);
@@ -633,7 +633,31 @@ t('« mars 2019 » et « 14 mars 2019 » ne sont pas une divergence ; « 10 juin
   const ev = (date, media, url, texte) => ext(doc(media, url, '2025-12-05'), { evenements: [E({ type: 'garde_a_vue', acteur: null, texte, date, date_nature: date.length === 10 ? 'evenement' : 'approximative', citation: 'g' })] });
   const compatibles = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-03-14', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 14 mars 2019.'), ev('2019-03', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue en mars 2019.')] });
   assert.ok(!compatibles.dossier.inconnues.some((i) => /dates divergentes/.test(i)));
-  const divergentes = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-06-10', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 10 juin 2019.'), ev('2019-06-21', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue le 21 juin 2019.')] });
-  assert.ok(divergentes.dossier.inconnues.some((i) => /dates divergentes/.test(i)));
+  const divergentes = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-06-10', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 10 juin 2019.'), ev('2019-07-02', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue le 2 juillet 2019.')] });
+  assert.ok(divergentes.dossier.inconnues.some((i) => /dates divergentes/.test(i)), 'mois différents : divergence réelle, signalée');
+});
+t('jours différents d’un même mois : date affichée au mois, sans contradiction ni jour choisi', () => {
+  const ev = (date, media, url, texte) => ext(doc(media, url, '2025-12-05'), { evenements: [E({ type: 'plainte', acteur: null, texte, date, citation: 'p' })] });
+  const r = composer({ c: carte('plainte'), aujourdhui: '2026-10-18', extractions: [ev('2026-06-10', 'A', 'https://x.test/1', 'Une plainte a été déposée le 10 juin 2026.'), ev('2026-06-21', 'B', 'https://x.test/2', 'Une plainte a été déposée le 21 juin 2026.')] });
+  const e = r.dossier.deroule.find((x) => x.type === 'plainte');
+  assert.equal(e.date, '2026-06'); assert.equal(e.date_nature, 'approximative');
+  assert.ok(!r.dossier.inconnues.some((i) => /dates divergentes/.test(i)));
+  assert.ok(r.attention.some((a) => a.code === 'DATE_AU_MOIS'));
+});
+t('condamnation sans information sur l’appel : « non documentés », jamais présentée comme non définitive par défaut', () => {
+  const r = composer({ c: carte(), aujourdhui: '2026-10-18', extractions: riche });
+  assert.match(r.dossier.etat_actuel[1], /^Appel et caractère définitif non documentés/);
+  assert.ok(!/SNY la présente comme non définitive/.test(JSON.stringify(r.dossier)));
+});
+t('rendu : une source « utilisée » sans aucune étape ni réaction n’est jamais présentée comme utilisée ; l’inventaire est séparé', () => {
+  const r = composer({ c: carte(), aujourdhui: '2026-10-18', extractions: riche });
+  const cite = r.dossier.deroule[0].source;
+  const g = { contrat: 'x', modele: 'y', genere_le: '2026-10-22', qualification: 'READY', blocages: [], attention: [], stats: { sources_pertinentes: 2 }, ecartes: [], hors_perimetre: [], trace: [], cout: { appels: 0, cache: 0, input_tokens: 0, output_tokens: 0, cout_usd: null },
+    sources: [{ ...cite, publication_date: '2025-12-05', origine: 'memoire', acces: 'libre', pertinence: 'CETTE_AFFAIRE' }, { url: 'https://x.test/bruit', media: 'Bruit', publication_date: '2026-01-01', origine: 'decouverte', acces: 'libre', pertinence: 'CETTE_AFFAIRE' }, { url: 'https://x.test/hs', media: 'HS', publication_date: '2026-01-01', origine: 'decouverte', acces: 'libre', pertinence: 'HORS_SUJET' }] };
+  const md = rendreMarkdown({ c: carte(), dossier: r.dossier, generation: g }, { complet: false });
+  const [utilisees, inventaire] = md.split('## Inventaire des autres sources');
+  assert.match(utilisees, /## Sources utilisées[\s\S]*rattachement établi — utilisée/);
+  assert.ok(!/x\.test\/bruit/.test(utilisees) && /Bruit[^\n]*aucune étape ni réaction n’en provient — NON utilisée/.test(inventaire) && /HS[^\n]*hors sujet/.test(inventaire));
+  assert.match(md, /## Mesures institutionnelles \(autres que les suites judiciaires/);
 });
 console.log(`\n${n} contrôles génération de fiches : OK`);
