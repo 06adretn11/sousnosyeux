@@ -4,6 +4,8 @@ Rendus Markdown **sans extraits littéraux** des fiches READY / A_REVOIR du cata
 
 **Versions corrigées après relecture (22/10/2026, dossier [`v4/`](./v4/))** : [FR-2026-0115](./v4/FR-2026-0115.md) · [FR-2026-0046](./v4/FR-2026-0046.md) · [POC-02](./v4/POC-02.md) · [FR-2026-0025](./v4/FR-2026-0025.md) · [FR-2026-0036](./v4/FR-2026-0036.md) · [FR-2026-0027](./v4/FR-2026-0027.md). Elles remplacent, pour la relecture, les rendus du même nom ci-dessous (conservés : ce sont les versions relues). Détail et empreintes : [VALIDATION_STOCK_1](../VALIDATION_STOCK_1.md) §1 ter.
 
+**Versions corrigées après les 20 relectures (23/10/2026, dossier [`v5/`](./v5/))** : [FR-2026-0012](./v5/FR-2026-0012.md) · [FR-2026-0025](./v5/FR-2026-0025.md) · [FR-2026-0043](./v5/FR-2026-0043.md) · [FR-2026-0119](./v5/FR-2026-0119.md) · [FR-2026-0045](./v5/FR-2026-0045.md) · [FR-2026-0030](./v5/FR-2026-0030.md) · [FR-2026-0008](./v5/FR-2026-0008.md). Lecture des 20 : [RELECTURE_20_FICHES](../RELECTURE_20_FICHES.md).
+
 | Fiche | Carte | Qualification | Étapes | Réserve |
 |---|---|---|---:|---|
 | [FR-2026-0006](./FR-2026-0006.md) École maternelle Rochechouart, Paris 9e | plainte | READY | 4 | — |

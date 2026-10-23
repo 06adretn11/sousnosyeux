@@ -27,16 +27,24 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   for (const e of d.deroule || []) L.push(`- **${quand(e)}** · ${TYPE[e.type] ?? e.type}${e.acteur ? ` (${e.acteur})` : ''} — ${e.texte}  \n  Source : [${e.source.media}](${e.source.url})${(e.sources_complementaires || []).length ? ` · aussi : ${e.sources_complementaires.map((s) => `[${s.media}](${s.url})`).join(', ')}` : ''}`);
   L.push('');
   const mesures = (d.deroule || []).filter((e) => /^mesure_/.test(e.type));
-  L.push('## Mesures institutionnelles', '', ...(mesures.length ? mesures.map((e) => `- ${e.texte} ([${e.source.media}](${e.source.url}))`) : ['*Aucune mesure documentée par les sources lues.*']), '');
+  L.push('## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)', '', ...(mesures.length ? mesures.map((e) => `- ${e.texte} ([${e.source.media}](${e.source.url}))`) : ['*Aucune mesure documentée par les sources lues.*']), '');
   L.push('## Réactions et déclarations attribuées', '');
   if (!d.reactions?.length) L.push('*Aucune déclaration d’une personne ou institution nommée dans les sources lues.*');
   for (const r of d.reactions || []) L.push(`- **${r.acteur}** — ${r.qualite}${r.a_propos ? ` · à propos de : ${r.a_propos}` : ''}  \n  > « ${r.citations[0].texte} »  \n  Source : [${r.source.media}](${r.source.url})`);
   L.push('');
   // Une source listée n'est pas une source utilisée : seule « établi » alimente la fiche.
-  const USAGE = { CETTE_AFFAIRE: 'rattachement établi — utilisée', AUTRE_AFFAIRE: 'autre affaire — NON utilisée', AFFAIRE_SOEUR: 'affaire proche — NON utilisée', AMBIGU: 'rattachement non établi — NON utilisée' };
-  L.push('## Sources', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|');
-  for (const s of g.sources) L.push(`| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : (s.acces !== 'libre' ? 'non lue (inaccessible) — NON utilisée' : '—'))} |`);
-  L.push('');
+  // Trois niveaux distincts : listée · qualifiée « utilisée » · citée par une étape ou une réaction. Seule la source CITÉE alimente la fiche.
+  const citees = new Set();
+  for (const e of d.deroule || []) { citees.add(e.source?.url); for (const s of e.sources_complementaires || []) citees.add(s.url); }
+  for (const r of [...(d.reactions || []), ...(d.paroles || [])]) citees.add(r.source?.url);
+  const USAGE = { CETTE_AFFAIRE: 'rattachement établi — utilisée', AUTRE_AFFAIRE: 'autre affaire — NON utilisée', AFFAIRE_SOEUR: 'affaire proche — NON utilisée', AMBIGU: 'rattachement non établi — NON utilisée', HORS_SUJET: 'hors sujet (même nom ou même lieu, autre sujet) — NON utilisée' };
+  const usage = (s) => (s.pertinence === 'CETTE_AFFAIRE' && !citees.has(s.url) ? 'rattachement établi, mais aucune étape ni réaction n’en provient — NON utilisée'
+    : s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : (s.acces !== 'libre' ? 'non lue (inaccessible) — NON utilisée' : '—')));
+  const ligneSource = (s) => `| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${usage(s)} |`;
+  const utilisees = g.sources.filter((s) => citees.has(s.url));
+  const inventaire = g.sources.filter((s) => !citees.has(s.url));
+  L.push('## Sources utilisées', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|', ...utilisees.map(ligneSource), '');
+  if (inventaire.length) L.push('## Inventaire des autres sources (écartées, non lues ou sans apport)', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|', ...inventaire.map(ligneSource), '');
   L.push('## Inconnues et limites documentaires', '', ...(d.inconnues?.length ? d.inconnues.map((x) => `- ${x}`) : ['*Aucune.*']), '');
   L.push('## Points nécessitant une attention particulière', '', ...(g.attention.length ? g.attention.map((a) => `- **${a.niveau}** · ${a.code} — ${a.texte}`) : ['*Aucun.*']), '');
   L.push('## Mesures de génération', '', `- Sources : ${g.sources.filter((s) => s.acces === 'libre').length} lue(s) sur ${g.sources.length} · pertinentes : ${g.stats.sources_pertinentes}`, `- Éléments écartés par les gardes : ${g.ecartes.length} · éléments d'une autre affaire ou de portée territoriale, classés à part : ${(g.hors_perimetre || []).length}`, `- LLM : ${g.cout.appels} appel(s) (${g.cout.cache} depuis le cache), ${g.cout.input_tokens} tokens en entrée, ${g.cout.output_tokens} en sortie, ${g.cout.cout_usd == null ? 'coût non rapporté' : `${g.cout.cout_usd.toFixed(4)} USD`}`, '');

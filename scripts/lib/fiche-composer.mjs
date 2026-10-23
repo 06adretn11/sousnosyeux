@@ -144,7 +144,11 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     // « mars 2019 » et « 14 mars 2019 » ne divergent pas : une date moins précise qui contient la date plus précise est compatible avec elle.
     const toutes = new Set(g.membres.filter((m) => m.date).map((m) => m.date));
     const autresDates = new Set([...toutes].filter((d) => ![...toutes].some((o) => o.length > d.length && o.startsWith(d))));
-    if (autresDates.size > 1) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
+    // Jours différents d'un même mois (informations concordantes par ailleurs) : la date est affichée au MOIS, plus fidèle qu'un jour choisi entre deux sources ; ni contradiction ni jour inventé.
+    const memeMois = autresDates.size > 1 && [...autresDates].every((d) => d.length === 10 && d.slice(0, 7) === [...autresDates][0].slice(0, 7));
+    const dateFinale = memeMois ? [...autresDates][0].slice(0, 7) : e.date, natureFinale = memeMois ? 'approximative' : e.date_nature;
+    if (memeMois) signale('mineur', 'DATE_AU_MOIS', `${TYPE_FR[g.type] ?? g.type} : jours divergents selon les sources (${[...autresDates].map(dateFr).join(' / ')}) : date affichée au mois.`);
+    else if (autresDates.size > 1) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
     // Quantités divergentes entre sources pour un même fait (peine : « un an avec sursis » / « trois ans ferme »).
     const divergent = g.membres.length > 1 && g.membres.some((m) => quantitesNonAttestees(e.texte, m.citation).length && quantitesNonAttestees(m.texte, e.citation).length);
     if (divergent) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : chiffres divergents selon les sources (${g.membres.map((m) => `${m.doc.media} : « ${m.texte.slice(0, 120)} »`).join(' ; ')})`);
@@ -152,8 +156,8 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     if (/^mesure_/.test(g.type) && g.membres.every((m) => m.realisation === 'annoncee')) texte = `Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : ${MIN(texte)}`;
     if (/^(audience|renvoi)$/.test(g.type) && e.date && e.date > aujourdhui) texte = `À venir : ${MIN(texte)}`;
     const corrobore = ordre.slice(1).filter((m) => m.doc.url !== e.doc.url).map((m) => SOURCE(m.doc));
-    deroule.push({ date: e.date, date_nature: e.date_nature, type: g.type, acteur: e.acteur, texte, source: SOURCE(e.doc), ...(corrobore.length ? { sources_complementaires: corrobore.filter((s, i, a) => a.findIndex((t) => t.url === s.url) === i) } : {}),
-      _tri: e.date || e.doc.publication_date || '', _preuves: g.membres.map((m) => ({ url: m.doc.url, media: m.doc.media, citation: m.citation })) });
+    deroule.push({ date: dateFinale, date_nature: natureFinale, type: g.type, acteur: e.acteur, texte, source: SOURCE(e.doc), ...(corrobore.length ? { sources_complementaires: corrobore.filter((s, i, a) => a.findIndex((t) => t.url === s.url) === i) } : {}),
+      _tri: dateFinale || e.doc.publication_date || '', _preuves: g.membres.map((m) => ({ url: m.doc.url, media: m.doc.media, citation: m.citation })) });
   }
   // Chronologie : date de l'événement, à défaut date de parution ; à égalité l'ordre procédural.
   const ORDRE_TYPE = ['fait_rapporte', 'signalement', 'plainte', 'enquete', 'garde_a_vue', 'mise_en_examen', 'mesure_etablissement', 'mesure_collectivite', 'mesure_etat', 'communication_parquet', 'renvoi', 'audience', 'decision', 'appel', 'contexte'];
@@ -233,7 +237,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
       ? `Un appel est rapporté (${issue.doc.media}) : la décision n’est pas définitive.`
       : appelAnnonce ? `Un appel est annoncé (${appelAnnonce.source.media}) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive.`
       : issue.definitive === 'OUI' ? 'Une source indique que la décision est devenue définitive.'
-        : issue.nature === 'condamnation' ? 'Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive.'
+        : issue.nature === 'condamnation' ? 'Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.'
           : 'Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.');
   } else if (deroule.length) {
     // La phrase d'état est celle de l'étape qui FAIT l'état (mise en examen, enquête, plainte, procès), pas la dernière mentionnée.

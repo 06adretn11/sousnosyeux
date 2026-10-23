@@ -23,7 +23,7 @@ Selon Le Parisien, trois animateurs vacataires de l'école Boulard (Paris XIVe) 
 - **date non écrite · paru le 11 mars 2026** · Contexte — Selon Le Parisien, un nouveau scandale a été évoqué lors d'une réunion publique tendue, un mardi soir, au sein de l'établissement.  
   Source : [Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php)
 
-## Mesures institutionnelles
+## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
 - La Direction des affaires scolaires (Dasco) de la Ville de Paris a communiqué l'information aux familles par mail le dimanche 8 mars, la veille du retour en classe. ([Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php))
 - Selon Le Parisien, trois animateurs vacataires de l'école Boulard ont été suspendus par la Ville de Paris depuis la mi-février, à la suite d'alertes de parents, pour des faits présumés de viol et d'agression sexuelle. ([Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php))
@@ -32,11 +32,16 @@ Selon Le Parisien, trois animateurs vacataires de l'école Boulard (Paris XIVe) 
 
 *Aucune déclaration d’une personne ou institution nommée dans les sources lues.*
 
-## Sources
+## Sources utilisées
 
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
 | [Le Parisien](https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php) (2026-03-11) | libre | memoire | rattachement établi — utilisée |
+
+## Inventaire des autres sources (écartées, non lues ou sans apport)
+
+| Source | Accès | Origine | Rattachement à l’affaire |
+|---|---|---|---|
 | [Libération](https://www.liberation.fr/societe/police-justice/paris-un-animateur-decole-maternelle-suspendu-apres-des-soupcons-de-violences-sexuelles-20250415_Y6EGQBLKZVGINJYR75OHPHMQLQ/) (2025-04-15) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
 | [Le Parisien](https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-paris-linterminable-attente-de-deux-familles-de-lecole-maternelle-rochechouart-16-10-2026-V5ONJN4FCZHHRLL3HL234VGSWY.php) (2026-10-16) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 | [Le Figaro](https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924) (2026-09-24) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |

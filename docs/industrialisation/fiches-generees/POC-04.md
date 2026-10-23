@@ -33,7 +33,7 @@ Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçon
 - **date non écrite · paru le 23 février 2026** · Contexte — Selon 20 Minutes, le bibliothécaire est présumé innocent et nie les faits.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 
-## Mesures institutionnelles
+## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
 - Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
 - Selon 20 Minutes, l'enquête administrative a été rendue en juin 2024, d'après les informations du média. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
@@ -52,11 +52,16 @@ Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçon
   > « travailler à l’élaboration d’une réponse au plus vite en lien avec les services »  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 
-## Sources
+## Sources utilisées
 
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
 | [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau) (2026-02-23) | libre | memoire | rattachement établi — utilisée |
+
+## Inventaire des autres sources (écartées, non lues ou sans apport)
+
+| Source | Accès | Origine | Rattachement à l’affaire |
+|---|---|---|---|
 | [Le Parisien](https://www.leparisien.fr/faits-divers/scandale-du-periscolaire-a-paris-une-nouvelle-plainte-va-etre-deposee-contre-la-mairie-10-10-2026-B3R5T52FP5AQ7HYPY7LXVNQHBU.php) (2026-10-10) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 | [Le Parisien](https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-paris-linterminable-attente-de-deux-familles-de-lecole-maternelle-rochechouart-16-10-2026-V5ONJN4FCZHHRLL3HL234VGSWY.php) (2026-10-16) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 | [France Info](https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/une-nouvelle-plainte-collective-deposee-dans-le-scandale-du-periscolaire-a-paris-pour-combattre-l-impunite-de-tous-les-responsables-de-l-administration-de-la-ville_8232583.html) (2026-10-11) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
