@@ -140,7 +140,7 @@
 | Fiche | Appréciation | Correction exécutée | Sources réconciliées | Version · empreinte | Réserve |
 |---|---|---|---|---|---|
 | 0115 Tarnos | excellente | état « écroué » complété (v4) | Libération 403 : rattachée, non lue | v4 `4af66277…` | choix relue / v4 |
-| 0012 Passy | bonne, 1 seule source citée | **BFMTV, Le Figaro, Marianne reconnues rattachées, lues et extraites** : corroborent décision, audience, appel (Marianne : aucun fait citable) ; Le Point (immobilier) classé hors sujet | Le Monde 402 : rattachée, non lue | **v5 `bc30390d…`** (v3 `af070d82…`, relue `c0463bb3…`) | confirmer le passage `c0463` → v5 |
+| 0012 Passy | bonne, 1 seule source citée | **BFMTV, Le Figaro, Marianne reconnues rattachées, lues et extraites** : corroborent décision, audience, appel (Marianne : aucun fait citable) ; Le Point (immobilier) classé hors sujet | Le Monde 402 : rattachée, non lue | **v5 `564a9a72…`** (v3 `af070d82…`, relue `c0463bb3…`) | confirmer le passage `c0463` → v5 |
 | 0046 Rezé | bonne ; titre ≠ résumé | Ouche-Dinier = contexte (v4) ; titre de la carte à corriger (Home, §E) | 6 articles Paris/Angers/Rennes : correctement non utilisés | v4 `e984bd72…` | titre « Deux écoles… » |
 | POC-02 | RAS | — | — | v4 `850af5e2…` | — |
 | 0025 Pontoise | **faible** | **date de la mise en examen corrigée** : 26 janvier 2024 selon l’AFP (Europe 1) ; le 14 février est la date où franceinfo l’a apprise — ma v4 reprenait à tort le 14 février ; procédure Valenciennes/Stanislas séparée en étape « procédure distincte » ; qualification **READY → À REVOIR** (matière faible) | Europe 1 ajoutée | **v5 `479e446b…`** | recherches ciblées (relais Le Monde ; suites à Valenciennes / Val-d’Oise) : rien de plus trouvé. **Le lien Pontoise ↔ Saint-Jean-de-Passy n’est pas dans l’article Linfo.re** (il lie Pontoise à Stanislas ; seul France 3 écrit que l’ex-directeur de Passy « a aussi dirigé Stanislas ») : non reporté |
@@ -174,7 +174,9 @@
 4. **Déjà posées** : passage de 0012 à la v5 · relue ou v4 pour 0115 · 0035.
 5. **À arbitrer par la Maintenance** : cartes de 0036 (« plainte »), PARIS-007 (« enquête »), titre de 0046.
 
-### E. Propositions de correction de données (Home / mémoire) — à passer par le circuit de décision, rien n’est écrit
+### E. Corrections de données (Home / mémoire) — **préparées, non appliquées**
+
+> **24/10/2026** : les trois premières lignes sont prêtes dans [supabase/migrations/021_corrections_donnees_relecture_20.sql](https://github.com/06adretn11/sousnosyeux/blob/main/supabase/migrations/021_corrections_donnees_relecture_20.sql) — `UPDATE` gardés par la valeur actuelle (idempotents), chacun vérifié en lecture seule sur Neon (1 ligne concernée, aucune collision de nom), rollback commenté dans le fichier. Application après votre GO : `node scripts/apply-migration.mjs supabase/migrations/021_… --dry-run`, puis sans `--dry-run`, puis `scripts/sync-data.mjs` → `data/cases.json` → QA → déploiement (seule étape qui touche le site public). La quatrième ligne (FR-2026-0026) est hors périmètre.
 
 | Affaire | Champ | Aujourd’hui | Proposé | Preuve |
 |---|---|---|---|---|
@@ -302,7 +304,7 @@ Associations à suivre : **collectif SOS Périscolaire** (cité à Colombes, FR-
 
 ## 5. Suivi unique
 
-> **Mise à jour du 23/10/2026** : versions de référence actuelles des 20 fiches relues = [RELECTURE_20_FICHES.md](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.md) (nouvelles empreintes : 0012 `bc30390d…`, 0025 `479e446b…`, 0043 `bd580687…`, 0119 `d887a53e…`, 0045 `d5181579…`, 0030 `09c7f15c…`, 0008 `d613e70a…`). Les empreintes du tableau ci-dessous pour ces sept fiches sont celles des versions antérieures, conservées.
+> **Mise à jour du 23/10/2026** : versions de référence actuelles des 20 fiches relues = [RELECTURE_20_FICHES.md](https://github.com/06adretn11/sousnosyeux/blob/main/docs/industrialisation/RELECTURE_20_FICHES.md) (nouvelles empreintes : 0012 `564a9a72…`, 0025 `479e446b…`, 0043 `bd580687…`, 0119 `d887a53e…`, 0045 `d5181579…`, 0030 `09c7f15c…`, 0008 `d613e70a…`). Les empreintes du tableau ci-dessous pour ces sept fiches sont celles des versions antérieures, conservées.
 
 | Fiche | Lot | Réf. | Qualif. | Empreinte | Statut |
 |---|---|---|---|---|---|
