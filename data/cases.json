@@ -1202,10 +1202,10 @@
     },
     {
       "case_id": "FR-2026-0046",
-      "etablissement": "Deux écoles maternelles non nommées",
+      "etablissement": "École maternelle du Chêne-Creux",
       "commune": "Rezé",
       "departement": "Loire-Atlantique",
-      "type_structure": "périscolaire",
+      "type_structure": "maternelle",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "agression sexuelle",
       "statut_judiciaire": "condamnation non définitive",
@@ -1220,6 +1220,13 @@
           "publication_date": "2026-04-23",
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/reze-l-ex-animateur-periscolaire-soupconne-d-agressions-sexuelles-sera-rejuge-en-novembre-a-rennes-8058661",
+          "media": "ICI",
+          "publication_date": "2026-06-09",
+          "source_type": "presse",
+          "is_primary": false
         },
         {
           "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
