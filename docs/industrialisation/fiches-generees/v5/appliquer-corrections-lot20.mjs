@@ -364,12 +364,26 @@ const CORRECTIONS = {
     note(c, { operation: 'reformulation', cible: 'suite : « Aucun appel rapporté »', apres: 'Appel et caractère définitif non documentés', motif: 'Décision de l’éditeur : retirer la qualification « non définitive » non démontrée ; l’appel ou le caractère définitif ne sont pas documentés.' });
     ecrire(c, 'FR-2026-0045');
   },
+
+  // ---- 24/10/2026 : appel ANNONCÉ ≠ appel formé ; plus de « SNY présente la décision comme non définitive » (même phrase, deux fiches)
+  async 'POC-02#appel'() { await corrigerAppelAnnonce('POC-02', '850af5e2f4b7b042'); },
+  async 'FR-2026-0012#appel'() { await corrigerAppelAnnonce('FR-2026-0012', '564a9a72a6a0c45e'); },
 };
+async function corrigerAppelAnnonce(id, hash) {
+  const c = charger(id, hash);
+  const AVANT = 'son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive.';
+  const APRES = 'son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés.';
+  const t = JSON.stringify(c.d);
+  if (!t.includes(AVANT)) throw new Error(id + ' : phrase attendue absente');
+  c.d = JSON.parse(t.split(AVANT).join(APRES));
+  note(c, { operation: 'reformulation', cible: 'appel annoncé : « SNY présente la décision comme non définitive »', apres: 'appel formé et caractère définitif non documentés', motif: 'Décision de l’éditeur : distinguer appel annoncé et appel effectivement formé ; ne pas affirmer le caractère non définitif sans preuve. Aucun fait ni aucune source modifiés.' });
+  ecrire(c, id);
+}
 function ajouterSource(c, s, raison) { if (!c.g.sources.some((x) => x.url === s.url)) c.g.sources.push({ url: s.url, media: s.media, publication_date: s.publie_le ?? null, origine: 'fournie', acces: 'libre', pertinence: 'CETTE_AFFAIRE', raison }); }
 
 // Reformulation générale sur les autres fiches des 20 qui portent la phrase (aucune autre correction)
 const demandees = process.argv.slice(2);
-for (const [id, f] of Object.entries(CORRECTIONS)) if (!demandees.length || demandees.includes(id) || demandees.includes(id.split('#')[0] + '#finale') && id.endsWith('#finale')) await f();
+for (const [id, f] of Object.entries(CORRECTIONS)) if (!demandees.length || demandees.includes(id) || demandees.includes(id.split('#')[0] + '#finale') && id.endsWith('#finale') || demandees.includes(id.split('#')[0] + '#appel') && id.endsWith('#appel')) await f();
 // Reformulation générale sur les autres fiches des 20 qui portent encore la phrase (aucune autre correction)
 const AUTRES = ['FR-2026-0038', 'FR-2026-0139', 'FR-2026-0006', 'FR-2026-0028', 'FR-2026-0123', 'FR-2026-0046', 'POC-02', 'FR-2026-0036', 'FR-2026-0027', 'FR-2026-0115', 'FR-2026-0035', 'PARIS-007'];
 if (!demandees.length) for (const id of AUTRES) {

@@ -50,6 +50,19 @@ for (const c of doc.cases) {
   }
 }
 
+// R5 « à qualifier » publié : bloquant, sauf fiche individuelle approuvée (exception ciblée).
+{
+  const base = doc.cases.find((c) => c._expect_clean) ?? doc.cases[0];
+  const aq = { ...base, case_id: 'FIX-R5-aq', statut_judiciaire: 'à qualifier', publication_status: 'publiée' };
+  const regle = 'R5_a_qualifier_publiee';
+  if (checkCase(aq, TODAY).some((f) => f.rule === regle)) ok('R5 « à qualifier » publié sans fiche approuvée : bloquant');
+  else fail('R5 « à qualifier » publié sans fiche approuvée : NON détecté');
+  if (!checkCase(aq, TODAY, { fichesApprouvees: new Set(['FIX-R5-aq']) }).some((f) => f.rule === regle)) ok('R5 « à qualifier » avec fiche approuvée : toléré');
+  else fail('R5 « à qualifier » avec fiche approuvée : encore bloquant');
+  if (checkCase(aq, TODAY, { fichesApprouvees: new Set(['AUTRE']) }).some((f) => f.rule === regle)) ok('R5 : la fiche approuvée d’une autre affaire n’exempte rien');
+  else fail('R5 : exemption indue');
+}
+
 // ── 2) Règles par corpus : doublons ────────────────────────────────
 console.log('\n2) Détection de doublons (corpus)');
 const dups = ruleDuplicates(doc.cases);

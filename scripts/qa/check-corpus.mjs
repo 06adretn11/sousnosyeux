@@ -22,7 +22,9 @@ const TODAY = new Date();
 const doc = JSON.parse(await readFile(resolve(ROOT, 'data/cases.json'), 'utf8'));
 const cases = doc.cases;
 
-const findings = [...cases.flatMap((c) => checkCase(c, TODAY)), ...ruleDuplicates(cases)];
+// Fiches individuelles approuvées (projetées dans data/evenements.json) : seule exception à « à qualifier » interdit en publication (R5).
+const fichesApprouvees = new Set(Object.keys(JSON.parse(await readFile(resolve(ROOT, 'data/evenements.json'), 'utf8')).fiches_approuvees ?? {}));
+const findings = [...cases.flatMap((c) => checkCase(c, TODAY, { fichesApprouvees })), ...ruleDuplicates(cases)];
 
 const bloquants = findings.filter((f) => f.severity === 'bloquant');
 const alertes = findings.filter((f) => f.severity === 'alerte');

@@ -110,8 +110,8 @@ export function sourceAffichee(etat: EtatBloc, principale: SourceAffichee | null
  */
 export function phrasesEtat(statut: string, etat: EtatBloc, source: SourceAffichee | null): string[] {
   const cible0 = etat?.statut ?? statut;
-  // Finalité « inconnue » : la condamnation est dite sans le qualificatif « non définitive », que rien ne démontre.
-  const clause = cible0 === 'condamnation non définitive' && etat?.finalite === 'inconnue'
+  // Sans appel en cours ni finalité « non_definitive » validée, la condamnation est dite sans le qualificatif « non définitive », que rien ne démontre.
+  const clause = cible0 === 'condamnation non définitive' && etat?.finalite !== 'non_definitive' && !etat?.suites?.includes('APPEL_EN_COURS')
     ? (q: string) => `une condamnation a été prononcée${q}`
     : CLAUSE[cible0];
   if (!clause) {

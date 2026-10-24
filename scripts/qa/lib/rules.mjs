@@ -312,7 +312,7 @@ export function ruleSources(c) {
 }
 
 /** R5 — invariants de publication (contrat de données §1). */
-export function rulePublicationInvariants(c) {
+export function rulePublicationInvariants(c, ctx = {}) {
   const out = [];
   const publiee = c.publication_status === 'publiée' || c.publication_status === undefined;
 
@@ -345,7 +345,9 @@ export function rulePublicationInvariants(c) {
     }
   }
 
-  if (publiee && c.statut_judiciaire === 'à qualifier') {
+  // Exception ciblée : une affaire dont la FICHE individuelle a été approuvée et qui n'a, dans les sources, aucune étape judiciaire
+  // (décision de l'éditeur du 24/10/2026, Chat Perché) est publiée sans badge judiciaire : « à qualifier » est alors le seul libellé honnête.
+  if (publiee && c.statut_judiciaire === 'à qualifier' && !ctx.fichesApprouvees?.has(c.case_id)) {
     out.push(
       finding('R5_a_qualifier_publiee', 'bloquant', c.case_id, 'statut « à qualifier » incompatible avec la publication')
     );
@@ -463,13 +465,13 @@ export function ruleClaims(c) {
 }
 
 /** Applique toutes les règles « par fiche ». */
-export function checkCase(c, today = new Date()) {
+export function checkCase(c, today = new Date(), ctx = {}) {
   return [
     ...ruleForbiddenContent(c),
     ...ruleChildCount(c),
     ...ruleDeadlines(c, today),
     ...ruleSources(c),
-    ...rulePublicationInvariants(c),
+    ...rulePublicationInvariants(c, ctx),
     ...ruleFreshness(c, today),
     ...ruleTransitions(c),
     ...ruleClaims(c),
