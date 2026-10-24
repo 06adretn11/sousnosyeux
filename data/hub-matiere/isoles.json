@@ -450,6 +450,534 @@
           ]
         }
       }
+    },
+    "FR-2026-0115": {
+      "etat_actuel": [
+        "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+        "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
+      ],
+      "appel": false,
+      "faits": "Selon La Dépêche, un animateur du centre de loisirs de Tarnos (Landes) a été mis en examen pour des faits de viols et d'agressions sexuelles sur plusieurs enfants. Selon La Dépêche, l'animateur a été mis en examen pour quatre viols et trois agressions sexuelles, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+      "deroule": [
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon Sud Ouest, une septième plainte pourrait être déposée dans les heures qui viennent.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+            "publie_le": "2026-07-06",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "enquete",
+          "acteur": null,
+          "texte": "Selon Sud Ouest, certains enfants auraient été entendus par les enquêteurs ces derniers jours.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+            "publie_le": "2026-07-06",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-07-06",
+          "date_nature": "evenement",
+          "type": "garde_a_vue",
+          "acteur": null,
+          "texte": "Selon Sud Ouest, un animateur du centre de loisirs municipal de Tarnos a été placé en garde à vue le lundi 6 juillet pour suspicions de violences sexuelles.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+            "publie_le": "2026-07-06",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "La Dépêche",
+              "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+              "publie_le": "2026-09-04",
+              "acces": "libre"
+            },
+            {
+              "media": "La Montagne (AFP)",
+              "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "communication_parquet",
+          "acteur": "parquet de Dax",
+          "texte": "Le parquet de Dax a précisé dans un communiqué que les enfants concernés sont inscrits au centre de loisirs municipal de Tarnos.",
+          "source": {
+            "media": "La Provence",
+            "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
+            "publie_le": "2026-07-08",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "La Montagne (AFP)",
+              "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon Sud Ouest, un dépôt de plainte a été enregistré, la mairie en ayant eu connaissance le vendredi précédant le conseil municipal.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+              "publie_le": "2026-07-06",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_etablissement",
+          "acteur": "La mairie de Tarnos",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, le centre de loisirs sera fermé le mercredi 15 juillet 2026, avec l'accord du maire.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "Ville de Tarnos",
+          "texte": "La Ville a sollicité le Service départemental à la jeunesse, à l'engagement et aux sports, l'Agence régionale de santé, le centre médico-psycho-pédagogique, l'Unité d'accueil pédiatrique pour enfants en danger, l'Association d'aide aux victimes et de médiation ainsi que l'association Colosses aux pieds d'argile.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "La Ville de Tarnos",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, une réunion d'information à l'intention des parents dont les enfants fréquentent le centre de loisirs est organisée le mercredi 15 juillet 2026 à 18 heures au gymnase Léo-Lagrange.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-08",
+          "date_nature": "approximative",
+          "type": "decision",
+          "acteur": "chambre de l'instruction",
+          "texte": "Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention.",
+          "source": {
+            "media": "La Dépêche",
+            "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+            "publie_le": "2026-09-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mise_en_examen",
+          "acteur": null,
+          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+          "source": {
+            "media": "La Dépêche",
+            "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+            "publie_le": "2026-09-04",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            },
+            {
+              "media": "La Provence",
+              "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
+              "publie_le": "2026-07-08",
+              "acces": "libre"
+            },
+            {
+              "media": "La Montagne (AFP)",
+              "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            },
+            {
+              "media": "ici",
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+              "publie_le": "2026-10-07",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "contexte",
+          "acteur": "chambre de l'instruction",
+          "texte": "Selon La Dépêche, la chambre de l'instruction justifie cette remise en liberté par le fait que la sécurité du mis en cause ne peut plus être garantie en détention.",
+          "source": {
+            "media": "La Dépêche",
+            "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+            "publie_le": "2026-09-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_etablissement",
+          "acteur": "Centre de loisirs Pierrette-Fontenas de Tarnos",
+          "texte": "Selon Sud Ouest, le centre de loisirs de Tarnos a écarté un second animateur quelques jours avant la rentrée, appliquant le principe de précaution : dispense de se présenter à son poste le temps qu'aboutisse une procédure de licenciement.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/pyrenees-atlantiques/pays-basque/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-le-deuxieme-animateur-ecarte-avait-ete-exclu-du-periscolaire-de-bayonne-30608547.php",
+            "publie_le": "2026-09-13",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+              "publie_le": "2026-07-06",
+              "acces": "libre"
+            },
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/landes/tarnos/soupcons-d-agressions-sexuelles-au-centre-de-loisirs-de-tarnos-la-ville-s-est-bien-constituee-partie-civile-30766778.php",
+              "publie_le": "2026-09-24",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": "2026-09-22",
+          "date_nature": "evenement",
+          "type": "mesure_collectivite",
+          "acteur": "Ville de Tarnos (mairie)",
+          "texte": "Le maire de Tarnos a confirmé, lors du Conseil municipal du 22 septembre 2026, que la Ville s'est bien constituée partie civile dans l'affaire.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/soupcons-d-agressions-sexuelles-au-centre-de-loisirs-de-tarnos-la-ville-s-est-bien-constituee-partie-civile-30766778.php",
+            "publie_le": "2026-09-24",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "Ville de Tarnos (mairie)",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, la validation d'un avenant au contrat de délégation de service public du centre de loisirs sera soumise au vote du prochain Conseil municipal, ce document devant formaliser les durcissements des cahiers des charges.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/soupcons-d-agressions-sexuelles-au-centre-de-loisirs-de-tarnos-la-ville-s-est-bien-constituee-partie-civile-30766778.php",
+            "publie_le": "2026-09-24",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "ici",
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+              "publie_le": "2026-10-07",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "fait_rapporte",
+          "acteur": null,
+          "texte": "Selon ici, des faits d'agressions sexuelles et de viols sur de très jeunes enfants ont été découverts au centre de loisirs communal de Tarnos.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "fait_rapporte",
+          "acteur": null,
+          "texte": "Selon ici, plusieurs familles se sont regroupées au sein d'un collectif et ont organisé une marche blanche.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "ville de Tarnos (mairie)",
+          "texte": "Selon ici, la municipalité de Tarnos a présenté un plan d'action communal contre les violences sexuelles faites aux enfants, comprenant une série de mesures pour renforcer l'encadrement des enfants.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "ville de Tarnos (mairie)",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, un plan en quatre axes doit être déployé d'ici juin 2027.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "mairie de Tarnos",
+          "texte": "La mairie de Tarnos avait mis en place une cellule d'écoute et organisé plusieurs réunions publiques pour informer les parents.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Le dossier ne repose que sur 9 articles lus (Sud Ouest, La Dépêche, La Montagne (AFP), ici, La Provence)."
+      ],
+      "synthese": {
+        "decision": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+        "ouvert": "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
+      },
+      "reactions": [
+        {
+          "paraphrase": "Contexte dans l’article (Sud Ouest) : Le procureur de Dax, Benoît Fontaine, a confirmé l'information, tout en affirmant « qu'on était au tout début » de l'enquête, et qu'il faudrait attendre plusieurs heures pour connaître les suites judiciaires à donner dans ce dossier.",
+          "acteur": "Benoît Fontaine, procureur de Dax",
+          "qualite": "propos rapportés par Sud Ouest",
+          "date": "2026-07-06",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "l'état d'avancement de l'enquête",
+          "citations": [
+            {
+              "texte": "qu’on était au tout début",
+              "pour": "l'état d'avancement de l'enquête"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par Sud Ouest. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/societe/landes-une-garde-a-vue-en-cours-dans-l-affaire-des-soupcons-de-violences-sexuelles-au-centre-de-loisirs-municipal-de-tarnos-29822732.php",
+            "publie_le": "2026-07-06",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "Marc Mabillet, maire de Tarnos",
+          "qualite": "propos rapportés par ici",
+          "date": "2026-10-07",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "réponse de la commune après la découverte des faits",
+          "citations": [
+            {
+              "texte": "Il y aura un avant et un après",
+              "pour": "réponse de la commune après la découverte des faits"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "Marc Mabillet, maire de Tarnos",
+          "qualite": "propos rapportés par ici",
+          "date": "2026-10-07",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la sécurité des enfants",
+          "citations": [
+            {
+              "texte": "Une montée en puissance de la sécurité des enfants",
+              "pour": "la sécurité des enfants"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "Mehdi Boudjenane, avocat des parties civiles",
+          "qualite": "propos rapportés par Sud Ouest",
+          "date": "2026-09-24",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "Constitution de partie civile de la mairie et accès au dossier d'instruction",
+          "citations": [
+            {
+              "texte": "Je ne comprends pas pourquoi la mairie ne s'est pas constituée partie civile. Cela lui permettrait d'accéder au dossier d'instruction.",
+              "pour": "Constitution de partie civile de la mairie et accès au dossier d'instruction"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par Sud Ouest. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/soupcons-d-agressions-sexuelles-au-centre-de-loisirs-de-tarnos-la-ville-s-est-bien-constituee-partie-civile-30766778.php",
+            "publie_le": "2026-09-24",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "La mairie de Tarnos",
+          "qualite": "propos rapportés par Sud Ouest",
+          "date": "2026-07-09",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la réunion d'information des parents",
+          "citations": [
+            {
+              "texte": "Un temps d'échange qui sera régulé par l'association Couples et familles, afin de répondre aux questions sur les aspects judiciaires, psychologiques et procéduraux inhérents à cette situation. La gendarmerie sera également présente. En revanche, aucune information ne sera donnée sur l'enquête en cours.",
+              "pour": "la réunion d'information des parents"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par Sud Ouest. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "La mairie de Tarnos",
+          "qualite": "propos rapportés par Sud Ouest",
+          "date": "2026-07-09",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la fermeture du centre de loisirs",
+          "citations": [
+            {
+              "texte": "Les membres de l'équipe ont un besoin impérieux d'analyse de la situation et les moyens à mettre en œuvre pour y faire face.",
+              "pour": "la fermeture du centre de loisirs"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par Sud Ouest. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+            "publie_le": "2026-07-09",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "acteur": "Elisabeth Guthman, cofondatrice du collectif SOS périscolaire",
+          "qualite": "propos rapportés par ici",
+          "date": "2026-10-07",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "conséquences des violences subies et besoin de professionnels spécialisés",
+          "citations": [
+            {
+              "texte": "On a des enfants qui ne peuvent plus aller aux toilettes, on a des enfants qui s'enferment dans des placards, certains ont des traumatismes extrêmement lourds qu'il faut pouvoir prendre en charge d'une manière spécialisée. Et pour ça, il va falloir que des professionnels soient plus formés que d'autres.",
+              "pour": "conséquences des violences subies et besoin de professionnels spécialisés"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        }
+      ],
+      "statut_affiche": "mise en examen",
+      "situation": {
+        "decision": {
+          "label": "Situation judiciaire",
+          "titre": "Mise en examen",
+          "cat": "blue",
+          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan."
+        },
+        "suite": {
+          "label": "Suite",
+          "titre": "Aucune décision rendue",
+          "meta": "dans les sources consultées",
+          "cat": "blue",
+          "lignes": [
+            "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention.",
+            "La personne mise en cause est présumée innocente.",
+            "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, le centre de loisirs sera fermé le mercredi 15 juillet 2026, avec l'accord du maire.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : la Ville a sollicité le Service départemental à la jeunesse, à l'engagement et aux sports, l'Agence régionale de santé, le centre médico-psycho-pédagogique, l'Unité d'accueil pédiatrique pour enfants en danger, l'Association d'aide aux victimes et de médiation ainsi que l'association Colosses aux pieds d'argile."
+          ]
+        }
+      }
     }
   }
 }
