@@ -1599,9 +1599,23 @@
           "is_primary": false
         },
         {
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "media": "20 Minutes",
+          "publication_date": "2026-02-11",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
           "media": "France 3 Régions",
           "publication_date": "2026-10-02",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-10-08",
           "source_type": "presse",
           "is_primary": false
         },
