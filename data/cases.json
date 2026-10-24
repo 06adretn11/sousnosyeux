@@ -536,10 +536,10 @@
     },
     {
       "case_id": "FR-2026-0025",
-      "etablissement": "École Saint-Martin-de-France",
+      "etablissement": "Collège-lycée Saint-Martin-de-France",
       "commune": "Pontoise",
       "departement": "Val-d'Oise",
-      "type_structure": "internat",
+      "type_structure": "collège",
       "role_mis_en_cause": "direction",
       "type_affaire": "viol",
       "statut_judiciaire": "mise en examen",
