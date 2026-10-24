@@ -262,12 +262,114 @@ const CORRECTIONS = {
     note(c, { operation: 'qualification', cible: 'À REVOIR (matière faible, v5 précédente)', apres: 'READY', motif: 'Arbitrage de l’éditeur : l’affaire a sa place dans SNY et trois articles correctement rattachés constituent une matière suffisante. Ce n’est PAS une approbation de l’empreinte.' });
     ecrire(c, 'FR-2026-0025', { qualification: 'READY' });
   },
+
+  // =====================================================================================================================================
+  // ÉTAPE FINALE (24/10/2026) : applique les décisions de l'éditeur pour la mise en production. Chaque correction part de la version v5 indiquée.
+  // =====================================================================================================================================
+  async 'FR-2026-0030#finale'() {
+    const c = charger('FR-2026-0030', '09c7f15cd8d7af1a');
+    const t = JSON.stringify(c.d); let n = 0;
+    const remp = (a, b) => { const k = t2.split(a).length - 1; n += k; t2 = t2.split(a).join(b); };
+    let t2 = t;
+    for (const ap of ["'", '’']) { remp('l' + ap + 'ancien proviseur adjoint', 'l' + ap + 'ancien membre de la direction'); }
+    remp('un ancien proviseur adjoint', 'un ancien membre de la direction'); remp('le proviseur adjoint', 'le membre de la direction'); remp('du proviseur adjoint', 'du membre de la direction'); remp('Le proviseur adjoint', 'Le membre de la direction'); remp('proviseur adjoint', 'membre de la direction');
+    if (!n) throw new Error('0030 : aucune occurrence');
+    c.d = JSON.parse(t2);
+    c.g.attention = c.g.attention.filter((a) => a.code !== 'FONCTION_IDENTIFIANTE');
+    note(c, { operation: 'reformulation', cible: 'fonction « proviseur adjoint » (' + n + ' occurrences)', apres: '« membre de la direction »', motif: 'Décision de l’éditeur : ne pas sur-identifier la fonction ; la fonction exacte n’apporte rien à la compréhension de l’affaire.' });
+    ecrire(c, 'FR-2026-0030');
+  },
+
+  async 'FR-2026-0123#finale'() {
+    const c = charger('FR-2026-0123', '75b201bd44522a61');
+    const i24 = c.d.deroule.findIndex((e) => /a sanctionné plusieurs agents : le directeur/.test(e.texte));
+    if (i24 < 0) throw new Error('0123 : étape de sanctions absente');
+    const e24 = c.d.deroule[i24];
+    await verifier(e24.source.url, ['suspendu pendant trois mois et mis à la retraite anticipée', 'a écopé d’un blâme', 'suspendue pendant deux mois', 'a reçu un rappel à l’ordre']);
+    const avant = e24.texte;
+    e24.texte = 'Selon France 3 Provence-Alpes-Côte d’Azur, la ville de Nice a sanctionné plusieurs agents d’encadrement et de direction de l’enfance et du centre de loisirs (suspensions de deux et trois mois, mise à la retraite anticipée, blâme, rappel à l’ordre).';
+    note(c, { operation: 'reformulation', cible: avant, apres: e24.texte, motif: 'Décision de l’éditeur : limiter les formulations inutilement identifiantes (une fonction unique désigne une personne) ; les sanctions restent documentées.', preuves: [{ media: e24.source.media, url: e24.source.url, citation: 'suspendu pendant trois mois et mis à la retraite anticipée' }] });
+    for (const re of [/directeur de l.enfance et de la jeunesse de la Ville aurait été suspendu/, /infligé un blâme à la cheffe de service/]) {
+      const ix = c.d.deroule.findIndex((e) => re.test(e.texte));
+      if (ix < 0) throw new Error('0123 : étape à retirer absente');
+      note(c, { operation: 'retrait_etape', cible: c.d.deroule[ix].texte, motif: 'Doublon de la sanction générale reformulée (et désignation d’une fonction unique).' });
+      c.d.deroule.splice(ix, 1);
+    }
+    c.g.attention = c.g.attention.filter((a) => a.code !== 'FONCTION_IDENTIFIANTE');
+    ecrire(c, 'FR-2026-0123');
+  },
+
+  async 'FR-2026-0036#finale'() {
+    const c = charger('FR-2026-0036', '6b23273bc88028fe');
+    const susp = c.d.deroule.find((e) => /nouvelle procédure disciplinaire/.test(e.texte));
+    const nonReint = c.d.deroule.find((e) => /ne sera pas réintégré/.test(e.texte));
+    if (!susp || !nonReint) throw new Error('0036 : étapes attendues absentes');
+    const avant = c.d.etat_actuel[0];
+    c.d.etat_actuel = [susp.texte];
+    c.d.synthese = { decision: susp.texte };
+    c.d.situation = { decision: { label: 'Situation', titre: 'Suspension et procédure disciplinaire', meta: 'People&Baby', cat: 'orange', texte: susp.texte },
+      suite: { label: 'Suite', titre: 'Aucune procédure judiciaire documentée', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.', 'Plainte annoncée du groupe contre le salarié (selon Lyon Capitale et France 3 Régions) : aucun dépôt n’est confirmé dans les sources lues.', nonReint.texte] } };
+    note(c, { operation: 'reformulation', cible: 'situation : « ' + avant + ' » (plainte annoncée) + lignes dupliquées', apres: susp.texte, motif: 'Décision de l’éditeur : ne pas affirmer une plainte non documentée. La situation décrit la mesure réalisée (suspension, procédure disciplinaire) ; la plainte reste une annonce du groupe, dite comme telle ; les doublons de mise à pied sont retirés de la synthèse.' });
+    c.d.inconnues.unshift('Aucune plainte déposée pour cet établissement n’est rapportée : la plainte de la famille (février) concerne la crèche Joyeuse Tribu (fiche liée) ; celle du groupe contre le salarié est annoncée, non confirmée.');
+    ecrire(c, 'FR-2026-0036');
+  },
+
+  async 'FR-2026-0035#finale'() {
+    const c = charger('FR-2026-0035', '28fe51908463933f');
+    const F3 = { media: 'France 3 Régions', url: 'https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html', publie_le: '2025-06-18', acces: 'libre' };
+    await verifier(F3.url, ['Début avril, le salarié est affecté dans une autre crèche lyonnaise du groupe, Chat Perché']);
+    const e = evt({ type: 'contexte', acteur: 'People&Baby', texte: 'Affaire liée (crèche Chat Perché, Lyon 3e, fiche séparée) : selon France 3 Régions, début avril, le même salarié a été affecté à la crèche Chat Perché, où un nouvel incident a ensuite été rapporté en juin.', source: F3 });
+    await verifier(F3.url, ['Or début juin, un nouvel incident survient.']);
+    c.d.deroule.push(e);
+    note(c, { operation: 'ajout_etape', cible: e.texte, motif: 'Décision de l’éditeur : deux fiches liées, une par établissement ; lien documentaire réciproque (même gestionnaire, même salarié).', preuves: [{ media: F3.media, url: F3.url, citation: 'Début avril, le salarié est affecté dans une autre crèche lyonnaise du groupe, Chat Perché' }] });
+    ecrire(c, 'FR-2026-0035');
+  },
+
+  async 'PARIS-007#finale'() {
+    const c = charger('PARIS-007', '707e7612c3019da4');
+    const avant = c.d.etat_actuel[0];
+    c.d.etat_actuel = ['Aucune procédure judiciaire n’est rapportée par les sources lues. Enquête administrative (non judiciaire) : ' + avant.replace(/^Selon 20 Minutes, une/, 'selon 20 Minutes, une')];
+    c.d.synthese = { decision: c.d.etat_actuel[0] };
+    c.d.inconnues.unshift('Aucune plainte ni enquête du parquet n’est rapportée : les mesures décrites (enquête administrative, retrait du terrain, réunions) sont des mesures de la Ville de Paris, distinctes de toute suite judiciaire ; un signalement au parquet est seulement annoncé.');
+    note(c, { operation: 'reformulation', cible: avant, apres: c.d.etat_actuel[0], motif: 'Décision de l’éditeur : distinguer explicitement les mesures administratives d’une procédure judiciaire (la carte « enquête » n’est étayée que par une enquête administrative).' });
+    ecrire(c, 'PARIS-007');
+  },
+
+  async 'FR-2026-0008#finale'() {
+    const c = charger('FR-2026-0008', 'd613e70a3d0a0212');
+    const avant = c.d.etat_actuel[0];
+    c.d.etat_actuel = ['Aucune procédure judiciaire n’est rapportée par les sources lues. Enquête administrative (non judiciaire) : ' + avant.replace(/^La mairie/, 'la mairie') + ' ; la mairie du 14e arrondissement a annoncé avoir saisi le procureur de la République.'];
+    c.d.synthese = { decision: c.d.etat_actuel[0] };
+    c.d.inconnues.unshift('Aucune enquête judiciaire n’est rapportée : l’enquête mentionnée est administrative (mairie du 14e) ; la saisine du procureur est annoncée, sans suite connue.');
+    note(c, { operation: 'reformulation', cible: avant, apres: c.d.etat_actuel[0], motif: 'Décision de l’éditeur : distinguer enquête administrative et enquête judiciaire.' });
+    ecrire(c, 'FR-2026-0008');
+  },
+
+  // Annonay et Saint-Valéry : « non définitive » n'est pas démontré → l'appel et le caractère définitif sont dits non documentés
+  async 'FR-2026-0043#finale'() {
+    const c = charger('FR-2026-0043', 'bd5806875460e9d8');
+    c.d.situation.suite.titre = 'Appel et caractère définitif non documentés';
+    c.d.statut_libelle = 'Condamnation (appel non documenté)';
+    const k = c.d.inconnues.findIndex((x) => /^Périmètre/.test(x));
+    if (k < 0) throw new Error('0043 : inconnue de périmètre absente');
+    c.d.inconnues[k] = 'Périmètre : les faits documentés ne correspondent pas à des agressions sexuelles rapportées sur des élèves de l’établissement ; la condamnation porte sur le téléchargement d’images pédopornographiques, hors de l’établissement.';
+    note(c, { operation: 'reformulation', cible: 'suite : « Aucun appel rapporté » ; note de périmètre', apres: 'Appel et caractère définitif non documentés ; périmètre dit sans renvoi éditorial', motif: 'Décisions de l’éditeur : ne pas qualifier de « non définitive » une condamnation dont l’appel n’est pas documenté ; conserver la fiche en précisant la nature des faits.' });
+    ecrire(c, 'FR-2026-0043');
+  },
+
+  async 'FR-2026-0045#finale'() {
+    const c = charger('FR-2026-0045', 'd5181579c9183535');
+    c.d.situation.suite.titre = 'Appel et caractère définitif non documentés';
+    c.d.statut_libelle = 'Condamnation (appel non documenté)';
+    note(c, { operation: 'reformulation', cible: 'suite : « Aucun appel rapporté »', apres: 'Appel et caractère définitif non documentés', motif: 'Décision de l’éditeur : retirer la qualification « non définitive » non démontrée ; l’appel ou le caractère définitif ne sont pas documentés.' });
+    ecrire(c, 'FR-2026-0045');
+  },
 };
 function ajouterSource(c, s, raison) { if (!c.g.sources.some((x) => x.url === s.url)) c.g.sources.push({ url: s.url, media: s.media, publication_date: s.publie_le ?? null, origine: 'fournie', acces: 'libre', pertinence: 'CETTE_AFFAIRE', raison }); }
 
 // Reformulation générale sur les autres fiches des 20 qui portent la phrase (aucune autre correction)
 const demandees = process.argv.slice(2);
-for (const [id, f] of Object.entries(CORRECTIONS)) if (!demandees.length || demandees.includes(id)) await f();
+for (const [id, f] of Object.entries(CORRECTIONS)) if (!demandees.length || demandees.includes(id) || demandees.includes(id.split('#')[0] + '#finale') && id.endsWith('#finale')) await f();
 // Reformulation générale sur les autres fiches des 20 qui portent encore la phrase (aucune autre correction)
 const AUTRES = ['FR-2026-0038', 'FR-2026-0139', 'FR-2026-0006', 'FR-2026-0028', 'FR-2026-0123', 'FR-2026-0046', 'POC-02', 'FR-2026-0036', 'FR-2026-0027', 'FR-2026-0115', 'FR-2026-0035', 'PARIS-007'];
 if (!demandees.length) for (const id of AUTRES) {
