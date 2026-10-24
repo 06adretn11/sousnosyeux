@@ -1,7 +1,7 @@
 {
-  "_note": "GO de publication du 24/10/2026 (Adrien, conversation Claude Code) : identifiant de l'affaire -> empreinte EXACTE autorisée. Tarnos (0115) : clic Telegram du 24/10 (proposition af7a64e7). Les 19 autres : GO collectif saisi par l'agent, pas un clic.",
+  "_note": "(24/10 : POC-02 et FR-2026-0012 portent la nouvelle empreinte du GO de correction, voir ids-go-correction.json) GO de publication du 24/10/2026 (Adrien, conversation Claude Code) : identifiant de l'affaire -> empreinte EXACTE autorisée. Tarnos (0115) : clic Telegram du 24/10 (proposition af7a64e7). Les 19 autres : GO collectif saisi par l'agent, pas un clic.",
   "FR-2026-0115": "4af66277ad3e802e",
-  "POC-02": "850af5e2f4b7b042",
+  "POC-02": "53dcbef1f29f68eb",
   "FR-2026-0025": "a328daccc2ffef42",
   "FR-2026-0027": "04ca3c7a38e157eb",
   "FR-2026-0124": "16071cfe70469bad",
@@ -9,7 +9,7 @@
   "FR-2026-0139": "7bea2f3e47af82bf",
   "FR-2026-0006": "fb80fca964705d6e",
   "FR-2026-0028": "cc4d35f3858e5324",
-  "FR-2026-0012": "564a9a72a6a0c45e",
+  "FR-2026-0012": "a1165cf2585c95b8",
   "FR-2026-0046": "e984bd7210939752",
   "FR-2026-0123": "7d45756c4d0e8418",
   "FR-2026-0119": "d887a53e930a8f49",

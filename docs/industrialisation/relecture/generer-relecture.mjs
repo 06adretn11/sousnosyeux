@@ -14,9 +14,9 @@ const GH = 'https://github.com/06adretn11/sousnosyeux/blob/main/';
 // [lot, id, dossier, version, empreinte attendue, attente]
 const FICHES = [
   [1,'FR-2026-0115','v4/','v4 corrigée (relue : 884059fe59b45573)','4af66277ad3e802e','à vous : relue ou v4'],
-  [1,'FR-2026-0012','v5/','v5 : « appel annoncé » + 3 sources reconnues rattachées (v3 : af070d82b0235729 ; relue validée : c0463bb37a56ab7f)','564a9a72a6a0c45e','confirmer le passage à cette version'],
+  [1,'FR-2026-0012','v5/','v5 : « appel annoncé » + 3 sources reconnues rattachées (v3 : af070d82b0235729 ; relue validée : c0463bb37a56ab7f)','a1165cf2585c95b8','confirmer le passage à cette version'],
   [1,'FR-2026-0046','v4/','v4 corrigée (relue : d98feaedd130e5f1)','e984bd7210939752','à relire · titre de la carte à corriger (Chêne-Creux)'],
-  [1,'POC-02','v4/','v4 corrigée (relue : b1cdf82e22234035)','850af5e2f4b7b042','à relire'],
+  [1,'POC-02','v5/','version finale (appel annoncé distingué de l’appel formé ; v4 : 850af5e2f4b7b042)','53dcbef1f29f68eb','publiée'],
   [1,'FR-2026-0025','v5/','v5 recentrée sur Pontoise (arbitrage 24/10 ; v5 précédente : 479e446bac41eca5 ; v4 : 4dfa78f7161d3105 ; relue : 7ac88f870a7076e6)','a328daccc2ffef42','à relire · arbitrage appliqué : l’empreinte reste à approuver · correction de la Home à décider'],
   [1,'FR-2026-0036','v5/','version finale (plainte non affirmée ; fiche liée)','73661843f953c783','GO de publication du 24/10 (empreinte exacte)'],
   [1,'FR-2026-0027','v4/','v4 corrigée (relue : 347b5720c337ad99)','04ca3c7a38e157eb','à relire'],

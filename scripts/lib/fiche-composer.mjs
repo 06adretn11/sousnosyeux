@@ -235,7 +235,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     else signale('majeur', 'DECISION_NON_RESTITUABLE', 'La décision est établie mais sa formulation source contient un nom ou un nombre d’enfants : phrase à rédiger par un humain.');
     etat_actuel.push(issue.appel === 'OUI'
       ? `Un appel est rapporté (${issue.doc.media}) : la décision n’est pas définitive.`
-      : appelAnnonce ? `Un appel est annoncé (${appelAnnonce.source.media}) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive.`
+      : appelAnnonce ? `Un appel est annoncé (${appelAnnonce.source.media}) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés.`
       : issue.definitive === 'OUI' ? 'Une source indique que la décision est devenue définitive.'
         : issue.nature === 'condamnation' ? 'Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.'
           : 'Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.');

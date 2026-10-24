@@ -20,12 +20,14 @@ import { rattacherSources } from '../../scripts/lib/rattacher-sources.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire');
-const autorisees = JSON.parse(readFileSync(new URL('./ids-go-lot.json', import.meta.url), 'utf8'));
-delete autorisees._note;
+const liste = (A.find((a) => a.startsWith('--liste=')) ?? '--liste=ids-go-lot.json').slice(8);
+const autorisees = JSON.parse(readFileSync(new URL(`./${liste}`, import.meta.url), 'utf8'));
+const LOT = autorisees._lot ?? 'publication';
+delete autorisees._note; delete autorisees._lot;
 const demandes = A.filter((a) => !a.startsWith('--'));
 const ids = (demandes.length ? demandes : Object.keys(autorisees)).filter((id) => id !== 'FR-2026-0115'); // Tarnos : approuvée par clic Telegram (af7a64e7)
-const ID8 = createHash('sha256').update('GO-lot-publication-2026-10-24').digest('hex').slice(0, 8);
-const PAR = 'Adrien (GO de lot du 24/10/2026, saisi par l’agent — pas un clic Telegram)';
+const ID8 = createHash('sha256').update(LOT === 'publication' ? 'GO-lot-publication-2026-10-24' : `GO-lot-${LOT}`).digest('hex').slice(0, 8);
+const PAR = LOT === 'publication' ? 'Adrien (GO de lot du 24/10/2026, saisi par l’agent — pas un clic Telegram)' : `Adrien (GO de correction du 24/10/2026 « ${LOT} », saisi par l’agent — pas un clic Telegram)`;
 const cases = new Map(JSON.parse(readFileSync(new URL('../../data/cases.json', import.meta.url), 'utf8')).cases.map((c) => [c.case_id, c]));
 const { sql } = connecter();
 

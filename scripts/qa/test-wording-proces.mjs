@@ -19,7 +19,11 @@ verifie('événement validé et daté : « un procès s\'est tenu le 10 mars 202
 
 // Non-régression : les autres statuts n'ont pas bougé.
 verifie('enquête inchangée', phrasesEtat('enquête', null, src)[0] === 'Selon Sud Ouest, une enquête a été ouverte.');
-verifie('condamnation non définitive inchangée', /condamnation non définitive a été prononcée/.test(phrasesEtat('condamnation non définitive', null, src)[0]));
+// Sans bloc d'état validé (aucune preuve de finalité) : la condamnation est dite, sans « non définitive ».
+const sansEtat = phrasesEtat('condamnation non définitive', null, src)[0];
+verifie('condamnation sans bloc d\'état : « une condamnation a été prononcée », sans « non définitive »', /une condamnation a été prononcée/.test(sansEtat) && !/non définitive/.test(sansEtat), sansEtat);
+const appel = phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: null, suites: ['APPEL_EN_COURS'], sources: [src] }, src).join(' ');
+verifie('appel en cours : « non définitive » conservé', /condamnation non définitive a été prononcée/.test(appel) && /Un appel a été formé/.test(appel), appel);
 
 // Finalité validée « inconnue » : plus de « non définitive » affirmé ; finalité « non_definitive » (ou appel) : inchangé (cas positif).
 const inconnue = phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: 'inconnue', suites: [], sources: [src] }, src).join(' ');

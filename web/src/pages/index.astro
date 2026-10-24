@@ -57,8 +57,8 @@ function statutCat(s: string): 'red' | 'blue' | 'orange' | 'green' | 'muted' {
 }
 
 function statutLabel(s: string, etat: { suites?: string[]; finalite?: string | null } | null = null): string {
-  // Finalité validée « inconnue » (ni appel ni caractère définitif documentés) : « non-déf. » serait une affirmation sans preuve.
-  if (s === 'condamnation non définitive' && etat?.finalite === 'inconnue') return 'Condamné';
+  // « non-déf. » n'est écrit que si un appel est en cours ou si la finalité « non définitive » est validée ; sinon (finalité inconnue ou non documentée) : « Condamné ».
+  if (s === 'condamnation non définitive' && etat?.finalite !== 'non_definitive' && !etat?.suites?.includes('APPEL_EN_COURS')) return 'Condamné';
   const m: Record<string, string> = {
     'condamnation définitive':      'Condamné (déf.)',
     'condamnation non définitive':  'Condamné (non-déf.)',

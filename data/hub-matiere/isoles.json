@@ -982,7 +982,7 @@
     "POC-02": {
       "etat_actuel": [
         "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs.",
-        "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive."
+        "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
       ],
       "appel": false,
       "faits": "Selon Ouest-France, les faits sont survenus dans une école maternelle de La Courneuve. Selon Ouest-France, l'ordinateur du suspect a été saisi mais aucun fichier ni image ni pédopornographique n'a été retrouvé.",
@@ -1161,7 +1161,7 @@
       ],
       "synthese": {
         "decision": "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs.",
-        "ouvert": "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive."
+        "ouvert": "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
       },
       "reactions": [
         {
@@ -1203,7 +1203,7 @@
           "meta": "selon Femme Actuelle",
           "cat": "orange",
           "lignes": [
-            "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive.",
+            "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés.",
             "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien, l'enseignant mis en cause a été immédiatement suspendu."
           ]
         }
@@ -2968,7 +2968,7 @@
     "FR-2026-0012": {
       "etat_actuel": [
         "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
-        "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive."
+        "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
       ],
       "appel": false,
       "faits": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy, un établissement privé réputé de Paris, a été condamné pour agression sexuelle sur un élève de 14 ans en 2021. Selon Le Dauphiné Libéré, l'ancien directeur a nié les faits au cours de l'audience.",
@@ -3069,7 +3069,7 @@
       ],
       "synthese": {
         "decision": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
-        "ouvert": "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive."
+        "ouvert": "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
       },
       "reactions": [
         {
@@ -3180,7 +3180,7 @@
           "meta": "selon Le Dauphiné Libéré",
           "cat": "orange",
           "lignes": [
-            "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; SNY présente la décision comme non définitive."
+            "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
           ]
         }
       }

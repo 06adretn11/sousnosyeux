@@ -70,7 +70,7 @@ const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 
   <div class="chips">
     {!blocs2 && <span class={`chip ${cat}`}>{d.statut_libelle ?? STATUT_LABELS[statut] ?? statut}</span>}
     {!blocs2 && appel && <span class="chip appel">Appel — décision non définitive</span>}
-    <span class="chip muted">{c.statut_des_faits === 'allégué' ? 'faits allégués' : c.statut_des_faits}</span>
+    <span class="chip muted">{c.statut_des_faits === 'allégué' ? 'faits allégués' : c.statut_des_faits === 'retenu par jugement non définitif' && !(appel || c.etat?.finalite === 'non_definitive') ? 'retenu par jugement' : c.statut_des_faits}</span>
   </div>
 
   {blocs2 && (
@@ -123,7 +123,8 @@ const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 
     {inconnues.length > 0 && (<><p class="sous">Ce que l’on ne sait pas</p><ul class="inconnues">{inconnues.map((i) => <li>{i}</li>)}</ul></>)}
   </section>
 
-  <p class="verif">Dernière vérification : {lib(d.verifie_le ?? verifieLe)}.</p>
+  {/* Seule une date de vérification PROPRE à la fiche est affichée : `verifieLe` (date de rédaction du fichier documentaire) n'est pas une vérification. */}
+  {d.verifie_le && <p class="verif">Dernière vérification : {lib(d.verifie_le)}.</p>}
   <p class="retours">
     {hub && <a class="r-hub" href={`${hub.url}#${c.case_id.toLowerCase()}`}>← {hub.titre}</a>}
     <a class="r-home" href="/">← Retour à la carte</a>
