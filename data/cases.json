@@ -630,9 +630,51 @@
           "is_primary": true
         },
         {
+          "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+          "media": "France 24",
+          "publication_date": "2025-07-31",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lindependant.fr/2025/08/14/assistante-decole-maternelle-accusee-de-viols-a-vic-la-gardiole-latsem-mise-en-examen-pour-viols-et-agressions-sexuelles-sur-9-enfants-a-ete-remise-en-12876411.php",
+          "media": "L'indépendant",
+          "publication_date": "2025-08-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
           "media": "La Dépêche",
           "publication_date": "2025-07-31",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+          "media": "Ladepeche.fr",
+          "publication_date": "2025-08-01",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+          "media": "Midi Libre",
+          "publication_date": "2026-09-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+          "media": "Midi Libre",
+          "publication_date": "2025-07-31",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+          "media": "MidiLibre",
+          "publication_date": "2026-01-23",
           "source_type": "presse",
           "is_primary": false
         }
