@@ -709,9 +709,23 @@
           "is_primary": true
         },
         {
+          "url": "https://www.bfmtv.com/lyon/rhone-un-parent-d-eleve-en-detention-provisoire-pour-des-faits-de-viols-et-agressions-sexuelles-a-lucenay_AN-202503130373.html",
+          "media": "BFMTV",
+          "publication_date": "2025-03-13",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
           "media": "Le Dauphiné Libéré",
           "publication_date": "2026-04-30",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/03/13/un-parent-d-eleve-suspecte-de-viols-et-d-agressions-sexuelles-sur-plusieurs-enfants",
+          "media": "Le Dauphiné Libéré",
+          "publication_date": "2025-03-13",
           "source_type": "presse",
           "is_primary": false
         }
