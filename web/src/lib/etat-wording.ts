@@ -109,7 +109,11 @@ export function sourceAffichee(etat: EtatBloc, principale: SourceAffichee | null
  * @param source  média à créditer, ou null s'il est inconnu
  */
 export function phrasesEtat(statut: string, etat: EtatBloc, source: SourceAffichee | null): string[] {
-  const clause = CLAUSE[etat?.statut ?? statut];
+  const cible0 = etat?.statut ?? statut;
+  // Finalité « inconnue » : la condamnation est dite sans le qualificatif « non définitive », que rien ne démontre.
+  const clause = cible0 === 'condamnation non définitive' && etat?.finalite === 'inconnue'
+    ? (q: string) => `une condamnation a été prononcée${q}`
+    : CLAUSE[cible0];
   if (!clause) {
     // Repli prudent : statut non couvert (ex. « à qualifier »).
     return source

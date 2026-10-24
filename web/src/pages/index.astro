@@ -56,7 +56,9 @@ function statutCat(s: string): 'red' | 'blue' | 'orange' | 'green' | 'muted' {
   return 'muted';
 }
 
-function statutLabel(s: string, etat: { suites?: string[] } | null = null): string {
+function statutLabel(s: string, etat: { suites?: string[]; finalite?: string | null } | null = null): string {
+  // Finalité validée « inconnue » (ni appel ni caractère définitif documentés) : « non-déf. » serait une affirmation sans preuve.
+  if (s === 'condamnation non définitive' && etat?.finalite === 'inconnue') return 'Condamné';
   const m: Record<string, string> = {
     'condamnation définitive':      'Condamné (déf.)',
     'condamnation non définitive':  'Condamné (non-déf.)',

@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-18"
+    "generated_at": "2026-10-24"
   },
   "cases": [
     {
@@ -1898,6 +1898,20 @@
           "publication_date": null,
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908",
+          "media": "Femme Actuelle",
+          "publication_date": "2026-03-28",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-12-17",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     },
