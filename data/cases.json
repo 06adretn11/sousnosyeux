@@ -797,9 +797,30 @@
           "is_primary": true
         },
         {
+          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+          "media": "20 Minutes",
+          "publication_date": "2026-01-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
           "media": "Actu17",
           "publication_date": "2026-01-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "media": "La Voix du Nord",
+          "publication_date": "2026-01-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+          "media": "Ouest-France",
+          "publication_date": "2026-01-20",
           "source_type": "presse",
           "is_primary": false
         }
