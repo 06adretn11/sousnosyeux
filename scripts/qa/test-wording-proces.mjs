@@ -21,5 +21,11 @@ verifie('événement validé et daté : « un procès s\'est tenu le 10 mars 202
 verifie('enquête inchangée', phrasesEtat('enquête', null, src)[0] === 'Selon Sud Ouest, une enquête a été ouverte.');
 verifie('condamnation non définitive inchangée', /condamnation non définitive a été prononcée/.test(phrasesEtat('condamnation non définitive', null, src)[0]));
 
+// Finalité validée « inconnue » : plus de « non définitive » affirmé ; finalité « non_definitive » (ou appel) : inchangé (cas positif).
+const inconnue = phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: 'inconnue', suites: [], sources: [src] }, src).join(' ');
+verifie('finalité inconnue : « une condamnation a été prononcée », sans « non définitive »', /une condamnation a été prononcée/.test(inconnue) && !/non définitive/.test(inconnue), inconnue);
+const nonDef = phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: 'non_definitive', suites: [], sources: [src] }, src).join(' ');
+verifie('finalité non_definitive : « non définitive » conservé', /condamnation non définitive a été prononcée/.test(nonDef) && /n'est pas définitive/.test(nonDef), nonDef);
+
 console.log(ko ? `\nWORDING_PROCES_FAILED — ${ko} échec(s)` : '\nWORDING_PROCES_OK');
 process.exit(ko ? 1 : 0);
