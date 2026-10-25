@@ -69,6 +69,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Nouveau Hub actionnable (PRÉPARER LE HUB → dossier consultable, rejeu sans doublon, rien publié) · « À lire aussi » = piste, jamais preuve (article lié, date, portée)',
+    script: 'scripts/qa/test-hub-et-pistes.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Information validée → pages existantes — destinations calculées (fiche approuvée, Hub publié), portée jamais devinée, rien d’exposé hors pages publiques',
     script: 'scripts/qa/test-destinations.mjs',
     bloquant: true,

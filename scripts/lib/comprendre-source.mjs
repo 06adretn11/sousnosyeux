@@ -38,6 +38,7 @@
 // =====================================================================
 
 import { createHash } from 'node:crypto';
+import { estPisteDeNavigation } from './corps-article.mjs';
 
 // La version DOIT bouger quand le prompt bouge : c'est le prompt, bien
 // plus que le slug du modèle, qui conditionne les réponses. Une constante
@@ -166,5 +167,6 @@ export function evidenceLitterale(reponse, corps) {
   // Comparaison sur la citation ENTIÈRE. Une première version ne comparait
   // que les 60 premiers caractères : une citation vraie au début et
   // fabriquée ensuite passait le contrôle.
-  return ev.filter((e) => e && !texte.includes(norm(e)));
+  // Un « À lire aussi » est présent dans la page mais n'est pas du contenu de l'article : il ne vaut pas citation.
+  return ev.filter((e) => e && (estPisteDeNavigation(e) || !texte.includes(norm(e))));
 }

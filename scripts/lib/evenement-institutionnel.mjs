@@ -44,6 +44,7 @@ const ANNONCE = /\b(annonc\w+|va|vont|sera|seront|serait|prevu\w*|prevoit|prevoi
 const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\bont\s+(?:manifeste|defile)\w*/;
 /** Texte comparable : sans accents, minuscules, apostrophes unifiées. */
 import { dejaConnu } from './nouveaute.mjs';
+import { estPisteDeNavigation } from './corps-article.mjs';
 const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[’'`]/g, "'");
 
 // Libellés publics : table fermée. Jamais de nom (personne mise en cause, élu), jamais de détail des faits.
@@ -183,7 +184,13 @@ const acteurNomme = (phrase) => { const m = ACTEUR_NOMME.exec(phrase); return m 
 const jetonsEtab = (e) => norm(e).split(/[^a-z0-9]+/).filter((w) => w.length > 3 && !['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'periscolaire', 'centre', 'loisirs'].includes(w));
 // Coupe aux fins de phrase seulement : les guillemets à espaces de la presse (« " texte " ») ne sont pas des frontières.
 // Les crédits photo (« © Radio France – Prénom Nom ») collés à une phrase sont retirés : jamais un nom de journaliste dans une citation.
-const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => s.replace(/\s*©.*$/, '').replace(/\s+/g, ' ').trim()).filter((s) => s.length >= 25);
+const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => s.replace(/\s*©.*$/, '').replace(/\s+/g, ' ').trim())
+  // Un « À lire aussi » est le titre d'un AUTRE article : jamais une phrase de celui-ci, donc jamais une preuve (même sur un corps déjà mémorisé).
+  .filter((s) => s.length >= 25 && !estPisteDeNavigation(s));
+
+/** Territoire NOMMÉ par la phrase (« rassemblés à Paris ») — jamais la commune de l'affaire dont on est parti. */
+// (`\b` ne voit pas les lettres accentuées : « à » s'ancre par lookbehind.)
+const territoireDe = (phrase) => /(?<![\p{L}])(?:à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de)\s+(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/u.exec(phrase)?.[1] ?? null;
 
 /**
  * Réactions et mesures d'institutions rapportées par un ARTICLE ENTIER (et non seulement par la citation qui porte l'événement
@@ -218,9 +225,9 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       // UN fait par (type, jour) : deux rassemblements de jours différents ne fusionnent pas ; une phrase sans date rejoint le fait déjà vu.
       const cle = [...parMesure.keys()].find((k) => k.startsWith(`mob:${mesure}|`) && (!d.date || !parMesure.get(k).event_date || parMesure.get(k).event_date === d.date)) ?? `mob:${mesure}|${d.date ?? d.periode ?? parMesure.size}`;
       const f = parMesure.get(cle);
-      if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: nomme && !multi ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], _nomme: nomme && !multi });
+      if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: nomme && !multi ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], territoire: territoireDe(phrase), _nomme: nomme && !multi });
       else {
-        f.event_date ||= d.date; f.event_period ||= d.periode;
+        f.event_date ||= d.date; f.event_period ||= d.periode; f.territoire ||= territoireDe(phrase);
         for (const a of acteurs) if (!f.acteurs.includes(a)) f.acteurs.push(a);
         if (realisation === 'réalisée') f.realisation = 'réalisée';
         if (nomme && !multi && !f._nomme) { f._nomme = true; f.portee = 'établissement'; f.evidence.unshift(phrase); }
@@ -228,6 +235,17 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
         f.evidence = f.evidence.slice(0, 2);
         f.acteur = f.acteurs.join(', ');
       }
+    }
+  }
+  // Date de l'ÉVÉNEMENT établie ailleurs dans le même article (légende « … à Paris, le 21 mars 2026 ») : adoptée seulement si elle porte une année
+  // écrite et si l'article n'en nomme qu'une pour ce type de mobilisation. La date de PUBLICATION n'est jamais la date du rassemblement.
+  for (const f of parMesure.values()) {
+    if (f.nature !== 'mobilisation' || f.event_date) continue;
+    const motif = MOBILISATIONS.find(([m]) => m === f.mesure)[1];
+    const datees = phrases.filter((p) => motif.test(norm(p)) && /\b\d{4}\b/.test(p)).map((p) => [dateEcrite(p, anneeRef).date, p]).filter(([d]) => d);
+    if (datees.length && new Set(datees.map(([d]) => d)).size === 1) {
+      f.event_date = datees[0][0]; f.event_period = null;
+      if (f.evidence.length < 2) f.evidence.push(datees[0][1]);
     }
   }
   for (let i = 0; i < phrases.length; i++) {
@@ -253,7 +271,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       }
     }
   }
-  return [...parMesure.values()].map(({ _nomme, ...f }) => ({ ...f, libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
+  return [...parMesure.values()].map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && (f.portee !== 'territoire' || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
 }
 
 /**

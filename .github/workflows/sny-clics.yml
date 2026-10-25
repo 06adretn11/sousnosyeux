@@ -102,6 +102,31 @@ jobs:
       - name: Contrôler le site réellement servi
         if: ${{ !cancelled() }}
         run: node scripts/reconcilier-publication.mjs --site
+      # Hub : le clic « PRÉPARER LE HUB » produit un DOSSIER DE REVUE (docs/industrialisation/hub-drafts), jamais une page du site. Écrit → déposé sur main →
+      # annoncé avec le lien, une seule fois, seulement après lecture du dossier sur main. Une erreur est dite sur Telegram ; elle ne bloque rien.
+      # (Après la publication des pages : ce dépôt ne touche que docs/, jamais l'artefact public ni le build.)
+      - name: Préparer les Hubs acceptés (dossier de revue, aucune publication)
+        id: hubs
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: node scripts/preparer-hub.mjs --ecrire
+      - name: Déposer les dossiers de Hub sur main (docs seulement, aucune page du site)
+        if: ${{ !cancelled() && steps.hubs.outputs.change == 'true' }}
+        continue-on-error: true
+        run: |
+          git config user.name "sny-bot"
+          git config user.email "sny-bot@users.noreply.github.com"
+          git add docs/industrialisation/hub-drafts
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: brouillon de Hub préparé sur clic Telegram ($HUB_SLUGS), aucune publication"
+            git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
+          fi
+        env:
+          HUB_SLUGS: ${{ steps.hubs.outputs.slugs }}
+      - name: Annoncer les brouillons de Hub prêts (lien vérifié sur main)
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: node scripts/preparer-hub.mjs --annoncer
       # Diagnostic territorial : la mémoire a changé → un Hub est-il à intégrer, enrichir ou proposer ? Notifie SEULEMENT si les compteurs ont bougé ;
       # ne publie jamais rien ; une panne du diagnostic ne bloque jamais la publication.
       - name: Diagnostic territorial (réévaluation des Hubs)

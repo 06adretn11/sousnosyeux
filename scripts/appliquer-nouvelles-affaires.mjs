@@ -90,6 +90,19 @@ for (const r of dues) {
     continue;
   }
 
+  // --- HUB (proposition « PRÉPARER LE HUB ») ----------------------------------------------------------------------------------
+  // PRÉPARER = produire un dossier de revue consultable (scripts/preparer-hub.mjs : écriture → dépôt sur main → annonce avec le lien), jamais
+  // publier. Un ACCEPT n'est donc PAS clos ici : la proposition reste « à appliquer » tant que le dossier n'est pas consultable (preuve, pas
+  // promesse). REJECT : consigné, rien préparé. Aucune écriture dans `cases`, aucun HOLD touché.
+  if (p.hub) {
+    if (accepte) { console.log('  Hub accepté : préparation du brouillon confiée à preparer-hub.mjs (rien publié)'); continue; }
+    console.log('  Hub refusé : rien préparé');
+    if (ECRIRE) await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ' · Hub refusé : rien préparé', 500)
+                           where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    notees++;
+    continue;
+  }
+
   // --- FICHE INDIVIDUELLE (proposition « APPROUVER LA FICHE ») -------------------------------------------------------------------
   // APPROUVER = GO éditorial de la PAGE, jamais publication de l'affaire (elle doit déjà être publique). Écrit : les sources lues pour la
   // fiche sont rattachées à l'affaire (lib/rattacher-sources, idempotent) + une revue « [Fiche approuvée] » portant l'empreinte du dossier.

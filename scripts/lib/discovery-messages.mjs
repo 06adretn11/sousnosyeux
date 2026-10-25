@@ -35,7 +35,8 @@ function trois(articles, n = 3) {
 export function messageEnrichissement(p, neufs, territorial) {
   const f1 = neufs[0];
   const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : 'date non établie');
-  const lieu = territorial ? `Territoire : ${esc(f1.territoire || p.commune)} (information relevée via ${esc(p.etablissement)})` : `<b>${esc(p.etablissement)}</b> — ${esc(p.commune)}`;
+  // Le territoire est celui que NOMME la source probante ; à défaut il n'est pas établi — jamais la commune de l'affaire d'où l'on est parti.
+  const lieu = territorial ? `Territoire : ${f1.territoire ? esc(f1.territoire) : 'non établi par la source'} (information relevée via ${esc(p.etablissement)})` : `<b>${esc(p.etablissement)}</b> — ${esc(p.commune)}`;
   const lienArticle = /^https?:\/\//.test(p.url || '') ? `\n${esc(p.url)}` : '';
   return [
     `🔄 <b>MAINTENANCE</b> · 📌 ENRICHISSEMENT PROPOSÉ`,
@@ -114,7 +115,23 @@ export function messageFiche(p) {
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
+/** NOUVEAU HUB PROPOSÉ (diagnostic territorial) : PRÉPARER LE HUB = préparer un BROUILLON consultable, jamais publier. */
+export function messageHub(p) {
+  const h = p.hub;
+  return [
+    `🗺 <b>TERRITOIRE · NOUVEAU HUB PROPOSÉ</b> · ${esc(h.territoire)}`,
+    '',
+    '<b>Pourquoi maintenant</b> : ' + (h.pourquoi || []).map(esc).join(' ; '),
+    `<b>Affaires publiques</b> : ${h.publiques.length} (aucun Hub) · <b>Matière</b> : ${h.evenements} événement(s) validé(s), ${h.reactions} réaction(s)/mobilisation(s), ${h.sources} source(s)`,
+    '',
+    '<b>Ce que fait le bouton</b>',
+    '🗺 PRÉPARER LE HUB : SNY prépare un BROUILLON de Hub (affaires, chronologie du territoire, réponses publiques, sources, ce qui reste à établir) et t’envoie le lien du dossier de revue. Aucune page n’est créée ni publiée ; publier un Hub exigera ton GO distinct.',
+    '🟡 REVIEW : rien préparé · ⛔ REJECT : pas de Hub pour ce territoire.',
+  ].join('\n');
+}
+
 export function messageDecision(p, recommendation) {
+  if (p.hub) return messageHub(p);
   if (p.page) return messageFiche(p);
   if (p.publication) return messagePublication(p);
   // Un candidat de rattachement (payload.attach) → message COMPARATIF, quelle que soit la recommandation : c'est l'humain qui tranche.
@@ -211,6 +228,7 @@ export function modeCreation(recommendation, payload) {
  * REVIEW = HOLD : n'écrit rien. Jamais toutes les actions à la fois.
  */
 export function boutons(recommendation, cle, payload = null) {
+  if (payload?.hub) return { inline_keyboard: [[{ text: '🗺 PRÉPARER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.page) return { inline_keyboard: [[{ text: '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   const r2 = [
     { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` },

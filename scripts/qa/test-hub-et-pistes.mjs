@@ -1,0 +1,179 @@
+// Deux écarts de la boucle Maintenance Telegram (24/10/2026) :
+//   1. une proposition de nouveau Hub doit être ACTIONNABLE (préparer un brouillon consultable, sans jamais publier) ;
+//   2. un « À lire aussi » est une PISTE de découverte, jamais une preuve ; l'article lié fournit sa propre preuve, sa date et sa portée.
+import assert from 'node:assert/strict';
+import { decoderCallback, boutonValable } from '../lib/telegram-clics.mjs';
+import { boutons, messageDecision, messageEnrichissement } from '../lib/discovery-messages.mjs';
+import { payloadProposition, composerBrouillonHub, slugTerritoire, urlBrouillon } from '../lib/hub-brouillon.mjs';
+import { diagnostiquer } from '../lib/diagnostic-territoire.mjs';
+import { extraireCorps, estPisteDeNavigation } from '../lib/corps-article.mjs';
+import { extraireReactions } from '../lib/evenement-institutionnel.mjs';
+import { evidenceLitterale } from '../lib/comprendre-source.mjs';
+import { pistesASuivre } from '../lib/pistes.mjs';
+
+let n = 0; const t = (nom, f) => { f(); n++; console.log(`  ✓ ${nom}`); };
+
+// --- fixtures ----------------------------------------------------------------------------------------------------------
+const affaire = (id, commune, statut, sources) => ({ case_id: id, etablissement: `École de ${commune}`, commune, departement: 'Landes', type_structure: 'école', role_mis_en_cause: 'enseignant',
+  type_affaire: 'violences', statut_judiciaire: statut, statut_des_faits: 'allégué', enfants_concernes_public: 'non précisé', lat: 43.9, lng: -0.9, geocode_source: 'ban-commune',
+  sources: sources.map(([media, url, d], i) => ({ url, media, publication_date: d, source_type: 'presse', is_primary: i === 0 })) });
+const CASES = [
+  affaire('FR-2026-0901', 'Tarnos', 'mise en examen', [['Sud Ouest', 'https://www.sudouest.fr/a1', '2026-07-06'], ['Mediapart', 'https://www.mediapart.fr/x', '2026-07-08']]),
+  affaire('FR-2026-0902', 'Mées', 'procès', [['ICI', 'https://www.ici.fr/b1', '2026-09-25']]),
+];
+const EVTS = [{ case_id: 'FR-2026-0901', type: 'réponse_institutionnelle', date: null, libelle: 'Selon la presse, la collectivité a annoncé un plan d’action.', realisation: 'annoncée',
+  source: { media: 'ici', url: 'https://www.ici.fr/e1', publication_date: '2026-10-07' } }];
+const ETAT = { hub: null, publiques: ['FR-2026-0902', 'FR-2026-0901'], horsHub: [], candidatesValidees: 0, reviewNonPublic: 0, evenements: 1, reactions: 1, sources: 3, avecMatiere: 1, _dep: 'Landes' };
+const TERR = { slug: 'landes', titre: 'Landes', departement: 'Landes' };
+
+// --- 1. Hub -------------------------------------------------------------------------------------------------------------
+const d = diagnostiquer(ETAT, { publiques: 0, horsHub: 0, candidatesValidees: 0, reviewNonPublic: 0, evenements: 0, reactions: 0, sources: 0 });
+const { payload, cle } = payloadProposition('landes', ETAT, d);
+
+t('le cas Landes est bien un PROPOSER_NOUVEAU_HUB (la proposition existe, c\'est son action qui manquait)', () => assert.equal(d.decision, 'PROPOSER_NOUVEAU_HUB'));
+t('la proposition de Hub envoyée porte une action fonctionnelle : un bouton décodable par le circuit de clics existant', () => {
+  const kb = boutons('REVIEW', 'abcd1234', payload).inline_keyboard.flat();
+  const prep = kb.find((b) => /PRÉPARER LE HUB/.test(b.text));
+  assert.ok(prep, 'bouton PRÉPARER LE HUB absent');
+  assert.deepEqual(decoderCallback(prep.callback_data), { type: 'NC', action: 'VALIDATE', cle: 'abcd1234' });
+  assert.ok(kb.some((b) => decoderCallback(b.callback_data)?.action === 'REVIEW') && kb.some((b) => decoderCallback(b.callback_data)?.action === 'REJECT'));
+});
+t('le bouton est VALABLE pour ce message, et seulement lui : un clic « Hub » ne peut ni créer une fiche, ni rattacher, ni publier', () => {
+  assert.equal(boutonValable('VALIDATE', payload), true);
+  for (const a of ['CREATE', 'ATTACH', 'PENDING']) assert.equal(boutonValable(a, payload), false, a);
+  assert.equal(boutonValable('VALIDATE', { hub: { territoire: 'x' } }), false, 'sans identifiant de dossier : non valable');
+});
+t('le message annonce ce que fait le bouton, et que rien n\'est publié', () => {
+  const m = messageDecision(payload, 'REVIEW');
+  assert.match(m, /PRÉPARER LE HUB/); assert.match(m, /BROUILLON/); assert.match(m, /Aucune page n’est créée ni publiée/); assert.match(m, /Landes/);
+  assert.doesNotMatch(m, /se prend dans la conversation/);
+});
+t('une même proposition de périmètre ne se duplique pas : clé stable à l\'ordre près, nouvelle seulement si le périmètre change', () => {
+  assert.equal(payloadProposition('landes', { ...ETAT, publiques: [...ETAT.publiques].reverse() }, d).cle, cle);
+  assert.notEqual(payloadProposition('landes', { ...ETAT, publiques: [...ETAT.publiques, 'FR-2026-0903'] }, d).cle, cle);
+});
+t('préparer = un dossier de revue consultable : affaires, sources, réponse publique, couverture, contrôles, empreinte, « aucune publication »', () => {
+  const r = composerBrouillonHub({ territoire: TERR, cases: CASES, evenements: EVTS, genere_le: '2026-10-25' });
+  for (const s of ['FR-2026-0901', 'FR-2026-0902', 'Tarnos', 'Mées', 'https://www.sudouest.fr/a1', 'https://www.ici.fr/e1', 'plan d’action', 'Couverture de presse dans le temps', 'BROUILLON — aucune publication', r.hash]) assert.ok(r.markdown.includes(s), s);
+  assert.match(r.markdown, /2 affaire\(s\) publique\(s\) dans 2 commune\(s\)/);
+  assert.match(urlBrouillon(r.slug), /\/docs\/industrialisation\/hub-drafts\/landes\.md$/);
+});
+t('le dossier n\'invente ni ne publie : média payant écarté, aucun événement d\'une autre affaire, aucun lien postulé entre les affaires', () => {
+  const r = composerBrouillonHub({ territoire: TERR, cases: CASES, evenements: [...EVTS, { ...EVTS[0], case_id: 'FR-2026-0777', libelle: 'ÉVÉNEMENT ÉTRANGER' }], genere_le: '2026-10-25' });
+  assert.ok(!/mediapart/i.test(r.markdown)); assert.ok(!r.markdown.includes('ÉVÉNEMENT ÉTRANGER')); assert.match(r.markdown, /ne postule aucun lien/);
+});
+t('rejouer ne crée pas de doublon : mêmes données → même empreinte et même dossier ; données modifiées → autre empreinte', () => {
+  const a = composerBrouillonHub({ territoire: TERR, cases: CASES, evenements: EVTS, genere_le: '2026-10-25' });
+  const b = composerBrouillonHub({ territoire: TERR, cases: CASES, evenements: EVTS, genere_le: '2026-10-25' });
+  assert.equal(a.hash, b.hash); assert.equal(a.markdown, b.markdown);
+  assert.notEqual(composerBrouillonHub({ territoire: TERR, cases: CASES.slice(0, 1), evenements: EVTS, genere_le: '2026-10-25' }).hash, a.hash);
+});
+t('une impossibilité est dite, jamais présentée comme un succès : aucune affaire publique → erreur ; identifiant de fichier hostile refusé', () => {
+  assert.throws(() => composerBrouillonHub({ territoire: TERR, cases: [], genere_le: '2026-10-25' }), /aucune affaire publique/);
+  assert.throws(() => composerBrouillonHub({ territoire: { ...TERR, slug: '../../etc/x' }, cases: CASES, genere_le: '2026-10-25' }), /invalide/);
+  assert.equal(slugTerritoire('Côtes-d’Armor'), 'cotes-d-armor');
+});
+
+// --- 2. Preuve : « À lire aussi » = piste, pas preuve --------------------------------------------------------------------
+const RFI_A = 'https://www.rfi.fr/fr/france/20260915-peine-de-prison-ferme-scandale-periscolaire-parisien';
+const LIEN = 'https://www.rfi.fr/fr/france/20260321-france-des-parents-rassembl%C3%A9s-%C3%A0-paris';
+const page = (corps, titre = 'Article') => `<html><head><title>${titre}</title></head><body>${corps}</body></html>`;
+const HTML_A = page(
+  '<p>Un animateur a été condamné mardi à Paris à cinq ans de prison pour agressions sexuelles sur des élèves de l’école Vigée-Lebrun dans le XVe arrondissement.</p>'
+  + `<p class="a-read-more"><span class="a-read-more__label">À lire aussi</span><a href="${LIEN}">France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire</a></p>`
+  + '<p>Le parquet a fait appel de la relaxe de deux autres animateurs, ce qui a provoqué la colère de plusieurs familles et associations spécialisées.</p>', 'France: première peine ferme - RFI');
+
+t('l\'« À lire aussi » sort du corps de l\'article : il n\'est plus du texte que l\'on peut citer', () => {
+  const r = extraireCorps(HTML_A, RFI_A);
+  assert.ok(!/rassembl/i.test(r.corps.replace(r.titre, '')), 'le titre du lien associé est resté dans le corps');
+  assert.equal(r.paragraphes.length, 2);
+});
+t('… mais il est CONSERVÉ comme piste de découverte, avec son adresse', () => {
+  const r = extraireCorps(HTML_A, RFI_A);
+  assert.deepEqual(r.liens_associes, [{ titre: 'France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire', url: LIEN }]);
+});
+t('un « À lire aussi » seul ne fait plus une réaction proposée : ni dans le corps nettoyé, ni dans un corps déjà mémorisé qui le contient encore', () => {
+  assert.deepEqual(extraireReactions(extraireCorps(HTML_A, RFI_A).corps, { etablissement: 'École Vigée Lebrun', anneeRef: '2026-09-15' }), []);
+  const ancien = 'Un animateur a été condamné mardi à Paris à cinq ans de prison.\n\nÀ lire aussi France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire\n\nLe parquet a fait appel.';
+  assert.deepEqual(extraireReactions(ancien, { etablissement: 'École Vigée Lebrun', anneeRef: '2026-09-15' }), []);
+});
+t('voie modèle : une citation qui n\'est qu\'un « À lire aussi » est INVALIDE même si elle figure dans la page', () => {
+  const corps = 'Texte.\n\nÀ lire aussi France: des parents rassemblés à Paris contre les violences\n\nSuite du texte réel.';
+  assert.deepEqual(evidenceLitterale({ evidence: ['À lire aussi France: des parents rassemblés à Paris contre les violences', 'Suite du texte réel.'] }, corps),
+    ['À lire aussi France: des parents rassemblés à Paris contre les violences']);
+  assert.ok(estPisteDeNavigation('Lire aussi : « un titre »') && !estPisteDeNavigation('Les parents ont lu aussi la lettre'));
+});
+t('un fait directement documenté dans le CORPS reste admissible (la garde ne supprime pas la preuve réelle)', () => {
+  const corps = extraireCorps(page('<p>Un rassemblement de plusieurs parents du collectif était organisé ce samedi matin devant la mairie de Paris pour alerter les autorités.</p>'), 'https://x.fr/a').corps;
+  const r = extraireReactions(corps, { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24' });
+  assert.equal(r.length, 1); assert.equal(r[0].mesure, 'rassemblement'); assert.match(r[0].evidence.join(' '), /devant la mairie de Paris/);
+});
+t('pistes bornées : même éditeur, jamais la source elle-même, jamais deux fois, ≤ 2, et seulement si le titre annonce un fait', () => {
+  const liens = [
+    { titre: 'France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire', url: LIEN },
+    { titre: 'Les parents rassemblés à Lyon contre les violences sexuelles dans le périscolaire', url: 'https://autre-media.fr/x' },
+    { titre: 'Recevez toute l’actualité internationale directement dans votre boite mail', url: 'https://www.rfi.fr/newsletter' },
+    { titre: 'Les parents rassemblés à Nantes pour dénoncer les violences périscolaires', url: RFI_A },
+    { titre: 'Des parents se sont rassemblés à Lille contre les violences sexuelles dans le périscolaire', url: 'https://www.rfi.fr/lille' },
+    { titre: 'Des parents se sont rassemblés à Brest contre les violences sexuelles dans le périscolaire', url: 'https://www.rfi.fr/brest' },
+  ];
+  const deja = new Set();
+  const p = pistesASuivre(liens, { url: RFI_A, deja });
+  assert.deepEqual(p.map((x) => x.url), [LIEN, 'https://www.rfi.fr/lille']);
+  assert.deepEqual(pistesASuivre(liens, { url: RFI_A, deja }).map((x) => x.url), ['https://www.rfi.fr/brest'], 'les pistes déjà suivies ne le sont pas deux fois');
+});
+t('l\'article LIÉ fournit sa propre preuve : citation de SON corps, date de l\'événement ≠ date de publication, portée = territoire que la source nomme', () => {
+  const lie = extraireCorps(page(
+    '<p>Pour alerter les autorités, un rassemblement de plusieurs parents du collectif était organisé ce samedi matin devant la mairie de Paris contre les violences dans le périscolaire.</p>',
+    'France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire - RFI'), LIEN);
+  const [f] = extraireReactions(lie.corps, { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24' }); // publié un mardi, le rassemblement date du samedi précédent
+  assert.equal(f.event_date, '2026-03-21'); assert.notEqual(f.event_date, '2026-03-24');
+  assert.equal(f.portee, 'territoire'); assert.equal(f.territoire, 'Paris'); assert.notEqual(f.territoire, 'Paris 15e');
+  assert.ok(f.evidence.some((e) => /devant la mairie de Paris/.test(e)));
+  assert.ok(f.evidence.every((e) => lie.corps.includes(e)), 'toute citation vient du corps de l\'article lié');
+});
+t('sans date écrite : la date de PUBLICATION n\'est jamais prise pour celle du rassemblement', () => {
+  const [f] = extraireReactions(extraireCorps(page('<p>Un rassemblement de plusieurs parents du collectif a eu lieu devant la mairie de Paris contre les violences périscolaires.</p>'), LIEN).corps,
+    { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24' });
+  assert.equal(f.event_date, null);
+});
+t('la portée vient du contenu probant : le message ne rattache pas un fait territorial à la commune de la fiche d\'où l\'on est parti', () => {
+  const base = { etablissement: 'École Vigée Lebrun', commune: 'Paris 15e', courant: 'condamnation non définitive', media: 'RFI', publication_date: '2026-09-15', url: RFI_A };
+  const fait = { libelle_public: 'Selon la presse, des parents ont tenu un rassemblement.', realisation: 'réalisée', acteur: 'parents', evidence: ['Un rassemblement de parents.'], event_date: null };
+  const sans = messageEnrichissement(base, [fait], true);
+  assert.match(sans, /Territoire : non établi par la source/); assert.doesNotMatch(sans, /Territoire : Paris 15e/); assert.match(sans, /date non établie/);
+  assert.match(messageEnrichissement(base, [{ ...fait, territoire: 'Paris' }], true), /Territoire : Paris \(/);
+});
+t('date de publication de la page lue : méta, JSON-LD, sinon adresse — jamais devinée', () => {
+  assert.equal(extraireCorps('<html><head><meta property="article:published_time" content="2026-03-21T08:00:00+01:00"></head><body><p>' + 'x'.repeat(80) + '</p></body></html>', 'https://x.fr/a').publie_le, '2026-03-21');
+  assert.equal(extraireCorps(page('<p>' + 'x'.repeat(80) + '</p>'), 'https://x.fr/20260321-titre').publie_le, '2026-03-21');
+  assert.equal(extraireCorps(page('<p>' + 'x'.repeat(80) + '</p>'), 'https://x.fr/titre-sans-date').publie_le, null);
+});
+
+// --- suivi d'une piste : article lié lu comme une source, ou incertitude conservée -------------------------------------------
+const at = async (nom, f) => { await f(); n++; console.log(`  ✓ ${nom}`); };
+const LIE_HTML = page('<p>Pour alerter les autorités, un rassemblement de plusieurs parents du collectif était organisé ce samedi matin devant la mairie de Paris contre les violences périscolaires.</p>',
+  'France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire - RFI');
+const lirePageFictive = (html, url) => async () => { const r = extraireCorps(html, url); return { ok: true, corps: r.corps, liens: r.liens_associes, publie_le: '2026-03-21', url }; };
+
+await at('suivre la piste : l\'article lié est lu et qualifié pour la même affaire, avec SA date de publication, une seule fois (profondeur 1)', async () => {
+  const appels = []; const compte = {};
+  const { suivrePistes } = await import('../lib/pistes.mjs');
+  const r = await suivrePistes({ liens: extraireCorps(HTML_A, RFI_A).liens_associes, url: RFI_A, deja: new Set(), max: 2, lire: lirePageFictive(LIE_HTML, LIEN), compte: (k) => { compte[k] = (compte[k] || 0) + 1; },
+    qualifier: async ({ page, piste }) => { appels.push({ url: page.url, titre: piste.titre, corps: page.corps }); return { sortie: 'NEW_SOURCE_NO_STATE_CHANGE', rattachement: 'OK' }; } });
+  assert.equal(appels.length, 1); assert.equal(appels[0].url, LIEN); assert.match(appels[0].corps, /devant la mairie de Paris/);
+  assert.deepEqual(r.map((x) => [x.url, x.publie_le, x.sortie]), [[LIEN, '2026-03-21', 'NEW_SOURCE_NO_STATE_CHANGE']]); assert.equal(compte.pistes_suivies, 1);
+});
+await at('article lié inaccessible : l\'incertitude est conservée et dite — rien n\'est qualifié, rien n\'est inventé', async () => {
+  const { suivrePistes } = await import('../lib/pistes.mjs'); let appele = false; const compte = {};
+  const r = await suivrePistes({ liens: extraireCorps(HTML_A, RFI_A).liens_associes, url: RFI_A, deja: new Set(), max: 2, compte: (k) => { compte[k] = (compte[k] || 0) + 1; },
+    lire: async () => ({ ok: false, motif: 'HTTP 403' }), qualifier: async () => { appele = true; return {}; } });
+  assert.equal(appele, false); assert.deepEqual(r.map((x) => [x.issue, x.motif]), [['INACCESSIBLE', 'HTTP 403']]); assert.equal(compte.pistes_inaccessibles, 1);
+});
+await at('aucun lien associé retenu → aucune lecture (pas d\'exploration générale)', async () => {
+  const { suivrePistes } = await import('../lib/pistes.mjs'); let lu = 0;
+  const r = await suivrePistes({ liens: [{ titre: 'Newsletter : recevez l’actualité', url: 'https://www.rfi.fr/n' }], url: RFI_A, deja: new Set(), max: 2, lire: async () => { lu++; return { ok: true }; }, qualifier: async () => ({}) });
+  assert.deepEqual(r, []); assert.equal(lu, 0);
+});
+
+console.log(`\n${n} contrôles : OK`);
