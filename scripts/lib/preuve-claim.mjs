@@ -86,9 +86,9 @@ export async function lirePage(url, cache) {
     const r = await fetch(url, { headers: { 'user-agent': UA }, signal: AbortSignal.timeout(25000), redirect: 'follow' });
     const html = await r.text();
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const { corps, titre } = extraireCorps(html);
+    const { corps, titre, liens_associes, publie_le } = extraireCorps(html, r.url || url);
     if (!corps) throw new Error('structure de page non reconnue');
-    res = { ok: true, corps, titre, octets: Buffer.byteLength(html), url: r.url || url };
+    res = { ok: true, corps, titre, liens: liens_associes, publie_le, octets: Buffer.byteLength(html), url: r.url || url };
   } catch (e) {
     res = { ok: false, motif: String(e.message).slice(0, 80), octets: 0 };
   }

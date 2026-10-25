@@ -5,17 +5,23 @@
 //   node scripts/diagnostic-territoire.mjs                 # plan : tous les territoires, aucune écriture, aucun envoi
 //   node scripts/diagnostic-territoire.mjs --ecrire        # journalise l'instantané ; notifie (Telegram) SEULEMENT si changement significatif
 //   node scripts/diagnostic-territoire.mjs --territoire gironde   (filtre)
+//   node scripts/diagnostic-territoire.mjs --territoire landes --proposer --ecrire   (re)propose « PRÉPARER LE HUB » sans attendre un changement
+// Nouveau Hub : la proposition est une ligne de new_case_proposals (boutons PRÉPARER LE HUB / REVIEW / REJECT), exécutée par preparer-hub.mjs.
 // Instantané précédent : telegram_journal (kind « application », cle « diag:<territoire> », details = compteurs). Aucune table nouvelle.
 // Premier passage d'un territoire = base de référence, jamais de notification. Une affaire sans département n'est comptée nulle part.
 // =====================================================================
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { connecter } from './lib/neon.mjs';
+import { payloadProposition } from './lib/hub-brouillon.mjs';
 import { HUBS_PERIMETRES, diagnostiquer, instantane, messageDiagnostic } from './lib/diagnostic-territoire.mjs';
 import { evaluerPublication } from './lib/publication-gates.mjs';
 import { journaliser } from './lib/telegram-clics.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire');
+const PROPOSER = A.includes('--proposer'); // avec --territoire : (re)propose le Hub même sans changement depuis l'instantané (idempotent : une proposition par périmètre)
 const FILTRE = A.includes('--territoire') ? A[A.indexOf('--territoire') + 1].toLowerCase() : null;
 const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
 const hubDossiers = (h) => new Set(Object.keys(lire(`data/hub-matiere/${h}.json`).dossiers || {}));
@@ -72,7 +78,23 @@ if (process.argv[1]?.endsWith('diagnostic-territoire.mjs')) {
     if (!prev) base++;
     if (d.decision !== 'NO_ACTION' || FILTRE) console.log(`· ${nom.padEnd(22)} ${d.decision.padEnd(22)} ${prev ? (d.significatif ? 'NOTIFIER' : 'sans changement significatif') : 'base de référence'} — ${d.pourquoi.join(' ; ')}`);
     if (!ECRIRE) continue;
-    if (d.significatif) { await prevenir(messageDiagnostic(nom, e, d)); notifies++; }
+    // NOUVEAU HUB : jamais un message sans bouton. Une proposition DÉCIDABLE (PRÉPARER LE HUB / REVIEW / REJECT) est écrite dans
+    // new_case_proposals (clé de dédoublonnage = périmètre) puis envoyée par le circuit Discovery ; si elle ne peut pas l'être, le signal reste
+    // interne (instantané non journalisé : il sera reconsidéré au prochain passage), aucun message d'information n'est envoyé à la place.
+    if (d.decision === 'PROPOSER_NOUVEAU_HUB' && (d.significatif || (PROPOSER && FILTRE))) {
+      try {
+        const { payload, cle } = payloadProposition(nom, e, d);
+        const [ins] = await sql`insert into new_case_proposals (dedup_key, recommendation, attach_case_id, payload)
+                                values (${cle}, 'REVIEW', null, ${JSON.stringify(payload)}::jsonb) on conflict (dedup_key) do nothing returning proposal_id::text pid`;
+        const [pr] = ins ? [ins] : await sql`select proposal_id::text pid, decision::text d from new_case_proposals where dedup_key = ${cle}`;
+        console.log(`  proposition de Hub ${ins ? 'créée' : `déjà existante (décision : ${pr.d ?? 'en attente'})`} : ${pr.pid.slice(0, 8)}`);
+        if (ins) {
+          // Envoi immédiat (une seule fois : telegram_envois) ; à défaut, le prochain « notifier-nouvelles » l'enverra.
+          try { execFileSync(process.execPath, [fileURLToPath(new URL('./telegram-v0.mjs', import.meta.url)), 'nouvelle', pr.pid.slice(0, 8)], { stdio: 'inherit' }); } catch { console.log('  envoi différé au prochain passage'); }
+          notifies++;
+        }
+      } catch (err) { console.log(`  ⚠ proposition de Hub non écrite (${String(err.message).slice(0, 100)}) : signal conservé en interne, aucun message envoyé`); continue; }
+    } else if (d.significatif && d.decision !== 'PROPOSER_NOUVEAU_HUB') { await prevenir(messageDiagnostic(nom, e, d)); notifies++; }
     if (!prev || bouge) await journaliser(sql, { kind: 'application', cle: 'diag:' + nom, resultat: 'diagnostic', details: { instantane: instantane(e), decision: d.decision } });
   }
   console.log(`diagnostic territorial : ${Object.keys(etats).length} territoire(s), ${base} base(s) de référence, ${notifies} notification(s)${ECRIRE ? '' : ' (plan : rien écrit, rien envoyé)'}`);

@@ -55,7 +55,8 @@ import {
   claimDejaEtabli, requetePreuve, actes, estRegression, STAGE_ACTE, jetonsEtab, racineCommune,
   suffisance, entreeCache, entreeDepuisBase, evenementDejaValide,
 } from './lib/routage-veille.mjs';
-import { trouverSources, canonique } from './lib/preuve-claim.mjs';
+import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
+import { suivrePistes, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
 import { extraireReactions, dateEcrite } from './lib/evenement-institutionnel.mjs';
 import { dejaConnu } from './lib/nouveaute.mjs';
 
@@ -368,7 +369,7 @@ const F = {
   url_non_resolue: 0, fetch_echoue: 0, qualifies: 0,
   NO_CHANGE: 0, NEW_SOURCE_NO_STATE_CHANGE: 0, STATE_CHANGE_CANDIDATE: 0,
   AMBIGUOUS: 0, SOURCE_ACCESS_BLOCKED: 0, SOURCE_REVIEW_REQUIRED: 0,
-  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, faits_deja_connus: 0,
+  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, pistes_suivies: 0, pistes_inaccessibles: 0, faits_deja_connus: 0,
   appels_llm: 0, fetches: 0, octets: 0,
   analyses_ecrites: 0, analyses_reutilisees: 0, evidence_inventee: 0,
   input_tokens: 0, output_tokens: 0, cout_usd: 0,
@@ -428,9 +429,32 @@ async function ecrireReactions(base, reactions) {
   if (!r2.deja_presente) F.propositions_reactions++;
 }
 
-async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = null, fenetre = null, arbitre = false }) {
-  let corps = '';
-  if (page?.ok) corps = page.corps;
+/**
+ * PISTES. Un « À lire aussi » n'est jamais une preuve (extraireCorps le sort du corps) : c'est un lien vers un AUTRE article, qui peut documenter
+ * ce que son titre annonce. On le suit UNE fois, avec les outils existants (lirePage → qualification) : l'article lié est lu en entier et, s'il porte
+ * le fait, produit SA proposition — sa source, ses citations, sa date de publication, sa portée. Borné (lib/pistes) : même éditeur, ≤ 2 par source,
+ * ≤ PISTES_PAR_RUN par cycle, profondeur 1. Inaccessible ou sans fait : rien n'est inventé, la piste est seulement consignée.
+ */
+const PISTES_PAR_RUN = 8;
+const pistesDejaSuivies = new Set();
+async function qualifierSource(args) {
+  const trace = {};
+  const q = await qualifierSourceBrut({ ...args, trace });
+  if (args.profondeur || q.bloque || q.rattachement !== 'OK' || !trace.liens?.length || LEGACY) return q;
+  const pistes = await suivrePistes({
+    liens: trace.liens, url: args.url, deja: pistesDejaSuivies, max: Math.min(PISTES_PAR_SOURCE, PISTES_PAR_RUN - F.pistes_suivies),
+    lire: (u) => lirePage(u, cacheDocs), compte: (k) => { F[k]++; },
+    // L'article lié est qualifié comme n'importe quelle source (mêmes gardes), pour CETTE affaire ; sa date est celle de SA publication.
+    qualifier: ({ page, piste }) => qualifierSourceBrut({ ...args, c: { ...args.c, cle: `${args.c.cle}|piste`, title: piste.titre, published: page.publie_le || null, corroborants: [] },
+      url: page.url || piste.url, page, acte: null, fenetre: null, arbitre: false, profondeur: 1, decouvert_via: { url: args.url, titre: piste.titre }, trace: {} }),
+  });
+  if (pistes.length) q.pistes = pistes;
+  return q;
+}
+
+async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, acte = null, fenetre = null, arbitre = false, trace = {}, decouvert_via = null }) {
+  let corps = '', publieLe = null;
+  if (page?.ok) { corps = page.corps; publieLe = page.publie_le || null; trace.liens = page.liens; }
   else {
     try {
       F.fetches++;
@@ -438,7 +462,8 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
       const html = await res.text();
       F.octets += Buffer.byteLength(html);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      ({ corps } = extraireCorps(html));
+      const lu = extraireCorps(html, url);
+      ({ corps } = lu); publieLe = lu.publie_le; trace.liens = lu.liens_associes;
       if (!corps) throw new Error('structure de page non reconnue');
     } catch (e) {
       F.fetch_echoue++; F.SOURCE_ACCESS_BLOCKED++;
@@ -449,7 +474,8 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
   const article = {
     article_id: 'ART-' + fingerprint(url).slice(0, 10),
     media: mediaLu || c.media || domaine(c.source_domain || ''),
-    publication_date: c.published || null,
+    // Date de PUBLICATION de cet article (jamais celle du fait qu'il rapporte) : celle de la découverte, à défaut celle de la page elle-même.
+    publication_date: c.published || publieLe || null,
     url,
     body: corps,
     content_fingerprint: fingerprint(corps),
@@ -472,7 +498,7 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
         await assurerArticle(sql, article);
         await ecrireReactions({ case_id: fiche.case_id, article_id: article.article_id, content_fingerprint: article.content_fingerprint,
           version: CONTRAT_V2 ? CONTRAT.CONTRAT_VERSION : contratVersion(), rattachement: 'OK', CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire },
-          SOURCE_DATE: article.publication_date || null, finalite: 'inconnue', REQUIRES_HUMAN_REVIEW: true }, rx);
+          SOURCE_DATE: article.publication_date || null, finalite: 'inconnue', REQUIRES_HUMAN_REVIEW: true, ...(decouvert_via ? { decouvert_via } : {}) }, rx);
       }
     }
     const { acteEtabli, suffisante } = suffisance({
@@ -503,6 +529,8 @@ async function qualifierSource({ r, fiche, c, url, mediaLu, page = null, acte = 
       motif: e.name === 'TimeoutError' ? 'MODELE_TIMEOUT' : `ERREUR:${String(e.message).slice(0, 60)}`,
     };
   }
+  // Provenance : article atteint par un lien associé. Le fait, sa citation et sa date restent ceux de CET article ; la source d'origine n'est que la piste.
+  if (decouvert_via) out.decouvert_via = decouvert_via;
   // Une sœur de même rôle : rien ne départage les deux fiches. La proposition d'état est retirée,
   // l'analyse reste (AMBIGUOUS) avec sa raison — c'est l'humain qui rattache (invariant Faidherbe).
   const memeRole = soeursDe(fiche).filter((x) => x.role_mis_en_cause === fiche.role_mis_en_cause);

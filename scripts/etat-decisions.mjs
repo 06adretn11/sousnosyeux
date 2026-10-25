@@ -87,7 +87,7 @@ const actions = aAction ? new Map((await sql`select left(proposal_id::text, 8) k
 for (const n of nc) {
   const p = n.payload;
   const action = n.decision === 'ACCEPT' ? (actions.get(n.k) ?? (n.recommendation === 'ATTACH_EXISTING' ? 'ATTACH' : 'CREATE')) : null;
-  const l = { cle: n.k, type: 'discovery', affaire: n.created_case_id || n.attach_case_id || `${p.commune}`, objet: p.attach ? 'rapprochement / création' : 'nouvelle affaire', choix: n.decision ? `${n.decision}${action ? ' · ' + action : ''}` : '—' };
+  const l = { cle: n.k, type: 'discovery', affaire: n.created_case_id || n.attach_case_id || `${p.commune}`, objet: p.hub ? 'Hub territorial (brouillon)' : p.attach ? 'rapprochement / création' : 'nouvelle affaire', choix: n.decision ? `${n.decision}${action ? ' · ' + action : ''}` : '—' };
   if (!n.decision) { l.etat = 'EN ATTENTE'; l.detail = 'demande envoyée, aucun clic enregistré'; }
   else if (n.decision === 'REVIEW_REQUIRED') { l.etat = 'HOLD'; l.detail = 'mis de côté : ni création ni rattachement, intervention humaine ultérieure'; }
   else if (n.applied_at) { l.etat = 'APPLIQUÉE'; l.detail = n.created_case_id ? `fiche ${n.created_case_id} créée${action === 'CREATE_PENDING' ? ' EN ATTENTE DE PREUVES (non publiable)' : ''}` : action === 'ATTACH' ? 'sources rattachées' : 'décision consignée (aucune écriture de fiche)'; }

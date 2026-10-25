@@ -41,6 +41,8 @@ export function boutonValable(action, payload) {
   if (action === 'REVIEW' || action === 'REJECT') return true;
   // Proposition de PUBLICATION : seul « PUBLIER » (callback VALIDATE) est positif, et seulement si elle est publiable. Ni rattachement ni création.
   // Proposition de FICHE : seul « APPROUVER » (callback VALIDATE) est positif ; ni rattachement, ni création, ni publication d'affaire.
+  // Proposition de HUB : seul « PRÉPARER LE HUB » (callback VALIDATE) est positif — il prépare un brouillon, il ne publie rien.
+  if (payload?.hub) return action === 'VALIDATE' && !!payload.hub.slug;
   if (payload?.page) return action === 'VALIDATE' && !!payload.page.hash;
   if (payload?.publication) return action === 'VALIDATE' && payload.publication.publiable === true;
   if (action === 'ATTACH') return !!payload?.attach?.case_id;
