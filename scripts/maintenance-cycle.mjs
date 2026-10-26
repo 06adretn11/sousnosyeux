@@ -56,7 +56,7 @@ import {
   suffisance, entreeCache, entreeDepuisBase, evenementDejaValide,
 } from './lib/routage-veille.mjs';
 import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
-import { suivrePistes, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
+import { suivrePistes, estFaitDeTerritoireNomme, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
 import { extraireReactions, dateEcrite } from './lib/evenement-institutionnel.mjs';
 import { dejaConnu } from './lib/nouveaute.mjs';
 
@@ -406,12 +406,14 @@ const dateCoherente = (eventDate, fenetre) => {
 };
 
 /** Réponses publiques NOUVELLES d'un article (absentes de la mémoire de l'affaire). Pas de modèle : vocabulaire et libellés fermés. */
-function reactionsDe(fiche, article, corps) {
+function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const memoire = memoireFaits.get(fiche.case_id) || [];
   const pub = String(article.publication_date || '').slice(0, 10) || null;
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
+  // Article atteint par un lien associé et qui ne nomme pas l'établissement (un reportage sur un rassemblement à l'échelle d'une ville) : il ne peut
+  // porter que des faits de TERRITOIRE dont la source nomme elle-même le territoire — jamais un fait de l'établissement, jamais un territoire déduit de la fiche.
   const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres })
-    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }));
+    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   F.reactions_nouvelles += r.length;
   return r;
 }
@@ -492,8 +494,8 @@ async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, act
     const s = SORTIE_DE_ACTION[prev.analysis_action] || 'AMBIGUOUS';
     F[s]++;
     // Un article analysé avant que les réponses publiques soient extraites : aucun appel modèle, le corps est déjà lu.
-    if (prev.rattachement === 'OK') {
-      const rx = reactionsDe(fiche, article, corps);
+    if (prev.rattachement === 'OK' || decouvert_via) {
+      const rx = reactionsDe(fiche, article, corps, { viaPiste: prev.rattachement !== 'OK' });
       if (rx.length && !DRY) {
         await assurerArticle(sql, article);
         await ecrireReactions({ case_id: fiche.case_id, article_id: article.article_id, content_fingerprint: article.content_fingerprint,
@@ -593,7 +595,8 @@ async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, act
   // publiques nouvelles (cas Villeurbanne, 15/10/2026 : le seul fait retenu était un rappel judiciaire, l'audit, la commission et le
   // plan de formation de la Ville étaient perdus). Elles forment une proposition ENRICHMENT SÉPARÉE (version « +reactions ») :
   // décision et effets distincts de ceux du changement d'état. Aucun appel modèle : vocabulaire fermé, libellés publics fermés.
-  const reactionsNouvelles = out.rattachement === 'OK' ? reactionsDe(fiche, article, corps) : [];
+  const viaPiste = !!decouvert_via && out.rattachement !== 'OK';
+  const reactionsNouvelles = out.rattachement === 'OK' || viaPiste ? reactionsDe(fiche, article, corps, { viaPiste }) : [];
 
   // --- garde-fou de fiabilité ---------------------------------------
   // Le moteur `rules` a été validé sur des corps d'articles RECONSTITUÉS
@@ -636,7 +639,8 @@ async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, act
     if (p.deja_presente) F.propositions_deja_presentes++;
     else if (ACTION === 'STATE_CHANGE' || ACTION === 'AMBIGUOUS') F.propositions_ecrites++;
     else F.analyses_ecrites++;
-    await ecrireReactions({ ...out, article_id: article.article_id }, reactionsNouvelles);
+    // Fait de territoire lu dans un article lié (rattaché à l'affaire par la SOURCE qui y renvoie, `decouvert_via`) : proposition « +reactions » seulement.
+    await ecrireReactions({ ...out, ...(viaPiste ? { rattachement: 'OK' } : {}), article_id: article.article_id }, reactionsNouvelles);
   }
 
   // SUFFISANCE (doctrine SOURCE_EVIDENCE) : la source est rattachée par le
