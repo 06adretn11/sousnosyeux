@@ -247,6 +247,16 @@ t('« plan d’action » seulement si la source le dit ; hors article rattaché 
   const autre = extraireReactions('La municipalité renforcera l’encadrement dans les écoles Voltaire et Pasteur de la commune cette année.', { etablissement: 'Les Tournesols', autres: ['École Voltaire'], lieAffaire: true, commune: 'X' });
   assert.equal(autre[0].portee, 'territoire', 'phrase qui nomme d’autres établissements : jamais rattachée à celui-ci');
 });
+t('le rattachement de l’article ne décide pas seul de la portée : autre établissement dans l’article, ou acteur d’un autre territoire ⇒ territoire (doute = pas d’attribution forcée)', () => {
+  const opts = { etablissement: 'Les Tournesols', anneeRef: '2026-10-16', lieAffaire: true, commune: 'Lingolsheim' };
+  const mesure = 'La municipalité indique qu’elle va renforcer l’encadrement sur les accueils de loisirs maternels.';
+  assert.equal(extraireReactions(mesure, opts)[0].portee, 'établissement', 'article centré sur l’affaire : réponse liée');
+  const multi = extraireReactions(`${mesure}\n\nAilleurs, à l’école Voltaire, une autre enquête a été ouverte.`, { ...opts, autres: ['École Voltaire'] });
+  assert.equal(multi[0].portee, 'territoire', 'l’article parle aussi d’un autre établissement : lien incertain');
+  assert.equal(extraireReactions('La Ville de Lyon va renforcer l’encadrement dans les accueils de loisirs.', opts)[0].portee, 'territoire', 'acteur d’un autre territoire');
+  const meme = extraireReactions('La Ville de Lingolsheim va renforcer l’encadrement dans les accueils de loisirs.', opts)[0];
+  assert.equal(meme.portee, 'établissement'); assert.equal(meme.territoire, 'Lingolsheim');
+});
 t('une phrase impersonnelle ne reprend l’acteur que dans le MÊME paragraphe (incertitude ≠ attribution forcée)', () => {
   const separe = 'La municipalité indique qu’elle va renforcer l’encadrement des accueils de loisirs.\n\nUn temps d’échange sera organisé en novembre avec les parents.';
   const fs = extraireReactions(separe, { etablissement: 'X', lieAffaire: true, commune: 'Y' });

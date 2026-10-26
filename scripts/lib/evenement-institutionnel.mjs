@@ -218,6 +218,8 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
   // Jetons des AUTRES établissements du même territoire : une phrase qui les nomme parle de plusieurs structures (portée territoire).
   const jetonsAutres = autres.flatMap((e) => jetonsEtab(e)).filter((t) => !jetons.includes(t));
   const parMesure = new Map();
+  const corpsNorm = norm(corps);
+  const articleMultiAffaires = jetonsAutres.some((t) => corpsNorm.includes(t));   // l'article parle aussi d'autres établissements du territoire
   // Phrases avec leur paragraphe : une phrase impersonnelle ne reprend l'acteur de la phrase précédente que dans le MÊME paragraphe.
   const decoupees = String(corps || '').split(/\n{2,}/).flatMap((b, bi) => decoupe(b).map((p) => [p, bi]));
   const phrases = decoupees.map((x) => x[0]);
@@ -278,12 +280,16 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
     for (const [mesure, motif] of MESURES) {
       if (mesure === 'suspension_agent' || !motif.test(propre ? norm(propre) : n)) continue;
       const realisation = realisationDe(propre ?? phrase);
-      // Lien à l'affaire ≠ étendue : une réponse lue dans un article RATTACHÉ à l'affaire, sans autre établissement nommé, reste liée à elle même si la mesure
-      // vise plusieurs structures ; son étendue (commune) est conservée à part dans `territoire`.
+      // Lien à l'affaire ≠ étendue. Le rattachement de l'ARTICLE aide à comprendre le fait, il ne décide pas seul de sa portée : la réponse reste liée à l'affaire
+      // (même si la mesure vise plusieurs structures ; étendue conservée à part dans `territoire`) SEULEMENT si le contexte ne la contredit pas :
+      //   · la phrase, ou l'article, ne nomme pas d'autres établissements du même territoire (article multi-affaires : le lien est incertain) ;
+      //   · l'acteur n'est pas explicitement celui d'un AUTRE territoire que la commune de l'affaire.
+      // Doute ⇒ « territoire » (jamais une attribution forcée à l'affaire).
       const nomme = jetons.length && jetons.some((t) => n.includes(t));
-      const lie = lieAffaire && !jetonsAutres.some((t) => n.includes(t));
-      const portee = nomme || lie ? 'établissement' : 'territoire';
       const nommeTerr = acteurNomme(phrase);
+      const memeTerritoire = !nommeTerr.territoire || (!!commune && (norm(commune).startsWith(norm(nommeTerr.territoire)) || norm(nommeTerr.territoire).startsWith(norm(commune))));
+      const lie = lieAffaire && !articleMultiAffaires && !jetonsAutres.some((t) => n.includes(t)) && memeTerritoire;
+      const portee = nomme || lie ? 'établissement' : 'territoire';
       const communal = !nommeTerr.territoire && lieAffaire && commune && MUNICIPAL.test(acteur) ? commune.replace(/\s+\d+\s*(?:er|e|eme)?$/i, '') : null;
       const d = dateEcrite(propre ?? phrase, anneeRef);
       const f = parMesure.get(mesure);
