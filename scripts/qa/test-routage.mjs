@@ -165,6 +165,13 @@ test('6. Titon (relaxe) : la requête « en avant » porte « appel » et la req
   vrai(!/animateur/.test(q.avant), 'le rôle rétrécit la requête (mesuré sur Titon)');
   vrai(q.ouverte.includes('École Titon') && !/appel/.test(q.ouverte), q.ouverte);
 });
+test('6a. un libellé générique + commune (Morigny-Champigny) se cherche par la commune, pas par la phrase entre guillemets ; un vrai nom reste entre guillemets', () => {
+  const g = requetesVeille({ etablissement: 'Structures périscolaires de Morigny-Champigny', commune: 'Morigny-Champigny', statut_judiciaire: 'mise en examen' });
+  vrai(!g.avant.includes('"Structures') && g.avant.startsWith('Morigny-Champigny') && /procès/.test(g.avant), g.avant);
+  vrai(g.ouverte.startsWith('Morigny-Champigny when:'), g.ouverte);
+  const n = requetesVeille({ etablissement: 'Centre de loisirs du Chambon', commune: 'Laguenne-sur-Avalouze', statut_judiciaire: 'mise en examen' });
+  vrai(n.avant.startsWith('"Centre de loisirs du Chambon"'), n.avant);
+});
 test('6b. Titon : « le parquet fait appel de la relaxe » → claim APPEL, distinct de la relaxe', () => {
   const items = [
     { titre: 'Pourquoi l’animateur périscolaire jugé […] à l’école Titon à Paris a été relaxé - franceinfo', published: '2026-06-17' },

@@ -462,8 +462,13 @@ export function requetesVeille(c, { fenetreJours = 45 } = {}) {
   // rien et l'affaire n'est jamais surveillée. On cherche alors les mots du nom, sans la mention
   // « non nommé » ni la parenthèse (mesuré à l'ouverture des dossiers REVIEW de Discovery #1).
   const etab = c.etablissement || '';
-  const anonyme = /non nomm|\(/i.test(etab);
-  const nomCherche = etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
+  // Un LIBELLÉ générique (« Structures périscolaires de Morigny-Champigny ») n'est pas un nom : aucun article ne l'écrit, la phrase entre
+  // guillemets ne ramène rien (mesuré : 0 résultat sur FR-2026-0011). Sans mot distinctif hors commune, on cherche la commune seule.
+  const GEN_LIBELLE = new Set(['structure', 'structures', 'periscolaire', 'periscolaires', 'centres', 'non', 'nomme', 'nommee', 'nommes']);
+  const tokCommune = new Set(racineCommune(c.commune || '').split(' '));
+  const libelleGenerique = !!etab && !aplat(etab).split(/[^a-z0-9]+/).some((j) => j.length >= 3 && !GENERIQUES.has(j) && !GEN_LIBELLE.has(j) && !tokCommune.has(j));
+  const anonyme = /non nomm|\(/i.test(etab) || libelleGenerique;
+  const nomCherche = libelleGenerique ? '' : etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
   const base = [etab ? (anonyme ? nomCherche : `"${etab}"`) : '', (c.commune || '').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' ');
   const b = BOOSTERS[c.statut_judiciaire] || BOOSTERS['à qualifier'];
   const bq = b.map((x) => (/\s/.test(x) ? `"${x}"` : x)).join(' OR ');
