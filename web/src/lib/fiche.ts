@@ -18,6 +18,7 @@ export const HUBS: Record<string, { titre: string; url: string }> = {
   'paris-11e': { titre: 'Paris 11e', url: '/territoires/paris-11e' },
   'bordeaux-gironde': { titre: 'Bordeaux / Gironde', url: '/territoires/bordeaux-gironde' },
   'hautes-alpes': { titre: 'Hautes-Alpes', url: '/territoires/hautes-alpes' },
+  'landes': { titre: 'Landes', url: '/territoires/landes' },
 };
 const ISOLES = 'isoles';
 const TYPE_NEON: Record<string, string> = {

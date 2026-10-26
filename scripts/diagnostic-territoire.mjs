@@ -55,7 +55,7 @@ export async function etatsTerritoires({ hubsOverride = null, retirerPubliques =
       sources: pub.reduce((n, c) => n + (sr.get(c.case_id) || []).length, 0), _dep: dans[0]?.departement ?? null, residuel: nom === 'paris-hors-11e' };
   };
   for (const [h, p] of Object.entries(HUBS_PERIMETRES)) ajouter(h, h, p.test);
-  const deptsHub = new Set(['Gironde', 'Hautes-Alpes']);
+  const deptsHub = new Set(['Gironde', 'Hautes-Alpes', 'Landes']);
   for (const d of new Set(cases.map((c) => c.departement).filter(Boolean))) {
     if (deptsHub.has(d)) continue;
     if (d === 'Paris') ajouter('paris-hors-11e', null, (c) => c.departement === 'Paris' && c.commune !== 'Paris 11e');

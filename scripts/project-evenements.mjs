@@ -60,7 +60,7 @@ for (const id of new Set(revues.map((r) => r.case_id))) {
 const lire = (fichier) => JSON.parse(readFileSync(new URL(`../${fichier}`, import.meta.url), 'utf8'));
 const casesPubliques = lire('data/cases.json').cases;
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
-const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
+const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
 const { matiere, bloques, conservees } = construireMatiere(await lireMatiereValidee(sql), {
   publiques: new Set(ids), holds, approuvees: new Set(Object.keys(fiches)), cases: new Map(casesPubliques.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs,
 });

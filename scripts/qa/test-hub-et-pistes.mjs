@@ -205,4 +205,28 @@ await at('article lié qui ne nomme pas l\'école : seul un fait de TERRITOIRE n
   assert.ok(nomme.length === 1 && !estFaitDeTerritoireNomme(nomme[0]), 'un fait qui nomme l’école reste un fait d’établissement : écarté pour un article non rattaché');
 });
 
+// --- Hub Landes publié : matière cohérente, projection possible, un dossier = un seul Hub -----------------------------------
+await at('Hub Landes : affaires publiques et non gelées, un dossier par affaire, jamais le même dossier dans deux fichiers de matière', async () => {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const lire = (f) => JSON.parse(readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8'));
+  const landes = lire('data/hub-matiere/landes.json');
+  const publiques = new Set(lire('data/cases.json').cases.map((c) => c.case_id));
+  const holds = new Set(lire('data/publication-holds.json').holds.map((h) => h.case_id));
+  for (const id of landes.ordre) { assert.ok(publiques.has(id), `${id} non publique`); assert.ok(!holds.has(id), `${id} sous HOLD`); assert.ok(landes.dossiers[id], `${id} sans dossier`); }
+  const vus = new Map();
+  for (const f of readdirSync(new URL('../../data/hub-matiere/', import.meta.url)).filter((x) => x.endsWith('.json'))) {
+    for (const id of Object.keys(lire(`data/hub-matiere/${f}`).dossiers || {})) { assert.ok(!vus.has(id), `${id} dans ${vus.get(id)} ET ${f}`); vus.set(id, f); }
+  }
+});
+await at('Hub Landes : une mesure ou une mobilisation validée a un bloc existant pour s\'y projeter (aucun blocage)', async () => {
+  const { destinationsDe } = await import('../lib/destinations.mjs');
+  const { readFileSync } = await import('node:fs');
+  const groupes = JSON.parse(readFileSync(new URL('../../data/hub-matiere/landes.json', import.meta.url), 'utf8')).reponses.map((g) => g.titre);
+  const ctx = { publiques: new Set(['A']), holds: new Set(), approuvees: new Set(), cases: new Map([['A', { commune: 'Tarnos', departement: 'Landes' }]]), hubs: { landes: { publie: true, groupes } } };
+  for (const nature of ['mesure', 'mobilisation']) {
+    const d = destinationsDe({ case_id: 'A', nature, portee: 'affaire', territoire: null }, ctx);
+    assert.deepEqual(d.bloques, []); assert.equal(d.hubs[0]?.hub, 'landes');
+  }
+});
+
 console.log(`\n${n} contrôles : OK`);
