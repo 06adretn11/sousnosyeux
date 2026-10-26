@@ -51,7 +51,8 @@ export function messageEnrichissement(p, neufs, territorial) {
     '',
     '<b>Source</b>',
     `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,
-    `« ${esc(cut(f1.evidence[0], 240))} »`,
+    // Passage probant = une PHRASE du corps (finit par une ponctuation) ; le titre de la page (« … - RFI ») n'est qu'un repère, jamais présenté comme preuve s'il existe mieux.
+    `« ${esc(cut(f1.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f1.evidence[0], 240))} »`,
     '',
     `<b>Portée</b> : ${territorial ? 'territoire (plusieurs structures ou politique de collectivité, non propre à cet établissement)' : 'établissement'}`,
     `<b>Utilisation possible</b> : ${territorial ? 'Hub du territoire ; rappel attribué (portée territoriale) dans les fiches du territoire' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`,
