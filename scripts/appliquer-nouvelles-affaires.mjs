@@ -94,6 +94,18 @@ for (const r of dues) {
   // PRÉPARER = produire un dossier de revue consultable (scripts/preparer-hub.mjs : écriture → dépôt sur main → annonce avec le lien), jamais
   // publier. Un ACCEPT n'est donc PAS clos ici : la proposition reste « à appliquer » tant que le dossier n'est pas consultable (preuve, pas
   // promesse). REJECT : consigné, rien préparé. Aucune écriture dans `cases`, aucun HOLD touché.
+  // --- PUBLICATION D'UN HUB (proposition « PUBLIER LE HUB ») -----------------------------------------------------------------
+  // La décision ACCEPT EST le GO éditorial de la matière portant `hub_publication.hash` : rien à écrire ici. project-evenements la lit (échec fermé :
+  // seule l'empreinte COURANTE approuvée est publique), la projette dans data/evenements.json (`hubs_approuves`), et la chaîne existante fait le reste
+  // (QA → commit → build → vérification du site servi → confirmation Telegram avec le lien). REJECT : consigné, rien n'est publié.
+  if (p.hub_publication) {
+    console.log(accepte ? `  GO de publication du Hub « ${p.hub_publication.slug} » enregistré (projection par project-evenements)` : '  publication du Hub refusée : rien publié');
+    if (ECRIRE) await sql`update new_case_proposals set applied_at = now(), decision_comment = left(coalesce(decision_comment, '') || ${accepte ? ' · GO de publication du Hub enregistré' : ' · publication du Hub refusée'}, 500)
+                           where proposal_id = ${r.pid}::uuid and applied_at is null`;
+    if (accepte) publiees++; else notees++;
+    continue;
+  }
+
   if (p.hub) {
     if (accepte) { console.log('  Hub accepté : préparation du brouillon confiée à preparer-hub.mjs (rien publié)'); continue; }
     console.log('  Hub refusé : rien préparé');

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // =====================================================================
-// scripts/preparer-hub.mjs — exécute le clic « PRÉPARER LE HUB » : produit le dossier de revue du Hub, le rend consultable, prévient.
+// scripts/preparer-hub.mjs — exécute le clic « PRÉPARER LE HUB » : produit l'aperçu (dossier de revue + matière composée), le rend consultable,
+// puis propose « PUBLIER LE HUB » (le GO de publication est un second clic, sur l'empreinte de la matière ; la suite est autonome).
 //
 //   node scripts/preparer-hub.mjs                       # plan : propositions de Hub ACCEPTÉES, rien écrit
-//   node scripts/preparer-hub.mjs --ecrire              # écrit docs/industrialisation/hub-drafts/<territoire>.md (change=true si modifié)
-//   node scripts/preparer-hub.mjs --annoncer            # dossier présent sur origin/main ? alors UN message avec le lien, et la proposition est close
+//   node scripts/preparer-hub.mjs --ecrire              # écrit docs/industrialisation/hub-drafts/<territoire>.md + data/hub-matiere/<territoire>.json
+//   node scripts/preparer-hub.mjs --annoncer            # aperçu présent sur origin/main ? alors la proposition « PUBLIER LE HUB » (UN message : lien + bouton) ; la préparation est close
 //   node scripts/preparer-hub.mjs --simuler <territoire> [<département>]   # sans base ni Telegram : dossier à partir de data/cases.json seul
 //
 // Réutilise : new_case_proposals (décision, applied_at), data/cases.json (affaires PUBLIQUES), case_events + sources (Neon, lecture seule),
@@ -12,16 +13,18 @@
 // PRÉPARER ≠ PUBLIER : aucune page, aucune écriture dans `cases`, aucun HOLD touché. Rejouable : un dossier déjà à jour (même empreinte) n'est
 // pas réécrit, l'annonce n'est faite qu'une fois (proposition close). Une impossibilité ou une erreur est dite, jamais présentée comme un succès.
 // =====================================================================
-import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, appendFileSync, readdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { composerBrouillonHub, CHEMIN_BROUILLON, urlBrouillon, slugTerritoire } from './lib/hub-brouillon.mjs';
+import { composerBrouillonHub, CHEMIN_BROUILLON, slugTerritoire } from './lib/hub-brouillon.mjs';
+import { composerMatiereHub, payloadPublication, hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire'), ANNONCER = A.includes('--annoncer'), SIMULER = A.includes('--simuler');
 const racine = new URL('../', import.meta.url);
 const chemin = (slug) => new URL(CHEMIN_BROUILLON(slug), racine);
+const lireJson = (f) => JSON.parse(readFileSync(new URL(f, racine), 'utf8'));
 const affairesPubliques = (dep) => JSON.parse(readFileSync(new URL('data/cases.json', racine), 'utf8')).cases.filter((c) => c.departement === dep);
 const aujourdhui = () => new Date().toISOString().slice(0, 10);
 const empreinteDe = (md) => /Empreinte du dossier \| `([0-9a-f]{16})`/.exec(md)?.[1] ?? null;
@@ -56,24 +59,36 @@ for (const r of dues) {
     const f = chemin(slug);
     if (!existsSync(f)) { console.log(`· ${id8} ${slug} : dossier pas encore écrit — annonce différée`); continue; }
     const local = readFileSync(f, 'utf8');
-    let surMain = null;
+    const fm = new URL(CHEMIN_MATIERE(slug), racine);
+    let surMain = null, matiereMain = null;
     try {
       execFileSync('git', ['fetch', '--quiet', 'origin', 'main'], { stdio: 'ignore' });
       surMain = execFileSync('git', ['show', `origin/main:${CHEMIN_BROUILLON(slug)}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+      matiereMain = JSON.parse(execFileSync('git', ['show', `origin/main:${CHEMIN_MATIERE(slug)}`], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }));
     } catch { /* absent de main ou git indisponible : traité ci-dessous */ }
-    if (surMain === null || empreinteDe(surMain) !== empreinteDe(local)) {
-      console.log(`· ${id8} ${slug} : dossier pas (encore) sur main — annonce différée`);
+    const matiereLocale = existsSync(fm) ? JSON.parse(readFileSync(fm, 'utf8')) : null;
+    if (surMain === null || empreinteDe(surMain) !== empreinteDe(local) || !matiereLocale || !matiereMain || hashMatiere(matiereMain) !== hashMatiere(matiereLocale)) {
+      console.log(`· ${id8} ${slug} : dossier ou matière pas (encore) sur main — annonce différée`);
       // Jamais de silence : une préparation qui n'aboutit pas dans les 2 h est dite.
       if (Date.now() - Date.parse(r.decided_at) > 2 * 36e5 && process.env.TELEGRAM_BOT_TOKEN) {
         await prevenirUneFois(sql, { cle: id8, resultat: 'hub_en_retard', texte: `⚠️ <b>Brouillon de Hub NON disponible</b> — ${esc(h.territoire)} (${id8})\nLe dossier a été préparé mais n’a pas pu être déposé sur le dépôt. Rien n’est publié. Il sera réessayé au prochain passage.` });
       }
       continue;
     }
-    const texte = `🗺 <b>Brouillon de Hub prêt à relire</b> — ${esc(h.territoire)} (${id8})\n${h.publiques.length} affaire(s) publique(s) · ${h.sources} source(s) · ${h.reactions} réponse(s)/mobilisation(s)\nDossier de revue : ${urlBrouillon(slug)}\nEmpreinte : ${empreinteDe(local)}\n\n<b>Rien n’est publié</b> : aucune page du site n’est créée ni modifiée. Publier ce Hub exigera ton GO distinct, sur cette empreinte.`;
-    if (!(await prevenir(texte))) { console.log(`· ${id8} ${slug} : message non parti — réessayé au prochain passage`); erreurs++; continue; }
-    await clore(r.pid, ' · brouillon de Hub préparé et annoncé');
-    await journaliser(sql, { kind: 'application', cle: id8, resultat: 'hub_pret', details: { slug, empreinte: empreinteDe(local) } });
-    console.log(`· ${id8} ${slug} : brouillon annoncé, proposition close`);
+    // L'aperçu est consultable sur main : la décision suivante est une proposition « PUBLIER LE HUB » (une par Hub et empreinte de la matière).
+    // Le message de cette proposition EST l'annonce de l'aperçu (lien + bouton) : un seul message, le GO de publication reste distinct du GO de préparation.
+    const hash = hashMatiere(matiereLocale);
+    const { payload, cle } = payloadPublication({ slug, titre: h.departement, hash, ids: matiereLocale.ordre });
+    const [ins] = await sql`insert into new_case_proposals (dedup_key, recommendation, attach_case_id, payload)
+                            values (${cle}, 'REVIEW', null, ${JSON.stringify(payload)}::jsonb) on conflict (dedup_key) do nothing returning proposal_id::text pid`;
+    const [pub] = ins ? [ins] : await sql`select proposal_id::text pid from new_case_proposals where dedup_key = ${cle}`;
+    console.log(`· ${id8} ${slug} : proposition de publication ${ins ? 'créée' : 'déjà existante'} ${pub.pid.slice(0, 8)}`);
+    if (ins) {
+      try { execFileSync(process.execPath, [fileURLToPath(new URL('./telegram-v0.mjs', import.meta.url)), 'nouvelle', pub.pid.slice(0, 8)], { stdio: 'inherit' }); }
+      catch { console.log('  envoi différé : repris par « notifier-nouvelles » au prochain passage (jamais perdu, jamais doublé)'); }
+    }
+    await clore(r.pid, ' · aperçu de Hub préparé ; proposition de publication ' + pub.pid.slice(0, 8));
+    await journaliser(sql, { kind: 'application', cle: id8, resultat: 'hub_pret', details: { slug, empreinte: empreinteDe(local), page: hash } });
     continue;
   }
 
@@ -94,16 +109,34 @@ for (const r of dues) {
                                     from case_events e left join sources s on s.source_id = e.source_id
                                    where e.case_id = any(${ids}) and e.libelle_public is not null`)
       .map(({ media, url, publication_date, ...e }) => ({ ...e, source: url ? { media, url, publication_date } : null }));
-    const d = composerBrouillonHub({ territoire: { slug, titre: h.departement, departement: h.departement }, cases, evenements, genere_le: aujourdhui() });
+    const territoire = { slug, titre: h.departement, departement: h.departement };
+    const holds = new Set((lireJson('data/publication-holds.json').holds || []).map((x) => x.case_id));
+    const publiables = cases.filter((c) => !holds.has(c.case_id));          // une affaire gelée n'entre ni dans le dossier ni dans la page
+    const fMat = new URL(CHEMIN_MATIERE(slug), racine);
+    const matExistante = existsSync(fMat) ? JSON.parse(readFileSync(fMat, 'utf8')) : null;
+    // Un Hub RÉDIGÉ (ou déjà publié) n'est jamais écrasé par une matière composée.
+    if (matExistante && !matExistante._meta?.genere_auto) {
+      console.log(`· ${id8} ${slug} : un Hub rédigé existe déjà — rien n'est composé`);
+      if (ECRIRE) { await prevenirUneFois(sql, { cle: id8, resultat: 'hub_existant', texte: `ℹ️ <b>Hub déjà existant</b> — ${esc(h.territoire)} (${id8})\nUn Hub rédigé couvre déjà ce territoire : rien n’a été composé ni publié.` }); await clore(r.pid, ' · Hub rédigé déjà existant'); }
+      continue;
+    }
+    const dossiersExistants = new Set(readdirSync(new URL('data/hub-matiere/', racine)).filter((x) => x.endsWith('.json') && x !== `${slug}.json`).flatMap((x) => Object.keys(lireJson(`data/hub-matiere/${x}`).dossiers || {})));
+    const composer = (date) => composerMatiereHub({ territoire, cases, evenements, holds, dossiersExistants, genere_le: date });
+    let matiere = composer(aujourdhui());
+    // Rejeu : même contenu = même matière (la date de rédaction d'origine est conservée, sinon l'empreinte changerait chaque jour).
+    if (matExistante && hashMatiere(composer(matExistante._meta.redige_le)) === hashMatiere(matExistante)) matiere = matExistante;
+    const pageHash = hashMatiere(matiere);
+    const d = composerBrouillonHub({ territoire, cases: publiables, evenements, genere_le: aujourdhui(), pageHash });
     const f = chemin(slug);
     const existant = existsSync(f) ? readFileSync(f, 'utf8') : null;
-    const a_jour = existant !== null && empreinteDe(existant) === d.hash;
-    console.log(`· ${id8} ${slug} : ${cases.length} affaire(s), ${evenements.length} événement(s), empreinte ${d.hash}${a_jour ? ' — dossier déjà à jour' : ''}`);
+    const a_jour = existant !== null && empreinteDe(existant) === d.hash && existant.includes(pageHash) && matiere === matExistante;
+    console.log(`· ${id8} ${slug} : ${publiables.length} affaire(s), ${evenements.length} événement(s), empreinte ${d.hash}, page ${pageHash}${a_jour ? ' — déjà à jour' : ''}`);
     if (!ECRIRE || a_jour) continue;
     mkdirSync(dirname(fileURLToPath(f)), { recursive: true });
     writeFileSync(f, d.markdown);
+    if (matiere !== matExistante) writeFileSync(fMat, JSON.stringify(matiere, null, 2) + '\n');
     modifies.push(slug);
-    console.log(`  dossier écrit : ${CHEMIN_BROUILLON(slug)}`);
+    console.log(`  dossier écrit : ${CHEMIN_BROUILLON(slug)} · matière : ${CHEMIN_MATIERE(slug)}`);
   } catch (e) {
     erreurs++;
     console.log(`· ${id8} ${slug} : ERREUR de préparation (${String(e.message).slice(0, 120)})`);

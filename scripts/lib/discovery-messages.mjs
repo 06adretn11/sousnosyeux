@@ -136,7 +136,24 @@ export function messageHub(p) {
   ].join('\n');
 }
 
+/** HUB À PUBLIER : l'aperçu a été préparé ; PUBLIER LE HUB = GO éditorial de CETTE matière (empreinte) puis chaîne autonome jusqu'au front vérifié. */
+export function messageHubPublication(p) {
+  const h = p.hub_publication;
+  return [
+    `🗺 <b>HUB À PUBLIER</b> · ${esc(h.titre)}`,
+    '',
+    `<b>Aperçu consultable</b> : ${esc(h.apercu)}`,
+    `${h.publiques.length} affaire(s) publique(s) · empreinte de la page <code>${esc(h.hash)}</code>`,
+    'La page est composée sans rédaction depuis les fiches publiques et les événements validés ; ce qui manque est dit dans l’aperçu et dans la page.',
+    '',
+    '<b>Ce que fait le bouton</b>',
+    `🗺 PUBLIER LE HUB : GO éditorial de CETTE page (empreinte ci-dessus). Ensuite, sans autre intervention : projection, contrôles, déploiement, vérification du site servi, puis confirmation avec le lien public (${esc(h.page)}). Si la page change avant, elle ne sera pas publiée sans nouveau GO.`,
+    '🟡 REVIEW : rien publié · ⛔ REJECT : ce Hub n’est pas publié.',
+  ].join('\n');
+}
+
 export function messageDecision(p, recommendation) {
+  if (p.hub_publication) return messageHubPublication(p);
   if (p.hub) return messageHub(p);
   if (p.page) return messageFiche(p);
   if (p.publication) return messagePublication(p);
@@ -234,6 +251,7 @@ export function modeCreation(recommendation, payload) {
  * REVIEW = HOLD : n'écrit rien. Jamais toutes les actions à la fois.
  */
 export function boutons(recommendation, cle, payload = null) {
+  if (payload?.hub_publication) return { inline_keyboard: [[{ text: '🗺 PUBLIER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.hub) return { inline_keyboard: [[{ text: '🗺 PRÉPARER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.page) return { inline_keyboard: [[{ text: '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   const r2 = [

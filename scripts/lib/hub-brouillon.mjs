@@ -18,7 +18,7 @@ export const CHEMIN_BROUILLON = (slug) => `docs/industrialisation/hub-drafts/${s
 export const urlBrouillon = (slug) => `${BASE_BROUILLONS}/${slug}.md`;
 
 const canon = (v) => (Array.isArray(v) ? v.map(canon) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon(v[k])])) : v);
-const empreinte = (v) => createHash('sha256').update(JSON.stringify(canon(v))).digest('hex').slice(0, 16);
+export const empreinte = (v) => createHash('sha256').update(JSON.stringify(canon(v))).digest('hex').slice(0, 16);
 const jj = (d) => (d ? String(d).slice(0, 10).split('-').reverse().join('/') : 'date non établie');
 const cellule = (s) => String(s ?? '—').replace(/\|/g, '/').replace(/\s+/g, ' ');
 
@@ -49,7 +49,7 @@ export function payloadProposition(nom, e, d) {
  * @param {{case_id:string, type:string, date:string|null, libelle:string, realisation:string|null, source:{media:string,url:string,publication_date:string|null}|null}[]} evenements  événements validés
  * @returns {{slug:string, hash:string, markdown:string, compteurs:object, bloquants:object[], alertes:object[]}}
  */
-export function composerBrouillonHub({ territoire, cases, evenements = [], genere_le }) {
+export function composerBrouillonHub({ territoire, cases, evenements = [], genere_le, pageHash = null }) {
   if (!/^[a-z0-9-]+$/.test(territoire?.slug || '')) throw new Error('territoire : identifiant de fichier invalide');
   if (!cases.length) throw new Error('aucune affaire publique dans ce territoire : rien à préparer');
   const affaires = cases.map((c) => ({ ...projectCase(c), sources: (c.sources || []).map(projectSource).filter((s) => !MEDIAS_PAYANTS.includes(s.media)) }));
@@ -82,7 +82,9 @@ export function composerBrouillonHub({ territoire, cases, evenements = [], gener
   L.push(`# Dossier de revue — Hub « ${territoire.titre} »`, '');
   L.push('> ⛔ **BROUILLON — aucune publication.** Préparé depuis la proposition Telegram « PRÉPARER LE HUB ». Aucune page du site n’est créée ni modifiée ; ce dossier ne vaut ni approbation ni GO de publication.', '');
   L.push('| | |', '|---|---|', `| Territoire | ${territoire.titre}${territoire.departement ? ` (département : ${territoire.departement})` : ''} |`, `| Généré le | ${genere_le} |`,
-    `| Empreinte du dossier | \`${hash}\` |`, `| Publiable en l’état | ${bloquants.length ? `❌ non — ${bloquants.length} contrôle(s) bloquant(s)` : '❌ non — aucune page de Hub n’existe pour ce territoire ; la publication est un acte distinct'} |`, '');
+    `| Empreinte du dossier | \`${hash}\` |`,
+    ...(pageHash ? [`| Page à publier | \`/territoires/${territoire.slug}/\` — matière \`data/hub-matiere/${territoire.slug}.json\`, empreinte \`${pageHash}\` (c’est elle que « PUBLIER LE HUB » autorise) |`] : []),
+    `| Publiable en l’état | ${bloquants.length ? `❌ non — ${bloquants.length} contrôle(s) bloquant(s)` : '❌ non — aucune page de Hub n’existe pour ce territoire ; la publication est un acte distinct'} |`, '');
 
   L.push('## Ce que le Hub apporte au-delà des fiches individuelles', '');
   L.push(`- **Périmètre** : ${affaires.length} affaire(s) publique(s) dans ${new Set(affaires.map((a) => a.commune)).size} commune(s) — ${[...new Set(affaires.map((a) => a.commune))].join(', ')}. Ce brouillon ne postule aucun lien entre les affaires : elles ne sont réunies que par le territoire.`);

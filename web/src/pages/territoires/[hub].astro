@@ -8,10 +8,20 @@ import Paris11e from '../../components/territoires/Paris11e.astro';
 import Bordeaux from '../../components/territoires/Bordeaux.astro';
 import HautesAlpes from '../../components/territoires/HautesAlpes.astro';
 import Landes from '../../components/territoires/Landes.astro';
-import { matiereHub } from '../../lib/hub-matiere';
+import HubGenerique from '../../components/territoires/HubGenerique.astro';
+import { matiereHub, chargerHub } from '../../lib/hub-matiere';
+import evenementsDoc from '../../../../data/evenements.json';
 
 export function getStaticPaths() {
+  // Hubs COMPOSÉS puis approuvés (« PUBLIER LE HUB ») : une page par entrée de `hubs_approuves` (écrite par project-evenements, seulement si l'empreinte
+  // de la matière courante a reçu un GO). Aucune édition de code pour un nouveau Hub : le gabarit commun suffit.
+  const REDIGES = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'];
+  const composes = Object.entries((evenementsDoc as any).hubs_approuves ?? {}).filter(([s]) => !REDIGES.includes(s)).map(([slug, a]: [string, any]) => {
+    const n = chargerHub(slug).matiere.ordre.length;
+    return { params: { hub: slug }, props: { hub: slug, titre: a.titre, description: `${a.titre} : ${n} affaire${n > 1 ? 's' : ''} rapportée${n > 1 ? 's' : ''} par la presse, avec leurs sources, les réponses publiques documentées et ce que l’on ne sait pas.` } };
+  });
   return [
+    ...composes,
     { params: { hub: 'paris-11e' }, props: { hub: 'paris-11e', titre: 'Paris 11e', description: 'Neuf affaires rapportées par la presse dans le 11e arrondissement de Paris : déroulés, décisions, et réponses publiques parisiennes.' } },
     { params: { hub: 'bordeaux-gironde' }, props: { hub: 'bordeaux-gironde', titre: 'Bordeaux / Gironde', description: 'Frida-Kahlo et Cenon : déroulés sourcés, déclarations du procureur et des élus, versions divergentes.' } },
     { params: { hub: 'hautes-alpes' }, props: { hub: 'hautes-alpes', titre: 'Hautes-Alpes', description: 'Deux affaires jugées à Gap : ce qui était poursuivi, requis, retenu et écarté, et la réponse des institutions.' } },
@@ -29,5 +39,6 @@ const nMatiere = matiereHub(hub).length;
     {hub === 'bordeaux-gironde' && <Bordeaux />}
     {hub === 'hautes-alpes' && <HautesAlpes />}
     {hub === 'landes' && <Landes />}
+    {!['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].includes(hub) && <HubGenerique hub={hub} />}
   </div>
 </Layout>

@@ -10,6 +10,7 @@
 // découpage, pas un territoire compréhensible), ne produit aucune proposition (WATCH / NO_ACTION : Adrien n'est pas sollicité).
 // Ne notifie JAMAIS sans changement significatif : `significatif` n'est vrai que si les compteurs ont bougé depuis l'instantané.
 // =====================================================================
+import { readFileSync } from 'node:fs';
 
 export const HUBS_PERIMETRES = {
   // `zone` : étendue géographique du Hub, pour savoir si la PORTÉE d'une information (nommée par sa source) y est contenue.
@@ -18,6 +19,22 @@ export const HUBS_PERIMETRES = {
   'hautes-alpes': { titre: 'Hautes-Alpes', test: (c) => c.departement === 'Hautes-Alpes', zone: { departement: 'Hautes-Alpes' } },
   'landes': { titre: 'Landes', test: (c) => c.departement === 'Landes', zone: { departement: 'Landes' } },
 };
+
+/**
+ * Déclare un Hub dont la matière a été COMPOSÉE puis approuvée (data/evenements.json → `hubs_approuves`) : son périmètre vient de sa matière
+ * (`_meta.perimetre.departement`), pas d'une édition de code. Idempotent ; un Hub déjà déclaré n'est jamais remplacé.
+ */
+export function enregistrerHub(slug, titre, departement) {
+  if (!/^[a-z0-9-]+$/.test(slug || '') || !departement || HUBS_PERIMETRES[slug]) return;
+  HUBS_PERIMETRES[slug] = { titre, test: (c) => c.departement === departement, zone: { departement } };
+}
+try {
+  const ev = JSON.parse(readFileSync(new URL('../../data/evenements.json', import.meta.url), 'utf8'));
+  for (const [slug, a] of Object.entries(ev.hubs_approuves || {})) {
+    const m = JSON.parse(readFileSync(new URL(`../../data/hub-matiere/${slug}.json`, import.meta.url), 'utf8'));
+    enregistrerHub(slug, a.titre, m._meta?.perimetre?.departement);
+  }
+} catch { /* aucun Hub approuvé, ou fichiers absents (tests isolés) : seuls les Hubs rédigés comptent */ }
 
 /** Instantané comparable (nombres seulement) : ce qui change = ce qui est nouveau. */
 export const instantane = (e) => ({ publiques: e.publiques.length, horsHub: e.horsHub.length, candidatesValidees: e.candidatesValidees,
