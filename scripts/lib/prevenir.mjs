@@ -29,15 +29,19 @@ export function phrasePublication(pub) {
  */
 export const phraseEnrichissement = () => 'Décision enregistrée : l’information est conservée en mémoire. Aucune publication n’est promise par ce message ; si une page publique est concernée, une confirmation suivra après vérification du site, sinon vous serez prévenu qu’aucune page n’est modifiée.';
 export function texteConservee(f) {
+  // Un fait de TERRITOIRE n'est pas un enrichissement « de » l'établissement par lequel il a été découvert : on le présente par sa portée.
+  if (f.portee === 'territoire') return `📌 <b>Information territoriale validée et conservée</b> — ${esc(f.territoire || 'territoire non précisé')}\n${esc(f.libelle)}\n<b>Aucune page publique n’est modifiée</b> : aucun Hub publié ne couvre ce territoire. L’information reste disponible pour un futur Hub, sans nouvelle validation. Aucune publication n’est en cours.`;
   return `📌 <b>Enrichissement validé et conservé</b> — ${esc(f.etablissement || f.case_id)}\n${esc(f.libelle)}\n<b>Aucune page publique n’est modifiée</b> : aucune fiche approuvée ni Hub publié n’est concerné. L’information reste disponible pour une future fiche ou un Hub, sans nouvelle validation. Aucune publication n’est en cours.`;
 }
 export function texteBloquee(b) {
-  return `⚠️ <b>Enrichissement validé mais NON intégré aux pages</b> — ${esc(b.etablissement || b.case_id || b.id)}\n${esc(b.libelle || '')}\nMotif : ${esc(b.raison)}\nLa validation est conservée ; aucune page n’a été modifiée. Aucun nouveau GO n’est demandé : une revue ciblée de la page est nécessaire.`;
+  return `⚠️ <b>${b.portee === 'territoire' ? 'Information territoriale validée mais NON intégrée' : 'Enrichissement validé mais NON intégré'} aux pages</b> — ${esc(b.portee === 'territoire' ? (b.territoire || 'territoire') : (b.etablissement || b.case_id || b.id))}\n${esc(b.libelle || '')}\nMotif : ${esc(b.raison)}\nLa validation est conservée ; aucune page n’a été modifiée. Aucun nouveau GO n’est demandé : une revue ciblée de la page est nécessaire.`;
 }
-export function texteVerifie({ ids = [], fiches = [], hubs = [], site }) {
+export function texteVerifie({ ids = [], fiches = [], hubs = [], site, infos = [] }) {
   const pages = [...fiches.map((f) => `${site}/affaires/${String(f).toLowerCase()}/`), ...hubs.map((h) => `${site}/territoires/${h}/`)];
   const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
-  return `🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${site}).${pages.length ? `\nPages actualisées :\n${pages.join('\n')}` : ''}`;
+  // `infos` : informations validées réellement affichées sur les Hubs vérifiés (ce qui a changé, avec sa portée) — jamais présentées comme propres à une affaire.
+  const quoi = infos.length ? `\nInformations validées affichées :\n${infos.map((i) => `• ${esc(i.libelle)}${i.portee === 'territoire' ? ` (portée : ${esc(i.territoire || 'territoire')} — contexte, non propre à une affaire)` : ''}`).join('\n')}` : '';
+  return `🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${site}).${quoi}${pages.length ? `\nPages actualisées :\n${pages.join('\n')}` : ''}`;
 }
 
 /** @returns {Promise<boolean>} true si le message est parti */

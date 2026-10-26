@@ -95,7 +95,7 @@ await t('« en novembre dernier » dans un article de MARS 2026 → novembre 202
 await t('acteur NOMMÉ et territoire tels qu’écrits ; mesure annoncée ; portée TERRITOIRE (aucune attribution à l’école)', () => {
   assert.equal(rxC[0].acteur_nomme, 'Ville de Paris'); assert.equal(rxC[0].territoire, 'Paris'); assert.equal(rxC[0].realisation, 'annoncée'); assert.equal(rxC[0].portee, 'territoire');
   const m = messageEnrichissement({ etablissement: ECOLE, commune: 'Paris 10e', courant: 'enquête', media: 'JDD', publication_date: '2026-03-21', url: 'https://media.example/jdd' }, rxC, true);
-  assert.match(m, /Territoire : Paris/); assert.match(m, /non propre à cet établissement/); assert.match(m, /novembre 2025/); assert.ok(!/<b>École maternelle Les Tilleuls<\/b>/.test(m));
+  assert.match(m, /Territoire : Paris/); assert.match(m, /non propre à un établissement ni à une affaire/); assert.match(m, /INFORMATION TERRITORIALE PROPOSÉE/); assert.ok(!/ENRICHISSEMENT PROPOSÉ|état judiciaire inchangé/.test(m)); assert.match(m, /Provenance seulement/); assert.match(m, /novembre 2025/); assert.ok(!/<b>École maternelle Les Tilleuls<\/b>/.test(m));
 });
 await t('dates relatives : « prochain » = futur ; sans date de publication = rien (jamais deviné) ; jour de semaine relatif à la publication', () => {
   assert.equal(dateEcrite('en novembre prochain', '2026-03-21').periode, '2026-11');

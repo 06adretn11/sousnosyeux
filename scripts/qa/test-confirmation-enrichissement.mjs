@@ -43,7 +43,7 @@ t('« Publié et vérifié » nomme chaque page actualisée avec son URL (fiche 
   assert.ok(m.includes('https://sousnosyeux.org/affaires/fr-2026-0042/') && m.includes('https://sousnosyeux.org/territoires/paris-11e/')); assert.ok(!MAUVAIS.test(m));
 });
 t('seul verifier-site (après lecture du site servi) annonce « publié et vérifié » ; le message passe par texteVerifie', () => {
-  const v = src('scripts/verifier-site.mjs'); assert.ok(v.includes('texteVerifie({ ids, fiches, hubs, site: SITE })'));
+  const v = src('scripts/verifier-site.mjs'); assert.ok(v.includes('texteVerifie({ ids, fiches, hubs, site: SITE, infos })'));
 });
 
 console.log('\n  3. VALIDÉ MAIS BLOQUÉ — motif exact, sans nouveau GO');
