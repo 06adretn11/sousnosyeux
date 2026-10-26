@@ -18,7 +18,14 @@ const decode = (s) => s
   .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
   .replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&rsquo;|&apos;/g, "'")
   .replace(/&eacute;/g, 'é').replace(/&egrave;/g, 'è').replace(/&agrave;/g, 'à')
+  // Entités nommées courantes de la presse française (« &acirc; », « &ocirc; », « &laquo; »…) : sans elles, une citation « littérale » garde le code HTML.
+  .replace(/&([A-Za-z]+);/g, (m, nom) => ENTITES[nom] ?? m)
   .replace(/&amp;/g, '&');
+const ENTITES = {
+  acirc: 'â', Acirc: 'Â', ecirc: 'ê', Ecirc: 'Ê', icirc: 'î', Icirc: 'Î', ocirc: 'ô', Ocirc: 'Ô', ucirc: 'û', Ucirc: 'Û', euml: 'ë', iuml: 'ï', uuml: 'ü', ouml: 'ö', auml: 'ä',
+  ccedil: 'ç', Ccedil: 'Ç', ugrave: 'ù', Ugrave: 'Ù', Eacute: 'É', Egrave: 'È', Agrave: 'À', oelig: 'œ', OElig: 'Œ', aelig: 'æ', laquo: '«', raquo: '»',
+  hellip: '…', ndash: '–', mdash: '—', lsquo: '‘', ldquo: '“', rdquo: '”', euro: '€', copy: '©', deg: '°',
+};
 
 export const nettoyer = (s) => decode(s.replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 

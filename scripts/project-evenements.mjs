@@ -11,13 +11,13 @@
 // Un même fait enregistré deux fois (type + date + statut) ne compte qu'une fois, le plus ancien fait foi (même règle que la synthèse d'état).
 // `rectification` n'est jamais un fait à afficher.
 // =====================================================================
-import { readFileSync, writeFileSync, existsSync, appendFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
 import { dossierFiche, hashDossier, ficheApprouvee, empreinteApprouvee } from './lib/fiche-page.mjs';
 import { connecter } from './lib/neon.mjs';
 import { lireMatiereValidee } from './lib/matiere-validee.mjs';
 import { construireMatiere } from './lib/destinations.mjs';
 import { enregistrerHub } from './lib/diagnostic-territoire.mjs';
-import { hubsApprouves, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
+import { hubsApprouves, hashMatiere, CHEMIN_MATIERE, CHEMIN_APPROUVE } from './lib/hub-publication.mjs';
 import { prevenirUneFois, texteBloquee, texteConservee } from './lib/prevenir.mjs';
 
 const DIFF = process.argv.includes('--diff');
@@ -63,17 +63,26 @@ const lire = (fichier) => JSON.parse(readFileSync(new URL(`../${fichier}`, impor
 const casesPubliques = lire('data/cases.json').cases;
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
 const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
-// HUBS COMPOSÉS : publics seulement si l'empreinte de leur matière COURANTE a reçu un GO « PUBLIER LE HUB » (échec fermé : matière modifiée ⇒ retirée).
-// Le Hub approuvé reçoit ensuite les informations validées comme les Hubs rédigés (même périmètre, mêmes blocs) ; sa page est générée par le gabarit commun.
-const decisionsHub = (await sql`select payload->'hub_publication' h from new_case_proposals where decision = 'ACCEPT' and payload ? 'hub_publication'`)
+// HUBS COMPOSÉS : le contenu public est la DERNIÈRE VERSION APPROUVÉE (instantané data/hub-approuve/<slug>.json, écrit quand le GO porte sur la matière
+// courante). Une modification en attente de validation ne retire jamais un Hub publié ; sans GO retrouvable, rien n'est public (échec fermé).
+// Le Hub approuvé reçoit ensuite les informations validées comme les Hubs rédigés (même périmètre, mêmes blocs de SA version approuvée), sans second GO.
+const decisionsHub = (await sql`select payload->'hub_publication' h from new_case_proposals where decision = 'ACCEPT' and payload ? 'hub_publication' order by decided_at desc, proposal_id`)
   .map((r) => r.h).filter((x) => /^[a-z0-9-]+$/.test(x?.slug || '') && x?.hash);
-const matieresHub = Object.fromEntries([...new Set(decisionsHub.map((x) => x.slug))].map((s) => [s, existsSync(new URL(`../${CHEMIN_MATIERE(s)}`, import.meta.url)) ? lire(CHEMIN_MATIERE(s)) : null]));
-const hubsApprouvesCourants = hubsApprouves(decisionsHub, matieresHub);
-for (const [slug, a] of Object.entries(hubsApprouvesCourants)) {
-  hubs[slug] = { publie: true, groupes: matieresHub[slug].reponses.map((g) => g.titre) };
-  enregistrerHub(slug, a.titre, matieresHub[slug]._meta?.perimetre?.departement);
+const slugsHub = [...new Set(decisionsHub.map((x) => x.slug))];
+const lireSi = (chemin) => (existsSync(new URL(`../${chemin}`, import.meta.url)) ? lire(chemin) : null);
+const matieresHub = Object.fromEntries(slugsHub.map((s) => [s, lireSi(CHEMIN_MATIERE(s))]));
+const instantanesHub = Object.fromEntries(slugsHub.map((s) => [s, lireSi(CHEMIN_APPROUVE(s))]));
+const approbations = hubsApprouves(decisionsHub, matieresHub, instantanesHub);
+const versionApprouvee = {};   // slug → matière de la version approuvée (courante si le GO vient de lui être donné, sinon l'instantané conservé)
+for (const [slug, a] of Object.entries(approbations)) {
+  versionApprouvee[slug] = a.source === 'courante' ? matieresHub[slug] : instantanesHub[slug];
+  hubs[slug] = { publie: true, groupes: versionApprouvee[slug].reponses.map((g) => g.titre) };
+  enregistrerHub(slug, a.titre, versionApprouvee[slug]._meta?.perimetre?.departement);
 }
-for (const x of decisionsHub) if (!hubsApprouvesCourants[x.slug] && matieresHub[x.slug]) console.log(`· Hub « ${x.slug} » : GO sur une autre empreinte que la matière courante — non publié (nouveau GO requis)`);
+// Ce qui est publié côté données : { hash, titre } seulement (la provenance courante/instantané ne doit pas faire bouger le fichier public).
+const hubsApprouvesCourants = Object.fromEntries(Object.entries(approbations).map(([s, a]) => [s, { hash: a.hash, titre: a.titre }]));
+for (const x of decisionsHub) if (!approbations[x.slug] && matieresHub[x.slug]) console.log(`· Hub « ${x.slug} » : aucun GO sur une version retrouvable — non publié (nouveau GO requis)`);
+for (const [slug, a] of Object.entries(approbations)) if (a.source === 'instantane' && matieresHub[slug] && hashMatiere(matieresHub[slug]) !== a.hash) console.log(`· Hub « ${slug} » : modification en attente de validation — dernière version approuvée maintenue`);
 const { matiere, bloques, conservees } = construireMatiere(await lireMatiereValidee(sql), {
   publiques: new Set(ids), holds, approuvees: new Set(Object.keys(fiches)), cases: new Map(casesPubliques.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs,
 });
@@ -102,7 +111,10 @@ if (!DIFF) for (const b of bloques) await prevenirUneFois(sql, { cle: `matiere:$
 // Une information validée SANS page concernée (ni fiche approuvée, ni Hub publié) : confirmation de PERSISTANCE, une seule fois, sans promesse de publication.
 // L'issue vient du résultat réel de la projection ci-dessus, jamais du statut « publiée » de l'affaire.
 if (!DIFF) for (const f of conservees) await prevenirUneFois(sql, { cle: `matiere:conservee:${f.id}`, resultat: 'conservee', texte: texteConservee(f) });
-if (avant === texte) { console.log('NO_PUBLIC_CHANGE — data/evenements.json déjà conforme à Neon'); sortie(false); process.exit(0); }
+// Instantanés des versions approuvées : écrits quand le GO porte sur la matière COURANTE (jamais réécrits tant que la version approuvée est la même).
+const instantanesAEcrire = Object.entries(approbations).filter(([s, a]) => a.source === 'courante' && !(instantanesHub[s] && hashMatiere(instantanesHub[s]) === a.hash));
+if (!DIFF) for (const [s] of instantanesAEcrire) { mkdirSync(new URL('../data/hub-approuve/', import.meta.url), { recursive: true }); writeFileSync(new URL(`../${CHEMIN_APPROUVE(s)}`, import.meta.url), JSON.stringify(matieresHub[s], null, 2) + '\n', 'utf8'); console.log(`✅ version approuvée conservée : ${CHEMIN_APPROUVE(s)}`); }
+if (avant === texte && !(instantanesAEcrire.length && !DIFF)) { console.log('NO_PUBLIC_CHANGE — data/evenements.json déjà conforme à Neon'); sortie(false); process.exit(0); }
 if (DIFF) { console.log('écart avec le fichier committé (rien écrit) · pages concernées : ' + (concernees.join(', ') || 'aucune')); process.exit(0); }
 writeFileSync(CHEMIN, texte, 'utf8');
 sortie(true);

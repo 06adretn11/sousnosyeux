@@ -31,7 +31,9 @@ export function enregistrerHub(slug, titre, departement) {
 try {
   const ev = JSON.parse(readFileSync(new URL('../../data/evenements.json', import.meta.url), 'utf8'));
   for (const [slug, a] of Object.entries(ev.hubs_approuves || {})) {
-    const m = JSON.parse(readFileSync(new URL(`../../data/hub-matiere/${slug}.json`, import.meta.url), 'utf8'));
+    let m;
+    try { m = JSON.parse(readFileSync(new URL(`../../data/hub-approuve/${slug}.json`, import.meta.url), 'utf8')); }   // version approuvée si elle existe
+    catch { m = JSON.parse(readFileSync(new URL(`../../data/hub-matiere/${slug}.json`, import.meta.url), 'utf8')); }
     enregistrerHub(slug, a.titre, m._meta?.perimetre?.departement);
   }
 } catch { /* aucun Hub approuvé, ou fichiers absents (tests isolés) : seuls les Hubs rédigés comptent */ }

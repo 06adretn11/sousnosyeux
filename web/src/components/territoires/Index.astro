@@ -1,7 +1,7 @@
 ---
 // Porte d'entrée de la prévisualisation : trois expériences, trois formats,
 // et pour chaque territoire à matière non publiée, la version publique seule.
-import { casesParIds } from '../../lib/territoires';
+import { casesParIds, idsAffichables } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
 import evenementsDoc from '../../../../data/evenements.json';
 
@@ -9,7 +9,7 @@ interface Props { base?: string; publique?: boolean }
 const { base = '/brouillons/territoires', publique = false } = Astro.props;
 const compter = (id: string) => {
   const { matiere, prive } = chargerHub(id);
-  return { publiques: casesParIds(matiere.ordre).length, privees: prive ? Object.keys(prive.dossiers).length : 0 };
+  return { publiques: casesParIds(matiere._meta?.genere_auto ? idsAffichables(matiere.ordre) : matiere.ordre).length, privees: prive ? Object.keys(prive.dossiers).length : 0 };
 };
 const p = compter('paris-11e'), b = compter('bordeaux-gironde'), h = compter('hautes-alpes'), l = compter('landes');
 const loc = (n: number) => (n > 0 ? ` + ${n} dossier${n > 1 ? 's' : ''} non publié${n > 1 ? 's' : ''} (rendu local)` : '');

@@ -59,7 +59,7 @@ export function messageEnrichissement(p, neufs, territorial) {
     // Passage probant = une PHRASE du corps (finit par une ponctuation) ; le titre de la page (« … - RFI ») n'est qu'un repère, jamais présenté comme preuve s'il existe mieux.
     `« ${esc(cut(f1.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f1.evidence[0], 240))} »`,
     '',
-    `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : 'établissement'}`,
+    `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
     `<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`,
     '',
     '<b>Décision</b>',

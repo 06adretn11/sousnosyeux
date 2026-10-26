@@ -2,6 +2,7 @@
 //   1. une proposition de nouveau Hub doit être ACTIONNABLE (préparer un brouillon consultable, sans jamais publier) ;
 //   2. un « À lire aussi » est une PISTE de découverte, jamais une preuve ; l'article lié fournit sa propre preuve, sa date et sa portée.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { decoderCallback, boutonValable } from '../lib/telegram-clics.mjs';
 import { boutons, messageDecision, messageEnrichissement } from '../lib/discovery-messages.mjs';
 import { payloadProposition, composerBrouillonHub, slugTerritoire, urlBrouillon } from '../lib/hub-brouillon.mjs';
@@ -207,7 +208,7 @@ await at('article lié qui ne nomme pas l\'école : seul un fait de TERRITOIRE n
 
 // --- Hub Landes publié : matière cohérente, projection possible, un dossier = un seul Hub -----------------------------------
 await at('Hub Landes : affaires publiques et non gelées, un dossier par affaire, jamais le même dossier dans deux fichiers de matière', async () => {
-  const { readFileSync, readdirSync } = await import('node:fs');
+  const { readdirSync } = await import('node:fs');
   const lire = (f) => JSON.parse(readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8'));
   const landes = lire('data/hub-matiere/landes.json');
   const publiques = new Set(lire('data/cases.json').cases.map((c) => c.case_id));
@@ -227,6 +228,57 @@ await at('Hub Landes : une mesure ou une mobilisation validée a un bloc existan
     const d = destinationsDe({ case_id: 'A', nature, portee: 'affaire', territoire: null }, ctx);
     assert.deepEqual(d.bloques, []); assert.equal(d.hubs[0]?.hub, 'landes');
   }
+});
+
+// --- qualification des réponses : preuve = fait précis, lien à l'affaire ≠ étendue, jamais d'élargissement ni de transfert ------------------
+const CORPS_MESURE = 'Une plainte a été déposée contre cet agent communal, indique la municipalité.\n\nLa municipalité indique qu’elle va "renforcer l’encadrement sur les accueils de loisirs maternels, au-delà des obligations règlementaires afin qu’un adulte ne reste pas seul avec un enfant" . Un temps d’échange sera organisé dans le courant du mois de novembre , avec les parents et les enfants scolarisés sur le thème de la prévention des violences sexuelles.\n\nUn autre paragraphe sans rapport.';
+t('réponse municipale lue dans l’article RATTACHÉ à l’affaire : liée à l’affaire, étendue communale conservée à part, libellé limité à ce que la source dit', () => {
+  const fs = extraireReactions(CORPS_MESURE, { etablissement: 'Les Tournesols', anneeRef: '2026-10-16', lieAffaire: true, commune: 'Lingolsheim' });
+  const renf = fs.find((f) => f.mesure === 'renforcement_encadrement'), info = fs.find((f) => f.mesure === 'information_familles');
+  assert.equal(fs.length, 2);
+  assert.equal(renf.portee, 'établissement'); assert.equal(renf.territoire, 'Lingolsheim'); assert.doesNotMatch(renf.libelle_public, /plan d’action/);
+  assert.match(renf.libelle_public, /renforcement de l’encadrement/); assert.equal(renf.event_period, null, 'la date du temps d’échange n’est pas transférée à la mesure d’encadrement');
+  assert.equal(info.event_period, '2026-11'); assert.equal(info.portee, 'établissement'); assert.equal(info.territoire, 'Lingolsheim');
+  assert.ok(info.evidence[0].includes('La municipalité indique') && info.evidence[0].includes('temps d’échange'), 'la preuve porte l’acteur ET la mesure, écrits dans le même paragraphe');
+});
+t('« plan d’action » seulement si la source le dit ; hors article rattaché (ou autre établissement nommé), la mesure reste territoriale — l’acteur seul ne décide pas', () => {
+  assert.equal(extraireReactions('La mairie présente un plan d’action pour renforcer l’encadrement des enfants dans les centres.', { lieAffaire: true, commune: 'X' })[0].mesure, 'plan_action_encadrement');
+  assert.equal(extraireReactions(CORPS_MESURE, { etablissement: 'Les Tournesols', anneeRef: '2026-10-16' }).find((f) => f.mesure === 'renforcement_encadrement').portee, 'territoire');
+  const autre = extraireReactions('La municipalité renforcera l’encadrement dans les écoles Voltaire et Pasteur de la commune cette année.', { etablissement: 'Les Tournesols', autres: ['École Voltaire'], lieAffaire: true, commune: 'X' });
+  assert.equal(autre[0].portee, 'territoire', 'phrase qui nomme d’autres établissements : jamais rattachée à celui-ci');
+});
+t('une phrase impersonnelle ne reprend l’acteur que dans le MÊME paragraphe (incertitude ≠ attribution forcée)', () => {
+  const separe = 'La municipalité indique qu’elle va renforcer l’encadrement des accueils de loisirs.\n\nUn temps d’échange sera organisé en novembre avec les parents.';
+  const fs = extraireReactions(separe, { etablissement: 'X', lieAffaire: true, commune: 'Y' });
+  assert.deepEqual(fs.map((f) => f.mesure), ['renforcement_encadrement'], 'autre paragraphe : aucune attribution à la municipalité');
+});
+const CORPS_AVOCAT = 'Le mis en examen ne reconnaît pas les faits.\n\n"Au drame humain s’ajoute la légèreté blâmable de responsables manifestement inconséquents" , avait réagi jeudi, avant la mise en examen, Maître Untel, avocat de plusieurs parents d’élèves.';
+t('la réaction d’un avocat n’est pas un rassemblement : « manifestement » n’est pas « manifester », aucune date ni statut annoncé/réalisé inventés', () => {
+  assert.deepEqual(extraireReactions(CORPS_AVOCAT, { etablissement: 'École Saint-Laurent', anneeRef: '2026-09-25', lieAffaire: true, commune: 'Paris 10e' }), []);
+  // la vraie manifestation reste reconnue
+  const vraie = extraireReactions('Des parents ont manifesté devant l’école ce jeudi pour réclamer des explications aux autorités.', { etablissement: 'École Saint-Laurent', anneeRef: '2026-09-25' });
+  assert.equal(vraie.length, 1); assert.equal(vraie[0].mesure, 'rassemblement'); assert.equal(vraie[0].event_date, '2026-09-24');
+});
+t('entités HTML décodées par le traitement existant (plus de « &acirc; » ni « &ocirc; » dans les citations)', () => {
+  const r = extraireCorps(page('<p>Au drame humain s’ajoute la légèreté bl&acirc;mable de responsables, a réagi Ma&icirc;tre Untel, avocat des parents d’élèves de l’école du c&ocirc;té de la gare.</p>'), 'https://x.fr/a');
+  assert.match(r.corps, /blâmable/); assert.match(r.corps, /Maître/); assert.match(r.corps, /côté/); assert.doesNotMatch(r.corps, /&[a-z]+;/);
+});
+t('mobilisation générale (RFI) : toujours territoriale — article atteint par une piste, jamais lié à l’affaire d’où l’on est parti', () => {
+  const fs = extraireReactions('Pour alerter les autorités, un rassemblement de plusieurs parents du collectif était organisé ce samedi matin devant la mairie de Paris.', { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24', lieAffaire: false, commune: 'Paris 15e' });
+  assert.equal(fs[0].portee, 'territoire'); assert.equal(fs[0].territoire, 'Paris');
+});
+t('messages : réponse liée à l’affaire = enrichissement de sa fiche avec son étendue ; fait territorial = provenance seulement', () => {
+  const base = { etablissement: 'Les Tournesols', commune: 'Lingolsheim', courant: 'enquête', media: 'ICI', publication_date: '2026-10-16', url: 'https://ici.example/a' };
+  const lie = messageEnrichissement(base, [{ libelle_public: 'Selon la presse, la collectivité a annoncé un renforcement de l’encadrement des enfants.', realisation: 'annoncée', acteur: 'municipalite', portee: 'établissement', territoire: 'Lingolsheim', evidence: ['La municipalité indique qu’elle va renforcer l’encadrement.'], event_date: null }], false);
+  for (const s of ['ENRICHISSEMENT PROPOSÉ', 'Les Tournesols', 'réponse liée à cette affaire', 'étendue de la mesure : Lingolsheim', 'non limitée à cet établissement']) assert.ok(lie.includes(s), s);
+  assert.doesNotMatch(lie, /plan d’action|Provenance seulement|INFORMATION TERRITORIALE/);
+});
+t('retraitement sans doublon : les propositions erronées gardent leur ligne et leur décision ; les corrigées naissent sous une version distincte (idempotente), compatible avec les filtres « +reactions »', () => {
+  const src = (f) => readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8');
+  const mc = src('scripts/maintenance-cycle.mjs');
+  assert.ok(mc.includes('.q2+reactions`') && mc.includes("primitive_version not like '%+reactions'"));
+  assert.ok(mc.includes('lieAffaire: !viaPiste') && mc.includes('commune: fiche.commune'));
+  assert.ok(src('scripts/lib/persist-etat-affaire.mjs').includes('on conflict (case_id, article_id, content_fingerprint, primitive_version)'));
 });
 
 console.log(`\n${n} contrôles : OK`);

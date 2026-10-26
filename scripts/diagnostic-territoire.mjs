@@ -25,7 +25,8 @@ const PROPOSER = A.includes('--proposer'); // avec --territoire : (re)propose le
 const FILTRE = A.includes('--territoire') ? A[A.indexOf('--territoire') + 1].toLowerCase() : null;
 const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
 // Affaires couvertes par un Hub : celles de ses dossiers ET celles de son `ordre` (un Hub composé n'a pas de dossier rédigé pour chaque affaire).
-const hubDossiers = (h) => { const m = lire(`data/hub-matiere/${h}.json`); return new Set([...Object.keys(m.dossiers || {}), ...(m.ordre || [])]); };
+const hubDossiers = (h) => { let m; try { m = lire(`data/hub-approuve/${h}.json`); } catch { m = lire(`data/hub-matiere/${h}.json`); }   // version approuvée si elle existe
+  return new Set([...Object.keys(m.dossiers || {}), ...(m.ordre || [])]); };
 const REACTIONS = ['réponse_institutionnelle', 'mobilisation', 'suspension'];
 
 const { sql } = connecter();

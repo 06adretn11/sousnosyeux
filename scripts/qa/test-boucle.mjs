@@ -141,12 +141,13 @@ test('la citation d’origine est conservée (mémoire privée)', inst.citation.
 // Régression : `\b` ne reconnaît pas les lettres accentuées. Sans le mot « maire », « municipalité » / « collectivité » n'étaient jamais
 // vus comme acteurs — ce que seul le rejeu sur l'article réel de Verdon-les-Roses a révélé (la fixture ci-dessus passait grâce à « maire »).
 inst = detecterInstitutionnel(['La municipalité a présenté une série de mesures pour renforcer l’encadrement des enfants dans les centres de loisirs.']);
-test('« municipalité » seule (sans « maire ») est reconnue comme acteur — mesure annoncée', inst?.mesure === 'plan_action_encadrement' && inst.realisation === 'annoncée');
-test('« collectivité » (accent final) est reconnue comme acteur', detecterInstitutionnel(['La collectivité a décidé d’un renforcement de l’encadrement dans toutes les structures.'])?.mesure === 'plan_action_encadrement');
+test('« municipalité » seule (sans « maire ») est reconnue comme acteur — mesure annoncée', inst?.mesure === 'renforcement_encadrement' && inst.realisation === 'annoncée' && !/plan d’action/.test(inst.libelle_public));
+test('« plan d’action » écrit par la source → seul cas où le libellé dit « plan d’action »', detecterInstitutionnel(['La mairie présente un plan d’action pour renforcer l’encadrement des enfants.'])?.mesure === 'plan_action_encadrement');
+test('« collectivité » (accent final) est reconnue comme acteur', detecterInstitutionnel(['La collectivité a décidé d’un renforcement de l’encadrement dans toutes les structures.'])?.mesure === 'renforcement_encadrement');
 test('« éducation nationale » (accent initial) est reconnue comme acteur', detecterInstitutionnel(['L’éducation nationale a lancé une inspection de l’établissement concerné.'])?.mesure === 'controle_inspection');
 inst = detecterInstitutionnel(['La mairie a mis en place des binômes dans tous les accueils de loisirs depuis lundi.']);
 test('mesure RÉALISÉE : verbe d’accomplissement explicite, aucun marqueur d’annonce', inst?.realisation === 'réalisée' && /mis en œuvre/.test(inst.libelle_public));
-test('même mesure, deux stades : deux libellés distincts (annoncée ≠ réalisée)', libelleInstitutionnel('plan_action_encadrement', 'annoncée') !== libelleInstitutionnel('plan_action_encadrement', 'réalisée'));
+test('même mesure, deux stades : deux libellés distincts (annoncée ≠ réalisée)', libelleInstitutionnel('renforcement_encadrement', 'annoncée') !== libelleInstitutionnel('renforcement_encadrement', 'réalisée'));
 test('au moindre doute : « annoncée » (jamais « réalisée » par défaut)', realisationDe('La mairie travaille sur un dispositif de renforcement de l’encadrement.') === 'annoncée');
 test('annonce au futur : annoncée', detecterInstitutionnel(['Le maire annonce que la mairie fermera temporairement le centre de loisirs.'])?.realisation === 'annoncée');
 inst = detecterInstitutionnel(['Un animateur a été mis à pied ou suspendu de ses fonctions jusqu’à nouvel ordre par ses employeurs, dont la municipalité.']);
