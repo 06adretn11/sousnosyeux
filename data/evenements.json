@@ -141,6 +141,34 @@
         }
       }
     ],
+    "FR-2026-0139": [
+      {
+        "event_id": "35e25593-99f7-48be-b7c1-ed6fa3ae0b35",
+        "date": null,
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, la collectivité a annoncé un renforcement de l’encadrement des enfants.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "ICI",
+          "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+          "publie_le": "2026-10-16"
+        }
+      },
+      {
+        "event_id": "c54fa0aa-ca6c-47cf-9610-51b26143dc70",
+        "date": null,
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "ICI",
+          "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+          "publie_le": "2026-10-16"
+        }
+      }
+    ],
     "POC-05": [
       {
         "event_id": "bf3e73ae-05f3-422a-ad50-246e164a3cff",
@@ -323,6 +351,29 @@
       }
     },
     {
+      "id": "621b584cb8e2",
+      "nature": "mesure",
+      "libelle": "Selon la presse, la collectivité a annoncé un renforcement de l’encadrement des enfants.",
+      "realisation": "annoncée",
+      "portee": "établissement",
+      "acteur": "municipalite",
+      "territoire": "Lingolsheim",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ICI",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16"
+      },
+      "etablissement": "Les Tournesols",
+      "case_id": "FR-2026-0139",
+      "event_id": "35e25593-99f7-48be-b7c1-ed6fa3ae0b35",
+      "destinations": {
+        "fiche": "FR-2026-0139",
+        "hubs": []
+      }
+    },
+    {
       "id": "9f260d306f1d",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
@@ -374,6 +425,29 @@
             "groupe": "Ville de Paris et mairie du 11e"
           }
         ]
+      }
+    },
+    {
+      "id": "ac45c351e88b",
+      "nature": "mesure",
+      "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
+      "realisation": "annoncée",
+      "portee": "établissement",
+      "acteur": "municipalite",
+      "territoire": "Lingolsheim",
+      "date": null,
+      "periode": "2026-11",
+      "source": {
+        "media": "ICI",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16"
+      },
+      "etablissement": "Les Tournesols",
+      "case_id": "FR-2026-0139",
+      "event_id": "35e25593-99f7-48be-b7c1-ed6fa3ae0b35",
+      "destinations": {
+        "fiche": "FR-2026-0139",
+        "hubs": []
       }
     }
   ]
