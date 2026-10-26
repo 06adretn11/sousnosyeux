@@ -16,6 +16,7 @@ export const HUBS_PERIMETRES = {
   'paris-11e': { titre: 'Paris 11e', test: (c) => c.commune === 'Paris 11e', zone: { ville: 'paris' } },
   'bordeaux-gironde': { titre: 'Bordeaux / Gironde', test: (c) => c.departement === 'Gironde', zone: { departement: 'Gironde' } },
   'hautes-alpes': { titre: 'Hautes-Alpes', test: (c) => c.departement === 'Hautes-Alpes', zone: { departement: 'Hautes-Alpes' } },
+  'landes': { titre: 'Landes', test: (c) => c.departement === 'Landes', zone: { departement: 'Landes' } },
 };
 
 /** Instantané comparable (nombres seulement) : ce qui change = ce qui est nouveau. */

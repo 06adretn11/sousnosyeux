@@ -26,7 +26,7 @@ if (!ids.length) { console.error('usage : proposer-fiche.mjs <case_id>… [--ecr
 const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
 const cases = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
 const evenements = lire('data/evenements.json').affaires;
-const HUBS = { 'paris-11e': 'Paris 11e', 'bordeaux-gironde': 'Bordeaux / Gironde', 'hautes-alpes': 'Hautes-Alpes' };
+const HUBS = { 'paris-11e': 'Paris 11e', 'bordeaux-gironde': 'Bordeaux / Gironde', 'hautes-alpes': 'Hautes-Alpes', 'landes': 'Landes' };
 const sql = SIMULER ? null : connecter().sql;
 
 for (const id of ids) {

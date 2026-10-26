@@ -1,0 +1,36 @@
+---
+// Landes — territoire peu dense : deux affaires distinctes, rapportées à Tarnos et à Mées, aucune jugée.
+// La valeur est dans la lecture croisée : où en est chaque procédure, qui a répondu (parquet, Ville, Éducation
+// nationale), et ce que les sources ne disent pas. Pas de carte (deux points éloignés n'apprennent rien).
+// Même gabarit que les autres Hubs : repères, réponses, dossiers (aperçu + lien vers la fiche quand elle est publique), limites.
+import Dossier from '../Dossier.astro';
+import Reperes from '../Reperes.astro';
+import Reponses from '../Reponses.astro';
+import Limites from '../Limites.astro';
+import { casesParIds } from '../../lib/territoires';
+import { chargerHub } from '../../lib/hub-matiere';
+
+const { matiere } = chargerHub('landes');
+const cases = casesParIds(matiere.ordre);
+const D = matiere.dossiers;
+// Étapes structurantes gardées dans l'aperçu quand la fiche individuelle est publique (le déroulé complet est sur la fiche).
+const APERCU = ['garde_a_vue', 'mise_en_examen', 'decision', 'renvoi', 'audience'];
+const dossier = (id: string) => ({ ...D[id], apercu_types: D[id].apercu_types ?? APERCU });
+---
+
+<div class="terr">
+  <p class="eyebrow">Territoire peu dense · Landes (40)</p>
+  <h1>Comprendre les affaires des Landes</h1>
+
+  <Reperes r={matiere.reperes}>
+    <Reponses groupes={matiere.reponses} />
+  </Reperes>
+
+  <h2>Les dossiers</h2>
+  <div class="grille">
+    {cases.map((c) => <Dossier c={c} d={dossier(c.case_id)} />)}
+  </div>
+
+  <h2>Limites et inconnues</h2>
+  <Limites recherches={matiere.recherches} />
+</div>

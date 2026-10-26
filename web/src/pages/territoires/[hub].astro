@@ -7,6 +7,7 @@ import Habillage from '../../components/territoires/Habillage.astro';
 import Paris11e from '../../components/territoires/Paris11e.astro';
 import Bordeaux from '../../components/territoires/Bordeaux.astro';
 import HautesAlpes from '../../components/territoires/HautesAlpes.astro';
+import Landes from '../../components/territoires/Landes.astro';
 import { matiereHub } from '../../lib/hub-matiere';
 
 export function getStaticPaths() {
@@ -14,6 +15,7 @@ export function getStaticPaths() {
     { params: { hub: 'paris-11e' }, props: { hub: 'paris-11e', titre: 'Paris 11e', description: 'Neuf affaires rapportées par la presse dans le 11e arrondissement de Paris : déroulés, décisions, et réponses publiques parisiennes.' } },
     { params: { hub: 'bordeaux-gironde' }, props: { hub: 'bordeaux-gironde', titre: 'Bordeaux / Gironde', description: 'Frida-Kahlo et Cenon : déroulés sourcés, déclarations du procureur et des élus, versions divergentes.' } },
     { params: { hub: 'hautes-alpes' }, props: { hub: 'hautes-alpes', titre: 'Hautes-Alpes', description: 'Deux affaires jugées à Gap : ce qui était poursuivi, requis, retenu et écarté, et la réponse des institutions.' } },
+    { params: { hub: 'landes' }, props: { hub: 'landes', titre: 'Landes', description: 'Deux affaires rapportées à Tarnos et à Mées : déroulés sourcés, réponses du parquet, de la Ville et de l’Éducation nationale, aucun jugement rapporté.' } },
   ];
 }
 const { hub, titre, description } = Astro.props as { hub: string; titre: string; description: string };
@@ -26,5 +28,6 @@ const nMatiere = matiereHub(hub).length;
     {hub === 'paris-11e' && <Paris11e />}
     {hub === 'bordeaux-gironde' && <Bordeaux />}
     {hub === 'hautes-alpes' && <HautesAlpes />}
+    {hub === 'landes' && <Landes />}
   </div>
 </Layout>
