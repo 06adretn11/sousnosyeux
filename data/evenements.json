@@ -323,6 +323,33 @@
       }
     },
     {
+      "id": "9f260d306f1d",
+      "nature": "mobilisation",
+      "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
+      "realisation": "réalisée",
+      "portee": "territoire",
+      "acteur": "parents, collectif",
+      "territoire": "Paris",
+      "date": "2026-03-21",
+      "periode": null,
+      "source": {
+        "media": "RFI",
+        "url": "https://www.rfi.fr/fr/france/20260321-france-des-parents-rassembl%C3%A9s-%C3%A0-paris-contre-les-violences-sexuelles-dans-le-p%C3%A9riscolaire",
+        "publie_le": "2026-03-21"
+      },
+      "case_id": null,
+      "event_id": null,
+      "destinations": {
+        "fiche": null,
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "aa9d4eb1d5fd",
       "nature": "mesure",
       "libelle": "Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.",
