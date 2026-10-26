@@ -62,17 +62,26 @@ export function datePublication(html, url = '') {
  *          `corps` est vide si la structure de page n'est pas reconnue. Les blocs « À lire aussi » ne sont PAS dans le corps :
  *          ils sont rendus à part (`liens_associes`), comme pistes de découverte.
  */
+const CLASSE_BLOC_LIE = '(?:read-more|related|lire-aussi|see-also|teaser|recommend)';
+// Un paragraphe peut ne rien porter lui-même et se trouver dans un conteneur « related » encore ouvert : c'est un titre voisin, pas l'article.
+const dansBlocLie = (html, index) => {
+  const avant = html.slice(0, index);
+  const ouvertures = [...avant.matchAll(new RegExp(`<(?:div|aside|section|ul|nav)\\b[^>]*class=["'][^"']*${CLASSE_BLOC_LIE}[^"']*["'][^>]*>`, 'gi'))];
+  const o = ouvertures[ouvertures.length - 1];
+  return !!o && !/<\/(?:div|aside|section|ul|nav)>/i.test(avant.slice(o.index + o[0].length));
+};
+
 export function extraireCorps(html, url = '') {
   const liens_associes = [];
   const paragraphes = [...html.matchAll(/<p([^>]*)>([\s\S]*?)<\/p>/gi)]
-    .map((m) => ({ attrs: m[1], html: m[2], texte: nettoyer(m[2]) }))
+    .map((m) => ({ attrs: m[1], html: m[2], texte: nettoyer(m[2]), lie: dansBlocLie(html, m.index) }))
     .filter((p) => p.texte.length > 60)
     .filter((p) => {
       const bas = p.texte.toLowerCase();
       return !CHROME.some((c) => bas.includes(c));
     })
     .filter((p) => {
-      if (!estPisteDeNavigation(p.texte) && !/class=["'][^"']*(?:read-more|related|lire-aussi|see-also)/i.test(p.attrs)) return true;
+      if (!p.lie && !estPisteDeNavigation(p.texte) && !new RegExp(`class=["'][^"']*${CLASSE_BLOC_LIE}`, 'i').test(p.attrs)) return true;
       const a = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i.exec(p.html);
       if (a) {
         try { liens_associes.push({ titre: nettoyer(a[2]), url: new URL(a[1].replace(/&amp;/g, '&'), url || undefined).href }); } catch { /* lien relatif sans base : ignoré */ }

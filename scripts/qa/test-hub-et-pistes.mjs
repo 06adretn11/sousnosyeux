@@ -291,4 +291,14 @@ t('retraitement sans doublon : les propositions erronées gardent leur ligne et 
   assert.ok(src('scripts/lib/persist-etat-affaire.mjs').includes('on conflict (case_id, article_id, content_fingerprint, primitive_version)'));
 });
 
+t('un titre voisin dans un conteneur « related » ou un teaser sans marqueur sort du corps (défaut reproduit sur main avant correctif) ; le paragraphe suivant reste', () => {
+  const T = 'La mairie de Rennes suspend les animateurs de tous les centres de loisirs après une affaire, annonce la municipalité';
+  const h = '<html><title>Un animateur mis en examen à Rennes</title><body><p>Un animateur périscolaire de Rennes a été mis en examen mardi pour agressions sexuelles sur mineurs, selon le parquet.</p>'
+    + `<div class="related-posts"><p>${T}</p></div><p class="teaser"><a href="/x">${T}</a></p>`
+    + '<p>Son avocat a indiqué mercredi que le mis en examen contestait les faits et qu\'il serait placé sous contrôle judiciaire.</p></body></html>';
+  const r = extraireCorps(h, 'https://ex.fr/a');
+  assert.equal(r.paragraphes.length, 2);
+  assert.ok(!r.corps.includes('suspend'));
+});
+
 console.log(`\n${n} contrôles : OK`);
