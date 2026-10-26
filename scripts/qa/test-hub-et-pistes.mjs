@@ -141,8 +141,8 @@ t('la portée vient du contenu probant : le message ne rattache pas un fait terr
   const base = { etablissement: 'École Vigée Lebrun', commune: 'Paris 15e', courant: 'condamnation non définitive', media: 'RFI', publication_date: '2026-09-15', url: RFI_A };
   const fait = { libelle_public: 'Selon la presse, des parents ont tenu un rassemblement.', realisation: 'réalisée', acteur: 'parents', evidence: ['Un rassemblement de parents.'], event_date: null };
   const sans = messageEnrichissement(base, [fait], true);
-  assert.match(sans, /Territoire : non établi par la source/); assert.doesNotMatch(sans, /Territoire : Paris 15e/); assert.match(sans, /date non établie/);
-  assert.match(messageEnrichissement(base, [{ ...fait, territoire: 'Paris' }], true), /Territoire : Paris \(/);
+  assert.match(sans, /Territoire : non établi par la source/); assert.doesNotMatch(sans, /Territoire : Paris 15e/); assert.doesNotMatch(sans, /état judiciaire inchangé|ENRICHISSEMENT PROPOSÉ/); assert.match(sans, /date non établie/);
+  assert.match(messageEnrichissement(base, [{ ...fait, territoire: 'Paris' }], true), /Territoire : Paris</);
 });
 t('le passage présenté comme preuve est une phrase du corps, pas le titre de la page', () => {
   const base = { etablissement: 'École Vigée Lebrun', commune: 'Paris 15e', courant: 'enquête', media: 'RFI', publication_date: '2026-03-21', url: LIEN };

@@ -73,7 +73,9 @@ for (let essai = 1; essai <= ESSAIS; essai++) {
 }
 const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
 if (!dernier.length) {
-  if (TELEGRAM) await prevenir(texteVerifie({ ids, fiches, hubs, site: SITE })); // pages actualisées : URL de chacune
+  // Informations validées dont la page servie vient d'être contrôlée (ecartsHub : présentes dans la page) : dites telles qu'elles sont, avec leur portée.
+  const infos = (evenements.matiere || []).filter((x) => (x.destinations?.hubs || []).some((h) => hubs.includes(h.hub))).map((x) => ({ libelle: x.libelle, portee: x.portee, territoire: x.territoire }));
+  if (TELEGRAM) await prevenir(texteVerifie({ ids, fiches, hubs, site: SITE, infos })); // pages actualisées : URL de chacune
   console.log('site conforme');
   process.exit(0);
 }

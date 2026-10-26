@@ -29,9 +29,29 @@ t('fiche + Hub : une information d’affaire (fiche approuvée, Hub dont le pér
 t('fiche seule : affaire isolée (aucun Hub) mais fiche approuvée', () => { const d = destinationsDe(fait({ case_id: 'ISO' }), ctx()); assert.equal(d.fiche, 'ISO'); assert.deepEqual(d.hubs, []); });
 t('Hub seul : affaire publique du périmètre sans fiche approuvée ; une affaire d’un autre arrondissement n’est pas dans le périmètre du Hub 11e', () => { assert.deepEqual(destinationsDe(fait({ case_id: 'P-10' }), ctx()).hubs, []); const d = destinationsDe(fait({ case_id: 'P-11B' }), ctx()); assert.equal(d.fiche, null); assert.equal(d.hubs.length, 1); });
 t('aucune page : affaire non publique → rien (l’information reste en mémoire, aucune page créée)', () => { const d = destinationsDe(fait({ case_id: 'CANDIDATE' }), ctx()); assert.deepEqual(d, { fiche: null, hubs: [], bloques: [] }); });
-t('affaire sous HOLD : jamais exposée, ni fiche ni Hub, même via une information territoriale', () => {
-  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD' }), ctx()).hubs, []);
-  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD', nature: 'mesure', portee: 'territoire', territoire: 'Paris' }), ctx()), { fiche: null, hubs: [], bloques: [] });
+// Affaire PUBLIQUE sous HOLD (cas FR-2026-0004) : `publiques` la contient, c'est donc bien le HOLD — et lui seul — qui décide.
+const ctxHold = (o = {}) => ctx({ publiques: new Set(['P-11', 'P-11B', 'P-10', 'G-1', 'ISO', 'P-HOLD']), ...o });
+t('affaire sous HOLD : ses faits PROPRES ne sont jamais projetés, ni fiche ni Hub (même fiche approuvée)', () => {
+  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD' }), ctxHold()), { fiche: null, hubs: [], bloques: [] });
+  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD', portee: 'affaire' }), ctxHold({ approuvees: new Set(['P-HOLD']) })), { fiche: null, hubs: [], bloques: [] });
+});
+t('HOLD ≠ provenance : un fait de TERRITOIRE validé, découvert via une affaire gelée, suit sa propre portée (Hub qui contient « Paris »), jamais la fiche de l’affaire gelée', () => {
+  const d = destinationsDe(fait({ case_id: 'P-HOLD', nature: 'mobilisation', portee: 'territoire', territoire: 'Paris' }), ctxHold({ approuvees: new Set(['P-HOLD']) }));
+  assert.equal(d.fiche, null, 'la fiche d’une affaire gelée n’est jamais alimentée');
+  assert.deepEqual(d.hubs, [{ hub: 'paris-11e', groupe: 'Familles, avocats, syndicats, associations' }]);
+  // aucun rattachement artificiel : un territoire hors de tout Hub publié, ou non nommé, reste en mémoire
+  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD', portee: 'territoire', territoire: 'Lyon' }), ctxHold()), { fiche: null, hubs: [], bloques: [] });
+  assert.deepEqual(destinationsDe(fait({ case_id: 'P-HOLD', portee: 'territoire', territoire: null }), ctxHold()), { fiche: null, hubs: [], bloques: [] });
+  // une affaire NON publique n'ouvre rien, même pour un fait de territoire
+  assert.deepEqual(destinationsDe(fait({ case_id: 'CANDIDATE', portee: 'territoire', territoire: 'Paris' }), ctxHold()), { fiche: null, hubs: [], bloques: [] });
+});
+t('projection : la provenance gelée n’est pas exposée (case_id absent côté public) ; un fait propre à l’affaire gelée reste conservé, non publié ; rejeu identique', () => {
+  const faits = [fait({ id: 'a', case_id: 'P-HOLD', nature: 'mobilisation', portee: 'territoire', territoire: 'Paris' }), fait({ id: 'b', case_id: 'P-HOLD', portee: 'affaire' })];
+  const r = construireMatiere(faits, ctxHold());
+  assert.equal(r.matiere.length, 1); assert.equal(r.matiere[0].id, 'a'); assert.equal(r.matiere[0].case_id, null); assert.ok(!('etablissement' in r.matiere[0]));
+  assert.ok(!JSON.stringify(r.matiere).includes('P-HOLD') && !JSON.stringify(r.matiere).includes('École E'), 'aucune trace de l’affaire gelée dans la projection publique');
+  assert.deepEqual(r.conservees.map((x) => x.id), ['b']);
+  assert.equal(JSON.stringify(construireMatiere(faits, ctxHold())), JSON.stringify(r), 'aucune duplication au rejeu');
 });
 t('mesure territoriale « Ville de Paris » rattachée à Aqueduc-like (Paris 10e) : Hub Paris oui ; fiche d’origine seulement si approuvée ET commune dans la portée', () => {
   const f = fait({ case_id: 'P-10', nature: 'mesure', portee: 'territoire', territoire: 'Paris', acteur: 'Ville de Paris' });
@@ -102,9 +122,15 @@ t('vérification du site : fiches ET Hubs (data-matiere + libellé présent) ; T
   assert.ok(v.includes('--hubs') && v.includes('data-matiere') && v.includes('absente de la page servie') && v.includes('Hub ${h}'));
   for (const w of ['sny-clics', 'sny-telegram']) { const y = src(`.github/workflows/${w}.yml`); assert.ok(y.includes('--hubs $HUBS') && y.includes('steps.evenements.outputs.hubs')); }
 });
-t('Telegram : le blocage est signalé précisément (« NON intégré aux pages », motif exact), la validation est conservée, aucun nouveau GO', () => {
-  const p = src('scripts/lib/prevenir.mjs');
-  assert.ok(src('scripts/project-evenements.mjs').includes('texteBloquee(b)') && p.includes('NON intégré aux pages') && p.includes('La validation est conservée') && p.includes('Aucun nouveau GO'));
+t('Telegram : le blocage est signalé précisément (« NON intégré aux pages », motif exact), la validation est conservée, aucun nouveau GO ; un fait de territoire est présenté par sa portée', async () => {
+  const { texteBloquee, texteConservee } = await import('../lib/prevenir.mjs');
+  assert.ok(src('scripts/project-evenements.mjs').includes('texteBloquee(b)'));
+  const m = texteBloquee({ etablissement: 'École E', case_id: 'X', libelle: 'L', raison: 'motif exact' });
+  for (const s of ['NON intégré aux pages', 'motif exact', 'La validation est conservée', 'Aucun nouveau GO']) assert.ok(m.includes(s), s);
+  const t = texteBloquee({ portee: 'territoire', territoire: 'Paris', etablissement: null, libelle: 'L', raison: 'r' });
+  assert.ok(t.includes('Information territoriale validée mais NON intégrée') && t.includes('Paris') && !t.includes('École'));
+  const c = texteConservee({ portee: 'territoire', territoire: 'Paris', etablissement: null, case_id: null, libelle: 'Selon la presse, des parents ont tenu un rassemblement.' });
+  assert.ok(c.includes('Information territoriale validée et conservée') && c.includes('Paris') && !/Vigée|FR-2026/.test(c));
 });
 
 console.log('\n  RÉCUPÉRABLE — la matière territoriale validée ne dépend pas de l’état public de l’affaire support');

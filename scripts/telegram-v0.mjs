@@ -396,6 +396,14 @@ async function clicEtat(cb, d, cle) {
     returning decision::text`;
   if (maj.length) {
     console.log(`décision ${d} → ${VERS_DB[d]} enregistrée sur ${cle}`);
+    // Fait de TERRITOIRE : l'accusé le dit par sa portée (jamais « enrichissement de l'établissement », jamais le texte d'une nouvelle affaire).
+    const faits = Array.isArray(p.facts) ? p.facts.filter((f) => f?.libelle_public) : [];
+    const territorial = p.analysis_action === 'ENRICHMENT' && faits.length > 0 && faits.every((f) => f.portee === 'territoire');
+    if (territorial) {
+      await accuser(cb, `✅ <b>Décision enregistrée : ${LIBELLE_ACTION[d]}</b>\nInformation territoriale (${esc(faits[0].territoire || 'territoire non précisé')}) : ${esc(faits[0].libelle_public)} (${cle})\nProvenance : ${esc(p.etablissement)} — aucune affaire n’est modifiée.`
+        + (VERS_DB[d] === 'ACCEPT' ? '\nSi un Hub publié couvre ce territoire, l’information y sera projetée, puis vérifiée sur le site ; vous recevrez la confirmation avec le lien (sinon : conservée, aucune page modifiée).' : '\nAucune écriture.'));
+      return 'enregistree';
+    }
     const quoi = p.analysis_action === 'STATE_CHANGE' && p.apres ? `${p.avant} → ${p.apres}` : 'enrichissement documentaire (état judiciaire inchangé)';
     await accuser(cb, `✅ <b>Décision enregistrée : ${LIBELLE_ACTION[d]}</b>\n${esc(p.etablissement)} — ${esc(p.commune)} : ${esc(quoi)} (${cle})` + (VERS_DB[d] === 'ACCEPT' ? SUITE : '\nAucune écriture sur la fiche.'));
     return 'enregistree';
