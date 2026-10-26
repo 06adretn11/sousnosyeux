@@ -172,6 +172,10 @@ test('6a. un libellé générique + commune (Morigny-Champigny) se cherche par l
   const n = requetesVeille({ etablissement: 'Centre de loisirs du Chambon', commune: 'Laguenne-sur-Avalouze', statut_judiciaire: 'mise en examen' });
   vrai(n.avant.startsWith('"Centre de loisirs du Chambon"'), n.avant);
 });
+test('6a-bis. la requête de PREUVE d’un libellé générique ne contient ni le libellé ni la phrase entre guillemets (0 résultat mesuré sur FR-2026-0011)', () => {
+  const r = requetePreuve({ fiche: { etablissement: 'Structures périscolaires de Morigny-Champigny', commune: 'Morigny-Champigny', role_mis_en_cause: 'animateur périscolaire', statut_judiciaire: 'mise en examen' }, claim: { acte: 'DEMANDE_LIBERTE', items: [{ titre: 't' }] } });
+  vrai(r.every((x) => !/structures|"/i.test(x)) && /morigny champigny demande remise en liberté/.test(r[0]), JSON.stringify(r));
+});
 test('6b. Titon : « le parquet fait appel de la relaxe » → claim APPEL, distinct de la relaxe', () => {
   const items = [
     { titre: 'Pourquoi l’animateur périscolaire jugé […] à l’école Titon à Paris a été relaxé - franceinfo', published: '2026-06-17' },
