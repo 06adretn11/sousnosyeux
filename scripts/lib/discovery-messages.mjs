@@ -11,6 +11,9 @@ import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+// Les acteurs de l'extraction sont normalisés (sans accent) : rendus lisibles, rien n'est inventé.
+const LISIBLES = { municipalite: 'Municipalité', mairie: 'Mairie', maire: 'Maire', academie: 'Académie', prefecture: 'Préfecture', prefet: 'Préfet', rectorat: 'Rectorat', 'education nationale': 'Éducation nationale', 'conseil municipal': 'Conseil municipal' };
+const acteurLisible = (a) => (a ? (LISIBLES[a] ?? a) : 'acteur non précisé');
 const jj = (d) => (d ? (d instanceof Date ? d.toISOString() : String(d)).slice(0, 10).split('-').reverse().join('/') : 'date inconnue'); // un objet Date (colonne SQL) ne devient jamais « Thu Oct 15 »
 const lien = (a) => `📰 ${esc(a.media || 'média')} → ${esc(a.url)}`;
 
@@ -48,16 +51,16 @@ export function messageEnrichissement(p, neufs, territorial) {
     ...tete,
     '',
     '<b>Ce qui est nouveau</b>',
-    ...neufs.slice(0, 2).map((f) => `• ${esc(f.libelle_public)}${f.realisation ? ` (${esc(f.realisation)})` : ''}`),
+    // Chaque fait avec SON passage probant : une PHRASE du corps (finit par une ponctuation) ; le titre de la page (« … - RFI ») n'est qu'un repère, jamais présenté comme preuve s'il existe mieux.
+    ...neufs.slice(0, 2).flatMap((f) => [`• ${esc(f.libelle_public)}${f.realisation ? ` (${esc(f.realisation)})` : ''}`,
+      `  « ${esc(cut(f.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f.evidence[0], 420))} »`]),
     neufs.length > 2 ? `(+${neufs.length - 2} autre(s) information(s))` : '',
     '',
     '<b>Qui / quand</b>',
-    `${esc(f1.acteur_nomme || f1.acteur || 'acteur non précisé')} · ${esc(quand(f1))}`,
+    ...neufs.slice(0, 2).map((f) => `${esc(acteurLisible(f.acteur_nomme || f.acteur))} · ${esc(quand(f))}`),
     '',
     '<b>Source</b>',
     `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,
-    // Passage probant = une PHRASE du corps (finit par une ponctuation) ; le titre de la page (« … - RFI ») n'est qu'un repère, jamais présenté comme preuve s'il existe mieux.
-    `« ${esc(cut(f1.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f1.evidence[0], 240))} »`,
     '',
     `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
     `<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`,
