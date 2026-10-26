@@ -176,4 +176,15 @@ await at('aucun lien associé retenu → aucune lecture (pas d\'exploration gén
   assert.deepEqual(r, []); assert.equal(lu, 0);
 });
 
+await at('article lié qui ne nomme pas l\'école : seul un fait de TERRITOIRE nommé par la source est retenu — jamais un fait d\'établissement, jamais un territoire déduit de la fiche', async () => {
+  const { estFaitDeTerritoireNomme } = await import('../lib/pistes.mjs');
+  const lie = extraireCorps(LIE_HTML, LIEN).corps;
+  const faits = extraireReactions(lie, { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24' });
+  assert.ok(faits.length === 1 && faits.every(estFaitDeTerritoireNomme), 'le rassemblement de Paris est un fait de territoire nommé');
+  assert.equal(estFaitDeTerritoireNomme({ portee: 'territoire', territoire: null }), false);
+  assert.equal(estFaitDeTerritoireNomme({ portee: 'établissement', territoire: 'Paris' }), false);
+  const nomme = extraireReactions('Des parents se sont rassemblés ce jeudi devant l’école Vigée Lebrun pour demander des explications aux autorités.', { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-24' });
+  assert.ok(nomme.length === 1 && !estFaitDeTerritoireNomme(nomme[0]), 'un fait qui nomme l’école reste un fait d’établissement : écarté pour un article non rattaché');
+});
+
 console.log(`\n${n} contrôles : OK`);

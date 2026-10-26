@@ -47,3 +47,6 @@ export async function suivrePistes({ liens, url, deja, max, lire, qualifier, com
   }
   return consignation;
 }
+
+/** Un article atteint par un lien associé qui ne nomme pas l'établissement ne peut porter que des faits de TERRITOIRE dont la source nomme le territoire. */
+export const estFaitDeTerritoireNomme = (f) => f?.portee === 'territoire' && !!f.territoire;
