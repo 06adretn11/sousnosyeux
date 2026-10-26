@@ -456,14 +456,24 @@ export function claimDejaEtabli({ case_id, claim, evenements }) {
  * (mesuré sur Titon : « animateur » écartait des titres d'appel qui ne le
  * nomment pas).
  */
+/** Un LIBELLÉ générique (« Structures périscolaires de Morigny-Champigny ») n'est pas un nom : aucun article ne l'écrit. Aucun mot distinctif hors commune. */
+const GEN_LIBELLE = new Set(['structure', 'structures', 'periscolaire', 'periscolaires', 'centres', 'non', 'nomme', 'nommee', 'nommes']);
+export function estLibelleGenerique(etab, commune) {
+  const tokCommune = new Set(racineCommune(commune || '').split(' '));
+  return !!etab && !aplat(etab).split(/[^a-z0-9]+/).some((j) => j.length >= 3 && !GENERIQUES.has(j) && !GEN_LIBELLE.has(j) && !tokCommune.has(j));
+}
+
 export function requetesVeille(c, { fenetreJours = 45 } = {}) {
   // Un établissement ANONYME (« Centre périscolaire de Charly (non nommé) », « École non nommée ») ne se
   // cherche pas entre guillemets : la phrase exacte n'existera dans aucun article, la requête ne ramène
   // rien et l'affaire n'est jamais surveillée. On cherche alors les mots du nom, sans la mention
   // « non nommé » ni la parenthèse (mesuré à l'ouverture des dossiers REVIEW de Discovery #1).
   const etab = c.etablissement || '';
-  const anonyme = /non nomm|\(/i.test(etab);
-  const nomCherche = etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
+  // Un LIBELLÉ générique (« Structures périscolaires de Morigny-Champigny ») n'est pas un nom : aucun article ne l'écrit, la phrase entre
+  // guillemets ne ramène rien (mesuré : 0 résultat sur FR-2026-0011). Sans mot distinctif hors commune, on cherche la commune seule.
+  const libelleGenerique = estLibelleGenerique(etab, c.commune);
+  const anonyme = /non nomm|\(/i.test(etab) || libelleGenerique;
+  const nomCherche = libelleGenerique ? '' : etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
   const base = [etab ? (anonyme ? nomCherche : `"${etab}"`) : '', (c.commune || '').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' ');
   const b = BOOSTERS[c.statut_judiciaire] || BOOSTERS['à qualifier'];
   const bq = b.map((x) => (/\s/.test(x) ? `"${x}"` : x)).join(' OR ');
@@ -489,18 +499,19 @@ const MOTS_ACTE = {
  */
 export function requetePreuve({ fiche, claim }) {
   const commune = racineCommune(fiche.commune);
-  if (claim.acte === 'NON_QUALIFIE') return [titreSansMedia(claim.items[0].titre), `"${fiche.etablissement}" ${commune}`];
+  const generique = estLibelleGenerique(fiche.etablissement, fiche.commune);   // libellé sans nom : la commune porte la recherche
+  if (claim.acte === 'NON_QUALIFIE') return [titreSansMedia(claim.items[0].titre), generique ? commune : `"${fiche.etablissement}" ${commune}`];
   // Première requête : jetons distinctifs de l'établissement, SANS guillemets ni arrondissement.
   // Mesuré sur Titon : `"École Titon" Paris 11e parquet fait appel` ne rend qu'UN résultat (la presse
   // écrit « XIe arrondissement »), `Titon Paris relaxe appel parquet` en rend dix, dont l'appel.
-  const jetons = jetonsEtab(fiche.etablissement, { saint: true }).join(' ') || fiche.etablissement;
+  const jetons = generique ? '' : (jetonsEtab(fiche.etablissement, { saint: true }).join(' ') || fiche.etablissement);
   // Un appel porte sur une décision : la nommer resserre la recherche sans la fermer.
   const objet = claim.acte === 'APPEL_FORME'
     ? (/relaxe/.test(fiche.statut_judiciaire || '') ? 'relaxe' : /condamnation/.test(fiche.statut_judiciaire || '') ? 'condamnation' : '')
     : '';
   const mots = [MOTS_ACTE[claim.acte] || '', objet].filter(Boolean).join(' ');
   const role = String(fiche.role_mis_en_cause || '').replace(/périscolaire|scolaire/gi, '').trim();
-  return [`${jetons} ${commune} ${mots}`.trim(), `"${fiche.etablissement}" ${role} ${mots}`.replace(/\s+/g, ' ').trim()];
+  return [`${jetons} ${commune} ${mots}`.replace(/\s+/g, ' ').trim(), `${generique ? commune : `"${fiche.etablissement}"`} ${role} ${mots}`.replace(/\s+/g, ' ').trim()];
 }
 
 // ---------------------------------------------------------------------
