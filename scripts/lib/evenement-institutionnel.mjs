@@ -202,8 +202,10 @@ const territoireDe = (phrase) => /(?<![\p{L}])(?:à|au|aux|en|dans|(?:la\s+)?(?:
  * @returns {Array<{event_type:string, mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement'|'territoire', acteur:string,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [] } = {}) {
+export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '' } = {}) {
   const jetons = jetonsEtab(etablissement);
+  // `titre` : titre de la page. Il repère l'article mais ne l'étaye pas : un fait dont TOUTES les citations sont ce titre n'est pas retenu.
+  const estTitre = (e) => !!titre && norm(e) === norm(titre);
   // Jetons des AUTRES établissements du même territoire : une phrase qui les nomme parle de plusieurs structures (portée territoire).
   const jetonsAutres = autres.flatMap((e) => jetonsEtab(e)).filter((t) => !jetons.includes(t));
   const parMesure = new Map();
@@ -271,7 +273,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       }
     }
   }
-  return [...parMesure.values()].map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && (f.portee !== 'territoire' || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
+  return [...parMesure.values()].filter((f) => !f.evidence.every(estTitre)).map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && (f.portee !== 'territoire' || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
 }
 
 /**
