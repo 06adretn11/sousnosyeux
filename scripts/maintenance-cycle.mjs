@@ -412,7 +412,7 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
   // Article atteint par un lien associé et qui ne nomme pas l'établissement (un reportage sur un rassemblement à l'échelle d'une ville) : il ne peut
   // porter que des faits de TERRITOIRE dont la source nomme elle-même le territoire — jamais un fait de l'établissement, jamais un territoire déduit de la fiche.
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres })
+  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0] }) // le corps commence par le titre de la page
     .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   F.reactions_nouvelles += r.length;
   return r;

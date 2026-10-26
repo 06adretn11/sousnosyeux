@@ -152,6 +152,16 @@ t('le passage présenté comme preuve est une phrase du corps, pas le titre de l
   assert.match(m, /« Un rassemblement de plusieurs parents était organisé/); assert.doesNotMatch(m, /« France: des parents rassemblés/);
   assert.match(messageEnrichissement(base, [{ ...f, evidence: [f.evidence[0]] }], true), /« France: des parents/, 'sans autre passage, le titre reste le seul repère');
 });
+t('un titre seul ne suffit pas à proposer un enrichissement ; titre + phrase du corps reste admissible', () => {
+  const TITRE = 'France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire - RFI';
+  const seul = extraireCorps(page('<p>Le secteur du périscolaire est éclaboussé depuis plusieurs semaines par une multiplication des cas de violences signalés dans des écoles.</p>', TITRE), 'https://x.fr/a');
+  const opts = { etablissement: 'École Vigée Lebrun', anneeRef: '2026-03-21', titre: seul.corps.split('\n\n')[0] };
+  assert.equal(extraireReactions(seul.corps, { ...opts, titre: '' }).length, 1, 'sans la garde, le titre seul faisait une proposition');
+  assert.deepEqual(extraireReactions(seul.corps, opts), []);
+  const avec = extraireCorps(page('<p>Pour alerter les autorités, un rassemblement de plusieurs parents du collectif était organisé ce samedi matin devant la mairie de Paris.</p>', TITRE), 'https://x.fr/b');
+  const [f] = extraireReactions(avec.corps, { ...opts, titre: avec.corps.split('\n\n')[0] });
+  assert.ok(f && f.evidence.some((e) => /devant la mairie de Paris/.test(e)));
+});
 t('date de publication de la page lue : méta, JSON-LD, sinon adresse — jamais devinée', () => {
   assert.equal(extraireCorps('<html><head><meta property="article:published_time" content="2026-03-21T08:00:00+01:00"></head><body><p>' + 'x'.repeat(80) + '</p></body></html>', 'https://x.fr/a').publie_le, '2026-03-21');
   assert.equal(extraireCorps(page('<p>' + 'x'.repeat(80) + '</p>'), 'https://x.fr/20260321-titre').publie_le, '2026-03-21');
