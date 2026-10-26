@@ -116,15 +116,15 @@ jobs:
         if: ${{ !cancelled() }}
         continue-on-error: true
         run: node scripts/preparer-hub.mjs --ecrire
-      - name: 9c. Déposer les dossiers de Hub sur main (docs seulement, aucune page du site)
+      - name: 9c. Déposer l'aperçu de Hub sur main (dossier de revue + matière composée ; aucune page tant que PUBLIER LE HUB n'a pas son GO)
         if: ${{ !cancelled() && steps.hubs.outputs.change == 'true' }}
         continue-on-error: true
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
-          git add docs/industrialisation/hub-drafts
+          git add docs/industrialisation/hub-drafts data/hub-matiere
           if ! git diff --cached --quiet; then
-            git commit -m "docs: brouillon de Hub préparé sur clic Telegram ($HUB_SLUGS), aucune publication"
+            git commit -m "docs: aperçu de Hub préparé sur clic Telegram ($HUB_SLUGS), aucune publication"
             git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
           fi
         env:

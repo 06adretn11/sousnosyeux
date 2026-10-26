@@ -15,7 +15,9 @@
 // aucune erreur réseau n'est donc relayée telle quelle).
 // VALIDATE n'écrit que state_proposals.decision. Aucune publication, ici ni ailleurs.
 // =====================================================================
+import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
+import { hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
@@ -244,6 +246,14 @@ async function nouvelle(cle) {
   }
   // Proposition de FICHE : jamais envoyée pour une affaire qui n'est pas (ou plus) publique ; l'enregistrement du choix exige `action`.
   // Proposition de HUB : l'enregistrement du choix exige `action` ; le bouton prépare un brouillon, il ne publie rien.
+  if (r[0].payload?.hub_publication) {
+    // Publication d'un Hub : jamais proposée pour une matière qui n'est plus celle de l'aperçu (empreinte) — sinon un GO porterait sur un contenu non vu.
+    const h = r[0].payload.hub_publication;
+    let courante = null;
+    try { courante = hashMatiere(JSON.parse(readFileSync(new URL(`../${CHEMIN_MATIERE(h.slug)}`, import.meta.url), 'utf8'))); } catch { /* matière absente */ }
+    if (courante !== h.hash) throw new Error('proposition de publication de Hub périmée (la matière a changé depuis l’aperçu) — rien envoyé');
+    if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de publication de Hub non envoyée');
+  } else
   if (r[0].payload?.hub) {
     if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de Hub non envoyée');
   } else
@@ -289,6 +299,9 @@ const SUITE = process.env.SNY_WEBHOOK === '1'
 const LIBELLE_PUBLICATION = { VALIDATE: 'PUBLIER (GO publication)', REVIEW: 'REVIEW (rien publié)', REJECT: 'REFUS DE PUBLIER (l’affaire est conservée)' };
 const SUITE_PUBLICATION = '\nPublication en cours : tu recevras « Publié et vérifié » seulement après lecture du site servi, ou le motif si elle ne peut pas aboutir.';
 // Proposition de HUB : PRÉPARER = un brouillon consultable, jamais une publication ; le lien (ou le motif) arrive dans un second message.
+// Publication d'un Hub : le clic est le GO ; la suite (projection, QA, déploiement, vérification du site) est autonome ; le lien arrive APRÈS la vérification.
+const LIBELLE_HUB_PUB = { VALIDATE: 'PUBLIER LE HUB (GO de publication)', REVIEW: 'REVIEW (rien publié)', REJECT: 'REFUS DE PUBLIER (le Hub n’est pas publié)' };
+const SUITE_HUB_PUB = '\nPublication en cours : tu recevras « Publié et vérifié » avec le lien public seulement après lecture du site servi, ou le motif si elle ne peut pas aboutir.';
 const LIBELLE_HUB = { VALIDATE: 'PRÉPARER LE HUB (brouillon, rien publié)', REVIEW: 'REVIEW (rien préparé)', REJECT: 'REFUS (aucun Hub préparé)' };
 const SUITE_HUB = '\nPréparation du brouillon en cours : tu recevras le lien du dossier de revue, ou le motif si elle ne peut pas aboutir. Aucune page n’est publiée.';
 const LIBELLE_ACTION = { VALIDATE: 'VALIDER', CREATE: 'CRÉER', ATTACH: 'RAPPROCHER', PENDING: 'CRÉER (preuves à compléter)', REVIEW: 'REVIEW (mis de côté, rien créé)', REJECT: 'REJETER' };
@@ -336,8 +349,8 @@ async function clicNouvelle(cb, d, cle) {
   if (maj.length) {
     console.log(`nouvelle affaire : décision ${d} → ${NC_VERS_DB[d]} enregistrée sur ${cle}`);
     const quoi = pr.payload?.etablissement ? `${esc(pr.payload.etablissement)} — ${esc(pr.payload.commune)}` : esc(pr.payload?.commune || cle);
-    const pub = !!pr.payload?.publication, hub = !!pr.payload?.hub;
-    await accuser(cb, `✅ <b>Décision enregistrée : ${(hub ? LIBELLE_HUB : pub ? LIBELLE_PUBLICATION : LIBELLE_ACTION)[d]}</b>\n${quoi} (${cle})` + (NC_VERS_DB[d] === 'ACCEPT' ? (hub ? SUITE_HUB : pub ? SUITE_PUBLICATION : SUITE) : '\nAucune écriture sur les fiches.'));
+    const pub = !!pr.payload?.publication, hub = !!pr.payload?.hub, hubPub = !!pr.payload?.hub_publication;
+    await accuser(cb, `✅ <b>Décision enregistrée : ${(hubPub ? LIBELLE_HUB_PUB : hub ? LIBELLE_HUB : pub ? LIBELLE_PUBLICATION : LIBELLE_ACTION)[d]}</b>\n${quoi} (${cle})` + (NC_VERS_DB[d] === 'ACCEPT' ? (hubPub ? SUITE_HUB_PUB : hub ? SUITE_HUB : pub ? SUITE_PUBLICATION : SUITE) : '\nAucune écriture sur les fiches.'));
     return 'enregistree';
   }
   const [cur] = await sql`select decision::text d from new_case_proposals where proposal_id = ${pr.pid}::uuid`;

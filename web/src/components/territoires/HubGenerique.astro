@@ -1,0 +1,39 @@
+---
+// Hub COMPOSÉ — gabarit commun des Hubs dont la matière a été composée (scripts/preparer-hub) puis approuvée (« PUBLIER LE HUB »).
+// Aucune rédaction ici : tout vient de data/hub-matiere/<hub>.json (repères, réponses, limites) et des dossiers existants des affaires.
+// Une affaire sans dossier détaillé est affichée avec son état, ses sources et ses événements validés ; ce qui manque est dit dans « Limites ».
+// Même gabarit que les autres Hubs : repères, réponses, dossiers (aperçu + lien vers la fiche quand elle est publique), limites.
+import Dossier from '../Dossier.astro';
+import Reperes from '../Reperes.astro';
+import Reponses from '../Reponses.astro';
+import Limites from '../Limites.astro';
+import { casesParIds } from '../../lib/territoires';
+import { chargerHub } from '../../lib/hub-matiere';
+import { dossierDe } from '../../lib/fiche';
+
+interface Props { hub: string }
+const { hub } = Astro.props;
+const { matiere } = chargerHub(hub);
+const titre = matiere._meta.titre;
+const cases = casesParIds(matiere.ordre);
+const APERCU = ['garde_a_vue', 'mise_en_examen', 'decision', 'renvoi', 'audience'];
+const dossier = (id: string) => { const d = matiere.dossiers?.[id] ?? dossierDe(id).d ?? {}; return { ...d, apercu_types: d.apercu_types ?? APERCU }; };
+const groupes = (matiere.reponses ?? []).filter((g: any) => g.items.length > 0);
+---
+
+<div class="terr">
+  <p class="eyebrow">Territoire · {titre}</p>
+  <h1>Comprendre les affaires — {titre}</h1>
+
+  <Reperes r={matiere.reperes}>
+    {groupes.length > 0 && <Reponses groupes={groupes} />}
+  </Reperes>
+
+  <h2>Les dossiers</h2>
+  <div class="grille">
+    {cases.map((c) => <Dossier c={c} d={dossier(c.case_id)} />)}
+  </div>
+
+  <h2>Limites et inconnues</h2>
+  <Limites recherches={matiere.recherches} />
+</div>

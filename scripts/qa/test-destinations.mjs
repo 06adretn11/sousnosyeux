@@ -102,7 +102,7 @@ t('une information territoriale ne porte pas d’établissement (jamais présent
 console.log('\n  RACCORDEMENT — pages et chaîne existantes, rien de nouveau');
 t('project-evenements : la projection existante porte la matière ; sorties fiches ET hubs ; blocage notifié UNE fois', () => {
   const s = src('scripts/project-evenements.mjs');
-  assert.ok(s.includes('construireMatiere') && s.includes('matiere }') && s.includes('hubs=') && s.includes('prevenirUneFois'));
+  assert.ok(s.includes('construireMatiere') && s.includes('fiches_approuvees: fiches, matiere') && s.includes('hubs=') && s.includes('prevenirUneFois'));
   assert.ok(s.includes("select e.case_id, e.event_id::text event_id"), 'case_events toujours projetés comme avant');
 });
 t('pages : la matière s’ajoute AUX blocs existants (Paroles et réactions ; réponses d’un Hub) ; aucune rubrique créée ; introduction/angle intouchés', () => {

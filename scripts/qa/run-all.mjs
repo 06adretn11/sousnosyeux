@@ -74,6 +74,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Hubs futurs sans agent — matière composée (jamais inventée), GO « PUBLIER LE HUB » sur l’empreinte, projection, parcours raccordé aux workflows',
+    script: 'scripts/qa/test-hub-publication.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Information validée → pages existantes — destinations calculées (fiche approuvée, Hub publié), portée jamais devinée, rien d’exposé hors pages publiques',
     script: 'scripts/qa/test-destinations.mjs',
     bloquant: true,

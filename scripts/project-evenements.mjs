@@ -16,6 +16,8 @@ import { dossierFiche, hashDossier, ficheApprouvee, empreinteApprouvee } from '.
 import { connecter } from './lib/neon.mjs';
 import { lireMatiereValidee } from './lib/matiere-validee.mjs';
 import { construireMatiere } from './lib/destinations.mjs';
+import { enregistrerHub } from './lib/diagnostic-territoire.mjs';
+import { hubsApprouves, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 import { prevenirUneFois, texteBloquee, texteConservee } from './lib/prevenir.mjs';
 
 const DIFF = process.argv.includes('--diff');
@@ -61,10 +63,21 @@ const lire = (fichier) => JSON.parse(readFileSync(new URL(`../${fichier}`, impor
 const casesPubliques = lire('data/cases.json').cases;
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
 const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
+// HUBS COMPOSÉS : publics seulement si l'empreinte de leur matière COURANTE a reçu un GO « PUBLIER LE HUB » (échec fermé : matière modifiée ⇒ retirée).
+// Le Hub approuvé reçoit ensuite les informations validées comme les Hubs rédigés (même périmètre, mêmes blocs) ; sa page est générée par le gabarit commun.
+const decisionsHub = (await sql`select payload->'hub_publication' h from new_case_proposals where decision = 'ACCEPT' and payload ? 'hub_publication'`)
+  .map((r) => r.h).filter((x) => /^[a-z0-9-]+$/.test(x?.slug || '') && x?.hash);
+const matieresHub = Object.fromEntries([...new Set(decisionsHub.map((x) => x.slug))].map((s) => [s, existsSync(new URL(`../${CHEMIN_MATIERE(s)}`, import.meta.url)) ? lire(CHEMIN_MATIERE(s)) : null]));
+const hubsApprouvesCourants = hubsApprouves(decisionsHub, matieresHub);
+for (const [slug, a] of Object.entries(hubsApprouvesCourants)) {
+  hubs[slug] = { publie: true, groupes: matieresHub[slug].reponses.map((g) => g.titre) };
+  enregistrerHub(slug, a.titre, matieresHub[slug]._meta?.perimetre?.departement);
+}
+for (const x of decisionsHub) if (!hubsApprouvesCourants[x.slug] && matieresHub[x.slug]) console.log(`· Hub « ${x.slug} » : GO sur une autre empreinte que la matière courante — non publié (nouveau GO requis)`);
 const { matiere, bloques, conservees } = construireMatiere(await lireMatiereValidee(sql), {
   publiques: new Set(ids), holds, approuvees: new Set(Object.keys(fiches)), cases: new Map(casesPubliques.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs,
 });
-const doc = { _meta: { projection: 'evenements-v0', note: 'Compilé depuis Neon (case_events, reviews, informations validées) par scripts/project-evenements.mjs. Ne pas éditer à la main.' }, affaires: parAffaire, fiches_approuvees: fiches, matiere };
+const doc = { _meta: { projection: 'evenements-v0', note: 'Compilé depuis Neon (case_events, reviews, informations validées) par scripts/project-evenements.mjs. Ne pas éditer à la main.' }, affaires: parAffaire, fiches_approuvees: fiches, matiere, ...(Object.keys(hubsApprouvesCourants).length ? { hubs_approuves: hubsApprouvesCourants } : {}) };
 const texte = JSON.stringify(doc, null, 2) + '\n';
 const avant = existsSync(CHEMIN) ? readFileSync(CHEMIN, 'utf8') : '';
 const n = Object.values(parAffaire).reduce((s, l) => s + l.length, 0);
@@ -76,7 +89,9 @@ const changees = matiere.filter((m) => ancienne.get(m.id) !== JSON.stringify(m))
 const retirees = (ancien.matiere ?? []).filter((m) => !matiere.some((x) => x.id === m.id));
 const touchees = [...changees, ...retirees];
 const concernees = Object.keys(fiches).filter((id) => !ancien.fiches_approuvees?.[id] || JSON.stringify(ancien.affaires?.[id] ?? []) !== JSON.stringify(parAffaire[id] ?? []) || touchees.some((m) => m.destinations.fiche === id));
-const hubsConcernes = [...new Set(touchees.flatMap((m) => m.destinations.hubs.map((h) => h.hub)))];
+// + les Hubs nouvellement approuvés (ou dont l'empreinte approuvée a changé) ou retirés : leur page est à vérifier sur le site servi, puis confirmée.
+const hubsChanges = Object.keys(hubsApprouvesCourants).filter((s) => JSON.stringify(hubsApprouvesCourants[s]) !== JSON.stringify(ancien.hubs_approuves?.[s]));
+const hubsConcernes = [...new Set([...touchees.flatMap((m) => m.destinations.hubs.map((h) => h.hub)), ...hubsChanges])];
 const sortie = (change) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `change=${change}
 fiches=${concernees.join(',')}
 hubs=${hubsConcernes.join(',')}

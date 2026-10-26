@@ -19,6 +19,8 @@ export const HUBS: Record<string, { titre: string; url: string }> = {
   'bordeaux-gironde': { titre: 'Bordeaux / Gironde', url: '/territoires/bordeaux-gironde' },
   'hautes-alpes': { titre: 'Hautes-Alpes', url: '/territoires/hautes-alpes' },
   'landes': { titre: 'Landes', url: '/territoires/landes' },
+  // Hubs COMPOSÉS puis approuvés : déclarés par la projection (evenements.json → hubs_approuves), sans édition de code.
+  ...Object.fromEntries(Object.entries((evenementsDoc as any).hubs_approuves ?? {}).map(([s, a]: [string, any]) => [s, { titre: a.titre, url: `/territoires/${s}` }])),
 };
 const ISOLES = 'isoles';
 const TYPE_NEON: Record<string, string> = {

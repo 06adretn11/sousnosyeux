@@ -24,7 +24,8 @@ const ECRIRE = A.includes('--ecrire');
 const PROPOSER = A.includes('--proposer'); // avec --territoire : (re)propose le Hub même sans changement depuis l'instantané (idempotent : une proposition par périmètre)
 const FILTRE = A.includes('--territoire') ? A[A.indexOf('--territoire') + 1].toLowerCase() : null;
 const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
-const hubDossiers = (h) => new Set(Object.keys(lire(`data/hub-matiere/${h}.json`).dossiers || {}));
+// Affaires couvertes par un Hub : celles de ses dossiers ET celles de son `ordre` (un Hub composé n'a pas de dossier rédigé pour chaque affaire).
+const hubDossiers = (h) => { const m = lire(`data/hub-matiere/${h}.json`); return new Set([...Object.keys(m.dossiers || {}), ...(m.ordre || [])]); };
 const REACTIONS = ['réponse_institutionnelle', 'mobilisation', 'suspension'];
 
 const { sql } = connecter();
@@ -55,7 +56,7 @@ export async function etatsTerritoires({ hubsOverride = null, retirerPubliques =
       sources: pub.reduce((n, c) => n + (sr.get(c.case_id) || []).length, 0), _dep: dans[0]?.departement ?? null, residuel: nom === 'paris-hors-11e' };
   };
   for (const [h, p] of Object.entries(HUBS_PERIMETRES)) ajouter(h, h, p.test);
-  const deptsHub = new Set(['Gironde', 'Hautes-Alpes', 'Landes']);
+  const deptsHub = new Set(Object.values(HUBS_PERIMETRES).map((p) => p.zone.departement).filter(Boolean));   // tout Hub (rédigé ou composé/approuvé) à périmètre départemental
   for (const d of new Set(cases.map((c) => c.departement).filter(Boolean))) {
     if (deptsHub.has(d)) continue;
     if (d === 'Paris') ajouter('paris-hors-11e', null, (c) => c.departement === 'Paris' && c.commune !== 'Paris 11e');

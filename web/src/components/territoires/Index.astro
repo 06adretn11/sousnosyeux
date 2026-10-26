@@ -3,6 +3,7 @@
 // et pour chaque territoire à matière non publiée, la version publique seule.
 import { casesParIds } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
+import evenementsDoc from '../../../../data/evenements.json';
 
 interface Props { base?: string; publique?: boolean }
 const { base = '/brouillons/territoires', publique = false } = Astro.props;
@@ -26,6 +27,10 @@ const cartes = [
   { href: `${base}/landes`, t: 'Landes', k: 'Territoire peu dense',
     d: `${l.publiques} affaires récentes (Tarnos, Mées), aucune jugée : déroulés sourcés, réponses du parquet, de la Ville et de l’Éducation nationale.`,
     alt: null },
+  // Hubs composés puis approuvés (gabarit commun) : une carte chacun, sans édition de code.
+  ...Object.entries((evenementsDoc as any).hubs_approuves ?? {}).filter(([s]) => !['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].includes(s)).map(([s, a]: [string, any]) => ({
+    href: `${base}/${s}`, t: a.titre, k: 'Hub composé',
+    d: `${compter(s).publiques} affaire(s) rapportée(s) par la presse : état, sources, réponses publiques documentées et ce que l’on ne sait pas.`, alt: null as null | { href: string; t: string } })),
 ];
 ---
 
