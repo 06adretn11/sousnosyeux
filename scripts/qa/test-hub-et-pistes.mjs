@@ -144,6 +144,14 @@ t('la portée vient du contenu probant : le message ne rattache pas un fait terr
   assert.match(sans, /Territoire : non établi par la source/); assert.doesNotMatch(sans, /Territoire : Paris 15e/); assert.match(sans, /date non établie/);
   assert.match(messageEnrichissement(base, [{ ...fait, territoire: 'Paris' }], true), /Territoire : Paris \(/);
 });
+t('le passage présenté comme preuve est une phrase du corps, pas le titre de la page', () => {
+  const base = { etablissement: 'École Vigée Lebrun', commune: 'Paris 15e', courant: 'enquête', media: 'RFI', publication_date: '2026-03-21', url: LIEN };
+  const f = { libelle_public: 'Selon la presse, des parents ont tenu un rassemblement.', realisation: 'réalisée', acteur: 'parents', territoire: 'Paris', event_date: '2026-03-21',
+    evidence: ['France: des parents rassemblés à Paris contre les violences sexuelles dans le périscolaire - RFI', 'Un rassemblement de plusieurs parents était organisé ce samedi matin devant la mairie de Paris.'] };
+  const m = messageEnrichissement(base, [f], true);
+  assert.match(m, /« Un rassemblement de plusieurs parents était organisé/); assert.doesNotMatch(m, /« France: des parents rassemblés/);
+  assert.match(messageEnrichissement(base, [{ ...f, evidence: [f.evidence[0]] }], true), /« France: des parents/, 'sans autre passage, le titre reste le seul repère');
+});
 t('date de publication de la page lue : méta, JSON-LD, sinon adresse — jamais devinée', () => {
   assert.equal(extraireCorps('<html><head><meta property="article:published_time" content="2026-03-21T08:00:00+01:00"></head><body><p>' + 'x'.repeat(80) + '</p></body></html>', 'https://x.fr/a').publie_le, '2026-03-21');
   assert.equal(extraireCorps(page('<p>' + 'x'.repeat(80) + '</p>'), 'https://x.fr/20260321-titre').publie_le, '2026-03-21');
