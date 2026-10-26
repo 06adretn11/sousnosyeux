@@ -7,7 +7,7 @@ import Dossier from '../Dossier.astro';
 import Reperes from '../Reperes.astro';
 import Reponses from '../Reponses.astro';
 import Limites from '../Limites.astro';
-import { casesParIds } from '../../lib/territoires';
+import { casesParIds, idsAffichables } from '../../lib/territoires';
 import { chargerHub } from '../../lib/hub-matiere';
 import { dossierDe } from '../../lib/fiche';
 
@@ -15,10 +15,12 @@ interface Props { hub: string }
 const { hub } = Astro.props;
 const { matiere } = chargerHub(hub);
 const titre = matiere._meta.titre;
-const cases = casesParIds(matiere.ordre);
+const cases = casesParIds(idsAffichables(matiere.ordre));   // une affaire gelée ou retirée depuis l'approbation n'est plus affichée
 const APERCU = ['garde_a_vue', 'mise_en_examen', 'decision', 'renvoi', 'audience'];
 const dossier = (id: string) => { const d = matiere.dossiers?.[id] ?? dossierDe(id).d ?? {}; return { ...d, apercu_types: d.apercu_types ?? APERCU }; };
-const groupes = (matiere.reponses ?? []).filter((g: any) => g.items.length > 0);
+// Contenu devenu interdit : les réponses d'une affaire gelée ou retirée depuis l'approbation ne sont plus affichées.
+const visibles = new Set(cases.map((c: any) => c.case_id));
+const groupes = (matiere.reponses ?? []).map((g: any) => ({ ...g, items: g.items.filter((i: any) => !i.case_id || visibles.has(i.case_id)) })).filter((g: any) => g.items.length > 0);
 ---
 
 <div class="terr">

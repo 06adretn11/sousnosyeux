@@ -17,6 +17,12 @@ export const memoireCompileeLe: string = (casesDoc as any)._meta.generated_at;
 
 const holds = new Set((holdsDoc as any).holds.map((h: any) => h.case_id));
 
+/**
+ * Hub COMPOSÉ publié : sa version approuvée peut citer une affaire devenue gelée (HOLD) ou retirée depuis. Une protection de publication l'emporte sur
+ * le maintien de la version : ces affaires sont ÉCARTÉES de l'affichage (jamais d'erreur de build, jamais de contenu devenu interdit).
+ */
+export const idsAffichables = (ids: string[]): string[] => ids.filter((id) => !holds.has(id) && (casesDoc as any).cases.some((x: any) => x.case_id === id));
+
 export function casesParIds(ids: string[]): any[] {
   return ids.map((id) => {
     if (holds.has(id)) throw new Error(`[territoires] ${id} est sous HOLD : jamais affichable`);

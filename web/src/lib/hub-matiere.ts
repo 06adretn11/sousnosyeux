@@ -22,11 +22,14 @@ import evenementsDoc from '../../../data/evenements.json';
 
 const publics = import.meta.glob('../../../data/hub-matiere/*.json', { eager: true });
 const prives = import.meta.glob('../../../data/hub-prive/*.json', { eager: true });
+// Dernière version APPROUVÉE d'un Hub composé (écrite par project-evenements au moment du GO « PUBLIER LE HUB ») : c'est elle qui est servie, pas le brouillon.
+const approuves = import.meta.glob('../../../data/hub-approuve/*.json', { eager: true });
 
 const parId = (mods: Record<string, any>) =>
   Object.fromEntries(Object.entries(mods).map(([p, m]) => [p.split('/').pop()!.replace('.json', ''), m.default ?? m]));
 const P = parId(publics);
 const V = parId(prives);
+const A = parId(approuves);
 
 // MATIÈRE VALIDÉE (data/evenements.json → `matiere`, projetée depuis Neon) : une information validée UNE fois, dont les destinations ont été
 // calculées à la projection. Ici, aucune décision : seul l'ajout dans un bloc EXISTANT désigné (`groupe`) ; l'angle et l'introduction du Hub
@@ -39,28 +42,31 @@ const acteurLisible = (m: any): string => {
     const t = String(m.acteur ?? '').split(', ').filter(Boolean).sort().reverse().join(' et ');
     return t ? t[0].toUpperCase() + t.slice(1) : 'Collectif';
   }
-  return m.acteur && !/^(la ville|collectivite|la commune)$/i.test(m.acteur) ? m.acteur : 'Collectivité';
+  // Les acteurs de la projection sont normalisés (sans accent) : on les rend lisibles sans rien inventer.
+  const LISIBLE: Record<string, string> = { municipalite: 'Municipalité', mairie: 'Mairie', maire: 'Maire', academie: 'Académie', prefecture: 'Préfecture', prefet: 'Préfet', 'education nationale': 'Éducation nationale', rectorat: 'Rectorat', 'conseil municipal': 'Conseil municipal' };
+  return m.acteur && !/^(la ville|collectivite|la commune)$/i.test(m.acteur) ? (LISIBLE[m.acteur] ?? m.acteur) : 'Collectivité';
 };
 /** Carte du bloc « réponses » d'un Hub (contrat Reponses). */
 export const carteReponse = (m: any) => ({
   ...periodeOuDate(m), acteur: acteurLisible(m),
-  texte: m.portee === 'territoire' ? `${m.libelle} Portée : ${m.territoire ?? 'territoire'}, non propre à une école.` : `${m.libelle}${m.etablissement ? ` (${m.etablissement})` : ''}`,
+  texte: m.portee === 'territoire' ? `${m.libelle} Portée : ${m.territoire ?? 'territoire'}, non propre à une école.` : `${m.libelle}${m.etablissement ? ` (${m.etablissement})` : ''}${m.territoire ? ` Étendue de la mesure : ${m.territoire}, non limitée à cet établissement.` : ''}`,
   source: m.source ? { ...m.source, acces: 'libre' } : null,
 });
 /** Carte de la rubrique « Paroles et réactions » d'une fiche (contrat Paroles compact) : jamais de citation inventée, position attribuée au média. */
 export const carteReaction = (m: any) => ({
   ...periodeOuDate(m), acteur: acteurLisible(m), qualite: m.nature === 'mobilisation' ? 'Mobilisation' : 'Mesure annoncée ou conduite',
   attribution: 'POSITION_ATTRIBUEE', portee: 'affaire', rappel_territorial: m.portee === 'territoire',
-  ...(m.portee === 'territoire' ? { a_propos: `Mesure à portée territoriale (${m.territoire ?? 'territoire'}), non propre à cet établissement` } : {}),
+  ...(m.portee === 'territoire' ? { a_propos: `Mesure à portée territoriale (${m.territoire ?? 'territoire'}), non propre à cet établissement` }
+    : m.territoire ? { a_propos: `Réponse liée à cette affaire ; étendue de la mesure : ${m.territoire}, non limitée à cet établissement` } : {}),
   paraphrase: m.libelle, source: m.source ? { ...m.source, acces: 'libre' } : null,
 });
 
 export function chargerHub(id: string): { matiere: any; prive: any | null } {
-  if (!P[id]) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
-  const m = P[id];
+  const m = A[id] ?? P[id];
+  if (!m) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
   const ajouts = matiereHub(id);
   if (!ajouts.length || !m.reponses) return { matiere: m, prive: V[id] ?? null };
-  const reponses = m.reponses.map((g: any) => ({ ...g, items: [...g.items, ...ajouts.filter((x) => x.destinations.hubs.some((h: any) => h.hub === id && h.groupe === g.titre)).map(carteReponse)] }));
+  const reponses = m.reponses.map((g: any) => ({ ...g, items: [...g.items, ...ajouts.filter((x) => x.destinations.hubs.some((h: any) => h.hub === id && h.groupe === g.titre) && !g.items.some((i: any) => String(i.texte).startsWith(x.libelle))).map(carteReponse)] }));
   return { matiere: { ...m, reponses }, prive: V[id] ?? null };
 }
 

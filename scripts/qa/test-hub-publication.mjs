@@ -77,14 +77,45 @@ t('une proposition de publication par (Hub, empreinte) : clé stable, nouvelle s
   assert.notEqual(payloadPublication({ slug: 'testland', titre: 'Testland', hash: 'f'.repeat(16), ids: [] }).cle, PUB.cle);
 });
 
-t('approbation = empreinte de la matière COURANTE : GO sur l\'empreinte actuelle → public ; matière modifiée depuis → non public ; Hub rédigé jamais concerné', () => {
+t('approbation = GO sur une empreinte RETROUVABLE : matière courante → publique ; GO inconnu, matière absente, Hub rédigé → rien ; GO rejoué → aucune duplication', () => {
   const m = compose(); const h = hashMatiere(m);
-  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h }], { testland: m }), { testland: { hash: h, titre: 'Testland' } });
-  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h }], { testland: compose({ evenements: [] }) }), {}, 'matière modifiée : le GO ne couvre plus');
-  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: 'a'.repeat(16) }], { testland: m }), {}, 'GO sur une autre empreinte');
+  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h }], { testland: m }), { testland: { hash: h, titre: 'Testland', source: 'courante' } });
+  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: 'a'.repeat(16) }], { testland: m }), {}, 'GO sur une empreinte que personne ne peut retrouver');
   assert.deepEqual(hubsApprouves([{ slug: 'landes', hash: h }], { landes: { _meta: { hub_id: 'landes', titre: 'Landes' } } }), {}, 'un Hub rédigé a sa propre page');
-  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h }], { testland: null }), {}, 'matière absente');
-  assert.equal(JSON.stringify(hubsApprouves([{ slug: 'testland', hash: h }, { slug: 'testland', hash: h }], { testland: m })), JSON.stringify(hubsApprouves([{ slug: 'testland', hash: h }], { testland: m })), 'GO rejoué : aucune duplication');
+  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h }], { testland: null }), {}, 'matière absente, aucun instantané');
+  assert.equal(JSON.stringify(hubsApprouves([{ slug: 'testland', hash: h }, { slug: 'testland', hash: h }], { testland: m })), JSON.stringify(hubsApprouves([{ slug: 'testland', hash: h }], { testland: m })));
+});
+t('Hub publié + modification EN ATTENTE : la dernière version approuvée reste servie (instantané), la nouvelle matière attend son GO', () => {
+  const v1 = compose(); const h1 = hashMatiere(v1);
+  const v2 = compose({ evenements: EV.slice(0, 1) });              // matière modifiée depuis, jamais approuvée
+  assert.notEqual(hashMatiere(v2), h1);
+  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h1 }], { testland: v2 }, { testland: v1 }), { testland: { hash: h1, titre: 'Testland', source: 'instantane' } });
+  // sans instantané conservé : échec fermé (rien n'est public sans version retrouvable)
+  assert.deepEqual(hubsApprouves([{ slug: 'testland', hash: h1 }], { testland: v2 }, {}), {});
+});
+t('nouveau GO sur la nouvelle matière : elle remplace l’ancienne ; un GO plus ancien ne reprend pas la main ; un GO non retrouvable est ignoré au profit du précédent', () => {
+  const v1 = compose(); const v2 = compose({ evenements: EV.slice(0, 1) }); const h1 = hashMatiere(v1), h2 = hashMatiere(v2);
+  assert.equal(hubsApprouves([{ slug: 'testland', hash: h2 }, { slug: 'testland', hash: h1 }], { testland: v2 }, { testland: v1 }).testland.hash, h2, 'le plus récent GO retrouvable gagne');
+  assert.equal(hubsApprouves([{ slug: 'testland', hash: 'b'.repeat(16) }, { slug: 'testland', hash: h1 }], { testland: v2 }, { testland: v1 }).testland.hash, h1, 'GO non retrouvable : on garde la version approuvée précédente');
+});
+t('un enrichissement déjà validé rejoint les blocs de la version APPROUVÉE pendant une modification en attente, sans second GO ; les protections restent actives', () => {
+  enregistrerHub('testland', 'Testland', 'Testland');
+  const approuvee = compose(), enAttente = { ...compose({ evenements: EV.slice(0, 1) }), reponses: [{ titre: 'Autre bloc', items: [] }] };
+  const groupes = approuvee.reponses.map((g) => g.titre);                       // ce que project-evenements fournit : les blocs de la version APPROUVÉE
+  assert.ok(!enAttente.reponses.some((g) => groupes.includes(g.titre)));
+  const ctx = (o = {}) => ({ publiques: new Set(['FR-X-0001']), holds: new Set(), approuvees: new Set(), cases: new Map([['FR-X-0001', { commune: 'Alpha', departement: 'Testland' }]]), hubs: { testland: { publie: true, groupes } }, ...o });
+  assert.equal(destinationsDe({ case_id: 'FR-X-0001', nature: 'mobilisation', portee: 'affaire', territoire: null }, ctx()).hubs[0]?.hub, 'testland');
+  assert.deepEqual(destinationsDe({ case_id: 'FR-X-0001', nature: 'mobilisation', portee: 'affaire', territoire: null }, ctx({ holds: new Set(['FR-X-0001']) })), { fiche: null, hubs: [], bloques: [] }, 'HOLD : jamais');
+  assert.deepEqual(destinationsDe({ case_id: 'FR-X-0001', nature: 'mobilisation', portee: 'affaire', territoire: null }, ctx({ publiques: new Set() })), { fiche: null, hubs: [], bloques: [] }, 'non publique : jamais');
+  delete HUBS_PERIMETRES.testland;
+});
+t('retraits et protections côté page : affaire gelée ou retirée depuis l’approbation et ses réponses ne sont plus affichées ; le front sert l’instantané approuvé', () => {
+  const g = src('web/src/components/territoires/HubGenerique.astro');
+  assert.ok(g.includes('idsAffichables(matiere.ordre)') && g.includes('visibles.has(i.case_id)'));
+  assert.ok(src('web/src/lib/territoires.ts').includes('!holds.has(id)'));
+  assert.ok(src('web/src/lib/hub-matiere.ts').includes('const m = A[id] ?? P[id]'));
+  const p = src('scripts/project-evenements.mjs'); assert.ok(p.includes('versionApprouvee[slug]') && p.includes('CHEMIN_APPROUVE') && p.includes('dernière version approuvée maintenue'));
+  for (const w of ['sny-clics', 'sny-telegram']) assert.ok(src('.github/workflows/' + w + '.yml').includes('git add data/hub-approuve'));
 });
 t('confirmation : le message « Publié et vérifié » donne le lien du Hub et les informations réellement affichées avec leur portée', () => {
   const m = texteVerifie({ hubs: ['testland'], site: 'https://sousnosyeux.org', infos: [{ libelle: 'Selon la presse, des parents ont tenu un rassemblement.', portee: 'territoire', territoire: 'Paris' }] });

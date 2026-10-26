@@ -412,7 +412,7 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
   // Article atteint par un lien associé et qui ne nomme pas l'établissement (un reportage sur un rassemblement à l'échelle d'une ville) : il ne peut
   // porter que des faits de TERRITOIRE dont la source nomme elle-même le territoire — jamais un fait de l'établissement, jamais un territoire déduit de la fiche.
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0] }) // le corps commence par le titre de la page
+  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune }) // le corps commence par le titre de la page
     .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   F.reactions_nouvelles += r.length;
   return r;
@@ -422,7 +422,9 @@ async function ecrireReactions(base, reactions) {
   if (DRY || !reactions.length) return;
   const faits = reactions.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
   const r2 = await enregistrerProposition(sql, {
-    ...base, version: `${base.version || PRIMITIVE_VERSION}+reactions`,
+    // `.q2` : qualification des réponses corrigée (lien à l'affaire ≠ étendue, mobilisation sur preuve directe, libellés non élargis). Les lignes « +reactions » d'avant
+    // (REVIEW compris) sont conservées telles quelles ; seules les propositions corrigées naissent sous cette version, une fois (clé d'idempotence inchangée).
+    ...base, version: `${base.version || PRIMITIVE_VERSION}.q2+reactions`,
     engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
     PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
     _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],

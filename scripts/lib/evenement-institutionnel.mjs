@@ -23,6 +23,9 @@ export const categorieEvenement = (t) => (TYPES_INSTITUTIONNELS.includes(t) ? 'i
 // ⚠ Tous les motifs sont écrits SANS accents et appliqués sur un texte normalisé (`norm`) : en JavaScript `\b` ne reconnaît pas
 // les lettres accentuées, donc « municipalité » n'était jamais vu comme un acteur — défaut révélé par le rejeu sur l'article
 // réel d'une mairie (la fixture synthétique passait seulement grâce au mot « maire »).
+// Acteurs MUNICIPAUX (leur étendue naturelle est la commune) ; le rectorat, la préfecture… n'en font pas partie.
+const MUNICIPAL = /^(?:maire|mairie|municipalite|conseil municipal|la commune|ville de|la ville|services? de la ville|service jeunesse)$/;
+const PASSIF = /\b(?:sera|seront|est|sont)\s+(?:organise|mis|mise|mises|instaure|propose|lance|prevu)\w*/;
 const ACTEUR = /\b(maire|mairie|municipalite|conseil municipal|collectivite|la commune|ville de|la ville|rectorat|academie|dsden|prefet|prefecture|education nationale|ministere|direction des services|service jeunesse|services? de la ville)\b/;
 
 // Vocabulaire fermé : code → motif. `suspension_agent` s'écrit en `suspension`, le reste en `réponse_institutionnelle`.
@@ -30,10 +33,12 @@ const MESURES = [
   // Seulement ce que le libellé « suspendu de ses fonctions » dit VRAIMENT : ni licenciement ni révocation (autre mesure, autre libellé),
   // et « écarté » seulement s'il s'agit des fonctions (« écarté de l'enquête » n'est pas une suspension).
   ['suspension_agent', /\b(suspendu\w*|suspension|mis(?:e)? a pied|ecarte\w*(?:\s+[^\s.]+){0,4}\s+(?:de\s+)?(?:ses|son)\s+(?:fonctions?|poste))\b/],
-  ['plan_action_encadrement', /plan d'action|renforc\w+\s+(?:de\s+)?(?:l'|les\s+)?(?:encadrement|controles?|recrutements?)|renforcement\s+(?:de\s+)?(?:l')?encadrement|taux d'encadrement|binomes?|double encadrement|recrut\w+\s+(?:de\s+)?(?:nouveaux\s+)?animateurs?/],
+  // « plan d'action » seulement quand la source le dit ; un simple renforcement de l'encadrement est une mesure plus étroite (libellé qui ne grossit pas la source).
+  ['plan_action_encadrement', /plan d'action/],
+  ['renforcement_encadrement', /^(?!.*plan d'action).*(?:renforc\w+\s+(?:de\s+)?(?:l'|les\s+)?(?:encadrement|controles?|recrutements?)|taux d'encadrement|binomes?|double encadrement|recrut\w+\s+(?:de\s+)?(?:nouveaux\s+)?animateurs?)/],
   ['controle_inspection', /\b(inspection|inspecteurs?|audit|controle administratif|enquete administrative|mission d'inspection)\b/],
   ['fermeture_structure', /\bferm\w+\b(?=[^.]{0,60}\b(?:centre|accueil|ecole|structure|creche|periscolaire)\b)|\bfermeture\b/],
-  ['information_familles', /reunion d'information|information (?:aux|des) (?:familles|parents)|cellule d'ecoute|cellule psychologique|accompagnement psychologique|soutien psychologique/],
+  ['information_familles', /reunion d'information|information (?:aux|des) (?:familles|parents)|temps d'echange[^.]{0,80}\bparents\b|cellule d'ecoute|cellule psychologique|accompagnement psychologique|soutien psychologique/],
   // Mesures de collectivité (cas Villeurbanne, 15/10/2026) : jusqu'ici invisibles parce que seul l'audit / l'inspection était reconnu.
   ['commission_independante', /commission independante/],
   ['plan_formation', /plan de formation|formations?\b[^.]{0,60}\b(?:agents|managers|personnels?|animateurs)\b|\bformer\b[^.]{0,40}\b(?:agents|personnels?|animateurs)\b/],
@@ -55,6 +60,10 @@ const LIBELLES = {
   },
   plan_action_encadrement: {
     annoncée: 'Selon la presse, la collectivité a annoncé un plan d’action pour renforcer l’encadrement des enfants.',
+    réalisée: 'Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.',
+  },
+  renforcement_encadrement: {
+    annoncée: 'Selon la presse, la collectivité a annoncé un renforcement de l’encadrement des enfants.',
     réalisée: 'Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.',
   },
   controle_inspection: {
@@ -135,7 +144,7 @@ export function dateEcrite(texte, ref = null) {
     const dt = new Date(pub.getTime() - ecart * 864e5);
     return { date: iso(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate()), periode: null };
   }
-  const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?(\\s+(?:dernier|passe))?\\b`).exec(n);
+  const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|du mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?(\\s+(?:dernier|passe))?\\b`).exec(n);
   if (m) {
     const mois = Number(MOIS[m[1]]);
     let y = m[2] ? Number(m[2]) : R?.y;
@@ -164,7 +173,7 @@ export function planReactions(faits, memoire = []) {
 // institutionnel dans la phrase n'est jamais une mobilisation. Le libellé public ne reprend ni parole ni citation de parent.
 const COLLECTIF = /\b(parents?(?: d'eleves)?|enseignants?|professeurs?|personnels?|collectifs?|associations?|riverains|habitants|syndicats?)\b/g;
 const MOBILISATIONS = [
-  ['rassemblement', /\b(?:se\s+sont\s+(?:reuni|rassembl|mobilis)\w*|rassembl\w+|manifest\w+|sit-in|veillee|marche blanche|cercle de silence|mobilis\w+)\b/, { annoncee: 'ont annoncé un rassemblement', realisee: 'ont tenu un rassemblement' }],
+  ['rassemblement', /\b(?:se\s+sont\s+(?:reuni|rassembl|mobilis)\w*|rassembl\w+|manifest(?!ement)\w+|sit-in|veillee|marche blanche|cercle de silence|mobilis\w+)\b/, { annoncee: 'ont annoncé un rassemblement', realisee: 'ont tenu un rassemblement' }],
   ['petition', /\bpetitions?\b/, { annoncee: 'ont annoncé une pétition', realisee: 'ont lancé une pétition' }],
   ['lettre_ouverte', /\blettres? ouvertes?\b|\bcourrier\s+(?:au|a la|adresse)\b/, { annoncee: 'ont annoncé l’envoi d’une lettre', realisee: 'ont adressé une lettre aux autorités' }],
 ];
@@ -202,14 +211,17 @@ const territoireDe = (phrase) => /(?<![\p{L}])(?:à|au|aux|en|dans|(?:la\s+)?(?:
  * @returns {Array<{event_type:string, mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement'|'territoire', acteur:string,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '' } = {}) {
+export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '', lieAffaire = false, commune = '' } = {}) {
   const jetons = jetonsEtab(etablissement);
   // `titre` : titre de la page. Il repère l'article mais ne l'étaye pas : un fait dont TOUTES les citations sont ce titre n'est pas retenu.
   const estTitre = (e) => !!titre && norm(e) === norm(titre);
   // Jetons des AUTRES établissements du même territoire : une phrase qui les nomme parle de plusieurs structures (portée territoire).
   const jetonsAutres = autres.flatMap((e) => jetonsEtab(e)).filter((t) => !jetons.includes(t));
   const parMesure = new Map();
-  const phrases = decoupe(corps);
+  // Phrases avec leur paragraphe : une phrase impersonnelle ne reprend l'acteur de la phrase précédente que dans le MÊME paragraphe.
+  const decoupees = String(corps || '').split(/\n{2,}/).flatMap((b, bi) => decoupe(b).map((p) => [p, bi]));
+  const phrases = decoupees.map((x) => x[0]);
+  const bloc = decoupees.map((x) => x[1]);
   // Mobilisations collectives (parents, enseignants…) : un événement par type, acteur(s) COLLECTIF(S), jamais de parole citée.
   for (const phrase of phrases) {
     const n = norm(phrase);
@@ -254,17 +266,28 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
     // Une mesure dont l'acteur est nommé dans la phrase SUIVANTE (« Une commission indépendante sera installée. Elle auditera les
     // processus de la commune. ») : les deux phrases forment alors UNE citation — jamais un acteur recoupé entre deux citations.
     let phrase = phrases[i];
-    if (!ACTEUR.test(norm(phrase)) && phrases[i + 1] && MESURES.some(([m, re]) => m !== 'suspension_agent' && re.test(norm(phrase)))) phrase = `${phrase} ${phrases[i + 1]}`;
+    const unePhraseMesure = (p) => MESURES.some(([m, re]) => m !== 'suspension_agent' && re.test(norm(p)));
+    // Phrase IMPERSONNELLE (« Un temps d'échange sera organisé… ») sans acteur, juste après la phrase du MÊME paragraphe qui nomme l'institution :
+    // les deux phrases forment UNE citation (l'acteur et la mesure sont tous deux écrits). Un verbe actif ou un autre paragraphe : aucune attribution.
+    let propre = null;   // phrase qui PORTE la mesure quand la citation en réunit deux : mesure, date et réalisation ne viennent que d'elle
+    if (!ACTEUR.test(norm(phrase)) && i > 0 && bloc[i - 1] === bloc[i] && ACTEUR.test(norm(phrases[i - 1])) && PASSIF.test(norm(phrase)) && unePhraseMesure(phrase)) { propre = phrase; phrase = `${phrases[i - 1]} ${phrase}`; }
+    else if (!ACTEUR.test(norm(phrase)) && phrases[i + 1] && unePhraseMesure(phrase)) phrase = `${phrase} ${phrases[i + 1]}`;
     const n = norm(phrase);
     const acteur = ACTEUR.exec(n)?.[1];
     if (!acteur) continue;
     for (const [mesure, motif] of MESURES) {
-      if (mesure === 'suspension_agent' || !motif.test(n)) continue;
-      const realisation = realisationDe(phrase);
-      const portee = jetons.length && jetons.some((t) => n.includes(t)) ? 'établissement' : 'territoire';
-      const d = dateEcrite(phrase, anneeRef);
+      if (mesure === 'suspension_agent' || !motif.test(propre ? norm(propre) : n)) continue;
+      const realisation = realisationDe(propre ?? phrase);
+      // Lien à l'affaire ≠ étendue : une réponse lue dans un article RATTACHÉ à l'affaire, sans autre établissement nommé, reste liée à elle même si la mesure
+      // vise plusieurs structures ; son étendue (commune) est conservée à part dans `territoire`.
+      const nomme = jetons.length && jetons.some((t) => n.includes(t));
+      const lie = lieAffaire && !jetonsAutres.some((t) => n.includes(t));
+      const portee = nomme || lie ? 'établissement' : 'territoire';
+      const nommeTerr = acteurNomme(phrase);
+      const communal = !nommeTerr.territoire && lieAffaire && commune && MUNICIPAL.test(acteur) ? commune.replace(/\s+\d+\s*(?:er|e|eme)?$/i, '') : null;
+      const d = dateEcrite(propre ?? phrase, anneeRef);
       const f = parMesure.get(mesure);
-      if (!f) parMesure.set(mesure, { event_type: 'réponse_institutionnelle', nature: 'mesure', mesure, realisation, portee, acteur, ...acteurNomme(phrase), event_date: d.date, event_period: d.periode, evidence: [phrase] });
+      if (!f) parMesure.set(mesure, { event_type: 'réponse_institutionnelle', nature: 'mesure', mesure, realisation, portee, acteur, ...nommeTerr, ...(communal ? { territoire: communal } : {}), event_date: d.date, event_period: d.periode, evidence: [phrase] });
       else {
         if (realisation === 'annoncée') f.realisation = 'annoncée';
         if (portee === 'établissement') f.portee = 'établissement';

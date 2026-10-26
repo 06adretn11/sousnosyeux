@@ -39,7 +39,7 @@ export function composerMatiereHub({ territoire, cases, evenements = [], holds =
   const statuts = {};
   for (const c of retenues) statuts[c.statut_judiciaire] = (statuts[c.statut_judiciaire] || 0) + 1;
   const evs = evenements.filter((e) => parId.has(e.case_id) && e.libelle && !(e.source && MEDIAS_PAYANTS.includes(e.source.media)));
-  const carte = (e) => ({ date: e.date || null, date_nature: e.date ? 'evenement' : 'inconnue', acteur: parId.get(e.case_id).commune, texte: e.libelle,
+  const carte = (e) => ({ case_id: e.case_id, date: e.date || null, date_nature: e.date ? 'evenement' : 'inconnue', acteur: parId.get(e.case_id).commune, texte: e.libelle,
     source: e.source?.url ? { media: e.source.media, url: e.source.url, publie_le: jj(e.source.publication_date) || null, acces: 'libre' } : null });
   const manquants = ids.filter((id) => !dossiersExistants.has(id));
   const n = retenues.length;
@@ -77,19 +77,26 @@ export function payloadPublication({ slug, titre, hash, ids }) {
   };
 }
 
+export const CHEMIN_APPROUVE = (slug) => `data/hub-approuve/${slug}.json`;
+
 /**
- * Hubs APPROUVÉS pour publication : l'empreinte de la matière COURANTE doit avoir reçu un GO (ACCEPT). Matière modifiée depuis ⇒ non publique.
+ * Hubs APPROUVÉS pour publication. Le contenu publié est la DERNIÈRE VERSION APPROUVÉE : l'instantané data/hub-approuve/<slug>.json, écrit quand le GO
+ * porte sur la matière courante. Une matière modifiée ensuite (nouvelle proposition en attente) ne retire PAS le Hub : l'instantané reste servi tant que
+ * la nouvelle empreinte n'a pas reçu son GO. Échec fermé : sans GO sur une empreinte que l'on peut retrouver (matière courante ou instantané), rien n'est public.
  * Seuls les Hubs composés automatiquement (`_meta.genere_auto`) passent par ici : les Hubs rédigés à la main ont leur propre page.
- * @param {{slug:string, hash:string}[]} decisions  propositions de publication ACCEPT
- * @param {Record<string, object|null>} matieres  matière courante par slug
- * @returns {Record<string, {hash:string, titre:string}>}
+ * @param {{slug:string, hash:string}[]} decisions  propositions de publication ACCEPT, de la plus récente à la plus ancienne
+ * @param {Record<string, object|null>} matieres  matière courante (brouillon) par slug
+ * @param {Record<string, object|null>} instantanes  dernière version approuvée par slug
+ * @returns {Record<string, {hash:string, titre:string, source:'courante'|'instantane'}>}
  */
-export function hubsApprouves(decisions, matieres) {
+export function hubsApprouves(decisions, matieres, instantanes = {}) {
   const out = {};
+  const auto = (x, slug) => !!x?._meta?.genere_auto && x._meta.hub_id === slug;
   for (const d of decisions) {
-    const m = matieres[d.slug];
-    if (!m?._meta?.genere_auto || m._meta.hub_id !== d.slug) continue;
-    if (hashMatiere(m) === d.hash) out[d.slug] = { hash: d.hash, titre: m._meta.titre };
+    if (out[d.slug]) continue;
+    const m = matieres[d.slug], s = instantanes[d.slug];
+    if (auto(m, d.slug) && hashMatiere(m) === d.hash) out[d.slug] = { hash: d.hash, titre: m._meta.titre, source: 'courante' };
+    else if (auto(s, d.slug) && hashMatiere(s) === d.hash) out[d.slug] = { hash: d.hash, titre: s._meta.titre, source: 'instantane' };
   }
   return Object.fromEntries(Object.entries(out).sort(([a], [b]) => a.localeCompare(b)));
 }
