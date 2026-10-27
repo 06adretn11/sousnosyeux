@@ -2,7 +2,7 @@
 
 `POC-04` · périscolaire · rôle : intervenant extérieur · état de la carte : **mise en examen**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `301b5f3da6f70f99`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `3ac5a2ffa8c2081b`.
 
 ## Situation judiciaire
 
@@ -14,8 +14,10 @@ Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupç
 
 ## Chronologie
 
-- **vers octobre 2023** · Mise en examen — Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.  
-  Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
+- **4 octobre 2023** · Mise en examen — Selon Le Parisien (article du 12 octobre 2023), un agent de l'école élémentaire Émeriau, interpellé sur son lieu de travail le 4 octobre, a été mis en examen pour agression sexuelle sur mineur et placé sous contrôle judiciaire à l'issue de sa garde à vue.  
+  Source : [Le Parisien](https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php) · aussi : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
+- **date non écrite · paru le 12 octobre 2023** · Plainte — Selon Le Parisien (article du 12 octobre 2023), au moins cinq signalements et plaintes avaient depuis été déposés par différents parents.  
+  Source : [Le Parisien](https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php)
 - **vers octobre 2023** · Mesure de la collectivité (inspection générale de la Ville de Paris) — Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 - **20 janvier 2026** · Mesure de la collectivité (Ville de Paris) — Selon 20 Minutes, les parents ont été convoqués à une restitution des conclusions de l'enquête administrative le 20 janvier 2026, en présence du secrétaire général adjoint de la Mairie de Paris et de la personne qui a mené l'enquête.  
@@ -54,6 +56,7 @@ Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupç
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
 | [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau) (2026-02-23) | libre | memoire | rattachement établi — utilisée |
+| [Le Parisien](https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php) (2023-10-12) | libre | memoire | rattachement établi — utilisée |
 
 ## Inventaire des autres sources (écartées, non lues ou sans apport)
 
@@ -69,7 +72,7 @@ Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupç
 ## Inconnues et limites documentaires
 
 - Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.
-- Le dossier ne repose que sur 1 article lu (20 Minutes).
+- Le dossier repose sur 2 articles lus (20 Minutes, Le Parisien 2023).
 
 ## Points nécessitant une attention particulière
 
@@ -80,7 +83,7 @@ Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupç
 
 ## Mesures de génération
 
-- Sources : 6 lue(s) sur 7 · pertinentes : 1
+- Sources : 7 lue(s) sur 8 · pertinentes : 1
 - Éléments écartés par les gardes : 14 · éléments d'une autre affaire ou de portée territoriale, classés à part : 2
 - LLM : 0 appel(s) (3 depuis le cache), 0 tokens en entrée, 0 en sortie, coût non rapporté
 
