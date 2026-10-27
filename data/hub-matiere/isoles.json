@@ -7256,6 +7256,352 @@
           ]
         }
       }
+    },
+    "FR-2026-0133": {
+      "appel": false,
+      "faits": "Selon Actu.fr, une enquête a été ouverte fin septembre 2026 pour des agressions sexuelles présumées sur des enfants du centre de loisirs de Rots, commune située à l'ouest de Caen (Calvados). Selon Actu.fr, ce sont des parents qui ont signalé les faits.",
+      "deroule": [
+        {
+          "date": "2026-09-25",
+          "type": "fait_rapporte",
+          "texte": "Selon Actu.fr, la maire de Rots explique avoir été alertée par les gendarmes le 25 septembre.",
+          "acteur": "gendarmerie",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "evenement"
+        },
+        {
+          "date": "2026-09-25",
+          "type": "mesure_etablissement",
+          "texte": "Selon ici, l'animateur du centre de loisirs a été suspendu le 25 septembre 2026 ; la mairie de Rots, responsable du centre, en a averti les familles par mail le 29 septembre.",
+          "acteur": "mairie de Rots",
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Ouest-France, des suspicions d'atteinte sexuelle sur mineurs portent sur des faits qui auraient été commis au centre de loisirs de Rots et suscitent l'inquiétude dans la commune.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon ici, le signalement de plusieurs parents est à l'origine de la suspension de l'animateur du centre de loisirs de Rots, selon une information de la radio ICI Normandie.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon le procureur de Caen, une demi-douzaine de plaintes ont été déposées pour l'instant, mais toutes n'ont pas eu le temps d'être vérifiées.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon le procureur de Caen, les investigations pour agression sexuelle visant l'animateur du centre de loisirs de Rots ont été confiées aux gendarmes de la brigade de recherche de Caen et ont débuté fin septembre.",
+          "acteur": "parquet de Caen, gendarmes de la brigade de recherche de Caen",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+            "acces": "libre",
+            "media": "France Info",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_etablissement",
+          "texte": "Selon Actu.fr, le contrat de l'animateur mis en cause, qui s'arrêtait au 30 septembre, n'a pas été renouvelé.",
+          "acteur": "mairie de Rots",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Actu.fr, la maire de Rots a entrepris des démarches afin de mettre en place une cellule psychologique et entend envoyer de nouveau des informations aux familles des enfants inscrits au centre de loisirs.",
+          "acteur": "mairie de Rots",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "article"
+        }
+      ],
+      "synthese": {
+        "decision": "Selon le procureur de Caen, les investigations pour agression sexuelle visant l'animateur du centre de loisirs de Rots ont été confiées aux gendarmes de la brigade de recherche de Caen et ont débuté fin septembre."
+      },
+      "inconnues": [
+        "Le dossier ne repose que sur 5 articles lus (France Info, Actu.fr, Ouest-France, ici)."
+      ],
+      "reactions": [
+        {
+          "date": "2026-10-07",
+          "acteur": "le procureur de Caen",
+          "etabli": "Établi : propos rapportés par France Info. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+            "acces": "libre",
+            "media": "France Info",
+            "publie_le": "2026-10-07"
+          },
+          "qualite": "propos rapportés par France Info",
+          "a_propos": "nombre de plaintes déposées",
+          "citations": [
+            {
+              "pour": "nombre de plaintes déposées",
+              "texte": "deux plaintes ont été déposées pour l'instant"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (France Info) : Le magistrat ajoute que \"deux plaintes ont été déposées pour l'instant\" .",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-10-07",
+          "acteur": "le procureur de Caen",
+          "etabli": "Établi : propos rapportés par France Info. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+            "acces": "libre",
+            "media": "France Info",
+            "publie_le": "2026-10-07"
+          },
+          "qualite": "propos rapportés par France Info",
+          "a_propos": "protocole d'audition des enfants",
+          "citations": [
+            {
+              "pour": "protocole d'audition des enfants",
+              "texte": "Il y a un protocole très précis à respecter pour recueillir la parole d'enfants aussi jeunes"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-10-07",
+          "acteur": "Dorothée Pitois-Blesteau, maire de Rots",
+          "etabli": "Établi : propos rapportés par France Info. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+            "acces": "libre",
+            "media": "France Info",
+            "publie_le": "2026-10-07"
+          },
+          "qualite": "propos rapportés par France Info",
+          "a_propos": "suspension de l'animateur",
+          "citations": [
+            {
+              "pour": "suspension de l'animateur",
+              "texte": "Il a été suspendu de ses fonctions immédiatement après le signalement des faits"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-10-07",
+          "acteur": "l’Union normande des centres maritimes et touristiques (UNCMT) et la municipalité de Rots",
+          "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-10-07"
+          },
+          "qualite": "propos rapportés par Ouest-France",
+          "a_propos": "l’enquête judiciaire en cours",
+          "citations": [
+            {
+              "pour": "l’enquête judiciaire en cours",
+              "texte": "une enquête judiciaire est en cours"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (Ouest-France) : Selon elles, « une enquête judiciaire est en cours ».",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-10-07",
+          "acteur": "Joël Garrigue, procureur de Caen",
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-10-07"
+          },
+          "qualite": "propos rapportés par ici",
+          "a_propos": "ouverture de l'enquête pour agression sexuelle",
+          "citations": [
+            {
+              "pour": "ouverture de l'enquête pour agression sexuelle",
+              "texte": "u ne enquête pour agression sexuelle a été ouverte il y a une dizaine de jours"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (ici) : Le procureur de Caen, Joël Garrigue, précise qu'\"u ne enquête pour agression sexuelle a été ouverte il y a une dizaine de jours \".",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        }
+      ],
+      "situation": {
+        "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
+          "label": "Suite",
+          "titre": "Aucune décision rendue",
+          "lignes": [
+            "La personne mise en cause est présumée innocente.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon ici, l'animateur du centre de loisirs a été suspendu le 25 septembre 2026 ; la mairie de Rots, responsable du centre, en a averti les familles par mail le 29 septembre.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon Actu.fr, le contrat de l'animateur mis en cause, qui s'arrêtait au 30 septembre, n'a pas été renouvelé."
+          ]
+        },
+        "decision": {
+          "cat": "blue",
+          "meta": "Parquet de Caen, gendarmes de la brigade de recherche de Caen",
+          "label": "Situation judiciaire",
+          "texte": "Selon le procureur de Caen, les investigations pour agression sexuelle visant l'animateur du centre de loisirs de Rots ont été confiées aux gendarmes de la brigade de recherche de Caen et ont débuté fin septembre.",
+          "titre": "Enquête"
+        }
+      },
+      "etat_actuel": [
+        "Selon le procureur de Caen, les investigations pour agression sexuelle visant l'animateur du centre de loisirs de Rots ont été confiées aux gendarmes de la brigade de recherche de Caen et ont débuté fin septembre."
+      ],
+      "statut_affiche": "enquête"
     }
   }
 }
