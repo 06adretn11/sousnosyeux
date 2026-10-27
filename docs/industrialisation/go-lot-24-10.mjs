@@ -26,7 +26,7 @@ const LOT = autorisees._lot ?? 'publication';
 // Date du GO (défaut : 24/10/2026, lot historique) ; `_cartes` : changements de CARTE couverts par le même GO (id → état) ; `_dates_sources` : dates de parution lues sur la page (id → [{url, date}]).
 const DATE = autorisees._date ?? '24/10/2026';
 const CARTES = autorisees._cartes ?? {}, DATES_SOURCES = autorisees._dates_sources ?? {};
-delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources;
+delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources; delete autorisees._cartes_seules;
 const demandes = A.filter((a) => !a.startsWith('--'));
 const ids = (demandes.length ? demandes : Object.keys(autorisees)).filter((id) => id !== 'FR-2026-0115'); // Tarnos : approuvée par clic Telegram (af7a64e7)
 const ID8 = createHash('sha256').update(LOT === 'publication' ? 'GO-lot-publication-2026-10-24' : `GO-lot-${LOT}`).digest('hex').slice(0, 8);
@@ -61,4 +61,19 @@ for (const id of ids) {
     }
   }
   console.log(`  ✅ ${id} : GO inscrit (${o.ajoutees ?? 0} source(s) rattachée(s)${o.deja ? ', déjà rattachées' : ''})`);
+}
+
+// CARTES SEULES couvertes par le même GO (aucune fiche : la fiche d'une carte contredite n'est produite qu'après sa correction) : id → état.
+// Même écriture que `etat()` d'appliquer-decisions ; la projection (project-public --modifier <id>, une affaire à la fois) est l'étape suivante.
+const CARTES_SEULES = JSON.parse(readFileSync(new URL(`./${liste}`, import.meta.url), 'utf8'))._cartes_seules ?? {};
+for (const [id, vers] of Object.entries(CARTES_SEULES)) {
+  if (demandes.length && !demandes.includes(id)) continue;
+  const [av] = await sql`select statut_judiciaire::text s, publication_status::text ps from cases where case_id = ${id}`;
+  if (!av || av.ps !== 'publiée') { console.log(`· ${id} : REFUS — l’affaire n’est pas publique`); continue; }
+  if (av.s === vers) { console.log(`· ${id} : carte déjà « ${vers} »`); continue; }
+  console.log(`· ${id} : CARTE « ${av.s} » → « ${vers} » (carte seule)${ECRIRE ? '' : ' · à écrire'}`);
+  if (!ECRIRE) continue;
+  await sql`update cases set statut_judiciaire = ${vers}::statut_judiciaire, updated_at = now() where case_id = ${id}`;
+  await sql`insert into reviews (case_id, reviewed_by, decision, comment) values (${id}, ${PAR}, 'validé', ${`[Carte ${ID8}] ${id} : « ${av.s} » → « ${vers} » — GO collectif d'Adrien du ${DATE} : les sources lues établissent « ${vers} » (voir REVUE_GLOBALE_STOCK_2) ; la fiche viendra après correction de la carte`})`;
+  console.log(`  ✅ ${id} : carte « ${av.s} » → « ${vers} » (à projeter : project-public.mjs --modifier ${id})`);
 }
