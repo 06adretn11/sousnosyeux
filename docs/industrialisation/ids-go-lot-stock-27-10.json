@@ -1,0 +1,21 @@
+{
+  "_lot": "lot-stock-2026-10-27",
+  "_date": "27/10/2026",
+  "_note": "Manifeste du GO collectif de la revue globale du stock (REVUE_GLOBALE_STOCK_2.md) : identifiant -> empreinte EXACTE autorisée (7 créations de fiche, 2 mises à jour), `_cartes_seules` : 5 corrections de carte sans fiche. Remplace ids-go-lot-27-10b.json (mêmes 2 mises à jour). NON exécuté : attend le GO écrit d'Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n'est couverte.",
+  "FR-2026-0001": "bbf6dbdf3c435ff8",
+  "FR-2026-0021": "ca69bcd3e781128f",
+  "FR-2026-0022": "d3ec303bfecf8a27",
+  "FR-2026-0033": "45db2b6de5bbc8fd",
+  "FR-2026-0044": "8b9335bf1473be74",
+  "FR-2026-0122": "5b0ea0573432c33c",
+  "FR-2026-0137": "9107847d31816769",
+  "POC-10": "c300e67bbd798e1a",
+  "POC-04": "3ac5a2ffa8c2081b",
+  "_cartes_seules": {
+    "FR-2026-0003": "condamnation non définitive",
+    "FR-2026-0047": "condamnation non définitive",
+    "FR-2026-0013": "enquête",
+    "FR-2026-0029": "procès",
+    "FR-2026-0024": "enquête"
+  }
+}
