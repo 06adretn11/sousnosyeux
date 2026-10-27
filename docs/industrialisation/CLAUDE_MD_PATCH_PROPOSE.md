@@ -57,6 +57,10 @@ Blocs à coller tels quels après relecture.
 - 🟠 `bulk-publish.mjs` publie sur le seul score, sans vérifier `verified_at`, la présence
   d'une source primaire datée ni le statut → c'est le chemin par lequel les 2 relaxes sont
   passées
+- ⏭️ **Après les priorités de publication et le GO diffusion** : compléter la recherche et
+  l'enrichissement documentaire (sources d'origine, presse locale, documents institutionnels,
+  éléments distinctifs multiples, sources indépendantes ≠ reprises, traçabilité du degré de
+  lecture) — cas fondateur Rouen/Mantes : `docs/industrialisation/ENRICHISSEMENT_DOCUMENTAIRE_ROUEN_MANTES.md`
 ```
 
 ## Correction à apporter dans §6 — Carte du repo
