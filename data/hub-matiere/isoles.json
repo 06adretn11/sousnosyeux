@@ -7102,6 +7102,19 @@
         {
           "date": null,
           "date_nature": "article",
+          "type": "signalement",
+          "acteur": null,
+          "texte": "Selon Le Figaro, c'est en avril que le récit d'une enfant à ses parents a conduit sa famille à mettre en cause un animateur périscolaire du centre de loisirs de la commune de Charly.",
+          "source": {
+            "media": "Le Figaro",
+            "url": "https://www.lefigaro.fr/lyon/eviter-une-autre-lyhanna-la-colere-d-un-pere-apres-la-mise-en-cause-d-un-animateur-periscolaire-pour-des-viols-sur-des-fillettes-pres-de-lyon-20260611",
+            "publie_le": "2026-06-11",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
           "type": "plainte",
           "acteur": null,
           "texte": "Selon l'avocat des familles, une nouvelle plainte a été déposée par une famille, qui dit que son enfant aurait été victime d'une agression sexuelle.",
@@ -7183,7 +7196,7 @@
       ],
       "inconnues": [
         "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
-        "Le dossier ne repose que sur 2 articles lus (Le Parisien, BFMTV Lyon)."
+        "Le dossier ne repose que sur 3 articles lus (Le Parisien, BFMTV Lyon, Le Figaro — ce dernier lu partiellement : seul le début de l’article est accessible)."
       ],
       "synthese": {
         "decision": "Selon Le Parisien, l'animateur d'un centre périscolaire près de Lyon a été mis en examen pour viol et agressions sexuelles et placé sous contrôle judiciaire, selon son avocat."
@@ -7602,6 +7615,451 @@
         "Selon le procureur de Caen, les investigations pour agression sexuelle visant l'animateur du centre de loisirs de Rots ont été confiées aux gendarmes de la brigade de recherche de Caen et ont débuté fin septembre."
       ],
       "statut_affiche": "enquête"
+    },
+    "FR-2026-0041": {
+      "etat_actuel": [
+        "Selon Femme Actuelle, un professeur de lycée de la région de Rouen a été jugé et condamné le 4 décembre 2025 à 4 ans de prison dont 1 an assorti d'un sursis probatoire de 2 ans, avec maintien de dépôt, et à l'interdiction définitive d'exercer une activité professionnelle ou bénévole avec des mineurs.",
+        "Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive."
+      ],
+      "appel": false,
+      "faits": "Selon Le Parisien, un enseignant d'histoire-géographie est jugé au tribunal correctionnel de Rouen pour atteintes sexuelles sur mineur de plus de 15 ans commises par une personne ayant autorité sur la victime. Selon Le Parisien, plusieurs de ses élèves, lycéennes au moment des faits, sont concernées.",
+      "deroule": [
+        {
+          "date": "2025-01-08",
+          "date_nature": "evenement",
+          "type": "mesure_etablissement",
+          "acteur": "rectorat",
+          "texte": "Le rectorat a suspendu l'enseignant à compter du 8 janvier 2025, lendemain de la première plainte.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Le Parisien",
+              "url": "https://www.leparisien.fr/faits-divers/un-professeur-de-lycee-en-normandie-juge-pour-avoir-eu-des-relations-sexuelles-avec-trois-de-ses-eleves-mineures-04-12-2025-BTGX72H7AZDN3N7PVDGOR4LGUE.php",
+              "publie_le": "2025-12-04",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": "2025-09",
+          "date_nature": "approximative",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon Femme Actuelle, Fin septembre 2025, une mère de famille a porté plainte après que sa fille s'est confiée à elle, et a découvert que l'enseignant devait être jugé moins de trois semaines plus tard pour des faits identiques.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Le Parisien",
+              "url": "https://www.leparisien.fr/faits-divers/un-professeur-de-lycee-en-normandie-juge-pour-avoir-eu-des-relations-sexuelles-avec-trois-de-ses-eleves-mineures-04-12-2025-BTGX72H7AZDN3N7PVDGOR4LGUE.php",
+              "publie_le": "2025-12-04",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
+          "date": "2025-10-16",
+          "date_nature": "evenement",
+          "type": "fait_rapporte",
+          "acteur": "justice",
+          "texte": "Selon Le Parisien, l'enseignant a d'abord été placé sous contrôle judiciaire jusqu'à l'audience, puis conduit en détention provisoire le 16 octobre.",
+          "source": {
+            "media": "Le Parisien",
+            "url": "https://www.leparisien.fr/faits-divers/un-professeur-de-lycee-en-normandie-juge-pour-avoir-eu-des-relations-sexuelles-avec-trois-de-ses-eleves-mineures-04-12-2025-BTGX72H7AZDN3N7PVDGOR4LGUE.php",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "fait_rapporte",
+          "acteur": null,
+          "texte": "Selon Femme Actuelle, un professeur d'histoire-géographie de la région de Rouen a entretenu des relations intimes avec plusieurs de ses élèves mineures.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon Femme Actuelle, une première plainte a été déposée, suivie de deux autres, la troisième ayant conduit au placement en détention provisoire.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "contexte",
+          "acteur": "justice",
+          "texte": "Selon Femme Actuelle, Avant la plainte de la mère de la troisième jeune fille, l'enseignant avait été placé sous contrôle judiciaire jusqu'à l'audience.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2025-12-04",
+          "date_nature": "evenement",
+          "type": "audience",
+          "acteur": "tribunal correctionnel de Rouen",
+          "texte": "Selon Le Parisien, l'enseignant est jugé au tribunal correctionnel de Rouen ce jeudi 4 décembre pour atteintes sexuelles sur mineur de plus de 15 ans.",
+          "source": {
+            "media": "Le Parisien",
+            "url": "https://www.leparisien.fr/faits-divers/un-professeur-de-lycee-en-normandie-juge-pour-avoir-eu-des-relations-sexuelles-avec-trois-de-ses-eleves-mineures-04-12-2025-BTGX72H7AZDN3N7PVDGOR4LGUE.php",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2025-12-04",
+          "date_nature": "evenement",
+          "type": "decision",
+          "acteur": "tribunal",
+          "texte": "Selon Femme Actuelle, un professeur de lycée de la région de Rouen a été jugé et condamné le 4 décembre 2025 à 4 ans de prison dont 1 an assorti d'un sursis probatoire de 2 ans, avec maintien de dépôt, et à l'interdiction définitive d'exercer une activité professionnelle ou bénévole avec des mineurs.",
+          "source": {
+            "media": "Femme Actuelle",
+            "url": "https://www.femmeactuelle.fr/actu/news-actu/un-professeur-de-lycee-condamne-a-de-la-prison-ferme-pour-avoir-eu-des-relations-intimes-avec-trois-de-ses-eleves-mineures-2201884",
+            "publie_le": "2025-12-04",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.",
+        "Le dossier ne repose que sur 2 articles lus (Le Parisien, Femme Actuelle)."
+      ],
+      "synthese": {
+        "decision": "Selon Femme Actuelle, un professeur de lycée de la région de Rouen a été jugé et condamné le 4 décembre 2025 à 4 ans de prison dont 1 an assorti d'un sursis probatoire de 2 ans, avec maintien de dépôt, et à l'interdiction définitive d'exercer une activité professionnelle ou bénévole avec des mineurs.",
+        "ouvert": "Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive."
+      },
+      "reactions": [],
+      "statut_affiche": "condamnation non définitive",
+      "situation": {
+        "decision": {
+          "label": "Décision",
+          "titre": "Condamnation",
+          "meta": "4 décembre 2025 · Tribunal",
+          "cat": "red",
+          "texte": "Selon Femme Actuelle, un professeur de lycée de la région de Rouen a été jugé et condamné le 4 décembre 2025 à 4 ans de prison dont 1 an assorti d'un sursis probatoire de 2 ans, avec maintien de dépôt, et à l'interdiction définitive d'exercer une activité professionnelle ou bénévole avec des mineurs."
+        },
+        "suite": {
+          "label": "Suite · recours",
+          "titre": "Aucun appel rapporté",
+          "meta": "dans les sources consultées",
+          "cat": "blue",
+          "lignes": [
+            "Aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive : SNY la présente comme non définitive.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : le rectorat a suspendu l'enseignant à compter du 8 janvier 2025, lendemain de la première plainte."
+          ]
+        }
+      }
+    },
+    "POC-04": {
+      "etat_actuel": [
+        "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
+      ],
+      "appel": false,
+      "faits": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupçonné d'agressions sexuelles envers plusieurs enfants de l'établissement. Selon 20 Minutes, l'homme a été mis en examen pour agression sexuelle et une instruction est en cours.",
+      "deroule": [
+        {
+          "date": "2023-10",
+          "date_nature": "approximative",
+          "type": "mise_en_examen",
+          "acteur": null,
+          "texte": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2023-10",
+          "date_nature": "approximative",
+          "type": "mesure_collectivite",
+          "acteur": "inspection générale de la Ville de Paris",
+          "texte": "Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-01-20",
+          "date_nature": "evenement",
+          "type": "mesure_collectivite",
+          "acteur": "Ville de Paris",
+          "texte": "Selon 20 Minutes, les parents ont été convoqués à une restitution des conclusions de l'enquête administrative le 20 janvier 2026, en présence du secrétaire général adjoint de la Mairie de Paris et de la personne qui a mené l'enquête.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "signalement",
+          "acteur": "parent d’élève",
+          "texte": "Selon une mère d'élève citée par 20 Minutes, elle a signalé à la direction de l'école des comportements problématiques de l'agent environ deux semaines avant son interpellation, signalement non mentionné dans l'enquête.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon 20 Minutes, au moins cinq plaintes ont été déposées dans cette affaire, portant le total à au moins six.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "enquete",
+          "acteur": null,
+          "texte": "Selon 20 Minutes, l'enquête judiciaire concernant les autres plaintes en est toujours au stade préliminaire.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "mesure_collectivite",
+          "acteur": "inspection générale de la Ville de Paris",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "contexte",
+          "acteur": null,
+          "texte": "Selon 20 Minutes, l'agent est présumé innocent et nie les faits.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Le dossier ne repose que sur 1 article lu (20 Minutes)."
+      ],
+      "synthese": {
+        "decision": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
+      },
+      "reactions": [
+        {
+          "acteur": "Kathleen Taïeb, avocate",
+          "qualite": "propos rapportés par 20 Minutes",
+          "date": "2026-02-23",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la manière dont les enquêtes administratives sont menées et restituées aux parents",
+          "citations": [
+            {
+              "texte": "Ils mènent ces enquêtes comme s’ils ne devaient pas en rendre compte aux parents",
+              "pour": "la manière dont les enquêtes administratives sont menées et restituées aux parents"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "paraphrase": "Contexte dans l’article (20 Minutes) : Ce dernier lui a répondu « évidemment », avant d’affirmer qu’il pensait « que ces conclusions leur avaient été communiquées ».",
+          "acteur": "Patrick Bloche, premier adjoint chargé de l’Éducation",
+          "qualite": "propos rapportés par 20 Minutes",
+          "date": "2026-02-23",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la communication des conclusions de l'enquête administrative aux parents",
+          "citations": [
+            {
+              "texte": "que ces conclusions leur avaient été communiquées",
+              "pour": "la communication des conclusions de l'enquête administrative aux parents"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        },
+        {
+          "paraphrase": "Contexte dans l’article (20 Minutes) : Sollicitée par 20 Minutes , la Mairie de Paris n’a pas répondu à notre demande consistant à nous procurer l’enquête, mais a indiqué « travailler à l’élaboration d’une réponse au plus vite en lien avec les services » au courrier des parents.",
+          "acteur": "Mairie de Paris",
+          "qualite": "propos rapportés par 20 Minutes",
+          "date": "2026-02-23",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "la réponse à apporter au courrier des parents délégués réclamant la réouverture de l'enquête",
+          "citations": [
+            {
+              "texte": "travailler à l’élaboration d’une réponse au plus vite en lien avec les services",
+              "pour": "la réponse à apporter au courrier des parents délégués réclamant la réouverture de l'enquête"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "20 Minutes",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "publie_le": "2026-02-23",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        }
+      ],
+      "statut_affiche": "mise en examen",
+      "situation": {
+        "decision": {
+          "label": "Situation judiciaire",
+          "titre": "Mise en examen",
+          "meta": "vers octobre 2023",
+          "cat": "blue",
+          "texte": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
+        },
+        "suite": {
+          "label": "Suite",
+          "titre": "Aucune décision rendue",
+          "meta": "dans les sources consultées",
+          "cat": "blue",
+          "lignes": [
+            "La personne mise en cause est présumée innocente.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon 20 Minutes, l'enquête administrative a été rendue en juin 2024, d'après les informations du média."
+          ]
+        }
+      }
+    },
+    "POC-10": {
+      "etat_actuel": [
+        "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+      ],
+      "appel": false,
+      "faits": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, qui y travaillait depuis décembre 2025.",
+      "deroule": [
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "plainte",
+          "acteur": null,
+          "texte": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement.",
+          "source": {
+            "media": "ELLE",
+            "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
+            "publie_le": "2026-03-16",
+            "acces": "libre"
+          }
+        }
+      ],
+      "inconnues": [
+        "Les sources lues rapportent des plaintes : elles ne disent pas si une enquête judiciaire est ouverte sur ces plaintes ni où en est la procédure.",
+        "Le dossier ne repose que sur 2 articles lus (ELLE, ici)."
+      ],
+      "synthese": {
+        "decision": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+      },
+      "reactions": [
+        {
+          "acteur": "Me Louis Cailliez, avocat des familles plaignantes",
+          "qualite": "propos rapportés par ici",
+          "date": "2026-10-11",
+          "date_nature": "article",
+          "portee": "affaire",
+          "attribution": "POSITION_ATTRIBUEE",
+          "a_propos": "impunité des responsables et gravité des viols commis sur de très jeunes enfants",
+          "citations": [
+            {
+              "texte": "On ne parle pas d'une impéritie sans conséquence, mais de viols de tous petits enfants qui auraient dû être évités",
+              "pour": "impunité des responsables et gravité des viols commis sur de très jeunes enfants"
+            }
+          ],
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "source": {
+            "media": "ici",
+            "url": "https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315",
+            "publie_le": "2026-10-11",
+            "acces": "libre"
+          },
+          "validation": "POSITION_ATTRIBUEE"
+        }
+      ],
+      "statut_affiche": "enquête",
+      "situation": {
+        "decision": {
+          "label": "Situation judiciaire",
+          "titre": "Plainte",
+          "cat": "orange",
+          "texte": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+        },
+        "suite": {
+          "label": "Suite",
+          "titre": "Aucune décision rendue",
+          "meta": "dans les sources consultées",
+          "cat": "blue",
+          "lignes": [
+            "La personne mise en cause est présumée innocente."
+          ]
+        }
+      }
     }
   }
 }

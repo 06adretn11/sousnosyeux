@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-24"
+    "generated_at": "2026-10-27"
   },
   "cases": [
     {
@@ -1612,6 +1612,13 @@
           "publication_date": "2026-07-02",
           "source_type": "presse",
           "is_primary": false
+        },
+        {
+          "url": "https://www.lefigaro.fr/lyon/eviter-une-autre-lyhanna-la-colere-d-un-pere-apres-la-mise-en-cause-d-un-animateur-periscolaire-pour-des-viols-sur-des-fillettes-pres-de-lyon-20260611",
+          "media": "Le Figaro",
+          "publication_date": "2026-06-11",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     },
@@ -2319,7 +2326,7 @@
       "type_structure": "périscolaire",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "mixte",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "plainte",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.841438,
@@ -2328,9 +2335,16 @@
         {
           "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
           "media": "ELLE",
-          "publication_date": null,
+          "publication_date": "2026-03-16",
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315",
+          "media": "ici",
+          "publication_date": "2026-10-11",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     }
