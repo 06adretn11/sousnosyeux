@@ -101,6 +101,7 @@ export function messagePublication(p) {
 /** FICHE INDIVIDUELLE À APPROUVER : une page (pas l'affaire) ; APPROUVER = GO éditorial de la PAGE uniquement. */
 export function messageFiche(p) {
   const x = p.page;
+  if (x.mise_a_jour) return messageFicheMiseAJour(p);
   return [
     `📄 <b>FICHE INDIVIDUELLE À APPROUVER</b> · ${esc(x.case_id)}`,
     '',
@@ -121,6 +122,34 @@ export function messageFiche(p) {
     '',
     '✅ APPROUVER = GO éditorial de la PAGE (enregistré, puis projection, QA, déploiement, vérification du site servi). Ce n’est pas la publication de l’affaire.',
     '🟡 REVIEW : rien publié · ⛔ REJECT : page écartée, l’affaire reste publique.',
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
+/** MISE À JOUR d'une fiche DÉJÀ publiée : seulement ce qui change depuis la dernière version approuvée (pas « + page », pas « Fiche → »). */
+function messageFicheMiseAJour(p) {
+  const x = p.page, m = x.mise_a_jour;
+  const quand = (e) => (e.date ? e.date : e.publie_le ? `date non écrite · paru le ${e.publie_le}` : 'date non établie');
+  return [
+    `🔄 <b>MISE À JOUR DE FICHE À APPROUVER</b> · ${esc(x.case_id)}`,
+    '',
+    `<b>${esc(p.etablissement)}</b> · ${esc(p.commune)}`,
+    `La page existe déjà : la version publique actuelle (empreinte <code>${esc(m.precedent_hash)}</code>) reste EN LIGNE tant que vous n’approuvez pas celle-ci (<code>${esc(x.hash)}</code>).`,
+    ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT · qualification ${esc(x.generation.qualification)} · chaque ligne reliée à un extrait de la source`] : []),
+    '',
+    '<b>Ce qui change depuis la version publique</b>',
+    ...(m.ajoutees || []).map((e) => `➕ ${esc(cut(e.texte, 300))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
+    ...(m.sources_nouvelles || []).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
+    ...(m.retirees || []).map((e) => `➖ Retirée : ${esc(cut(e.texte, 200))}`),
+    ...(m.sources_retirees || []).map((s) => `➖ Source retirée : ${esc(s.media || '')} → ${esc(s.url)}`),
+    m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) (même source, même date)` : '',
+    !(m.ajoutees || []).length && !(m.retirees || []).length ? '(aucune étape ajoutée ni retirée)' : '',
+    '<b>Inconnues</b> : ' + (x.inconnues || []).map((i) => esc(cut(i, 120))).join(' · '),
+    ...(x.generation?.attention?.length ? ['', '<b>⚠ Points d’attention</b>', ...x.generation.attention.map((a) => `• ${esc(cut(a.texte, 200))}`)] : []),
+    '',
+    x.preview_url ? `👁 Aperçu complet de cette version : ${esc(x.preview_url)}` : '👁 Aperçu : captures de la page jointes à ce message',
+    '',
+    '✅ APPROUVER = GO éditorial de CETTE VERSION de la page (enregistré, puis projection, QA, déploiement, vérification du site servi). L’affaire et la carte ne changent pas.',
+    '🟡 REVIEW : rien publié, la version actuelle reste en ligne · ⛔ REJECT : cette mise à jour est écartée, la version actuelle reste en ligne.',
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
@@ -256,7 +285,7 @@ export function modeCreation(recommendation, payload) {
 export function boutons(recommendation, cle, payload = null) {
   if (payload?.hub_publication) return { inline_keyboard: [[{ text: '🗺 PUBLIER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.hub) return { inline_keyboard: [[{ text: '🗺 PRÉPARER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
-  if (payload?.page) return { inline_keyboard: [[{ text: '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
+  if (payload?.page) return { inline_keyboard: [[{ text: payload.page.mise_a_jour ? '✅ APPROUVER LA MISE À JOUR' : '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   const r2 = [
     { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` },
     { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` },

@@ -13,9 +13,12 @@ import { dossierGeneree } from './lib/fiche-page.mjs';
 import { decider, inscrire } from './lib/promouvoir-fiche.mjs';
 
 const A = process.argv.slice(2);
-const ids = A.filter((a) => /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+|PARIS-\d+)$/.test(a));
+let ids = A.filter((a) => /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+|PARIS-\d+)$/.test(a));
 const ECRIRE = A.includes('--ecrire');
-if (!ids.length) { console.error('usage : promouvoir-fiche.mjs <case_id>… [--ecrire]'); process.exit(2); }
+// Sans copie locale du générateur (CI) : le dossier approuvé est celui que la PROPOSITION a porté (payload.page.dossier). Une seule proposition par affaire :
+// la DERNIÈRE acceptée (jamais une version plus ancienne qui écraserait la plus récente). Mêmes garde-fous (empreinte approuvée, HOLD, affaire publique).
+const DEPUIS_PROPOSITIONS = A.includes('--depuis-propositions');
+if (!ids.length && !DEPUIS_PROPOSITIONS) { console.error('usage : promouvoir-fiche.mjs <case_id>… | --depuis-propositions [--ecrire]'); process.exit(2); }
 
 const racine = (f) => new URL(`../${f}`, import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(racine(f), 'utf8'));
@@ -25,10 +28,19 @@ const hubs = readdirSync(racine('data/hub-matiere/')).filter((f) => f.endsWith('
 let isoles = lire('data/hub-matiere/isoles.json');
 const { sql } = connecter();
 
+const parPropositions = new Map();
+if (DEPUIS_PROPOSITIONS) {
+  const acceptees = await sql`select distinct on (payload->'page'->>'case_id') payload->'page'->>'case_id' id, payload->'page'->'dossier' dossier from new_case_proposals
+    where decision = 'ACCEPT' and payload->'page' ? 'dossier' order by payload->'page'->>'case_id', decided_at desc`;
+  for (const a of acceptees) parPropositions.set(a.id, { hub: null, d: a.dossier, proposable: true });
+  ids = [...parPropositions.keys()];
+}
+
 let ecrit = 0;
 for (const id of ids) {
   const revues = await sql`select reviewed_by, decision::text decision, comment from reviews where case_id = ${id} and comment like '[Fiche approuvée %' order by reviewed_at`;
-  const r = decider({ id, generee: dossierGeneree(id), revues, isoles, hubs, cases, holds });
+  const r = decider({ id, generee: parPropositions.get(id) ?? dossierGeneree(id), revues, isoles, hubs, cases, holds });
+  if (DEPUIS_PROPOSITIONS && !r.ok && r.motif === 'DEJA_PROMUE') continue;   // le cas normal : rien à dire
   console.log(`· ${id} : ${r.ok ? `promotion PERMISE (empreinte ${r.hash}${r.remplace ? `, remplace la version approuvée ${r.remplace}` : ''})` : `refusée — ${r.motif}${r.hash ? ` (empreinte ${r.hash})` : ''}`}`);
   if (!r.ok || !ECRIRE) continue;
   isoles = inscrire(isoles, id, r.dossier, r.hash);

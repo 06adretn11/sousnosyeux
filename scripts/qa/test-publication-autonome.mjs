@@ -106,7 +106,7 @@ t('les deux workflows : suite autorisée → QA → push ; seuil d’activation 
   for (const f of ['sny-telegram.yml', 'sny-clics.yml']) {
     const y = src(`.github/workflows/${f}`);
     assert.ok(y.includes('scripts/reconcilier-publication.mjs --ecrire') && y.includes('SNY_PUBLICATION_DEPUIS'));
-    assert.ok(y.indexOf('reconcilier-publication.mjs --ecrire') < y.indexOf('scripts/qa/run-all.mjs') && y.indexOf('scripts/qa/run-all.mjs') < y.indexOf('git push origin HEAD:main'));
+    assert.ok(y.indexOf('reconcilier-publication.mjs --ecrire') < y.indexOf('scripts/qa/run-all.mjs') && y.indexOf('scripts/qa/run-all.mjs') < y.indexOf('git push origin HEAD:main', y.indexOf('scripts/qa/run-all.mjs')));
   }
   assert.ok(src('.github/workflows/sny-telegram.yml').includes('OUTCOME_reconcile'));
 });

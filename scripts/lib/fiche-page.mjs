@@ -42,7 +42,7 @@ export function empreintesApprouvees(revues, id) {
   return [...new Set((revues || []).filter((x) => /^Adrien/.test(x.reviewed_by || '') && x.decision === 'validé' && REVUE_FICHE.test(x.comment || '') && REVUE_FICHE.exec(x.comment)[1] === id).map((x) => REVUE_FICHE.exec(x.comment)[2]))];
 }
 
-const urlsDe = (d) => {
+export const urlsDe = (d) => {
   const vus = new Map();
   const ajoute = (s) => { if (s?.url && !MEDIAS_PAYANTS.includes(s.media) && !vus.has(s.url)) vus.set(s.url, { url: s.url, media: s.media, d: s.publie_le ?? null }); };
   for (const e of d.deroule || []) ajoute(e.source);
@@ -51,11 +51,32 @@ const urlsDe = (d) => {
 };
 
 /**
+ * Ce que change une VERSION CANDIDATE par rapport à la dernière version publique (sans moteur de diff : comparaison d'ensembles).
+ * Une étape est identifiée par (source, type, date) : même clé mais texte reformulé = « reformulée » (non substantielle) ; clé absente d'un
+ * côté = ajoutée / retirée. Rien n'est perdu en silence : les retraits sont listés au même titre que les ajouts.
+ */
+export function changementsFiche(precedent, nouveau) {
+  const cle = (e) => `${e.source?.url ?? ''}|${e.type ?? ''}|${e.date ?? ''}`;
+  const compte = (l) => l.reduce((m, e) => m.set(cle(e), (m.get(cle(e)) || 0) + 1), new Map());
+  const cp = compte(precedent?.deroule || []), cn = compte(nouveau?.deroule || []);
+  const vue = (e) => ({ texte: e.texte, media: e.source?.media ?? null, url: e.source?.url ?? null, date: e.date ?? null, publie_le: e.source?.publie_le ?? null });
+  const reste = (l, autre) => { const c = new Map(autre); return l.filter((e) => { const n = c.get(cle(e)) || 0; if (n > 0) { c.set(cle(e), n - 1); return false; } return true; }); };
+  const ajoutees = reste(nouveau?.deroule || [], cp).map(vue), retirees = reste(precedent?.deroule || [], cn).map(vue);
+  const reformulees = (nouveau?.deroule || []).filter((e) => (precedent?.deroule || []).some((p) => cle(p) === cle(e) && p.texte !== e.texte)).length;
+  const up = new Set(urlsDe(precedent || {}).map((s) => s.url)), un = new Set(urlsDe(nouveau || {}).map((s) => s.url));
+  const sources_nouvelles = urlsDe(nouveau || {}).filter((s) => !up.has(s.url)), sources_retirees = urlsDe(precedent || {}).filter((s) => !un.has(s.url));
+  return { ajoutees, retirees, reformulees, sources_nouvelles, sources_retirees,
+    inconnues_changees: JSON.stringify(precedent?.inconnues || []) !== JSON.stringify(nouveau?.inconnues || []),
+    substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length) };
+}
+
+/**
  * Payload de la proposition (new_case_proposals.payload). Tout est DÉRIVÉ des données : rien n'est saisi à la main.
  * @param {{c:object, dossier:{hub:string|null,d:object,verifie_le:string}, sourcesNeon:string[], nbEvenements:number, previewBase:string, hubTitre?:string}} o
  */
-export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBase, hubTitre = null, generation = null }) {
+export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBase, hubTitre = null, generation = null, precedent = null }) {
   const d = dossier.d;
+  const ch = precedent ? changementsFiche(precedent.d, d) : null;
   const directes = urlsDe(d);
   const connues = new Set(sourcesNeon);
   const aRattacher = directes.filter((s) => !connues.has(s.url));
@@ -66,7 +87,9 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
     reactions.length ? `${reactions.length} réaction(s) directement liée(s), attribuée(s)` : null,
     (d.inconnues || []).length ? `${d.inconnues.length} inconnue(s)` : null,
   ].filter(Boolean);
-  const diff = [`+ page /affaires/${c.case_id.toLowerCase()}`, 'Home : la carte de l’affaire ne change pas ; un bouton « Fiche → » est ajouté'];
+  const diff = ch
+    ? [`Page /affaires/${c.case_id.toLowerCase()} : MISE À JOUR (la page existe déjà ; la version publique reste en ligne tant que celle-ci n’est pas approuvée)`]
+    : [`+ page /affaires/${c.case_id.toLowerCase()}`, 'Home : la carte de l’affaire ne change pas ; un bouton « Fiche → » est ajouté'];
   if (dossier.hub) diff.push(Array.isArray(d.apercu_types)
     ? `Hub ${hubTitre ?? dossier.hub} : bloc de l’affaire réduit à un aperçu + lien « Consulter le dossier complet »`
     : `Hub ${hubTitre ?? dossier.hub} : inchangé`);
@@ -84,6 +107,10 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
       // Fiche générée : pas de page d'aperçu (le dossier n'est pas encore dans data/hub-matiere) ; la lecture se fait sur le rendu Markdown du dépôt, qui porte la même empreinte.
       preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : generation ? `${REVUE_GENEREE_BASE}/${c.case_id}.md` : null,
       diff_public: diff, verifie_le: dossier.verifie_le,
+      // Mise à jour d'une page déjà publiée : ce qui change réellement depuis la dernière version publique (jamais tout l'historique comme nouveau).
+      ...(ch ? { mise_a_jour: { precedent_hash: hashDossier(precedent.d), ajoutees: ch.ajoutees.slice(0, 6), retirees: ch.retirees.slice(0, 6), reformulees: ch.reformulees, sources_nouvelles: ch.sources_nouvelles.slice(0, 4), sources_retirees: ch.sources_retirees.slice(0, 4) } } : {}),
+      // Dossier candidat (public par nature : c'est ce qui sera publié, sans extraits) : permet la promotion après le clic sans la copie locale du générateur.
+      ...(generation ? { dossier: d } : {}),
       // Présent seulement pour une fiche PRODUITE par le circuit de génération : l'humain approuve en sachant qu'elle est automatique.
       ...(generation ? { generation: resumeGeneration(generation) } : {}),
     },
