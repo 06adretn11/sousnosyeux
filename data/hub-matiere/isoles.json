@@ -6575,12 +6575,26 @@
               "acces": "libre"
             }
           ]
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "type": "audience",
+          "acteur": "chambre de l'instruction de Paris",
+          "texte": "Selon Le Parisien (article du 16 décembre 2025), l'animateur a comparu devant la chambre de l'instruction de Paris pour demander sa remise en liberté et a été maintenu en détention.",
+          "source": {
+            "media": "Le Parisien",
+            "url": "https://www.leparisien.fr/faits-divers/il-y-a-ce-monstre-en-moi-qui-merite-detre-puni-en-essonne-les-glacantes-confessions-de-lanimateur-pedophile-16-12-2025-RWXRLOEDAREWFPUCB5Y6JWGBPM.php",
+            "publie_le": "2025-12-16",
+            "acces": "libre"
+          }
         }
       ],
       "inconnues": [
         "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Situation après le 16 décembre 2025 (détention, éventuel renvoi devant une juridiction de jugement) : aucune source lue ne la documente ; ce n'est pas une preuve qu'elle n'a pas évolué.",
         "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
-        "Le dossier ne repose que sur 2 articles lus (Le Parisien, RTL)."
+        "Le dossier ne repose que sur 3 articles lus (Le Parisien ×2, RTL)."
       ],
       "synthese": {
         "decision": "Selon le parquet d'Evry, un animateur périscolaire a été mis en examen et écroué le 27 novembre 2025 pour agressions sexuelles sur plusieurs enfants en Essonne."
