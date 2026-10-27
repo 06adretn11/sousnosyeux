@@ -2,26 +2,24 @@
 
 `POC-10` · périscolaire · rôle : animateur périscolaire · état de la carte : **enquête**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `0f94f574a3431a1a`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `b6c0d06e024d87e3`.
 
 ## Situation judiciaire
 
-- Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement.
+- Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris.
 
 ## Faits publiquement rapportés
 
-Selon ELLE, un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, a été suspendu après des signalements de comportements agressifs et de cris envers des enfants. Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement, qui y travaillait depuis décembre 2025 et avait auparavant été exclu de l'école maternelle Saint-Dominique après des signalements.
+Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, qui y travaillait depuis décembre 2025.
 
 ## Chronologie
 
-- **date non écrite · paru le ?** · Plainte — Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement.  
-  Source : [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600)
-- **date non écrite · paru le ?** · Mesure de l’établissement — Selon ELLE, un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, a été suspendu après des signalements de comportements agressifs et de cris envers des enfants.  
+- **date non écrite · paru le 16 mars 2026** · Plainte — Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement.  
   Source : [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600)
 
 ## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
-- Selon ELLE, un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, a été suspendu après des signalements de comportements agressifs et de cris envers des enfants. ([ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600))
+*Aucune mesure documentée par les sources lues.*
 
 ## Réactions et déclarations attribuées
 
@@ -48,6 +46,7 @@ Selon ELLE, un animateur de l'école Volontaires, dans le 15e arrondissement de 
 
 ## Inconnues et limites documentaires
 
+- Les sources lues rapportent des plaintes : elles ne disent pas si une enquête judiciaire est ouverte sur ces plaintes ni où en est la procédure.
 - Le dossier ne repose que sur 2 articles lus (ELLE, ici).
 
 ## Points nécessitant une attention particulière

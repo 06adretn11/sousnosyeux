@@ -2,23 +2,21 @@
 
 `POC-04` · périscolaire · rôle : intervenant extérieur · état de la carte : **mise en examen**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `46ff477b1565dc60`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `301b5f3da6f70f99`.
 
 ## Situation judiciaire
 
-- Selon 20 Minutes, l'agent de la Ville exerçant à la bibliothèque de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.
+- Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.
 
 ## Faits publiquement rapportés
 
-Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçonné d'agressions sexuelles envers plusieurs enfants de l'établissement. Selon 20 Minutes, l'homme a été mis en examen pour agression sexuelle et une instruction est en cours.
+Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupçonné d'agressions sexuelles envers plusieurs enfants de l'établissement. Selon 20 Minutes, l'homme a été mis en examen pour agression sexuelle et une instruction est en cours.
 
 ## Chronologie
 
-- **vers octobre 2023** · Mise en examen — Selon 20 Minutes, l'agent de la Ville exerçant à la bibliothèque de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.  
+- **vers octobre 2023** · Mise en examen — Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 - **vers octobre 2023** · Mesure de la collectivité (inspection générale de la Ville de Paris) — Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024.  
-  Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
-- **vers juin 2024** · Mesure de la collectivité (inspection générale de la Ville de Paris) — Selon 20 Minutes, l'enquête administrative a été rendue en juin 2024, d'après les informations du média.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 - **20 janvier 2026** · Mesure de la collectivité (Ville de Paris) — Selon 20 Minutes, les parents ont été convoqués à une restitution des conclusions de l'enquête administrative le 20 janvier 2026, en présence du secrétaire général adjoint de la Mairie de Paris et de la personne qui a mené l'enquête.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
@@ -28,17 +26,16 @@ Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçon
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 - **date non écrite · paru le 23 février 2026** · Enquête — Selon 20 Minutes, l'enquête judiciaire concernant les autres plaintes en est toujours au stade préliminaire.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
-- **date non écrite · paru le 23 février 2026** · Mesure de la collectivité (inspection générale de la Ville de Paris) — Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire et le fonctionnement de la bibliothèque.  
+- **date non écrite · paru le 23 février 2026** · Mesure de la collectivité (inspection générale de la Ville de Paris) — Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
-- **date non écrite · paru le 23 février 2026** · Contexte — Selon 20 Minutes, le bibliothécaire est présumé innocent et nie les faits.  
+- **date non écrite · paru le 23 février 2026** · Contexte — Selon 20 Minutes, l'agent est présumé innocent et nie les faits.  
   Source : [20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau)
 
 ## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
 
 - Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
-- Selon 20 Minutes, l'enquête administrative a été rendue en juin 2024, d'après les informations du média. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
 - Selon 20 Minutes, les parents ont été convoqués à une restitution des conclusions de l'enquête administrative le 20 janvier 2026, en présence du secrétaire général adjoint de la Mairie de Paris et de la personne qui a mené l'enquête. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
-- Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire et le fonctionnement de la bibliothèque. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
+- Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire. ([20 Minutes](https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau))
 
 ## Réactions et déclarations attribuées
 
@@ -79,7 +76,6 @@ Selon 20 Minutes, un bibliothécaire de l'école Emeriau, à Paris, est soupçon
 - **mineur** · CITATIONS_A_RELIRE — Les citations sont reproduites telles que publiées : à relire sous l’angle de la protection des enfants et des familles.
 - **mineur** · SOURCE_UNIQUE — Le dossier repose sur un seul article lu.
 - **mineur** · DATES_NON_ECRITES — 5 étape(s) sans date d’événement écrite dans la source : affichées avec la date de parution.
-- **majeur** · FONCTION_IDENTIFIANTE — 1 ligne(s) rattachent une accusation ou une mesure à une fonction unique de l’établissement (ex. « bibliothécaire … ») : à vérifier — elle peut identifier la personne mise en cause sans la nommer.
 - **mineur** · ELEMENTS_ECARTES_PAR_LES_GARDES — 14 élément(s) proposé(s) par le modèle ont été écartés par les gardes : NOMBRE_EXACT_ENFANTS ×5, ACTEUR_OU_CITATION_INVALIDE ×3, CITATION_ABSENTE_OU_TEXTE_INTERDIT ×2, DETAIL_GRAPHIQUE ×1, ACTEUR_NON_PUBLIABLE ×3.
 
 ## Mesures de génération
