@@ -13,6 +13,7 @@
 import { readFileSync } from 'node:fs';
 import { prevenir, texteVerifie } from './lib/prevenir.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
+import { dossierFiche } from './lib/fiche-page.mjs';
 
 const ID = /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/;
 const argv = process.argv.slice(2);
@@ -40,6 +41,14 @@ async function ecartsFiche(id) {
   if (!html.includes(`data-evenements="${n}"`)) out.push(`fiche ${id} : nombre d'événements différent de la projection (${n} attendus)`);
   const m = (evenements.matiere || []).filter((x) => x.destinations?.fiche === id).length;
   if (!html.includes(`data-matiere="${m}"`)) out.push(`fiche ${id} : informations validées différentes de la projection (${m} attendues)`);
+  // CONTENU servi = contenu approuvé : une mise à jour (V1 → V2) ne doit pas être confirmée tant que la V1 est encore servie (les attributs data-* ne changent pas).
+  const d = dossierFiche(id)?.d;
+  if (d) {
+    const plat = (s) => String(s).replace(/<[^>]+>/g, ' ').replace(/&#39;|&#x27;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/’/g, "'").replace(/\s+/g, ' ');
+    const page = plat(html);
+    const absentes = (d.deroule || []).filter((e) => !page.includes(plat(e.texte).slice(0, 50)));
+    if (absentes.length) out.push(`fiche ${id} : ${absentes.length} étape(s) du dossier approuvé absente(s) de la page servie (version précédente encore servie ?)`);
+  }
   return out;
 }
 

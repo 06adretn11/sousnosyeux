@@ -79,6 +79,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Mise à jour d’une fiche publiée par un événement judiciaire sans changement de statut — sélection, changements vs version publique, message « mise à jour », promotion après clic, contenu servi vérifié',
+    script: 'scripts/qa/test-fiche-maj.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Information validée → pages existantes — destinations calculées (fiche approuvée, Hub publié), portée jamais devinée, rien d’exposé hors pages publiques',
     script: 'scripts/qa/test-destinations.mjs',
     bloquant: true,

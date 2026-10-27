@@ -127,8 +127,9 @@ t('parcours raccordé dans les workflows : préparer → déposer (matière + do
     const y = src(`.github/workflows/${w}.yml`);
     const i = (s) => { const k = y.indexOf(s); assert.ok(k >= 0, `${w} : ${s}`); return k; };
     assert.ok(i('appliquer-nouvelles-affaires.mjs --ecrire') < i('project-evenements.mjs'), 'le GO est appliqué avant la projection');
-    assert.ok(i('project-evenements.mjs') < i('scripts/qa/run-all.mjs') && i('scripts/qa/run-all.mjs') < i('git push origin HEAD:main'));
-    assert.ok(i('--hubs $HUBS') > i('git push origin HEAD:main') && y.includes('steps.evenements.outputs.hubs'), 'vérification des Hubs après le push');
+    const push = y.indexOf('git push origin HEAD:main', i('scripts/qa/run-all.mjs'));   // la poussée de PUBLICATION (un dépôt d'aperçu docs peut la précéder)
+    assert.ok(i('project-evenements.mjs') < i('scripts/qa/run-all.mjs') && i('scripts/qa/run-all.mjs') < push && push > 0);
+    assert.ok(i('--hubs $HUBS') > push && y.includes('steps.evenements.outputs.hubs'), 'vérification des Hubs après le push');
     assert.ok(i('preparer-hub.mjs --ecrire') < i('git add docs/industrialisation/hub-drafts data/hub-matiere') && i('git add docs/industrialisation/hub-drafts data/hub-matiere') < i('preparer-hub.mjs --annoncer'));
   }
   const a = src('scripts/appliquer-nouvelles-affaires.mjs'); assert.ok(a.includes('p.hub_publication') && a.indexOf('p.hub_publication') < a.indexOf('if (p.page)'));

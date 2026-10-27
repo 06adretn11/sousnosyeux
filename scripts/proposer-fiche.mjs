@@ -11,7 +11,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
-import { dossierFiche, dossierGeneree, payloadFiche, cleDedupFiche, hashDossier } from './lib/fiche-page.mjs';
+import { dossierFiche, dossierGeneree, payloadFiche, cleDedupFiche, hashDossier, changementsFiche } from './lib/fiche-page.mjs';
 import { messageFiche } from './lib/discovery-messages.mjs';
 
 const A = process.argv.slice(2);
@@ -38,7 +38,11 @@ for (const id of ids) {
   const b = sql ? (await sql`select publication_status::text ps from cases where case_id = ${id}`)[0] : { ps: 'publiée' };
   if (b?.ps !== 'publiée') { console.log(`· ${id} : l’affaire n’est pas publique dans Neon — jamais de fiche`); continue; }
   const sourcesNeon = sql ? (await sql`select url from sources where case_id = ${id}`).map((r) => r.url) : (c.sources || []).map((s) => s.url);
-  const payload = payloadFiche({ c, dossier, sourcesNeon, nbEvenements: (evenements[id] || []).length, previewBase: PREVIEW, hubTitre: HUBS[dossier.hub], generation: GENEREE ? dossier.generation : null });
+  // Fiche DÉJÀ publiée : la candidate est une MISE À JOUR (changements affichés depuis la dernière version publique) ; sans changement substantiel, rien n'est proposé.
+  const precedent = GENEREE ? dossierFiche(id) : null;
+  if (precedent && hashDossier(precedent.d) === hashDossier(dossier.d)) { console.log(`· ${id} : identique à la version publique — rien à proposer`); continue; }
+  if (precedent && !changementsFiche(precedent.d, dossier.d).substantiel) { console.log(`· ${id} : aucun changement substantiel depuis la version publique (reformulations seules) — rien à proposer`); continue; }
+  const payload = payloadFiche({ c, dossier, precedent, sourcesNeon, nbEvenements: (evenements[id] || []).length, previewBase: PREVIEW, hubTitre: HUBS[dossier.hub], generation: GENEREE ? dossier.generation : null });
   const cle = `${cleDedupFiche(id)}|${hashDossier(dossier.d)}`;
   const [deja] = sql ? await sql`select proposal_id::text pid, decision::text d from new_case_proposals where dedup_key = ${cle}` : [];
   console.log(`· ${id} — ${c.etablissement} : empreinte ${payload.page.hash}${deja ? ` — DÉJÀ PROPOSÉE (${deja.pid.slice(0, 8)}, décision : ${deja.d ?? 'en attente'})` : ''}`);

@@ -68,6 +68,9 @@ jobs:
         run: node scripts/reconcilier-publication.mjs --ecrire
       # Mémoire → surfaces : événements validés (fiches + Hubs) et fiches APPROUVÉES (revue Telegram « [Fiche approuvée] », empreinte du dossier à jour).
       # Même chaîne que la suite : QA → commit → push → build Cloudflare → vérification du site servi. Rejouable : lit Neon, réécrit seulement ce qui change.
+      # Fiche approuvée (nouvelle ou MISE À JOUR) : le dossier approuvé est celui que la proposition a porté (empreinte vérifiée contre la revue) → isoles.json.
+      - name: 5a. Promouvoir les fiches approuvées (dossier porté par la proposition)
+        run: node scripts/promouvoir-fiche.mjs --depuis-propositions --ecrire
       - name: 5b. Projeter événements validés et fiches approuvées
         id: evenements
         run: node scripts/project-evenements.mjs
@@ -81,7 +84,7 @@ jobs:
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
-          git add data/cases.json data/evenements.json
+          git add data/cases.json data/evenements.json data/hub-matiere/isoles.json
           if [ -d data/hub-approuve ]; then git add data/hub-approuve; fi
           if ! git diff --cached --quiet; then
             git commit -m "publication: mise à jour validée par l'éditeur ($RECON_IDS $FICHES)"
