@@ -90,8 +90,10 @@ t('promotion : sans clic positif sur CETTE empreinte, dossier altéré, HOLD ou 
 });
 t('parcours raccordé : sélection → candidate → proposition → promotion → projection → vérification du CONTENU servi (workflows et scripts)', () => {
   const clics = src('.github/workflows/sny-clics.yml'), tel = src('.github/workflows/sny-telegram.yml');
-  assert.ok(clics.includes('proposer-mises-a-jour-fiches.mjs --ecrire') && clics.indexOf('proposer-mises-a-jour-fiches') < clics.indexOf('telegram-v0.mjs notifier-nouvelles'), 'la proposition est créée avant l’envoi');
-  assert.ok(clics.indexOf('git add docs/industrialisation/fiches-generees') < clics.indexOf('telegram-v0.mjs notifier-nouvelles'), 'l’aperçu est déposé avant l’envoi');
+  const maj = src('.github/workflows/sny-maj-fiches.yml');
+  assert.ok(maj.includes('proposer-mises-a-jour-fiches.mjs --ecrire') && maj.indexOf('proposer-mises-a-jour-fiches') < maj.indexOf('git add docs/industrialisation/fiches-generees') && maj.indexOf('git add docs/industrialisation/fiches-generees') < maj.indexOf('notifier-nouvelles'), 'proposition créée, aperçu déposé, PUIS envoi');
+  assert.ok(/group:\s*sny-maj-fiches/.test(maj) && !/group:\s*sny-telegram/.test(maj) && !/getUpdates|recevoir/.test(maj), 'groupe de concurrence propre : la génération ne fait pas attendre les clics');
+  assert.ok(!clics.includes('proposer-mises-a-jour-fiches'), 'aucune génération longue dans le workflow des clics');
   for (const w of [clics, tel]) {
     assert.ok(w.includes('promouvoir-fiche.mjs --depuis-propositions --ecrire') && w.indexOf('promouvoir-fiche.mjs') < w.indexOf('project-evenements.mjs'), 'promotion avant projection');
     assert.ok(w.includes('data/hub-matiere/isoles.json'), 'le dossier promu est commité');

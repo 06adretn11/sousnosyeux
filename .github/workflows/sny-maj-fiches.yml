@@ -1,0 +1,54 @@
+# SNY — mises à jour de fiches publiées : un événement judiciaire nouveau et étayé (analyse de la Maintenance, SANS changement de statut) →
+# candidate générée avec la source nouvelle → aperçu déposé sur main → proposition « MISE À JOUR » envoyée sur Telegram. Aucune publication :
+# le clic, la promotion et la vérification du site servi sont ceux de sny-clics / sny-telegram.
+#
+# Workflow SÉPARÉ de sny-clics : la génération appelle un modèle et dure plusieurs minutes ; dans le groupe de concurrence « sny-telegram »
+# elle ferait attendre (ou perdre) les clics. Ici : son propre groupe, aucune lecture des clics, aucune projection.
+# contents: write — uniquement docs/industrialisation/fiches-generees (aperçu de la candidate) ; jamais l'artefact public ni le build.
+name: sny-maj-fiches
+
+on:
+  schedule:
+    - cron: '47 6-18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sny-maj-fiches
+  cancel-in-progress: false
+
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # Le modèle n'est appelé que s'il y a une affaire retenue (sinon : une requête SQL). Les logs n'affichent jamais titres ni URL d'articles (dépôt public).
+      - name: Proposer les mises à jour de fiches (événement judiciaire nouveau, aucune publication)
+        id: maj
+        run: node scripts/proposer-mises-a-jour-fiches.mjs --ecrire
+      - name: Déposer l'aperçu sur main (docs seulement ; AVANT l'envoi de la proposition)
+        if: ${{ steps.maj.outputs.change == 'true' }}
+        run: |
+          git config user.name "sny-bot"
+          git config user.email "sny-bot@users.noreply.github.com"
+          git add docs/industrialisation/fiches-generees
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: aperçu de mise à jour de fiche (proposition Telegram), aucune publication"
+            git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
+          fi
+      - name: Envoyer la proposition (une seule fois ; l'aperçu est sur main)
+        if: ${{ steps.maj.outputs.change == 'true' }}
+        run: node scripts/telegram-v0.mjs notifier-nouvelles 3

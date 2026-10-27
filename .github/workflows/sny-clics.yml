@@ -51,25 +51,7 @@ jobs:
           git commit -m "publication: évolution validée par l'éditeur ($PROJ_IDS)"
         env:
           PROJ_IDS: ${{ steps.projection.outputs.ids }}
-      # MISE À JOUR de fiche publiée : un événement judiciaire nouveau et étayé (analyse de la Maintenance, sans changement de statut) → candidate générée avec la source
-      # nouvelle → aperçu déposé sur main → proposition « mise à jour » (envoyée par l'étape notifier-nouvelles ci-dessous). La version publique reste en ligne.
-      # Le modèle n'est appelé que s'il y a une affaire retenue (sinon : une requête SQL). Les logs du script n'affichent jamais titres ni URL d'articles.
-      - name: Proposer les mises à jour de fiches (événement judiciaire nouveau, aucune publication)
-        id: maj
-        continue-on-error: true
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-        run: node scripts/proposer-mises-a-jour-fiches.mjs --ecrire
-      - name: Déposer l'aperçu des mises à jour de fiches sur main (docs seulement ; avant l'envoi de la proposition)
-        if: ${{ steps.maj.outputs.change == 'true' }}
-        run: |
-          git config user.name "sny-bot"
-          git config user.email "sny-bot@users.noreply.github.com"
-          git add docs/industrialisation/fiches-generees
-          if ! git diff --cached --quiet; then
-            git commit -m "docs: aperçu de mise à jour de fiche (proposition Telegram), aucune publication"
-            git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
-          fi
+      # (Les MISES À JOUR de fiches publiées sont proposées par le workflow séparé sny-maj-fiches : génération longue, hors du groupe de concurrence des clics.)
       # PROPOSITION de publication (jamais une publication) : seules les NOUVELLES candidates examinées (validées après l'activation),
       # plafond 3 par passage, une proposition par candidate ; l'arriéré n'est jamais proposé sans demande explicite (--ids).
       - name: Proposer la publication des nouvelles candidates examinées (aucune publication)

@@ -129,28 +129,38 @@ export function messageFiche(p) {
 function messageFicheMiseAJour(p) {
   const x = p.page, m = x.mise_a_jour;
   const quand = (e) => (e.date ? e.date : e.publie_le ? `date non écrite · paru le ${e.publie_le}` : 'date non établie');
-  return [
+  const plus = (l, n) => (l.length > n ? [`   (+ ${l.length - n} autre(s) : voir l’aperçu complet)`] : []);
+  // Telegram refuse un message de plus de 4096 caractères : on réduit le détail (jamais le sens) jusqu'à tenir, l'aperçu complet portant le reste.
+  const construire = ({ na, nr, ca, cr, att }) => [
     `🔄 <b>MISE À JOUR DE FICHE À APPROUVER</b> · ${esc(x.case_id)}`,
     '',
     `<b>${esc(p.etablissement)}</b> · ${esc(p.commune)}`,
     `La page existe déjà : la version publique actuelle (empreinte <code>${esc(m.precedent_hash)}</code>) reste EN LIGNE tant que vous n’approuvez pas celle-ci (<code>${esc(x.hash)}</code>).`,
-    ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT · qualification ${esc(x.generation.qualification)} · chaque ligne reliée à un extrait de la source`] : []),
+    ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT · qualification ${esc(x.generation.qualification)}`] : []),
     '',
     '<b>Ce qui change depuis la version publique</b>',
-    ...(m.ajoutees || []).map((e) => `➕ ${esc(cut(e.texte, 300))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
-    ...(m.sources_nouvelles || []).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
-    ...(m.retirees || []).map((e) => `➖ Retirée : ${esc(cut(e.texte, 200))}`),
-    ...(m.sources_retirees || []).map((s) => `➖ Source retirée : ${esc(s.media || '')} → ${esc(s.url)}`),
+    ...(m.ajoutees || []).slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
+    ...plus(m.ajoutees || [], na),
+    ...(m.sources_nouvelles || []).slice(0, 2).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
+    ...(m.retirees || []).slice(0, nr).map((e) => `➖ Retirée : ${esc(cut(e.texte, cr))}`),
+    ...plus(m.retirees || [], nr),
+    ...(m.sources_retirees || []).slice(0, 2).map((s) => `➖ Source retirée : ${esc(s.media || '')} → ${esc(s.url)}`),
     m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) (même source, même date)` : '',
     !(m.ajoutees || []).length && !(m.retirees || []).length ? '(aucune étape ajoutée ni retirée)' : '',
-    '<b>Inconnues</b> : ' + (x.inconnues || []).map((i) => esc(cut(i, 120))).join(' · '),
-    ...(x.generation?.attention?.length ? ['', '<b>⚠ Points d’attention</b>', ...x.generation.attention.map((a) => `• ${esc(cut(a.texte, 200))}`)] : []),
+    '<b>Inconnues</b> : ' + (x.inconnues || []).slice(0, 2).map((i) => esc(cut(i, 110))).join(' · '),
+    ...(att && x.generation?.attention?.length ? ['', '<b>⚠ Points d’attention</b>', ...x.generation.attention.slice(0, att).map((a) => `• ${esc(cut(a.texte, 140))}`)] : []),
     '',
     x.preview_url ? `👁 Aperçu complet de cette version : ${esc(x.preview_url)}` : '👁 Aperçu : captures de la page jointes à ce message',
     '',
-    '✅ APPROUVER = GO éditorial de CETTE VERSION de la page (enregistré, puis projection, QA, déploiement, vérification du site servi). L’affaire et la carte ne changent pas.',
+    '✅ APPROUVER = GO éditorial de CETTE VERSION de la page (puis projection, QA, déploiement, vérification du site servi). L’affaire et la carte ne changent pas.',
     '🟡 REVIEW : rien publié, la version actuelle reste en ligne · ⛔ REJECT : cette mise à jour est écartée, la version actuelle reste en ligne.',
   ].join('\n').replace(/\n{3,}/g, '\n\n');
+  let msg = '';
+  for (const niveau of [{ na: 4, nr: 3, ca: 220, cr: 130, att: 3 }, { na: 3, nr: 2, ca: 160, cr: 100, att: 2 }, { na: 2, nr: 2, ca: 120, cr: 80, att: 1 }, { na: 2, nr: 1, ca: 90, cr: 60, att: 0 }]) {
+    msg = construire(niveau);
+    if (msg.length <= 3700) break;
+  }
+  return msg;
 }
 
 /** NOUVEAU HUB PROPOSÉ (diagnostic territorial) : PRÉPARER LE HUB = préparer un BROUILLON consultable, jamais publier. */
