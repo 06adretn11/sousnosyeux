@@ -1,0 +1,11 @@
+{
+  "_lot": "lot-2026-10-27",
+  "_date": "27/10/2026",
+  "_note": "GO collectif du lot restant (conversation Claude Code, 27/10/2026) : identifiant de l'affaire -> empreinte EXACTE autorisée. Rouen, Charly v2, Émeriau, Volontaires. `_cartes` : changement de carte couvert par le même GO. Saisi par l'agent, pas un clic Telegram ; à n'exécuter qu'après le GO écrit d'Adrien.",
+  "FR-2026-0041": "47a158705b78aa24",
+  "FR-2026-0120": "b3b0ce29f2d73f64",
+  "POC-04": "301b5f3da6f70f99",
+  "POC-10": "b6c0d06e024d87e3",
+  "_cartes": { "POC-10": "plainte" },
+  "_dates_sources": { "POC-10": [ { "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600", "date": "2026-03-16" } ] }
+}
