@@ -24,6 +24,8 @@ const fiches = iF >= 0 ? (argv[iF + 1] || '').split(',').filter((i) => ID.test(i
 const ids = argv.filter((a, i) => ID.test(a) && i !== iF + 1 && i !== iH + 1);
 const TELEGRAM = !argv.includes('--sans-telegram');
 const SITE = process.env.SNY_SITE_URL || 'https://sousnosyeux.org';
+// `prevenir` rend true seulement si l'API Telegram a accepté le message : c'est la seule trace disponible (aucun contenu, aucun identifiant n'est écrit dans les logs).
+const trace = (ok) => console.log(`confirmation Telegram : ${ok ? 'acceptée par l’API (sendMessage ok)' : 'NON envoyée (échec de l’API ou configuration absente)'}`);
 if (!ids.length && !fiches.length && !hubs.length) { console.error('rien à vérifier'); process.exit(2); }
 
 const doc = JSON.parse(readFileSync('data/cases.json', 'utf8'));
@@ -84,10 +86,10 @@ const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hu
 if (!dernier.length) {
   // Informations validées dont la page servie vient d'être contrôlée (ecartsHub : présentes dans la page) : dites telles qu'elles sont, avec leur portée.
   const infos = (evenements.matiere || []).filter((x) => (x.destinations?.hubs || []).some((h) => hubs.includes(h.hub))).map((x) => ({ libelle: x.libelle, portee: x.portee, territoire: x.territoire }));
-  if (TELEGRAM) await prevenir(texteVerifie({ ids, fiches, hubs, site: SITE, infos })); // pages actualisées : URL de chacune
+  if (TELEGRAM) trace(await prevenir(texteVerifie({ ids, fiches, hubs, site: SITE, infos }))); // pages actualisées : URL de chacune
   console.log('site conforme');
   process.exit(0);
 }
-if (TELEGRAM) await prevenir(`⚠️ <b>Projeté mais NON vérifié sur le site</b> — ${tout}\nÉcart : ${dernier.slice(0, 2).join(' ; ')}. Le build Cloudflare est peut-être en retard : à revérifier.`);
+if (TELEGRAM) trace(await prevenir(`⚠️ <b>Projeté mais NON vérifié sur le site</b> — ${tout}\nÉcart : ${dernier.slice(0, 2).join(' ; ')}. Le build Cloudflare est peut-être en retard : à revérifier.`));
 console.error('site non conforme : ' + dernier.join(' ; '));
 process.exit(1);
