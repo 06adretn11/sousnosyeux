@@ -28,6 +28,7 @@
 // =====================================================================
 
 import { createHash } from 'node:crypto';
+import { estLibelleGenerique } from './routage-veille.mjs';
 import {
   STATUTS,
   normEtab,
@@ -251,7 +252,7 @@ export function rattacher(fiche, corps) {
   // Établissement : rapprochement par jetons normalisés (jamais une conclusion).
   const jetons = normEtab(fiche.etablissement).split(/\s+/).filter((j) => j.length > 3);
   const jetonsVus = jetons.filter((j) => txtNorm.includes(j));
-  const etabOk = jetons.length > 0 && jetonsVus.length === jetons.length;
+  let etabOk = jetons.length > 0 && jetonsVus.length === jetons.length;
   if (etabOk) signaux.push('établissement: jetons « ' + jetonsVus.join(' ') + ' » présents');
   else manquants.push('établissement « ' + fiche.etablissement + ' » non retrouvé dans le corps');
 
@@ -259,6 +260,29 @@ export function rattacher(fiche, corps) {
   // corpus écrit « Paris 11e » : on accepte les deux formes pour les villes
   // à arrondissements, sans quoi aucun article parisien ne se rattache.
   const communeOk = communePresente(fiche.commune, txtNorm, norm);
+
+  // LIBELLÉ GÉNÉRIQUE PUR (« Structures périscolaires de Morigny-Champigny » : aucun nom, seulement un type et la commune) : les jetons du
+  // libellé ne seront jamais dans un article, le rattachement ne pouvait donc jamais aboutir. On le fonde alors sur des éléments distinctifs
+  // CONCORDANTS du contenu — la commune associée au rôle dans le titre ou une même phrase (l'article en parle, il ne la cite pas en passant), le département,
+  // le rôle ET un marqueur judiciaire du statut connu —, jamais sur la commune seule. Les libellés « non nommé(e) » gardent la règle stricte.
+  if (!etabOk && estLibelleGenerique(fiche.etablissement, fiche.commune) && !/non nomm|\(/i.test(fiche.etablissement || '')) {
+    const MARQUEUR = { 'mise en examen': /mis(?:e)? en examen|ecroue/, plainte: /plainte/, 'enquête': /enquete/, 'procès': /proces|audience|juge/,
+      'condamnation non définitive': /condamn/, 'condamnation définitive': /condamn/ };
+    const marq = MARQUEUR[fiche.statut_judiciaire];
+    const roleMots = ROLE_MOTS(fiche.role_mis_en_cause);
+    const noyau = roleMots.filter((w) => !/scolaire/.test(w));   // « animateur » : le qualificatif « périscolaire » est souvent omis dans la phrase
+    // La commune doit être ASSOCIÉE au rôle dans la même phrase ou le même titre : « dont Morigny-Champigny, sont inquiets » ne suffit pas.
+    const commeSujet = txt.split(/\n+|(?<=[.!?])\s+/).some((seg) => { const n = norm(seg); return communePresente(fiche.commune, n, norm) && noyau.length > 0 && noyau.every((w) => n.includes(w)); });
+    const concordants = communeOk && commeSujet
+      && !!fiche.departement && txtNorm.includes(norm(fiche.departement))
+      && ROLE_MOTS(fiche.role_mis_en_cause).length > 0 && ROLE_MOTS(fiche.role_mis_en_cause).every((w) => txtNorm.includes(w))
+      && !!marq && marq.test(txtNorm);
+    if (concordants) {
+      etabOk = true;
+      manquants.pop();
+      signaux.push('identité (libellé générique) : commune associée au rôle (titre ou même phrase), département, rôle et marqueur « ' + fiche.statut_judiciaire + ' » concordants');
+    }
+  }
   if (communeOk) signaux.push('commune: « ' + fiche.commune + ' » présente');
   else manquants.push('commune « ' + fiche.commune + ' » non retrouvée');
 
