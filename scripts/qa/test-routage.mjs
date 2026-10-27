@@ -13,6 +13,7 @@
 // Aucun réseau, aucun Neon, aucun LLM.
 // =====================================================================
 
+import { rattacher } from '../lib/etat-affaire.mjs';
 import {
   construireContexte, router, actes, acteprimaire, clusteriser, requetesVeille,
   claimDejaEtabli, estRegression, cleClaim, lireCleClaim, requetePreuve, ROUTAGE_VERSION,
@@ -176,6 +177,18 @@ test('6a-bis. la requête de PREUVE d’un libellé générique ne contient ni l
   const r = requetePreuve({ fiche: { etablissement: 'Structures périscolaires de Morigny-Champigny', commune: 'Morigny-Champigny', role_mis_en_cause: 'animateur périscolaire', statut_judiciaire: 'mise en examen' }, claim: { acte: 'DEMANDE_LIBERTE', items: [{ titre: 't' }] } });
   vrai(r.every((x) => !/structures|"/i.test(x)) && /morigny champigny demande remise en liberté/.test(r[0]), JSON.stringify(r));
 });
+test('6d. libellé générique : rattachement par éléments concordants du contenu (positif / autre affaire refusée / insuffisant incertain / « non nommé » inchangé)', () => {
+  const F = { etablissement: 'Structures périscolaires de Morigny-Champigny', commune: 'Morigny-Champigny', departement: 'Essonne', role_mis_en_cause: 'animateur périscolaire', statut_judiciaire: 'mise en examen' };
+  const pos = 'Animateur périscolaire de Morigny-Champigny : il a comparu lundi pour demander sa remise en liberté\n\nL’animateur périscolaire de Morigny-Champigny (Essonne), mis en examen puis écroué le 27 novembre, comparaissait devant la chambre de l’instruction.';
+  vrai(rattacher(F, pos).rattachement === 'OK', JSON.stringify(rattacher(F, pos)));
+  const autre = 'Animateur périscolaire mis en examen à Étampes pour des agressions sexuelles\n\nUn animateur périscolaire d’Étampes (Essonne) a été mis en examen et écroué. Les habitants de communes voisines, dont Morigny-Champigny, sont inquiets.' + ' x'.repeat(400);
+  vrai(rattacher(F, autre).rattachement === 'NON_RATTACHABLE', 'la commune citée en passant ne suffit pas : ' + JSON.stringify(rattacher(F, autre)));
+  const insuffisant = 'Morigny-Champigny : une fête de village réunit les habitants de l’Essonne\n\nLe maire de Morigny-Champigny a salué les bénévoles.';
+  vrai(rattacher(F, insuffisant).rattachement === 'NON_RATTACHABLE', 'sans rôle ni marqueur judiciaire : reste non rattaché');
+  const nn = { ...F, etablissement: 'Lycée non nommé' , commune: 'Rouen', departement: 'Seine-Maritime', role_mis_en_cause: 'enseignant' };
+  vrai(rattacher(nn, 'Un enseignant de Rouen (Seine-Maritime) mis en examen.\n\nL’enseignant de Rouen, mis en examen.').rattachement === 'NON_RATTACHABLE', 'règle stricte conservée pour « non nommé »');
+});
+
 test('6b. Titon : « le parquet fait appel de la relaxe » → claim APPEL, distinct de la relaxe', () => {
   const items = [
     { titre: 'Pourquoi l’animateur périscolaire jugé […] à l’école Titon à Paris a été relaxé - franceinfo', published: '2026-06-17' },
