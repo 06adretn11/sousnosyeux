@@ -60,6 +60,9 @@ export const statutCat = (s: string): 'red' | 'blue' | 'orange' | 'green' =>
 /** L'état courant d'une fiche : l'état validé s'il existe, sinon le statut de la fiche. */
 export const statutCourant = (c: any): string => c.etat?.statut ?? c.statut_judiciaire;
 
+/** Dossier de Hub rédigé pour un autre état que celui de la carte (évolution validée depuis la rédaction) : sa lecture de l'état n'est plus affichable. */
+export const dossierDepasse = (c: any, d: any): boolean => !!d?.statut_affiche && d.statut_affiche !== statutCourant(c);
+
 /** Source la plus récente PAR DATE DE PUBLICATION. Ce n'est pas la date d'un événement. */
 export function derniereSource(c: any): { media: string; date: string | null; url: string | null } | null {
   const toutes = [

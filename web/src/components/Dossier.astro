@@ -7,12 +7,16 @@
 // Une phrase écrite et sourcée vaut mieux qu'une phrase fausse.
 import Chronologie from './Chronologie.astro';
 import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
-import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre } from '../lib/territoires';
+import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre, dossierDepasse } from '../lib/territoires';
 import { derouleCommun, fichePubliee } from '../lib/fiche';
 import { urlFicheRevue } from '../lib/revue';
 
 interface Props { c: any; d?: any; titre?: string }
-const { c, d = {}, titre } = Astro.props;
+const { c, d: dossier = {}, titre } = Astro.props;
+// Évolution validée depuis la rédaction (la carte a changé d'état) : l'état affiché est celui de la carte, dans le wording partagé ; la lecture,
+// le libellé et les inconnues écrits pour l'ancien état ne sont plus affichés. Le déroulé (historique) reste. Échec fermé jusqu'à la réécriture du dossier.
+const depasse = dossierDepasse(c, dossier);
+const d = depasse ? { ...dossier, etat_actuel: undefined, statut_affiche: undefined, statut_libelle: undefined, statut_cat: undefined, lecture: undefined, versions: undefined, inconnues: undefined } : dossier;
 
 // Déroulé COMMUN (Hub + fiche) : entrées du dossier alignées sur les événements validés de Neon (lib/fiche.ts).
 const { items: tout } = derouleCommun(c.case_id, d);
@@ -41,7 +45,7 @@ for (const s of sourcesLibres) {
 }
 ---
 
-<article class={`dossier ${cat}`} id={c.case_id.toLowerCase()} data-statut={statut}>
+<article class={`dossier ${cat}`} id={c.case_id.toLowerCase()} data-statut={statut} data-depasse={depasse ? 'oui' : undefined}>
   <header>
     <h3>{titre ?? c.etablissement}</h3>
     <p class="meta">{c.type_structure} · {c.commune}</p>
@@ -53,6 +57,7 @@ for (const s of sourcesLibres) {
   </header>
 
   {phrases.map((l: string) => <p class="etat">{l}</p>)}
+  {depasse && <p class="lecture">Ce dossier a été rédigé avant cette évolution : l’état ci-dessus est celui de la fiche, à jour ; le déroulé ci-dessous peut ne pas encore la refléter.</p>}
   {d.lecture && <p class="lecture">{d.lecture}</p>}
 
   {d.versions && (

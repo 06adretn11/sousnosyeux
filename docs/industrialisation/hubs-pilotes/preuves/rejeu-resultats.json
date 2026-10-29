@@ -1,0 +1,117 @@
+{
+  "execute_le": "2026-10-29T11:01:45.226Z",
+  "base": "7c4eb7a",
+  "nouveau": "553eb81",
+  "empreintes_proposees": {
+    "paris-11e": "165d248c53255f5d",
+    "landes": "7d109f47a5f5830c"
+  },
+  "fiches_approuvees_inchangees": {
+    "POC-09": {
+      "approuvee": "b1389eedbc0e7c7d",
+      "courante": "b1389eedbc0e7c7d"
+    },
+    "FR-2026-0115": {
+      "approuvee": "4af66277ad3e802e",
+      "courante": "4af66277ad3e802e"
+    }
+  },
+  "resultats": [
+    {
+      "comportement": "1. Évolution pertinente, documentée et approuvée",
+      "cas": "POC-05 relaxe + appel (historique, 07/10/2026) — code actuel (origin/main)",
+      "nature": "rejeu historique",
+      "environnement": "copie locale ..\\..\\..\\..\\hubs-base",
+      "attendu": "(référence) comportement actuel",
+      "observe": [
+        "étiquette d’état du dossier : Procès",
+        "lecture « le procès se tient » encore affichée comme état actuel : OUI",
+        "bandeau de page : non",
+        "ligne « Où en sont les procédures » : École maternelle Alphonse-Baudin Procès appel Audience, 26 mai 2026"
+      ],
+      "ok": true,
+      "defaut_constate": "la carte publique dit « relaxe, appel » ; le Hub continue d’afficher « Procès » et « le procès se tient » comme état actuel : contradiction entre surfaces"
+    },
+    {
+      "comportement": "1. Évolution pertinente, documentée et approuvée",
+      "cas": "POC-05 relaxe + appel (historique, 07/10/2026) — code proposé",
+      "nature": "rejeu historique",
+      "environnement": "copie locale ..\\..\\..\\..\\hubs-rejeu",
+      "attendu": "le dossier affiche l’état validé de la carte (relaxe, appel) dans le wording partagé, retire la lecture écrite pour « procès », le signale ; un bandeau prévient que les repères peuvent ne pas en tenir compte",
+      "observe": [
+        "étiquette d’état du dossier : Relaxe / non-lieu / classement",
+        "lecture « le procès se tient » encore affichée comme état actuel : non",
+        "bandeau de page : oui",
+        "ligne « Où en sont les procédures » : École maternelle Alphonse-Baudin Relaxe / non-lieu / classement appel Audience, 26 mai 2026"
+      ],
+      "ok": true,
+      "defaut_constate": null
+    },
+    {
+      "comportement": "1. Évolution pertinente, documentée et approuvée",
+      "cas": "information validée → Hub Landes (chemin automatisé)",
+      "nature": "rejeu (fait construit, approbation simulée)",
+      "environnement": "copie locale de la branche",
+      "attendu": "destination calculée = Hub Landes, bloc « Familles… » (pas de fiche : Mées n’a pas de fiche approuvée) ; ajout à sa place chronologique ; aucune autre page modifiée",
+      "observe": [
+        "destinations calculées : {\"fiche\":null,\"hubs\":[{\"hub\":\"landes\",\"groupe\":\"Familles et associations d’aide aux victimes\"}]}",
+        "pages dont le texte change : territoires/landes/index.html",
+        "ordre dans le bloc : réunion du 23/09 (ligne 5) puis rassemblement du 24/09 (ligne 7)"
+      ],
+      "ok": true
+    },
+    {
+      "comportement": "2. Information sans effet utile sur le Hub",
+      "cas": "mesure de portée « Bordeaux » ; plan de Tarnos déjà rédigé dans le Hub",
+      "nature": "rejeu (calcul réel des destinations, aucune écriture)",
+      "environnement": "fonctions pures sur les données de la branche",
+      "attendu": "aucune page Landes pour une portée « Bordeaux » ; pour une information déjà écrite, la proposition le dit (doublon probable) au lieu de la présenter comme nouvelle",
+      "observe": [
+        "portée « Bordeaux » → Hub Bordeaux / Gironde, bloc « Ville de Bordeaux et Éducation nationale » — https://sousnosyeux.org/territoires/bordeaux-gironde/",
+        "plan de Tarnos du 07/10 → Hub Landes, bloc « Collectivités et Éducation nationale » — https://sousnosyeux.org/territoires/landes/ — déjà dans ce bloc à cette date : « Présentation d’un plan d’action en quatre axes — prévenir, repérer, prendre en charge, sui… » ; fiche FR-2026-0115 — https://sousnosyeux.org/affaires/fr-2026-0115/",
+        "message Telegram rendu : proposition-telegram-tarnos.txt"
+      ],
+      "ok": true,
+      "limite": "Le Hub rédigé n’est pas une mémoire de faits : la proposition est encore ENVOYÉE (signalée comme doublon probable) ; c’est la décision humaine (REJECT) qui évite le changement."
+    },
+    {
+      "comportement": "3. Rejeu d’une évolution déjà traitée",
+      "cas": "même information validée deux fois ; projection et construction rejouées",
+      "nature": "rejeu (fonctions réelles, aucune écriture)",
+      "environnement": "copie locale de la branche",
+      "attendu": "une seule information ; projection identique au rejeu ; site reconstruit identique",
+      "observe": [
+        "informations lues : 1",
+        "projection rejouée identique : true",
+        "pages changées après reconstruction sans modification : 0"
+      ],
+      "ok": true
+    },
+    {
+      "comportement": "4. Proposition non approuvée",
+      "cas": "cette proposition (branche non fusionnée) face au site de production",
+      "nature": "observation réelle (lecture du site servi)",
+      "environnement": "https://sousnosyeux.org (lecture seule)",
+      "attendu": "le site servi garde la version approuvée ; la version proposée n’existe que sur la branche et son aperçu",
+      "observe": [
+        "site servi : « Conclusions non publiées » présent ; rapport du 15/10 absent",
+        "version proposée : rapport du 15/10 présent"
+      ],
+      "ok": true
+    },
+    {
+      "comportement": "5. Rectification d’une information",
+      "cas": "mentions périmées des deux Hubs (proposition) ; information validée rectifiée (rejeu)",
+      "nature": "proposition réelle + rejeu",
+      "environnement": "copie locale de la branche",
+      "attendu": "l’information incorrecte disparaît des blocs concernés ; elle ne subsiste pas à côté de la correction",
+      "observe": [
+        "mentions périmées restantes dans la proposition : aucune",
+        "ancien libellé encore affiché : non ; nouveau affiché : oui",
+        "pages changées : territoires/paris-11e/index.html",
+        "contrôle verifier-site (nombre + libellé) : conforme"
+      ],
+      "ok": true
+    }
+  ]
+}

@@ -107,7 +107,9 @@ t('project-evenements : la projection existante porte la matière ; sorties fich
 });
 t('pages : la matière s’ajoute AUX blocs existants (Paroles et réactions ; réponses d’un Hub) ; aucune rubrique créée ; introduction/angle intouchés', () => {
   const h = src('web/src/lib/hub-matiere.ts'); const f = src('web/src/lib/fiche.ts');
-  assert.ok(h.includes('m.reponses.map((g: any) => ({ ...g, items: [...g.items,') && !h.includes('titre: '), 'ajout dans un groupe existant, jamais un nouveau groupe');
+  assert.ok(h.includes('m.reponses.map((g: any) => ({ ...g, items: inserer(g.items,') && !h.includes('titre: '), 'ajout dans un groupe existant, jamais un nouveau groupe');
+  const ins = h.slice(h.indexOf('function inserer'));
+  assert.ok(ins.includes('const out = [...items]') && ins.includes('out.splice('), 'insertion chronologique : les éléments écrits du bloc restent tous, dans leur ordre');
   assert.ok(f.includes('reactions: [...(d?.reactions ?? []), ...cartes]') && f.includes('dejaCartes'));
   assert.ok(!src('web/src/components/FicheUnique.astro').includes('Contexte territorial'), 'template V1 : aucun bloc ajouté');
 });
