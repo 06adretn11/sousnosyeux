@@ -123,3 +123,8 @@ Worktree `C:/Users/adrien.etienne/sny-worktrees/hubs-pilotes` (branche `hubs/pil
 - **But** : contenus de deux Hubs ; affichage cohérent avec la carte ; proposition Telegram plus précise. **Installation** : aucune (fichiers du dépôt ; scripts exécutés par les workflows existants). **Au démarrage** : rien.
 - **Réseau** : inchangé (Telegram, Neon) ; le code ajouté ne lit que des fichiers du dépôt. **Privilèges** : inchangés. **Données personnelles** : aucune personne mise en cause nommée ; seules des personnes publiques nommées par la presse (élus, magistrats, un avocat de partie civile) ; aucun nombre d'enfants.
 - Revue sécurité non requise (rien au démarrage, aucune élévation) ; `telegram-v0.mjs` modifié (contenu d'un message) : relecture conseillée avant fusion.
+
+## GO reçu (29/10/2026)
+
+« GO Hubs pilotes : A paris-11e 165d248c53255f5d, B landes 7d109f47a5f5830c, C, D » — écrit par Adrien dans la session de préparation.
+Vérifié avant application : empreintes de la branche identiques à celles du GO ; `main` inchangé depuis `7c4eb7a` sur les fichiers concernés ; production encore sur l'ancienne version (rien d'appliqué) ; QA_PASSED ; 32 fiches approuvées inchangées. Périmètre appliqué : A, B, C, D, sans exclusion.
