@@ -152,7 +152,24 @@ await t('rejeu idempotent', () => assert.deepEqual(extraireReactions(`Parents et
 await t('Telegram : une information déjà consignée/validée ou déjà soumise, ou une source seule, ne produit AUCUN message ; une portée territoire a ses boutons', () => {
   const s = src('scripts/telegram-v0.mjs');
   assert.ok(s.includes('aucune information nouvelle à décider (source seule) : aucun message') && s.includes('même information déjà soumise à décision') && s.includes("q.decision = 'ACCEPT'"));
-  assert.ok(s.includes('messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length), boutonsEtat(cle)'));
+  assert.ok(s.includes('messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)), boutonsEtat(cle)'));
+});
+await t('proposition actionnable : elle NOMME les pages qu’un VALIDATE mettrait à jour (Hub + bloc + adresse, fiche approuvée), calculées comme à la projection ; aucune page → dit', async () => {
+  const { pagesSiValide } = await import('../lib/destinations.mjs');
+  const lire = (f) => JSON.parse(src(f));
+  const cases = lire('data/cases.json').cases, ev = lire('data/evenements.json');
+  const hubs = Object.fromEntries(['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes'].map((h) => [h, { publie: true, groupes: lire(`data/hub-matiere/${h}.json`).reponses.map((g) => g.titre) }]));
+  const ctx = { publiques: new Set(cases.map((c) => c.case_id)), holds: new Set(lire('data/publication-holds.json').holds.map((h) => h.case_id)), approuvees: new Set(Object.keys(ev.fiches_approuvees)),
+    cases: new Map(cases.map((c) => [c.case_id, { commune: c.commune, departement: c.departement }])), hubs };
+  const tarnos = pagesSiValide([{ case_id: 'FR-2026-0115', nature: 'mesure', portee: 'établissement', territoire: null }], ctx);
+  assert.ok(tarnos.some((x) => /^Hub Landes, bloc « Collectivités et Éducation nationale » — https:\/\/sousnosyeux\.org\/territoires\/landes\/$/.test(x)), tarnos.join(' | '));
+  assert.ok(tarnos.some((x) => x.startsWith('fiche FR-2026-0115 — https://sousnosyeux.org/affaires/fr-2026-0115/')));
+  const mees = pagesSiValide([{ case_id: 'FR-2026-0116', nature: 'mobilisation', portee: 'établissement', territoire: null }], ctx);
+  assert.deepEqual(mees, ['Hub Landes, bloc « Familles et associations d’aide aux victimes » — https://sousnosyeux.org/territoires/landes/'], 'pas de fiche approuvée pour Mées : le Hub seul');
+  assert.deepEqual(pagesSiValide([{ case_id: 'FR-2026-0004', nature: 'mesure', portee: 'établissement', territoire: null }], ctx), [], 'affaire sous HOLD : aucune page');
+  const m = messageEnrichissement({ etablissement: ECOLE, commune: 'Tarnos', courant: 'mise en examen', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, tarnos);
+  assert.ok(m.includes('Pages mises à jour si VALIDATE') && m.includes('territoires/landes/') && !m.includes('Utilisation possible'));
+  assert.match(messageEnrichissement({ etablissement: ECOLE, commune: 'X', courant: 'enquête', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, []), /aucune page publique : l’information resterait en mémoire/);
 });
 await t('application : une portée territoire n’est jamais écrite comme événement de l’affaire ; mobilisation/mesure d’établissement → case_events (projetée par project-evenements)', () => {
   const a = src('scripts/appliquer-decisions.mjs');

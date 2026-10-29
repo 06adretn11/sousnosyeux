@@ -34,8 +34,9 @@ function trois(articles, n = 3) {
  * @param {{etablissement, commune, courant, media, publication_date, url}} p   affaire + article source
  * @param {object[]} neufs  faits NOUVEAUX (libellé fermé, acteur, date/période, portée, citation)
  * @param {boolean} territorial  aucune information de portée affaire / établissement
+ * @param {string[]|null} pages  pages publiques mises à jour si VALIDATE (destinations calculées) ; null = non calculées
  */
-export function messageEnrichissement(p, neufs, territorial) {
+export function messageEnrichissement(p, neufs, territorial, pages = null) {
   const f1 = neufs[0];
   const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : 'date non établie');
   // Le territoire est celui que NOMME la source probante ; à défaut il n'est pas établi — jamais la commune de l'affaire d'où l'on est parti.
@@ -63,7 +64,9 @@ export function messageEnrichissement(p, neufs, territorial) {
     `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,
     '',
     `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
-    `<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`,
+    ...(Array.isArray(pages)
+      ? ['<b>Pages mises à jour si VALIDATE</b>', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
+      : [`<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`]),
     '',
     '<b>Décision</b>',
     'VALIDATE : conserver en mémoire (aucune mise à jour publique immédiate n’est promise ; reprise automatique si la fiche ou le Hub existent) · REVIEW · REJECT',

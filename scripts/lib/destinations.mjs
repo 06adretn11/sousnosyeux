@@ -65,6 +65,18 @@ export function destinationsDe(fait, ctx) {
   return out;
 }
 
+/** Pages publiques qu'un fait mettrait à jour S'IL était validé — même calcul que la projection, dit AVANT la décision (proposition Telegram). */
+export function pagesSiValide(faits, ctx, site = 'https://sousnosyeux.org') {
+  const out = new Set();
+  for (const f of faits) {
+    const d = destinationsDe(f, ctx);
+    for (const h of d.hubs) out.add(`Hub ${HUBS_PERIMETRES[h.hub]?.titre ?? h.hub}, bloc « ${h.groupe} » — ${site}/territoires/${h.hub}/`);
+    if (d.fiche) out.add(`fiche ${d.fiche} — ${site}/affaires/${d.fiche.toLowerCase()}/`);
+    for (const b of d.bloques) out.add(`non intégrable : ${b}`);
+  }
+  return [...out];
+}
+
 /** Projection publique : SEULES les informations qui ont au moins une destination ; le reste ne quitte jamais Neon. Pas de citation (preuve ≠ publication). */
 export function construireMatiere(faits, ctx) {
   const matiere = [], bloques = [], conservees = [];

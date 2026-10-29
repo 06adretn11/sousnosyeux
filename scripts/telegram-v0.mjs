@@ -22,6 +22,7 @@ import { messageDecision, boutons, modeCreation, messageEnrichissement } from '.
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr } from './lib/evenement-institutionnel.mjs';
+import { pagesSiValide } from './lib/destinations.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -199,7 +200,21 @@ async function decisionReactions(cle, p, faits) {
   const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
   const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
   if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
-  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length), boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)), boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+}
+// Pages publiques concernées SI la proposition est validée : même calcul que project-evenements (destinationsDe), sur l'artefact public du dépôt.
+// Fichiers illisibles → null : le message garde sa formulation générique (rien n'est deviné).
+function pagesSiValidee(case_id, neufs) {
+  try {
+    const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
+    const lireSi = (f) => { try { return lire(f); } catch { return null; } };
+    const cases = lire('data/cases.json').cases, ev = lire('data/evenements.json');
+    const slugs = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes', ...Object.keys(ev.hubs_approuves ?? {})];
+    const hubs = Object.fromEntries(slugs.map((s) => [s, { publie: true, groupes: ((lireSi(`data/hub-approuve/${s}.json`) ?? lire(CHEMIN_MATIERE(s))).reponses ?? []).map((g) => g.titre) }]));
+    const ctx = { publiques: new Set(cases.map((c) => c.case_id)), holds: new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id)),
+      approuvees: new Set(Object.keys(ev.fiches_approuvees ?? {})), cases: new Map(cases.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs };
+    return pagesSiValide(neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null })), ctx, process.env.SNY_SITE_URL || 'https://sousnosyeux.org');
+  } catch { return null; }
 }
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
