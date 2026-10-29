@@ -229,6 +229,17 @@ await at('Hub Landes : une mesure ou une mobilisation validée a un bloc existan
     assert.deepEqual(d.bloques, []); assert.equal(d.hubs[0]?.hub, 'landes');
   }
 });
+await at('Hubs rédigés : chaque dossier sans fiche approuvée porte l\'état pour lequel il a été écrit (une évolution validée ensuite est détectée, jamais contredite en silence) ; aucune note interne de revue dans le texte public', async () => {
+  const lire = (f) => JSON.parse(readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8'));
+  const approuvees = new Set(Object.keys(lire('data/evenements.json').fiches_approuvees || {}));
+  for (const hub of ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes']) {
+    const m = lire(`data/hub-matiere/${hub}.json`);
+    for (const id of m.ordre) if (!approuvees.has(id)) assert.ok(m.dossiers[id]?.statut_affiche, `${hub} / ${id} : état de rédaction absent (statut_affiche)`);
+    assert.ok(!/À revoir|avant publication d.un hub|TODO|FIXME/i.test(JSON.stringify(m)), `${hub} : note interne de revue dans la matière publique`);
+  }
+  const dossier = readFileSync(new URL('../../web/src/components/Dossier.astro', import.meta.url), 'utf8');
+  assert.ok(dossier.includes('dossierDepasse(c, dossier)') && /etat_actuel: undefined/.test(dossier) && /inconnues: undefined/.test(dossier), 'dossier dépassé : la lecture écrite pour l\'ancien état n\'est plus affichée');
+});
 
 // --- qualification des réponses : preuve = fait précis, lien à l'affaire ≠ étendue, jamais d'élargissement ni de transfert ------------------
 const CORPS_MESURE = 'Une plainte a été déposée contre cet agent communal, indique la municipalité.\n\nLa municipalité indique qu’elle va "renforcer l’encadrement sur les accueils de loisirs maternels, au-delà des obligations règlementaires afin qu’un adulte ne reste pas seul avec un enfant" . Un temps d’échange sera organisé dans le courant du mois de novembre , avec les parents et les enfants scolarisés sur le thème de la prévention des violences sexuelles.\n\nUn autre paragraphe sans rapport.';

@@ -3,15 +3,23 @@
     "hub_id": "landes",
     "redige_le": "2026-10-26",
     "statut": "matière PUBLIABLE : deux affaires publiques (FR-2026-0115 Tarnos, FR-2026-0116 Mées), aucune jugée.",
-    "methode": "dossier de Tarnos : celui de la fiche approuvée (inchangé) ; dossier de Mées : relu sur le texte des trois articles (Sud Ouest 25/09 partiel, ICI Gascogne 25/09, Sud Ouest 29/09) ; chaque phrase est attribuée ; aucune chronologie n’est reconstituée au-delà de ce que les sources datent."
+    "methode": "dossier de Tarnos : celui de la fiche approuvée (inchangé) ; dossier de Mées : relu sur le texte des trois articles (Sud Ouest 25/09 partiel, ICI Gascogne 25/09, Sud Ouest 29/09) ; chaque phrase est attribuée ; aucune chronologie n’est reconstituée au-delà de ce que les sources datent.",
+    "mis_a_jour_le": "2026-10-29",
+    "mise_a_jour": "réponses de la Ville de Tarnos (réunion tenue, aides votées, plan d’action), avocat et collectif de familles, divergence de date sur la remise en liberté, type de la réunion de Mées, dates de recherche (proposition, en attente de GO) — dossier de la fiche de Tarnos inchangé"
   },
   "reperes": {
     "titre": "Dans les Landes, deux affaires récentes, au stade de l’enquête et de la procédure : aucun jugement rapporté",
-    "chapeau": "Deux affaires distinctes, rapportées à Tarnos en juillet 2026 et à Mées en septembre 2026. Rien, dans les sources lues, ne les relie ; elles ne sont réunies ici que par le territoire. À Tarnos, un animateur a été mis en examen puis, selon La Dépêche, remis en liberté sous contrôle judiciaire ; à Mées, un enseignant remplaçant est placé sous contrôle judiciaire et, selon le parquet, sera jugé. Les personnes mises en cause bénéficient de la présomption d’innocence.",
+    "chapeau": "Deux affaires distinctes, rapportées à Tarnos en juillet 2026 et à Mées en septembre 2026. Rien, dans les sources lues, ne les relie ; elles ne sont réunies ici que par le territoire. À Tarnos, un animateur a été mis en examen puis remis en liberté sous contrôle judiciaire, et la Ville a voté des aides aux familles puis présenté un plan d’action ; à Mées, un enseignant remplaçant est placé sous contrôle judiciaire et, selon le parquet, sera jugé. Les personnes mises en cause bénéficient de la présomption d’innocence.",
     "points": [
       {
-        "texte": "Tarnos : un animateur du centre de loisirs municipal a été mis en examen ; il a été remis en liberté sous contrôle judiciaire en août, selon La Dépêche. Aucune décision de jugement n’est rapportée.",
+        "texte": "Tarnos : un animateur du centre de loisirs a été mis en examen et placé en détention provisoire en juillet, puis remis en liberté sous contrôle judiciaire — « près de quinze jours plus tard » selon Sud Ouest, en août selon La Dépêche. Aucune décision de jugement n’est rapportée.",
         "sources": [
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-la-justice-n-avance-pas-et-rien-ne-justifie-la-sortie-de-detention-provisoire-du-suspect-deplore-l-un-des-avocats-des-victimes-30545985.php",
+            "publie_le": "2026-09-09",
+            "acces": "libre"
+          },
           {
             "media": "La Dépêche",
             "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
@@ -33,6 +41,30 @@
       }
     ],
     "institutions": [
+      {
+        "acteur": "Ville de Tarnos (juillet – octobre 2026)",
+        "texte": "Réunion publique le 15 juillet ; aides financières aux familles des victimes votées par un conseil municipal extraordinaire le 23 juillet ; plan d’action en quatre axes (prévenir, repérer, prendre en charge, suivre) présenté le 7 octobre, à déployer d’ici juin 2027 dans les structures accueillant des enfants. Le plan est une annonce : sa mise en œuvre n’est pas documentée ici.",
+        "sources": [
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-la-ville-de-tarnos-annonce-la-creation-d-un-fonds-d-urgence-exceptionnel-en-faveur-des-familles-plaignantes-29981292.php",
+            "publie_le": "2026-07-18",
+            "acces": "libre"
+          },
+          {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-au-centre-de-loisirs-de-tarnos-nous-serons-toujours-aux-cotes-des-familles-prevention-signalements-et-soutien-aux-victimes-au-coeur-du-plan-de-protection-de-l-enfance-de-la-mairie-30963952.php",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          },
+          {
+            "media": "ICI Pays Basque",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-08",
+            "acces": "libre"
+          }
+        ]
+      },
       {
         "acteur": "Parquet de Dax (septembre 2026)",
         "texte": "À Mées : « les investigations ont établi qu’il s’agit d’un fait isolé et que l’intéressé n’a aucun antécédent judiciaire » ; l’enseignant est placé sous contrôle judiciaire, avec interdiction d’exercer au contact de mineurs.",
@@ -692,7 +724,7 @@
         {
           "date": "2026-09-23",
           "date_nature": "evenement",
-          "type": "mesure_collectivite",
+          "type": "mesure_etat",
           "acteur": "Éducation nationale, gendarmerie, parquet, Adavem",
           "texte": "Selon le parquet cité par Sud Ouest, une réunion publique s’est tenue le 23 septembre à la mairie de Mées, à l’initiative de l’inspectrice d’académie, en présence des parents d’élèves, du commandant de compagnie de gendarmerie de Dax, de l’association d’aide aux victimes Adavem et du procureur de la République.",
           "source": {
@@ -759,10 +791,12 @@
         }
       ],
       "inconnues": [
-        "Aucune date d’audience ni décision de justice n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Aucune date d’audience ni décision de justice n’est rapportée par les sources lues (recherche de presse du 29 octobre 2026) : la suite de la procédure est inconnue.",
         "La date de l’écartement de l’enseignant n’est pas établie : ICI Gascogne la situe au 17 puis au 18 septembre dans le même article.",
-        "Le dossier ne repose que sur 3 articles (Sud Ouest ×2, partiellement en accès abonnés, et ICI Gascogne)."
-      ]
+        "Le dossier ne repose que sur 3 articles (Sud Ouest ×2, partiellement en accès abonnés, et ICI Gascogne).",
+        "Type d’école : « école maternelle » selon ICI Gascogne et Sud Ouest du 25 septembre, « école élémentaire » selon Sud Ouest du 29 septembre ; la fiche retient « maternelle »."
+      ],
+      "statut_affiche": "procès"
     }
   },
   "reponses": [
@@ -811,14 +845,38 @@
           }
         },
         {
-          "date": null,
-          "date_nature": "article",
-          "acteur": "La Ville de Tarnos",
-          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, une réunion d'information à l'intention des parents dont les enfants fréquentent le centre de loisirs est organisée le mercredi 15 juillet 2026 à 18 heures au gymnase Léo-Lagrange.",
+          "date": "2026-07-15",
+          "date_nature": "evenement",
+          "acteur": "Ville de Tarnos",
+          "texte": "Réunion d’information organisée le mercredi 15 juillet à l’attention des habitants, que Sud Ouest décrit « sous haute tension » ; un dispositif de soutien psychologique y est annoncé. (Elle avait été annoncée le 9 juillet pour les parents du centre de loisirs.)",
           "source": {
             "media": "Sud Ouest",
-            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
-            "publie_le": "2026-07-09",
+            "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-la-ville-de-tarnos-annonce-la-creation-d-un-fonds-d-urgence-exceptionnel-en-faveur-des-familles-plaignantes-29981292.php",
+            "publie_le": "2026-07-18",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-07-18",
+          "date_nature": "article",
+          "acteur": "Maire de Tarnos (Marc Mabillet)",
+          "texte": "Propose un fonds d’urgence exceptionnel pour les familles plaignantes, destiné notamment aux frais de soins psychologiques et de déplacement, soumis à un conseil municipal convoqué le 23 juillet.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-la-ville-de-tarnos-annonce-la-creation-d-un-fonds-d-urgence-exceptionnel-en-faveur-des-familles-plaignantes-29981292.php",
+            "publie_le": "2026-07-18",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-07-23",
+          "date_nature": "evenement",
+          "acteur": "Conseil municipal de Tarnos",
+          "texte": "Un conseil municipal extraordinaire vote des aides financières aux familles des victimes (chronologie présentée par la Ville, rapportée par Sud Ouest).",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-au-centre-de-loisirs-de-tarnos-nous-serons-toujours-aux-cotes-des-familles-prevention-signalements-et-soutien-aux-victimes-au-coeur-du-plan-de-protection-de-l-enfance-de-la-mairie-30963952.php",
+            "publie_le": "2026-10-07",
             "acces": "libre"
           }
         },
@@ -833,12 +891,60 @@
             "publie_le": "2026-09-25",
             "acces": "libre"
           }
+        },
+        {
+          "date": "2026-10-07",
+          "date_nature": "evenement",
+          "acteur": "Ville de Tarnos (maire et premier adjoint)",
+          "texte": "Présentation d’un plan d’action en quatre axes — prévenir, repérer, prendre en charge, suivre — pour l’ensemble des structures accueillant des enfants de la commune, à déployer d’ici juin 2027. La Ville souhaite aussi renforcer les exigences de sécurité du cahier des charges du centre de loisirs, géré par une association en délégation de service public, dont le contrat doit être renouvelé en août 2027. Ce sont des annonces.",
+          "source": {
+            "media": "ICI Pays Basque",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-08",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "acteur": "Ville de Tarnos",
+          "texte": "Selon la Ville, des mesures pratiques sont appliquées depuis la rentrée de septembre : accompagnement aux toilettes par deux adultes, appel direct aux parents si un enfant doit être changé, accompagnement des intervenants extérieurs. Déclaration de la Ville, non vérifiée par ailleurs.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-au-centre-de-loisirs-de-tarnos-nous-serons-toujours-aux-cotes-des-familles-prevention-signalements-et-soutien-aux-victimes-au-coeur-du-plan-de-protection-de-l-enfance-de-la-mairie-30963952.php",
+            "publie_le": "2026-10-07",
+            "acces": "libre"
+          }
         }
       ]
     },
     {
       "titre": "Familles et associations d’aide aux victimes",
       "items": [
+        {
+          "date": null,
+          "date_nature": "article",
+          "acteur": "Collectif SOS Périscolaire (Tarnos)",
+          "texte": "Le collectif, qui accompagne des familles plaignantes de Tarnos, décrit une « angoisse » des familles à la rentrée. Position d’un collectif, rapportée telle quelle.",
+          "source": {
+            "media": "ICI Gascogne",
+            "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-gascogne/une-angoisse-pour-les-familles-a-tarnos-la-rentree-est-plombee-par-l-affaire-dans-le-periscolaire-3459466",
+            "publie_le": "2026-09-01",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "acteur": "Me Mehdi Boudjenane, avocat d’une partie civile (Tarnos)",
+          "texte": "Il conteste la remise en liberté de l’animateur (« Rien ne justifie cette sortie de détention provisoire ») et dénonce la lenteur et l’opacité de l’enquête. Position d’un avocat de partie civile, rapportée telle quelle.",
+          "source": {
+            "media": "Sud Ouest",
+            "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-la-justice-n-avance-pas-et-rien-ne-justifie-la-sortie-de-detention-provisoire-du-suspect-deplore-l-un-des-avocats-des-victimes-30545985.php",
+            "publie_le": "2026-09-09",
+            "acces": "libre"
+          }
+        },
         {
           "date": "2026-09-23",
           "date_nature": "evenement",
@@ -848,6 +954,18 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": null,
+          "date_nature": "article",
+          "acteur": "Familles de Tarnos ; collectif SOS Périscolaire",
+          "texte": "Selon ICI, plusieurs familles se sont regroupées en collectif et ont organisé une marche blanche (date non précisée) ; le collectif SOS Périscolaire juge que le plan municipal est une étape mais qu’il ne répond pas encore à toutes les attentes des parents, notamment sur la prise en charge spécialisée des enfants.",
+          "source": {
+            "media": "ICI Pays Basque",
+            "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+            "publie_le": "2026-10-08",
             "acces": "libre"
           }
         }
@@ -861,11 +979,19 @@
     },
     {
       "question": "Jugement ou appel",
-      "resultat": "rien rapporté dans les sources lues, pour les deux affaires"
+      "resultat": "rien rapporté au 29 octobre 2026, pour les deux affaires"
     },
     {
       "question": "Réponses institutionnelles",
-      "resultat": "parquet de Dax, Ville de Tarnos, Éducation nationale ; rien d’autre dans les sources lues"
+      "resultat": "parquet de Dax, Ville de Tarnos (réunion, aides votées, plan d’action), Éducation nationale ; la mise en œuvre du plan de Tarnos n’est pas documentée"
+    },
+    {
+      "question": "Statut du centre de loisirs de Tarnos",
+      "resultat": "présenté comme « municipal » par plusieurs articles ; selon ICI (8 octobre 2026), il est géré par une association dans le cadre d’une délégation de service public"
+    },
+    {
+      "question": "Autres faits signalés au centre de loisirs de Tarnos",
+      "resultat": "un second animateur a été écarté à la rentrée pour des faits antérieurs à son embauche et sans lien établi avec cette affaire (ICI) : ils ne sont pas documentés ici"
     }
   ]
 }

@@ -4,7 +4,9 @@
     "redige_le": "2026-10-10",
     "statut": "matière éditoriale — affaires toutes PUBLIQUES (artefact data/cases.json)",
     "methode": "chaque entrée est rattachée à un article dont le texte a été relu par script (mots-clés) avant écriture ; les paroles sont attribuées ; une date d'événement n'est affichée que si l'article la donne (date_nature = evenement).",
-    "ordre": "avancement procédural, jamais gravité"
+    "ordre": "avancement procédural, jamais gravité",
+    "mis_a_jour_le": "2026-10-29",
+    "mise_a_jour": "rapport du Sénat publié ; commission indépendante installée ; source du chiffre des relaxes ; dossier PARIS-009 relu sur le corps de l’article ; dates de recherche (proposition, en attente de GO)"
   },
   "ordre": [
     "POC-05",
@@ -120,11 +122,12 @@
         }
       ],
       "inconnues": [
-        "Date de l'audience d'appel : non trouvée au 10 octobre 2026 (recherches dans franceinfo, ICI, France 3).",
+        "Date de l'audience d'appel : non trouvée au 29 octobre 2026 (recherche de presse ; franceinfo, ICI, France 3, BFMTV).",
         "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
         "Le nombre d'enfants concernés diffère selon les articles (procès, calendrier du parquet) : SNY ne le reprend pas.",
         "Une constitution de partie civile d'associations est évoquée ailleurs ; elle n'est pas confirmée par les articles relus."
-      ]
+      ],
+      "statut_affiche": "relaxe / non-lieu / classement"
     },
     "POC-09": {
       "etat_actuel": [
@@ -509,13 +512,30 @@
     },
     "PARIS-009": {
       "etat_actuel": [
-        "Selon Le Parisien (20 novembre 2025), une deuxième animatrice a été suspendue à l'école Faidherbe « à la suite de violences ». SNY n'a pu lire que le titre de l'article : la nature précise des faits et les suites ne sont pas établies."
+        "Selon Le Parisien (20 novembre 2025), une deuxième personne de l’équipe d’animation de l’école maternelle Faidherbe, une animatrice, a été suspendue. D’après la Ville de Paris, citée par le journal, il ne s’agit pas de faits à caractère sexuel mais de « violences éducatives ordinaires » ; les faits précis reprochés ne sont pas connus.",
+        "Une suspension n’est pas une sanction pénale et ne vaut pas culpabilité."
       ],
       "statut_affiche": "enquête",
-      "lecture": "La fiche porte l'état « enquête ». Le titre de l'article parle d'une suspension ; il ne permet pas de confirmer à lui seul qu'une enquête a été ouverte. À revoir avant publication d'un hub.",
+      "lecture": "La fiche porte l’état « enquête ». L’article rapporte seulement qu’un parent s’est vu répondre que rien ne pouvait être dit « en raison de l’enquête », sans préciser s’il s’agit d’une enquête administrative ou pénale : aucune ouverture d’enquête par le parquet n’est rapportée. Cet état reste à établir.",
       "inconnues": [
-        "Corps de l'article inaccessible : nature des « violences », identité de l'établissement exact (rue Faidherbe) et éventuelle procédure non établies.",
-        "Rien ne permet d'établir que cette fiche et la précédente décrivent une même procédure ou deux procédures distinctes : elles sont comptées séparément, sous un seul établissement."
+        "Faits précis reprochés à l’animatrice : ni la Ville ni l’article ne les détaillent.",
+        "Nature de l’« enquête » évoquée par un parent (administrative ou pénale) : non établie ; aucune suite connue.",
+        "Lien avec la fiche voisine (rue Faidherbe) : l’article distingue cette suspension de celle d’un animateur visé la semaine précédente par un signalement pour agression sexuelle. La plainte de décembre rapportée par 20 minutes vise un animateur ; les sources lues ne disent pas si c’est celui suspendu en novembre."
+      ],
+      "deroule": [
+        {
+          "date": "2025-11-19",
+          "date_nature": "evenement",
+          "type": "mesure_etablissement",
+          "acteur": "Ville de Paris (employeur)",
+          "texte": "Lors d’une réunion avec les parents, le mercredi 19 novembre, la suspension d’une deuxième personne de l’équipe d’animation, une animatrice, est annoncée. Selon la Ville, les faits relèvent de « violences éducatives ordinaires », pas de faits à caractère sexuel.",
+          "source": {
+            "media": "Le Parisien",
+            "url": "https://www.leparisien.fr/faits-divers/paris-une-deuxieme-animatrice-suspendue-a-lecole-faidherbe-a-la-suite-de-violences-20-11-2025-DDEF6ZI34NEQTCU3JO2HN7ZTNE.php",
+            "publie_le": "2025-11-20",
+            "acces": "libre"
+          }
+        }
       ]
     },
     "PARIS-006": {
@@ -554,7 +574,8 @@
       "inconnues": [
         "Aucune suite postérieure à novembre 2025 n'a été trouvée (information judiciaire, mise en examen, classement).",
         "Les centres de loisirs concernés sont ceux de deux maternelles (Roquette et Parmentier) ; la fiche n'en porte qu'une."
-      ]
+      ],
+      "statut_affiche": "plainte"
     },
     "POC-08": {
       "etat_actuel": [
@@ -592,7 +613,8 @@
       "inconnues": [
         "Aucune suite postérieure à mars 2026 n'a été trouvée.",
         "La date d'ouverture de l'enquête n'est pas précisée."
-      ]
+      ],
+      "statut_affiche": "enquête"
     },
     "FR-2026-0016": {
       "etat_actuel": [
@@ -643,7 +665,8 @@
       "inconnues": [
         "Article réservé aux abonnés après le début : la date de la plainte, la situation actuelle de l'éducateur et la réaction de l'association ne sont pas établies.",
         "Aucune suite judiciaire connue."
-      ]
+      ],
+      "statut_affiche": "plainte"
     }
   },
   "reponses": [
@@ -728,6 +751,18 @@
           }
         },
         {
+          "date": "2026-07-01",
+          "date_nature": "evenement",
+          "acteur": "Commission indépendante (présidée par Antoine Garapon)",
+          "texte": "La commission annoncée le 9 juin est installée et commence ses travaux ; son président annonce une « période de travail intense de six mois » et espère remettre ses conclusions début 2027. Elles ne sont pas publiées au 29 octobre 2026.",
+          "source": {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/periscolaire-a-paris-la-commission-denquete-presidee-par-lex-juge-des-enfants-antoine-garapon-installee-4c048212-7521-11f1-9172-187ee382b87f",
+            "publie_le": "2026-07-01",
+            "acces": "libre"
+          }
+        },
+        {
           "date": null,
           "date_nature": "article",
           "acteur": "Maire du 11e (David Belliard)",
@@ -748,11 +783,23 @@
           "date": null,
           "date_nature": "article",
           "acteur": "Sénat (commission d'enquête)",
-          "texte": "Lancée en juin 2026 avec la sénatrice Agnès Evren pour rapporteure. Dans une audition publiée le 8 octobre, elle entend le DRH et l'ancienne secrétaire générale de la Ville : le DRH présente des excuses pour des propos sur les signalements et affirme que les animateurs visés pour violences sexuelles sont « systématiquement suspendus » ; l'ancienne secrétaire générale affirme que les recommandations d'un rapport de l'inspection générale de 2015 ont été mises en œuvre. Conclusions non publiées au 10 octobre.",
+          "texte": "Lancée en juin 2026 avec la sénatrice Agnès Evren pour rapporteure. Dans une audition publiée le 8 octobre, elle entend le DRH et l'ancienne secrétaire générale de la Ville : le DRH présente des excuses pour des propos sur les signalements et affirme que les animateurs visés pour violences sexuelles sont « systématiquement suspendus » ; l'ancienne secrétaire générale affirme que les recommandations d'un rapport de l'inspection générale de 2015 ont été mises en œuvre.",
           "source": {
             "media": "Public Sénat",
             "url": "https://www.publicsenat.fr/emission/100-senat/violences-dans-le-periscolaire-parisien-audition-des-services-de-la-ville-e79",
             "publie_le": "2026-10-08",
+            "acces": "libre"
+          }
+        },
+        {
+          "date": "2026-10-15",
+          "date_nature": "evenement",
+          "acteur": "Sénat (rapport de la commission, rapporteure Agnès Evren)",
+          "texte": "Présentation du rapport, adopté à l’unanimité le 14 octobre : vingt-cinq propositions en cinq axes, parmi lesquelles un contrôle d’honorabilité systématique, un fichier des suspensions et interdictions commun à l’Éducation nationale, à l’accueil collectif de mineurs et au sport, l’allongement des suspensions administratives à huit mois et une cellule d’appui aux communes auprès de chaque préfet. Le rapport qualifie les défaillances observées de « systémiques ». Ce sont des recommandations : SNY ne documente pas leurs suites.",
+          "source": {
+            "media": "TIME France",
+            "url": "https://www.timefrance.fr/politique/periscolaire-les-25-mesures-du-senat-pour-colmater-des-failles-systemiques/",
+            "publie_le": "2026-10-16",
             "acces": "libre"
           }
         }
@@ -802,19 +849,19 @@
   ],
   "inconnues_transversales": [
     "Éducation nationale (rectorat, DASEN de Paris) : aucune déclaration propre à ces écoles n'a été retrouvée dans les articles accessibles. Cela ne prouve pas qu'il n'y en a pas.",
-    "Conclusions de la commission indépendante de la Ville et de la commission d'enquête du Sénat : non publiées au 10 octobre 2026.",
-    "Dates des audiences d'appel (Titon, Alphonse-Baudin) : non trouvées.",
+    "Commission indépendante de la Ville : conclusions attendues début 2027 selon son président, non publiées au 29 octobre 2026. Rapport du Sénat : publié le 15 octobre 2026 ; les suites données à ses recommandations ne sont pas documentées ici.",
+    "Dates des audiences d'appel (Titon, Alphonse-Baudin) : non trouvées au 29 octobre 2026.",
     "Une constitution de partie civile de l'association L'Enfant Bleu est évoquée dans d'autres sources ; le communiqué (PDF) n'a pas pu être relu : elle n'est donc pas reprise.",
     "Deux articles évoquent des antécédents d'un animateur et son maintien en poste (école Bullourde) ; ils n'ont pas pu être relus en entier : SNY ne les reprend pas et n'en tire aucune conclusion sur la responsabilité de la Ville."
   ],
   "recherches": [
     {
       "question": "État le plus récent de chacune des procédures du 11e",
-      "resultat": "trouvé pour Titon, Baudin, Servan, Bullourde ; rien de postérieur pour Parmentier, Voltaire, Faidherbe, Lagon des Ours"
+      "resultat": "recherche de presse du 29 octobre 2026 : trouvé pour Titon, Baudin, Servan, Bullourde ; rien de postérieur pour Parmentier, Voltaire, Lagon des Ours ; Faidherbe : article du Parisien du 20 novembre 2025 désormais lu ; aucune date d’audience d’appel trouvée (Titon, Baudin)"
     },
     {
       "question": "Réponses des institutions (Ville, mairie du 11e, parquet, Sénat, Éducation nationale)",
-      "resultat": "trouvé sauf Éducation nationale"
+      "resultat": "trouvé sauf Éducation nationale ; rapport du Sénat (15 octobre 2026) et installation de la commission indépendante (juillet 2026) ajoutés"
     },
     {
       "question": "Mobilisation (parents, avocats, syndicats, associations)",
@@ -853,16 +900,16 @@
         "libelle": "relaxes dans le 11e, toutes deux frappées d’appel",
         "portee": "11e",
         "source": {
-          "media": "franceinfo",
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
-          "publie_le": "2026-06-17"
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+          "publie_le": "2026-07-10"
         }
       }
     ],
     "institutions": [
       {
         "acteur": "Emmanuel Grégoire, maire de Paris (9 juin 2026)",
-        "texte": "Annonce une commission d’enquête indépendante présidée par Antoine Garapon, ancien juge des enfants, avec « carte blanche » pour analyser la gestion du périscolaire depuis la réforme de 2013 ; elle fait suite à un plan d’action adopté en avril.",
+        "texte": "Annonce une commission d’enquête indépendante présidée par Antoine Garapon, ancien juge des enfants, avec « carte blanche » pour analyser la gestion du périscolaire depuis la réforme de 2013 ; elle fait suite à un plan d’action adopté en avril. Installée début juillet, elle a commencé ses travaux ; son président espère en remettre les conclusions début 2027.",
         "sources": [
           {
             "media": "TIME France",
@@ -873,13 +920,23 @@
             "media": "paris.fr",
             "url": "https://www.paris.fr/pages/un-nouveau-plan-d-action-contre-les-violences-faites-aux-enfants-34461",
             "publie_le": "2026-04-14"
+          },
+          {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/periscolaire-a-paris-la-commission-denquete-presidee-par-lex-juge-des-enfants-antoine-garapon-installee-4c048212-7521-11f1-9172-187ee382b87f",
+            "publie_le": "2026-07-01"
           }
         ]
       },
       {
-        "acteur": "Sénat (juin 2026 ; audition de la Ville publiée le 8 octobre)",
-        "texte": "Une commission d’enquête, dont la sénatrice Agnès Evren est rapporteure, entend la Ville : son DRH s’excuse pour des propos tenus sur les signalements. Conclusions non publiées.",
+        "acteur": "Sénat (commission d’enquête ; rapport présenté le 15 octobre 2026)",
+        "texte": "La commission, dont la sénatrice Agnès Evren est rapporteure, a entendu les services de la Ville (son DRH s’excuse pour des propos tenus sur les signalements), puis rendu un rapport de vingt-cinq propositions, adoptées à l’unanimité le 14 octobre, qui qualifie les défaillances observées de « systémiques ». Ce sont des recommandations : leurs suites ne sont pas documentées ici.",
         "sources": [
+          {
+            "media": "TIME France",
+            "url": "https://www.timefrance.fr/politique/periscolaire-les-25-mesures-du-senat-pour-colmater-des-failles-systemiques/",
+            "publie_le": "2026-10-16"
+          },
           {
             "media": "Public Sénat",
             "url": "https://www.publicsenat.fr/emission/100-senat/violences-dans-le-periscolaire-parisien-audition-des-services-de-la-ville-e79",
@@ -889,6 +946,6 @@
       }
     ],
     "limite": "Ces chiffres décrivent la réponse publique, pas la fréquence des faits dans le 11e : ils concernent Paris entier et SNY ne documente que ce que la presse rapporte. Éducation nationale : aucune déclaration propre à ces écoles retrouvée.",
-    "chapeau": "Depuis l’été 2025, la presse rapporte neuf affaires distinctes dans des écoles et une crèche du 11e : ce ne sont pas les épisodes d’une même procédure. Elles s’inscrivent dans un débat parisien auquel les pouvoirs publics ont répondu par étapes — suspensions d’animateurs dès 2025, plan d’action en avril 2026, commission indépendante annoncée en juin, enquête du Sénat."
+    "chapeau": "Depuis l’été 2025, la presse rapporte neuf affaires distinctes dans des écoles et une crèche du 11e : ce ne sont pas les épisodes d’une même procédure. Elles s’inscrivent dans un débat parisien auquel les pouvoirs publics ont répondu par étapes — suspensions d’animateurs dès 2025, plan d’action en avril 2026, commission indépendante installée en juillet, rapport du Sénat présenté en octobre."
   }
 }

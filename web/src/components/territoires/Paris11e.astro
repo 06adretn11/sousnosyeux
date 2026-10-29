@@ -6,14 +6,17 @@ import Dossier from '../Dossier.astro';
 import Reperes from '../Reperes.astro';
 import Reponses from '../Reponses.astro';
 import Limites from '../Limites.astro';
-import { casesParIds, STATUT_LABELS, statutCat } from '../../lib/territoires';
+import { casesParIds, STATUT_LABELS, statutCat, statutCourant, dossierDepasse } from '../../lib/territoires';
 import { chargerHub, libelleDate, TYPE_LABELS } from '../../lib/hub-matiere';
 import { dateLongue } from '../../lib/etat-wording';
 
 const { matiere } = chargerHub('paris-11e');
 const cases = casesParIds(matiere.ordre);
 const D = matiere.dossiers;
-const statutDe = (c: any) => D[c.case_id]?.statut_affiche ?? c.etat?.statut ?? c.statut_judiciaire;
+// Même règle que le dossier : une évolution validée depuis la rédaction l'emporte sur l'état écrit dans la matière.
+const statutDe = (c: any) => (dossierDepasse(c, D[c.case_id]) ? statutCourant(c) : D[c.case_id]?.statut_affiche ?? statutCourant(c));
+// Étapes connues à la date de la dernière mise à jour de la matière (une étape annoncée pour plus tard n'est pas « la dernière étape »).
+const jusquA = matiere._meta?.mis_a_jour_le ?? matiere._meta?.redige_le;
 
 // Un établissement = un point sur la carte (clé : coordonnées), ordre = avancement procédural.
 const groupes: any[][] = [];
@@ -29,7 +32,7 @@ for (const c of cases) etats.set(statutDe(c), (etats.get(statutDe(c)) ?? 0) + 1)
 
 // Dernière ÉTAPE PROCÉDURALE datée (date d'événement, jamais date d'article ; une mobilisation n'est pas une étape).
 const dernier = (c: any) => (D[c.case_id]?.deroule ?? [])
-  .filter((e: any) => e.date && e.date_nature === 'evenement' && e.date <= '2026-10-10' && !['mobilisation', 'prise_de_parole', 'contradiction', 'contexte'].includes(e.type))
+  .filter((e: any) => e.date && e.date_nature === 'evenement' && e.date <= jusquA && !['mobilisation', 'prise_de_parole', 'contradiction', 'contexte'].includes(e.type))
   .sort((a: any, b: any) => b.date.localeCompare(a.date))[0] ?? null;
 
 const pins = groupes.map((g) => ({
@@ -100,8 +103,8 @@ const pins = groupes.map((g) => ({
       <section class="groupe">
         {g.length > 1 && (
           <p class="note multi">
-            Deux fiches existent pour cet établissement. Les sources lues ne permettent pas d’établir s’il s’agit d’une
-            seule procédure ou de deux : elles sont comptées comme {g.length} fiches mais un seul établissement.
+            Deux fiches existent pour cet établissement : elles sont comptées comme {g.length} fiches mais un seul
+            établissement. Ce que les sources lues disent de leur lien éventuel figure dans chaque dossier.
           </p>
         )}
         {g.map((c) => <Dossier c={c} d={D[c.case_id]} />)}

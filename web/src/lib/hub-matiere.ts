@@ -66,8 +66,20 @@ export function chargerHub(id: string): { matiere: any; prive: any | null } {
   if (!m) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
   const ajouts = matiereHub(id);
   if (!ajouts.length || !m.reponses) return { matiere: m, prive: V[id] ?? null };
-  const reponses = m.reponses.map((g: any) => ({ ...g, items: [...g.items, ...ajouts.filter((x) => x.destinations.hubs.some((h: any) => h.hub === id && h.groupe === g.titre) && !g.items.some((i: any) => String(i.texte).startsWith(x.libelle))).map(carteReponse)] }));
+  const reponses = m.reponses.map((g: any) => ({ ...g, items: inserer(g.items, ajouts.filter((x) => x.destinations.hubs.some((h: any) => h.hub === id && h.groupe === g.titre) && !g.items.some((i: any) => String(i.texte).startsWith(x.libelle))).map(carteReponse)) }));
   return { matiere: { ...m, reponses }, prive: V[id] ?? null };
+}
+
+// Une information validée prend sa place chronologique dans le bloc (date d'événement, sinon date de parution) ; l'ordre écrit du bloc n'est jamais modifié.
+const cleChrono = (i: any): string => i.date ?? i.source?.publie_le ?? '';
+function inserer(items: any[], cartes: any[]): any[] {
+  const out = [...items];
+  for (const x of [...cartes].sort((a, b) => cleChrono(a).localeCompare(cleChrono(b)))) {
+    const k = cleChrono(x);
+    const i = k ? out.findIndex((y) => cleChrono(y) > k) : -1;
+    out.splice(i < 0 ? out.length : i, 0, x);
+  }
+  return out;
 }
 
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
