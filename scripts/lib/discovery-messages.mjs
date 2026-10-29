@@ -65,7 +65,7 @@ export function messageEnrichissement(p, neufs, territorial, pages = null) {
     '',
     `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
     ...(Array.isArray(pages)
-      ? ['<b>Pages mises à jour si VALIDATE</b>', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
+      ? ['<b>Pages concernées si VALIDATE</b>', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
       : [`<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`]),
     '',
     '<b>Décision</b>',

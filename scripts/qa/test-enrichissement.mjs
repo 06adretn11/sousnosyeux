@@ -174,7 +174,7 @@ await t('proposition actionnable : elle NOMME les pages qu’un VALIDATE mettrai
   assert.ok(plan.some((x) => /territoires\/landes\/ — déjà dans ce bloc à cette date : « Présentation d’un plan d’action/.test(x)), plan.join(' | '));
   assert.ok(!pagesSiValide([{ case_id: 'FR-2026-0115', nature: 'mesure', portee: 'établissement', territoire: null, date: '2026-08-01' }], ctxItems).some((x) => /déjà dans ce bloc/.test(x)), 'autre date : pas de rapprochement');
   const m = messageEnrichissement({ etablissement: ECOLE, commune: 'Tarnos', courant: 'mise en examen', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, tarnos);
-  assert.ok(m.includes('Pages mises à jour si VALIDATE') && m.includes('territoires/landes/') && !m.includes('Utilisation possible'));
+  assert.ok(m.includes('Pages concernées si VALIDATE') && m.includes('territoires/landes/') && !m.includes('Utilisation possible'));
   assert.match(messageEnrichissement({ etablissement: ECOLE, commune: 'X', courant: 'enquête', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, []), /aucune page publique : l’information resterait en mémoire/);
 });
 await t('application : une portée territoire n’est jamais écrite comme événement de l’affaire ; mobilisation/mesure d’établissement → case_events (projetée par project-evenements)', () => {
