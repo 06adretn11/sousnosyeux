@@ -101,3 +101,16 @@ Limites inchangées (doublons possibles Hub rédigé / information validée ; ac
 
 ## Vérification
 Chaque proposition répond à un défaut établi par les articles lus ; aucune date, statut, affaire ou gestionnaire n'a été tranché par supposition (les deux divergences de Tarnos sont dites, non résolues) ; cartes, fiches, empreintes, manifestes et matières publiques inchangés.
+
+---
+
+## Suite du 29/10/2026 — GO d'Adrien et exécution
+
+**GO E1 (29/10/2026)** : retrait public de **PARIS-009 seul**, selon l'option A ci-dessus ; motif consigné : « Le statut judiciaire actuellement affiché n'est pas suffisamment étayé par les sources consultées. » Ce retrait n'est pas une décision générale d'exclusion des violences non sexuelles. Aucun nouveau statut, aucune modification de R5. FR-2026-0023 et les autres affaires de l'école ne sont pas touchées.
+
+**Exécution** (état de départ : PARIS-009 `publiée`, aucune revue, 1 source ; `main` = 6d7a6e4 ; proposition restée applicable) :
+1. **Neon** (niveau qui commande la publication) : `cases.publication_status` `publiée` → `retirée` et revue `retirer` (« [Retrait 2026-10-29] GO d'Adrien… »), même convention que les retraits existants (FR-2026-0138, FR-2026-0134). Écriture idempotente, une seule exécution. L'affaire, sa source (Le Parisien, 20/11/2025) et l'historique restent en base ; les projections (`project-public`, `reconcilier-publication`) ne retiennent que `publiée`, et la réconciliation exige un GO de publication : la carte ne revient pas seule.
+2. **Dépôt** (une seule PR) : bloc `PARIS-009` retiré du Hub Paris 11e (titre et chapeau « huit », description de page, ligne « Limites », date de recherche) **et** entrée retirée de `data/cases.json` (65 affaires) : Hub et carte dans le même commit, la dépendance est respectée.
+3. Cohérence vérifiée avant fusion : affaires `publiée` ≥ 8 en base (67) = artefact (65) + FR-2026-0048 et FR-2026-0049 (déjà sous HOLD, non publiques) ; aucune affaire de l'artefact absente de la base. QA complète : QA_PASSED ; build : OK, 0 occurrence de PARIS-009 dans l'accueil et le Hub.
+
+Le résultat servi en production est consigné ci-dessous après vérification.
