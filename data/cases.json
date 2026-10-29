@@ -3,11 +3,11 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 66,
+    "total_cases": 65,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-27"
+    "generated_at": "2026-10-29"
   },
   "cases": [
     {
@@ -2009,29 +2009,6 @@
           "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
           "media": "Le Parisien",
           "publication_date": "2026-03-11",
-          "source_type": "presse",
-          "is_primary": true
-        }
-      ]
-    },
-    {
-      "case_id": "PARIS-009",
-      "etablissement": "École maternelle Faidherbe",
-      "commune": "Paris 11e",
-      "departement": "Paris",
-      "type_structure": "périscolaire",
-      "role_mis_en_cause": "animateur périscolaire",
-      "type_affaire": "mixte",
-      "statut_judiciaire": "enquête",
-      "statut_des_faits": "allégué",
-      "enfants_concernes_public": "non précisé",
-      "lat": 48.852072,
-      "lng": 2.383418,
-      "sources": [
-        {
-          "url": "https://www.leparisien.fr/faits-divers/paris-une-deuxieme-animatrice-suspendue-a-lecole-faidherbe-a-la-suite-de-violences-20-11-2025-DDEF6ZI34NEQTCU3JO2HN7ZTNE.php",
-          "media": "Le Parisien",
-          "publication_date": "2025-11-20",
           "source_type": "presse",
           "is_primary": true
         }

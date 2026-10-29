@@ -6,7 +6,7 @@
     "methode": "chaque entrée est rattachée à un article dont le texte a été relu par script (mots-clés) avant écriture ; les paroles sont attribuées ; une date d'événement n'est affichée que si l'article la donne (date_nature = evenement).",
     "ordre": "avancement procédural, jamais gravité",
     "mis_a_jour_le": "2026-10-29",
-    "mise_a_jour": "rapport du Sénat publié ; commission indépendante installée ; source du chiffre des relaxes ; dossier PARIS-009 relu sur le corps de l’article ; dates de recherche (proposition, en attente de GO)"
+    "mise_a_jour": "retrait du dossier PARIS-009 (GO du 29/10/2026) : statut judiciaire non suffisamment étayé par les sources consultées"
   },
   "ordre": [
     "POC-05",
@@ -14,7 +14,6 @@
     "POC-07",
     "POC-06",
     "FR-2026-0023",
-    "PARIS-009",
     "PARIS-006",
     "POC-08",
     "FR-2026-0016"
@@ -510,34 +509,6 @@
         "La plainte vise-t-elle l'un des deux animateurs déjà suspendus ? Les articles lus ne le disent pas."
       ]
     },
-    "PARIS-009": {
-      "etat_actuel": [
-        "Selon Le Parisien (20 novembre 2025), une deuxième personne de l’équipe d’animation de l’école maternelle Faidherbe, une animatrice, a été suspendue. D’après la Ville de Paris, citée par le journal, il ne s’agit pas de faits à caractère sexuel mais de « violences éducatives ordinaires » ; les faits précis reprochés ne sont pas connus.",
-        "Une suspension n’est pas une sanction pénale et ne vaut pas culpabilité."
-      ],
-      "statut_affiche": "enquête",
-      "lecture": "La fiche porte l’état « enquête ». L’article rapporte seulement qu’un parent s’est vu répondre que rien ne pouvait être dit « en raison de l’enquête », sans préciser s’il s’agit d’une enquête administrative ou pénale : aucune ouverture d’enquête par le parquet n’est rapportée. Cet état reste à établir.",
-      "inconnues": [
-        "Faits précis reprochés à l’animatrice : ni la Ville ni l’article ne les détaillent.",
-        "Nature de l’« enquête » évoquée par un parent (administrative ou pénale) : non établie ; aucune suite connue.",
-        "Lien avec la fiche voisine (rue Faidherbe) : l’article distingue cette suspension de celle d’un animateur visé la semaine précédente par un signalement pour agression sexuelle. La plainte de décembre rapportée par 20 minutes vise un animateur ; les sources lues ne disent pas si c’est celui suspendu en novembre."
-      ],
-      "deroule": [
-        {
-          "date": "2025-11-19",
-          "date_nature": "evenement",
-          "type": "mesure_etablissement",
-          "acteur": "Ville de Paris (employeur)",
-          "texte": "Lors d’une réunion avec les parents, le mercredi 19 novembre, la suspension d’une deuxième personne de l’équipe d’animation, une animatrice, est annoncée. Selon la Ville, les faits relèvent de « violences éducatives ordinaires », pas de faits à caractère sexuel.",
-          "source": {
-            "media": "Le Parisien",
-            "url": "https://www.leparisien.fr/faits-divers/paris-une-deuxieme-animatrice-suspendue-a-lecole-faidherbe-a-la-suite-de-violences-20-11-2025-DDEF6ZI34NEQTCU3JO2HN7ZTNE.php",
-            "publie_le": "2025-11-20",
-            "acces": "libre"
-          }
-        }
-      ]
-    },
     "PARIS-006": {
       "etat_actuel": [
         "Selon franceinfo, une plainte pour « viol aggravé », avec constitution de partie civile, a été déposée le lundi 17 novembre 2025 par la mère d'un enfant contre un animateur de la Ville à l'école maternelle Parmentier.",
@@ -852,12 +823,13 @@
     "Commission indépendante de la Ville : conclusions attendues début 2027 selon son président, non publiées au 29 octobre 2026. Rapport du Sénat : publié le 15 octobre 2026 ; les suites données à ses recommandations ne sont pas documentées ici.",
     "Dates des audiences d'appel (Titon, Alphonse-Baudin) : non trouvées au 29 octobre 2026.",
     "Une constitution de partie civile de l'association L'Enfant Bleu est évoquée dans d'autres sources ; le communiqué (PDF) n'a pas pu être relu : elle n'est donc pas reprise.",
-    "Deux articles évoquent des antécédents d'un animateur et son maintien en poste (école Bullourde) ; ils n'ont pas pu être relus en entier : SNY ne les reprend pas et n'en tire aucune conclusion sur la responsabilité de la Ville."
+    "Deux articles évoquent des antécédents d'un animateur et son maintien en poste (école Bullourde) ; ils n'ont pas pu être relus en entier : SNY ne les reprend pas et n'en tire aucune conclusion sur la responsabilité de la Ville.",
+    "Une suspension d’animatrice pour « violences éducatives ordinaires » à l’école maternelle Faidherbe (Le Parisien, 20 novembre 2025) n’est pas reprise : aucun fait de violence sexuelle ni procédure judiciaire n’y est rapporté dans les sources lues."
   ],
   "recherches": [
     {
       "question": "État le plus récent de chacune des procédures du 11e",
-      "resultat": "recherche de presse du 29 octobre 2026 : trouvé pour Titon, Baudin, Servan, Bullourde ; rien de postérieur pour Parmentier, Voltaire, Lagon des Ours ; Faidherbe : article du Parisien du 20 novembre 2025 désormais lu ; aucune date d’audience d’appel trouvée (Titon, Baudin)"
+      "resultat": "recherche de presse du 29 octobre 2026 : trouvé pour Titon, Baudin, Servan, Bullourde ; rien de postérieur pour Parmentier, Voltaire, Lagon des Ours ; Faidherbe (suspension d’une animatrice, Le Parisien du 20 novembre 2025) : article lu, non repris ; aucune date d’audience d’appel trouvée (Titon, Baudin)"
     },
     {
       "question": "Réponses des institutions (Ville, mairie du 11e, parquet, Sénat, Éducation nationale)",
@@ -873,7 +845,7 @@
     }
   ],
   "reperes": {
-    "titre": "Neuf affaires indépendantes dans le 11e, et une réponse publique qui a pris l’ampleur de tout Paris",
+    "titre": "Huit affaires indépendantes dans le 11e, et une réponse publique qui a pris l’ampleur de tout Paris",
     "chiffres": [
       {
         "valeur": "203",
@@ -946,6 +918,6 @@
       }
     ],
     "limite": "Ces chiffres décrivent la réponse publique, pas la fréquence des faits dans le 11e : ils concernent Paris entier et SNY ne documente que ce que la presse rapporte. Éducation nationale : aucune déclaration propre à ces écoles retrouvée.",
-    "chapeau": "Depuis l’été 2025, la presse rapporte neuf affaires distinctes dans des écoles et une crèche du 11e : ce ne sont pas les épisodes d’une même procédure. Elles s’inscrivent dans un débat parisien auquel les pouvoirs publics ont répondu par étapes — suspensions d’animateurs dès 2025, plan d’action en avril 2026, commission indépendante installée en juillet, rapport du Sénat présenté en octobre."
+    "chapeau": "Depuis l’été 2025, la presse rapporte huit affaires distinctes dans des écoles et une crèche du 11e : ce ne sont pas les épisodes d’une même procédure. Elles s’inscrivent dans un débat parisien auquel les pouvoirs publics ont répondu par étapes — suspensions d’animateurs dès 2025, plan d’action en avril 2026, commission indépendante installée en juillet, rapport du Sénat présenté en octobre."
   }
 }
