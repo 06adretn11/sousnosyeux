@@ -114,3 +114,9 @@ Chaque proposition répond à un défaut établi par les articles lus ; aucune d
 3. Cohérence vérifiée avant fusion : affaires `publiée` ≥ 8 en base (67) = artefact (65) + FR-2026-0048 et FR-2026-0049 (déjà sous HOLD, non publiques) ; aucune affaire de l'artefact absente de la base. QA complète : QA_PASSED ; build : OK, 0 occurrence de PARIS-009 dans l'accueil et le Hub.
 
 Le résultat servi en production est consigné ci-dessous après vérification.
+
+**Vérification en production (29/10/2026) — E1 clos.** PR #71, `main` = 3bb80a9, build Cloudflare déployé ; pages lues sur https://sousnosyeux.org :
+- `/territoires/paris-11e/` : titre « Huit affaires indépendantes… », chapeau « huit affaires distinctes », aucun bloc `PARIS-009`, tableau sans la ligne, note « Deux fiches existent » disparue, note de limites sur la suspension d'animatrice présente, FR-2026-0023 conservée ; `/` : aucune occurrence de PARIS-009 (65 cartes) ; `/territoires/` : 200.
+- Neon : PARIS-009 `retirée`, 1 source et 1 revue `retirer` conservées ; affaires `publiée` ≥ 8 (67) = artefact (65) + FR-2026-0048/0049 sous HOLD ; FR-2026-0023 toujours `publiée`.
+- Inchangés : matières Landes `7d109f47a5f5830c`, Bordeaux `b8ade36dbcdab19a`, Hautes-Alpes `797c632b421d3947` ; 32 fiches approuvées (empreinte courante = approuvée) ; `ids-go-lot-stock-27-10.json`, REVUE_GLOBALE_STOCK_2, `publication-holds.json`, `evenements.json` ; pages `/affaires/poc-09/`, `/affaires/fr-2026-0115/`, Landes, Hautes-Alpes, Bordeaux en 200. Matière Paris 11e : `165d248c53255f5d` → `fc6fec65e0a310fc` (retrait seul).
+- E2-b clos sans modification ; E2-a (nouvelle version de la fiche FR-2026-0115) en attente de validation ; E3 rattaché à B1 ; D : première proposition pertinente après déploiement non observée dans les traces consultées.
