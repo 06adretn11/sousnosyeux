@@ -128,3 +128,7 @@ Worktree `C:/Users/adrien.etienne/sny-worktrees/hubs-pilotes` (branche `hubs/pil
 
 « GO Hubs pilotes : A paris-11e 165d248c53255f5d, B landes 7d109f47a5f5830c, C, D » — écrit par Adrien dans la session de préparation.
 Vérifié avant application : empreintes de la branche identiques à celles du GO ; `main` inchangé depuis `7c4eb7a` sur les fichiers concernés ; production encore sur l'ancienne version (rien d'appliqué) ; QA_PASSED ; 32 fiches approuvées inchangées. Périmètre appliqué : A, B, C, D, sans exclusion.
+
+## Complément (29/10/2026)
+
+Suites E1 (PARIS-009) et E2 (Tarnos), renvoi E3 → B1 et constat sur D : [hubs-pilotes/COMPLEMENT_E1_E2.md](hubs-pilotes/COMPLEMENT_E1_E2.md). Aucune donnée publique modifiée.
