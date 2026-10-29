@@ -5,7 +5,7 @@
     "statut": "matière PUBLIABLE : deux affaires publiques (FR-2026-0115 Tarnos, FR-2026-0116 Mées), aucune jugée.",
     "methode": "dossier de Tarnos : celui de la fiche approuvée (inchangé) ; dossier de Mées : relu sur le texte des trois articles (Sud Ouest 25/09 partiel, ICI Gascogne 25/09, Sud Ouest 29/09) ; chaque phrase est attribuée ; aucune chronologie n’est reconstituée au-delà de ce que les sources datent.",
     "mis_a_jour_le": "2026-10-29",
-    "mise_a_jour": "réponses de la Ville de Tarnos (réunion tenue, aides votées, plan d’action), avocat et collectif de familles, divergence de date sur la remise en liberté, type de la réunion de Mées, dates de recherche (proposition, en attente de GO) — dossier de la fiche de Tarnos inchangé"
+    "mise_a_jour": "dossier Tarnos (FR-2026-0115) v2 : mise en examen datée du 8 juillet, divergences de sources (décompte, remise en liberté) attribuées, date de remise en liberté non établie, date de parution La Provence/AFP — GO du 29/10/2026"
   },
   "reperes": {
     "titre": "Dans les Landes, deux affaires récentes, au stade de l’enquête et de la procédure : aucun jugement rapporté",
@@ -159,6 +159,51 @@
           ]
         },
         {
+          "date": "2026-07-08",
+          "date_nature": "evenement",
+          "type": "mise_en_examen",
+          "acteur": null,
+          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+          "source": {
+            "media": "La Dépêche",
+            "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
+            "publie_le": "2026-09-04",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            },
+            {
+              "media": "La Provence",
+              "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            },
+            {
+              "media": "La Montagne (AFP)",
+              "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
+              "publie_le": "2026-07-09",
+              "acces": "libre"
+            },
+            {
+              "media": "ici",
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
+              "publie_le": "2026-10-07",
+              "acces": "libre"
+            },
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-la-justice-n-avance-pas-et-rien-ne-justifie-la-sortie-de-detention-provisoire-du-suspect-deplore-l-un-des-avocats-des-victimes-30545985.php",
+              "publie_le": "2026-09-09",
+              "acces": "libre"
+            }
+          ]
+        },
+        {
           "date": null,
           "date_nature": "article",
           "type": "communication_parquet",
@@ -167,7 +212,7 @@
           "source": {
             "media": "La Provence",
             "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
-            "publie_le": "2026-07-08",
+            "publie_le": "2026-07-09",
             "acces": "libre"
           },
           "sources_complementaires": [
@@ -240,8 +285,8 @@
           }
         },
         {
-          "date": "2026-08",
-          "date_nature": "approximative",
+          "date": null,
+          "date_nature": "inconnue",
           "type": "decision",
           "acteur": "chambre de l'instruction",
           "texte": "Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention.",
@@ -251,45 +296,6 @@
             "publie_le": "2026-09-04",
             "acces": "libre"
           }
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "mise_en_examen",
-          "acteur": null,
-          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
-          "source": {
-            "media": "La Dépêche",
-            "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
-            "publie_le": "2026-09-04",
-            "acces": "libre"
-          },
-          "sources_complementaires": [
-            {
-              "media": "Sud Ouest",
-              "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
-              "publie_le": "2026-07-09",
-              "acces": "libre"
-            },
-            {
-              "media": "La Provence",
-              "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
-              "publie_le": "2026-07-08",
-              "acces": "libre"
-            },
-            {
-              "media": "La Montagne (AFP)",
-              "url": "https://www.lamontagne.fr/tarnos-40220/faits-divers/tarnos-un-animateur-de-centre-de-loisirs-mis-en-examen-pour-viols-sur-six-enfants-de-3-et-4-ans_15017823/",
-              "publie_le": "2026-07-09",
-              "acces": "libre"
-            },
-            {
-              "media": "ici",
-              "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
-              "publie_le": "2026-10-07",
-              "acces": "libre"
-            }
-          ]
         },
         {
           "date": null,
@@ -432,7 +438,9 @@
         }
       ],
       "inconnues": [
-        "Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.",
+        "Les sources lues ne rapportent pas de jugement sur le fond. L’issue de la procédure reste à documenter.",
+        "Le nombre de chefs de mise en examen diffère selon les sources lues : trois viols et trois agressions sexuelles dans le communiqué du parquet de Dax (La Provence, avec l’AFP, 9 juillet) ; quatre viols et trois agressions sexuelles selon La Dépêche (4 septembre). Les sources lues ne disent pas si l’écart tient à une évolution de la procédure.",
+        "Date de la remise en liberté : « près de quinze jours » après le 8 juillet selon Sud Ouest (9 septembre), « en août » selon La Dépêche (4 septembre). Les sources lues ne permettent pas de trancher.",
         "Le dossier ne repose que sur 9 articles lus (Sud Ouest, La Dépêche, La Montagne (AFP), ici, La Provence)."
       ],
       "synthese": {

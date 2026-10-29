@@ -120,3 +120,20 @@ Le résultat servi en production est consigné ci-dessous après vérification.
 - Neon : PARIS-009 `retirée`, 1 source et 1 revue `retirer` conservées ; affaires `publiée` ≥ 8 (67) = artefact (65) + FR-2026-0048/0049 sous HOLD ; FR-2026-0023 toujours `publiée`.
 - Inchangés : matières Landes `7d109f47a5f5830c`, Bordeaux `b8ade36dbcdab19a`, Hautes-Alpes `797c632b421d3947` ; 32 fiches approuvées (empreinte courante = approuvée) ; `ids-go-lot-stock-27-10.json`, REVUE_GLOBALE_STOCK_2, `publication-holds.json`, `evenements.json` ; pages `/affaires/poc-09/`, `/affaires/fr-2026-0115/`, Landes, Hautes-Alpes, Bordeaux en 200. Matière Paris 11e : `165d248c53255f5d` → `fc6fec65e0a310fc` (retrait seul).
 - E2-b clos sans modification ; E2-a (nouvelle version de la fiche FR-2026-0115) en attente de validation ; E3 rattaché à B1 ; D : première proposition pertinente après déploiement non observée dans les traces consultées.
+
+---
+
+## E2-a — GO d'Adrien du 29/10/2026 et exécution (fiche FR-2026-0115, nouvelle version)
+
+**GO** : les quatre modifications E2-a, avec A (étape du 8 juillet : « des viols et des agressions sexuelles », décomptes chiffrés conservés dans la divergence, sans présenter une évolution de la procédure comme établie), B (remise en liberté : plus de date structurée « 2026-08 », date non établie, événement conservé après la mise en examen, deux datations attribuées et réserve) et C (« Les sources lues ne rapportent pas de jugement sur le fond. L’issue de la procédure reste à documenter. »). Aucune autre réécriture. La carte Tarnos est inchangée.
+
+**Version de départ vérifiée** : dossier `FR-2026-0115` d'empreinte `4af66277ad3e802e` sur `main` 1d8ace0 (approuvé par clic Telegram le 24/10, proposition `af7a64e7`) ; aucune modification concurrente ; passages conformes à ceux examinés. Corroboration : la validation du Decision Pack du 06/10 consignait déjà « mis en examen le 08/07 ».
+
+**Exécution** :
+1. Neon : revue `[Fiche approuvée b3ecb4bf] FR-2026-0115 hash=b3ecb4bf8853df89` (reviewed_by « Adrien (GO E2-a 29/10/2026) »), **écrite avant la fusion**. L'approbation `4af66277…` n'est pas révoquée (historique conservé) : la fiche n'a jamais été dépubliée.
+2. Dépôt : `data/hub-matiere/landes.json` (dossier FR-2026-0115 seul) + `data/evenements.json` (`fiches_approuvees.FR-2026-0115.hash` → `b3ecb4bf8853df89`, comme #59 pour FR-2026-0011 v2). QA : QA_PASSED ; build OK ; les 31 autres fiches approuvées inchangées.
+3. Empreintes : dossier Tarnos `4af66277ad3e802e` → **`b3ecb4bf8853df89`** ; matière Landes `7d109f47a5f5830c` → **`ba7d03c505c233f8`**.
+
+**Contenu appliqué** (étapes du déroulé, dans l'ordre) : garde à vue 06/07 → **mise en examen, 8 juillet 2026** (La Dépêche ; Sud Ouest 09/09, La Provence/AFP, La Montagne/AFP, Sud Ouest 09/07, ici en sources complémentaires) → … → remise en liberté (date non établie, texte « en août » attribué à La Dépêche inchangé) ; `inconnues` : phrase C, divergence des décomptes, divergence de la date de remise en liberté ; La Provence/AFP publiée le 09/07/2026 (2 occurrences).
+
+**Points laissés tels quels (hors GO, à votre appréciation)** : (1) « quatre viols et trois agressions sexuelles », attribué à La Dépêche, figure encore dans `etat_actuel`, `faits`, `synthese` et `situation` (4 occurrences) ; seule l'étape du 8 juillet est modifiée, la divergence est dite dans « Ce que l'on ne sait pas » ; (2) la rubrique « Suite » garde le titre « Aucune décision rendue » ; (3) pour une date non établie, le composant ajoute « la source ne date pas l'événement ; elle paraît le … », ce qui est inexact pour l'étape « en août » (La Dépêche dit « en août »).
