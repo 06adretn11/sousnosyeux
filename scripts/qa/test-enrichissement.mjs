@@ -167,6 +167,12 @@ await t('proposition actionnable : elle NOMME les pages qu’un VALIDATE mettrai
   const mees = pagesSiValide([{ case_id: 'FR-2026-0116', nature: 'mobilisation', portee: 'établissement', territoire: null }], ctx);
   assert.deepEqual(mees, ['Hub Landes, bloc « Familles et associations d’aide aux victimes » — https://sousnosyeux.org/territoires/landes/'], 'pas de fiche approuvée pour Mées : le Hub seul');
   assert.deepEqual(pagesSiValide([{ case_id: 'FR-2026-0004', nature: 'mesure', portee: 'établissement', territoire: null }], ctx), [], 'affaire sous HOLD : aucune page');
+  // Hub rédigé : une réponse déjà écrite dans le bloc à la même date est citée (doublon probable : la décision reste humaine, rien n'est masqué).
+  const items = Object.fromEntries(lire('data/hub-matiere/landes.json').reponses.map((g) => [g.titre, g.items]));
+  const ctxItems = { ...ctx, hubs: { ...ctx.hubs, landes: { ...ctx.hubs.landes, items } } };
+  const plan = pagesSiValide([{ case_id: 'FR-2026-0115', nature: 'mesure', portee: 'établissement', territoire: null, date: '2026-10-07' }], ctxItems);
+  assert.ok(plan.some((x) => /territoires\/landes\/ — déjà dans ce bloc à cette date : « Présentation d’un plan d’action/.test(x)), plan.join(' | '));
+  assert.ok(!pagesSiValide([{ case_id: 'FR-2026-0115', nature: 'mesure', portee: 'établissement', territoire: null, date: '2026-08-01' }], ctxItems).some((x) => /déjà dans ce bloc/.test(x)), 'autre date : pas de rapprochement');
   const m = messageEnrichissement({ etablissement: ECOLE, commune: 'Tarnos', courant: 'mise en examen', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, tarnos);
   assert.ok(m.includes('Pages mises à jour si VALIDATE') && m.includes('territoires/landes/') && !m.includes('Utilisation possible'));
   assert.match(messageEnrichissement({ etablissement: ECOLE, commune: 'X', courant: 'enquête', media: 'ICI', publication_date: '2026-10-15', url: 'https://media.example/a' }, rxB, false, []), /aucune page publique : l’information resterait en mémoire/);

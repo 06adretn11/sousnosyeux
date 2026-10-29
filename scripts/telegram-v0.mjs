@@ -210,10 +210,11 @@ function pagesSiValidee(case_id, neufs) {
     const lireSi = (f) => { try { return lire(f); } catch { return null; } };
     const cases = lire('data/cases.json').cases, ev = lire('data/evenements.json');
     const slugs = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes', ...Object.keys(ev.hubs_approuves ?? {})];
-    const hubs = Object.fromEntries(slugs.map((s) => [s, { publie: true, groupes: ((lireSi(`data/hub-approuve/${s}.json`) ?? lire(CHEMIN_MATIERE(s))).reponses ?? []).map((g) => g.titre) }]));
+    const reponses = (s) => (lireSi(`data/hub-approuve/${s}.json`) ?? lire(CHEMIN_MATIERE(s))).reponses ?? [];
+    const hubs = Object.fromEntries(slugs.map((s) => [s, { publie: true, groupes: reponses(s).map((g) => g.titre), items: Object.fromEntries(reponses(s).map((g) => [g.titre, g.items])) }]));
     const ctx = { publiques: new Set(cases.map((c) => c.case_id)), holds: new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id)),
       approuvees: new Set(Object.keys(ev.fiches_approuvees ?? {})), cases: new Map(cases.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs };
-    return pagesSiValide(neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null })), ctx, process.env.SNY_SITE_URL || 'https://sousnosyeux.org');
+    return pagesSiValide(neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null, date: f.event_date || null })), ctx, process.env.SNY_SITE_URL || 'https://sousnosyeux.org');
   } catch { return null; }
 }
 async function decisionInstitutionnelle(cle) {

@@ -65,12 +65,18 @@ export function destinationsDe(fait, ctx) {
   return out;
 }
 
-/** Pages publiques qu'un fait mettrait à jour S'IL était validé — même calcul que la projection, dit AVANT la décision (proposition Telegram). */
+/**
+ * Pages publiques qu'un fait mettrait à jour S'IL était validé — même calcul que la projection, dit AVANT la décision (proposition Telegram).
+ * Un Hub rédigé n'est pas en mémoire : si son bloc porte déjà une réponse à la MÊME date d'événement, elle est citée (doublon probable, décision humaine).
+ */
 export function pagesSiValide(faits, ctx, site = 'https://sousnosyeux.org') {
   const out = new Set();
   for (const f of faits) {
     const d = destinationsDe(f, ctx);
-    for (const h of d.hubs) out.add(`Hub ${HUBS_PERIMETRES[h.hub]?.titre ?? h.hub}, bloc « ${h.groupe} » — ${site}/territoires/${h.hub}/`);
+    for (const h of d.hubs) {
+      const meme = f.date ? (ctx.hubs[h.hub]?.items?.[h.groupe] ?? []).find((i) => i.date === f.date) : null;
+      out.add(`Hub ${HUBS_PERIMETRES[h.hub]?.titre ?? h.hub}, bloc « ${h.groupe} » — ${site}/territoires/${h.hub}/${meme ? ` — déjà dans ce bloc à cette date : « ${String(meme.texte).slice(0, 90)}… »` : ''}`);
+    }
     if (d.fiche) out.add(`fiche ${d.fiche} — ${site}/affaires/${d.fiche.toLowerCase()}/`);
     for (const b of d.bloques) out.add(`non intégrable : ${b}`);
   }
