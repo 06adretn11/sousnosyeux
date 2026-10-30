@@ -57,7 +57,7 @@ async function charger(cle) {
   const r = await sql`
     select p.proposal_id, p.case_id, p.statut_avant::text avant, p.statut_propose::text apres,
            p.event_date::text ed, c.statut_judiciaire::text courant,
-           p.analysis_action, p.facts, p.decision::text decision, p.payload->>'rattachement' rat,
+           p.analysis_action, p.facts, p.decision::text decision, p.payload->>'rattachement' rat, p.payload->>'note_limite' limite,
            c.etablissement, c.commune, a.media, a.publication_date, a.publication_date::text pd, a.url
       from state_proposals p
       join cases c using (case_id)
@@ -114,7 +114,7 @@ async function info(cle) {
   const corps = p.analysis_action === 'STATE_CHANGE'
     ? `Évolution évoquée, mais la source ne l’établit pas assez : aucun changement proposé (état : ${esc(p.avant)}).`
     : `Nouvel article traité.\nAucun changement de la fiche (état : ${esc(p.avant)}).`;
-  return envoyer(`🔄 <b>MAINTENANCE</b> · 📰 ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : ''));
+  return envoyer(`🔄 <b>MAINTENANCE</b> · 📰 ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : '') + (p.limite ? `\n\nLimite : ${esc(p.limite)}` : ''));
 }
 
 const boutonsEtat = (k) => ({
@@ -171,7 +171,7 @@ async function decision(cle) {
   const quand = !p.ed && periode ? `\n<i>Fait rapporté comme intervenu en ${esc(periode)} (jour non précisé) — l’article du ${jour(p.publication_date)} le rappelle.</i>` : '';
   return envoyer(
     `🔄 <b>MAINTENANCE</b> · ⚖️ ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>${quand}` +
-      `\n\nPreuve :\n« ${esc(q)} »` +
+      `\n\nPreuve :\n« ${esc(q)} »` + (p.limite ? `\n\nLimite : ${esc(p.limite)}` : '') +
       `\n\nSNY a besoin de ta validation.`,
     boutonsEtat(cle),
   );

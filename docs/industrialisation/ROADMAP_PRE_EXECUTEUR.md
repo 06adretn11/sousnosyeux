@@ -26,6 +26,14 @@ automatisation distante n’est autorisée. Détail et preuves : `GATE_0_REPORT.
 (`FR-2026-0024`, `FR-2026-0035`) sont **toujours publiées sur la carte**, alors que les
 mentions légales du site en production s’engagent à les retirer. Voir `CORPUS_AUDIT_V0.md` §2.1.
 
+**Limites et défauts documentaires consignés le 30 octobre 2026** (revue du stock, `REVUE_GLOBALE_STOCK_2.md` ; aucun chantier lancé, à traiter seulement s’ils reviennent) :
+- le garde-fou d’issue (`ISSUE_NON_ATTESTEE`) exige le mot de l’issue dans **la phrase citée** : un verdict écrit seulement dans le titre est écarté (cas FR-2026-0029) ;
+- le motif d’inventaire « ne nomme pas la commune ou la structure » est trompeur quand l’article nomme la commune sans l’établissement, ou nomme bien le lieu mais une autre affaire (cas Clicanoo/0033, Soyaux/0044, Le Monde 04/04/0122) ;
+- la Discovery n’a de mémoire que depuis le 06/09/2026 : une affaire de juillet (Orange) n’a jamais été vue ;
+- un article relayé (la Gazette « d’après Le Parisien ») peut porter une date que la source d’origine contredit (cas FR-2026-0021) ;
+- la clé OpenRouter a un plafond de dépense propre (30 $) distinct du solde du compte ; la Maintenance et la Discovery le dépassent sans échec visible (workflow vert, résultats vides) ;
+- des cartes publiques peuvent différer de Neon sans alerte (10 cartes au 30/10 : état de FR-2026-0005, sources de 9 cartes approuvées).
+
 ## 1. Décision directrice
 
 Le système distant ne doit pas être le prochain chantier. Le prochain chantier est de rendre **la production manuelle déterministe, vérifiable et maintenable**.
