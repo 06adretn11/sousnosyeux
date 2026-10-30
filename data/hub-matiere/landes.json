@@ -4,8 +4,8 @@
     "redige_le": "2026-10-26",
     "statut": "matière PUBLIABLE : deux affaires publiques (FR-2026-0115 Tarnos, FR-2026-0116 Mées), aucune jugée.",
     "methode": "dossier de Tarnos : celui de la fiche approuvée (inchangé) ; dossier de Mées : relu sur le texte des trois articles (Sud Ouest 25/09 partiel, ICI Gascogne 25/09, Sud Ouest 29/09) ; chaque phrase est attribuée ; aucune chronologie n’est reconstituée au-delà de ce que les sources datent.",
-    "mis_a_jour_le": "2026-10-29",
-    "mise_a_jour": "dossier Tarnos (FR-2026-0115) v2 : mise en examen datée du 8 juillet, divergences de sources (décompte, remise en liberté) attribuées, date de remise en liberté non établie, date de parution La Provence/AFP — GO du 29/10/2026"
+    "mis_a_jour_le": "2026-10-30",
+    "mise_a_jour": "dossier Tarnos (FR-2026-0115) v3 : résumés neutres sur le décompte contesté, titre « Suite » — GO du 30/10/2026"
   },
   "reperes": {
     "titre": "Dans les Landes, deux affaires récentes, au stade de l’enquête et de la procédure : aucun jugement rapporté",
@@ -99,11 +99,11 @@
   "dossiers": {
     "FR-2026-0115": {
       "etat_actuel": [
-        "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+        "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
         "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
       ],
       "appel": false,
-      "faits": "Selon La Dépêche, un animateur du centre de loisirs de Tarnos (Landes) a été mis en examen pour des faits de viols et d'agressions sexuelles sur plusieurs enfants. Selon La Dépêche, l'animateur a été mis en examen pour quatre viols et trois agressions sexuelles, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+      "faits": "Selon La Dépêche, un animateur du centre de loisirs de Tarnos (Landes) a été mis en examen pour des faits de viols et d'agressions sexuelles sur plusieurs enfants. Selon La Dépêche, l'animateur a été mis en examen pour des viols et des agressions sexuelles, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
       "deroule": [
         {
           "date": null,
@@ -444,7 +444,7 @@
         "Le dossier ne repose que sur 9 articles lus (Sud Ouest, La Dépêche, La Montagne (AFP), ici, La Provence)."
       ],
       "synthese": {
-        "decision": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
+        "decision": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
         "ouvert": "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
       },
       "reactions": [
@@ -617,11 +617,11 @@
           "label": "Situation judiciaire",
           "titre": "Mise en examen",
           "cat": "blue",
-          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour quatre viols et trois agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan."
+          "texte": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan."
         },
         "suite": {
           "label": "Suite",
-          "titre": "Aucune décision rendue",
+          "titre": "Issue de la procédure à documenter",
           "meta": "dans les sources consultées",
           "cat": "blue",
           "lignes": [
