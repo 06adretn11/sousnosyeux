@@ -272,7 +272,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
         : issue.definitive === 'OUI' ? { label: 'Suite · recours', titre: 'Décision devenue définitive', meta: `selon ${issue.doc.media}`, cat: 'blue', lignes: [] }
           : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })
       : futureAudience ? { label: 'Prochaine étape', titre: `Audience le ${dateFr(futureAudience.date)}`, meta: 'à venir · le procès n’a pas eu lieu', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] }
-        : { label: 'Suite', titre: 'Aucune décision rendue', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] };
+        : { label: 'Suite', titre: 'Issue de la procédure à documenter', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] };
     suite.lignes = [...(liberation ? [`Évolution rapportée : ${liberation.texte}`] : []), ...suite.lignes, ...mesures];
     if (!suite.lignes.length) delete suite.lignes;
     situation = { decision: { label: issue ? 'Décision' : 'Situation judiciaire', titre: issue ? NOM_ISSUE_TITRE[issue.nature] : NOM_ETAT_TITRE[etatSources], ...(meta ? { meta } : {}), cat: CAT[etatSources], texte: etat_actuel[0] }, suite };
@@ -294,7 +294,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   const inconnues = [];
   if (appelAnnonce && issue.definitive !== 'OUI') inconnues.push(`Appel : annoncé (${appelAnnonce.source.media}) ; dépôt effectif et suites non confirmés dans les sources lues.`);
   else if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push(issue.nature === 'condamnation' ? 'Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.' : 'Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.');
-  if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push('Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.');
+  // Une condamnation / un classement déjà sourcé dans la chronologie ne s'écrit pas « aucune décision rapportée » : on dit que l'issue est à documenter.
+  const decisionSourcee = deroule.find((d) => d.type === 'decision' && /class[ée]e? sans suite|non-lieu|relax[ée]|acquitt[ée]|condamn[ée]/i.test(d.texte));
+  if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push(decisionSourcee ? 'Issue de la procédure à documenter : la chronologie rapporte une décision que les sources lues ne permettent pas d’établir plus précisément (nature, appel, caractère définitif).' : 'Aucune décision rendue n’est rapportée par les sources lues : la suite de la procédure est inconnue.');
   if (pertinentes.length && !deroule.some((d) => /^mesure_/.test(d.type))) inconnues.push('Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.');
   // Les lacunes que déclarent les articles (« une 7e plainte pourrait être déposée… ») sont datées par nature : conservées dans la trace, pas publiées comme inconnues durables.
   for (const cc of contradictions) inconnues.push(`Divergence entre sources — ${cc}.`);

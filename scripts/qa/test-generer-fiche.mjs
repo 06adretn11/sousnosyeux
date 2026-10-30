@@ -319,9 +319,9 @@ t('synthèse : condamnation → bloc rouge « Condamnation » (date + autorité)
   const app = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
   assert.deepEqual([SIT(app).suite.titre, SIT(app).suite.cat], ['Appel rapporté', 'orange']);
 });
-t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Aucune décision rendue » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
+t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Issue de la procédure à documenter » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
   const mee = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', acteur: 'parquet de Rennes', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] })] });
-  assert.deepEqual([SIT(mee).decision.titre, SIT(mee).decision.cat, SIT(mee).decision.meta, SIT(mee).suite.titre], ['Mise en examen', 'blue', '10 juillet 2026 · Parquet de Rennes', 'Aucune décision rendue']);
+  assert.deepEqual([SIT(mee).decision.titre, SIT(mee).decision.cat, SIT(mee).decision.meta, SIT(mee).suite.titre], ['Mise en examen', 'blue', '10 juillet 2026 · Parquet de Rennes', 'Issue de la procédure à documenter']);
   assert.ok(!/condamn/i.test(JSON.stringify(SIT(mee))) && SIT(mee).suite.lignes.some((l) => /présumée innocente/.test(l)));
   const fut = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'audience', texte: 'Le procès est fixé au 22 février.', date: '2027-02-22', citation: 'p' })] })] });
   assert.deepEqual([SIT(fut).suite.label, SIT(fut).suite.titre], ['Prochaine étape', 'Audience le 22 février 2027']);
@@ -607,6 +607,10 @@ t('chronologie qui rapporte un classement/verdict sans issue établie → point 
   const procedure = E({ type: 'decision', texte: 'Le juge a placé l’animateur sous contrôle judiciaire.', date: '2025-12-04', citation: 'x' });
   const p = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [procedure, E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
   assert.ok(!p.attention.some((a) => a.code === 'DECISION_SANS_ISSUE_ETABLIE'));
+  // Condamnation déjà sourcée dans la chronologie : jamais « aucune décision rapportée » (inconnue) ; titre par défaut = issue à documenter.
+  const cond = composer({ c: carte('condamnation non définitive'), extractions: [ext(doc(), { evenements: [E({ type: 'decision', texte: 'Selon CNEWS, le tribunal a condamné l’animateur à 18 mois avec sursis.', date: '2026-07-10', citation: 'x' })] })] });
+  assert.ok(!cond.dossier.inconnues.some((i) => /Aucune décision rendue/.test(i)) && cond.dossier.inconnues.some((i) => /Issue de la procédure à documenter/.test(i)));
+  assert.ok(!JSON.stringify(cond.dossier.situation ?? {}).includes('Aucune décision rendue'));
 });
 t('garde-fou judiciaire : issue perdue alors que sa source est toujours retenue → régression (variance), version précédente conservée', () => {
   assert.deepEqual(regressionJudiciaire(genIssue('classement 2019-06', 'https://x/a'), genIssue(null, 'https://x/a')), { avant: 'classement 2019-06', apres: null });
