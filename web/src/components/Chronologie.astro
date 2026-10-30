@@ -25,7 +25,7 @@ const pub = (s: any) => (s?.publie_le ? dateLongue(s.publie_le) : null);
               ? <a href={e.source.url} target="_blank" rel="noopener noreferrer">{e.source.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} ↗</a>
               : <span>{e.source?.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} (lien non conservé)</span>}
             {e.source?.acces === 'paywall' && <span class="limite"> · article réservé aux abonnés</span>}
-            {sansDate && pub(e.source) && <span class="limite"> · la source ne date pas l’événement ; elle paraît le {pub(e.source)}</span>}
+            {sansDate && pub(e.source) && <span class="limite"> · Date de l’événement non établie</span>}
           </p>
         </div>
       </li>

@@ -143,3 +143,15 @@ Le résultat servi en production est consigné ci-dessous après vérification.
 - `/territoires/landes/` : bloc Tarnos (aperçu) avec la mise en examen datée du 8 juillet après la garde à vue ; l'aperçu ne porte pas les rubriques « ce que l'on ne sait pas », qui restent sur la fiche (comportement existant pour une fiche publique).
 - Empreintes : dossier `b3ecb4bf8853df89` (approuvé dans Neon avant la fusion ; `evenements.json` n'a changé que cette ligne), matière Landes `ba7d03c505c233f8`. 32 fiches approuvées toujours publiées ; Titon, Paris 11e, Hautes-Alpes, Bordeaux et la carte Tarnos inchangés ; `ids-go-lot-stock-27-10.json`, `REVUE_GLOBALE_STOCK_2` et `publication-holds.json` inchangés.
 - E2-a clos. Restent hors de cette exécution : B1, D, E4, E5, Mées, et les trois points laissés tels quels ci-dessus.
+
+---
+
+## Tarnos — correction finale de cohérence (GO d'Adrien du 30/10/2026)
+
+**GO** : trois réserves signalées après E2-a. **A** : « quatre viols et trois agressions sexuelles » → « des viols et des agressions sexuelles » dans les résumés (4 champs du dossier : `etat_actuel`, `faits`, `synthese`, `situation` — affichés 2 fois sur la fiche et 1 fois dans le bloc Tarnos du Hub), la divergence attribuée des décomptes (`inconnues`) intacte ; **B** : titre de l'encart « Suite » « Aucune décision rendue » → « Issue de la procédure à documenter » ; **C** : la formule « la source ne date pas l'événement ; elle paraît le… » → « Date de l'événement non établie ».
+
+**Départ vérifié** : dossier `b3ecb4bf8853df89`, matière Landes `ba7d03c505c233f8`, `main` 717f050 ; aucune modification concurrente.
+
+**Exécution** : approbation Neon écrite **avant** la fusion (`[Fiche approuvée ec1f2666] … hash=ec1f26661dfc9608`, reviewed_by « Adrien (GO cohérence Tarnos 30/10/2026) ») ; approbations précédentes conservées ; `landes.json` (dossier FR-2026-0115) ; `evenements.json` (cette seule ligne) ; `web/src/components/Chronologie.astro` (libellé partagé, une phrase). QA_PASSED, build OK. Empreintes : dossier `b3ecb4bf8853df89` → **`ec1f26661dfc9608`** ; matière Landes `ba7d03c505c233f8` → **`a728e1a8dc22eb65`** ; les 31 autres fiches, Paris 11e, Bordeaux, Hautes-Alpes et isolées inchangés.
+
+**Effet du libellé partagé (C)** : la phrase s'affiche sur toute étape sans date d'événement ; comparaison du rendu de `main` avant/après : **32 autres pages** changent de ce seul libellé (30 fiches individuelles, Hubs Paris 11e, Bordeaux/Gironde et Hautes-Alpes), aucune autre ligne ; leurs données et empreintes sont inchangées. Le titre « Suite » (B) est une donnée du dossier : seule la fiche Tarnos change ; le générateur de nouvelles fiches (`fiche-composer.mjs`) garde son libellé par défaut, non modifié.
