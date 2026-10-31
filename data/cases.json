@@ -1611,6 +1611,13 @@
           "is_primary": true
         },
         {
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+          "media": "20 Minutes",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
           "media": "Ouest-France",
           "publication_date": "2026-09-22",
@@ -1621,6 +1628,20 @@
           "url": "https://www.rennes-infos-autrement.fr/saint-aubin-daubigne-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineures/",
           "media": "Rennes Infos Autrement",
           "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+          "media": "TF1 INFO",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-armorique/j-y-pense-tout-le-temps-les-parents-d-eleves-de-saint-aubin-d-aubigne-demunis-apres-la-mise-en-examen-d-un-animateur-5869620",
+          "media": "ici",
+          "publication_date": "2026-09-28",
           "source_type": "presse",
           "is_primary": false
         }
