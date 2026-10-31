@@ -1,14 +1,36 @@
 {
   "_lot": "lot-stock-2026-10-27",
-  "_date": "30/10/2026",
-  "_note": "Manifeste du GO collectif de la revue globale du stock (REVUE_GLOBALE_STOCK_2.md, version du 30/10/2026) : identifiant -> empreinte EXACTE autorisée (7 créations de fiche, 2 mises à jour). Les trois corrections de carte (FR-2026-0003, 0047, 0013) ne sont PLUS dans ce manifeste : elles font l'objet de propositions Telegram séparées (demande d'Adrien) et ne sont pas approuvées indirectement. Option à ajouter seulement si Adrien la choisit : _cartes_seules { FR-2026-0024 : plainte } (section D2 de la revue). Les consolidations de doublons et réaffectations de sources s'exécutent avec consolidations-30-10.mjs (--go=JJ/MM/AAAA), pas avec ce manifeste. NON exécuté : attend le GO écrit d'Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n'est couverte.",
-  "FR-2026-0001": "41441fdf3b952e23",
+  "_date": "31/10/2026",
+  "_note": "Manifeste du GO collectif de la revue globale du stock (REVUE_GLOBALE_STOCK_2.md, version du 31/10/2026) : identifiant -> empreinte EXACTE autorisée (11 créations de fiche, 2 mises à jour). `_dates_sources` : dates de parution rectifiées d’après les pages (FR-2026-0001, 0033). Les cartes de FR-2026-0003 et 0047 ont été corrigées par clic Telegram d’Adrien (30/10) et publiées : le manifeste ne porte que la FICHE de 0003 ; la carte 0013 (information sans décision) n’y figure pas. Option à ajouter seulement si Adrien la choisit : _cartes_seules { FR-2026-0024 : enquête } (section D2 de la revue). Les consolidations de doublons et réaffectations de sources s’exécutent avec consolidations-30-10.mjs (--go=JJ/MM/AAAA), la proposition Orange avec orange-signal-31-10.mjs : pas avec ce manifeste. NON exécuté : attend le GO écrit d’Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n’est couverte.",
+  "FR-2026-0001": "850d7ef7f2b55ec4",
+  "FR-2026-0003": "c0c1ba9a71d1a958",
+  "FR-2026-0005": "d912f887365f3798",
   "FR-2026-0021": "ce6e55035bf36fc4",
   "FR-2026-0022": "d3ec303bfecf8a27",
-  "FR-2026-0033": "45db2b6de5bbc8fd",
+  "FR-2026-0029": "cbce5fe63e342711",
+  "FR-2026-0033": "3df31ef5be6362b1",
   "FR-2026-0044": "c6c544e7ae14ca26",
   "FR-2026-0122": "a79e82a521edf9dd",
   "FR-2026-0137": "2a586cb2adcb9fb0",
+  "POC-03": "9d13e7414edcd94c",
   "POC-10": "c300e67bbd798e1a",
-  "POC-04": "3ac5a2ffa8c2081b"
+  "POC-04": "3ac5a2ffa8c2081b",
+  "_dates_sources": {
+    "FR-2026-0001": [
+      {
+        "url": "https://www.lecourrierdesstrateges.fr/paris-un-animateur-periscolaire-renvoye-devant-le-tribunal-pour-agression-sexuelle/",
+        "date": "2026-03-25"
+      }
+    ],
+    "FR-2026-0033": [
+      {
+        "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+        "date": "2026-04-14"
+      },
+      {
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "date": "2026-04-13"
+      }
+    ]
+  }
 }

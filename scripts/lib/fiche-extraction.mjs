@@ -161,8 +161,11 @@ export const quantitesNonAttestees = (texte, citation) => {
 
 // Issue judiciaire : racines qui dessinent le SENS d'une décision. Le texte rédigé ne peut pas en porter une que la citation ne porte pas
 // (condamné ← relaxé est l'erreur irréparable). `dont`/`avec sursis` ne sont pas des issues : ils sont couverts par le contrôle des quantités.
+// « Il vient d'écoper de 24 mois de prison » constate une condamnation sans le mot (France 3, FR-2026-0029) : seules les formes PASSÉES ou narratives
+// comptent (« vient d'écoper », « a écopé », « écope de »), avec une peine dans la phrase ; « risque / pourrait / peut écoper » (infinitif) n'en est pas une.
+const ECOPE_PEINE = /(?=.*\b(?:prison|emprisonnement|reclusion|detention|amende|sursis)\b)(?:\b(?:vient|viennent) d ecoper\b|\b(?:a|ont|avait|avaient) ecope(?:e|es|s)?\b|\becope(?:nt)? de\b)/;
 const ISSUES = [
-  ['condamnation', /\bcondamn/], ['relaxe', /\brelax/], ['acquittement', /\bacquitt/], ['non_lieu', /\bnon[- ]lieu/], ['classement', /\bclass(?:e|ee|ement)\b.*\bsans suite|\bclassement sans suite|\bclasse sans suite/],
+  ['condamnation', new RegExp(`\\bcondamn|${ECOPE_PEINE.source}`)], ['relaxe', /\brelax/], ['acquittement', /\bacquitt/], ['non_lieu', /\bnon[- ]lieu/], ['classement', /\bclass(?:e|ee|ement)\b.*\bsans suite|\bclassement sans suite|\bclasse sans suite/],
   ['mise_en_examen', /\bmis(?:e)?(?:s)? en examen|\bmise en examen/], ['definitif', /\bdefinitiv/], ['appel', /\b(?:fait appel|interjete|appel)\b/], ['incarceration', /\b(?:detention|incarcer|mandat de depot)/],
 ];
 export function issuesPortees(s) {
