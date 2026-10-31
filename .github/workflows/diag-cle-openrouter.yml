@@ -1,0 +1,17 @@
+# DIAGNOSTIC PONCTUEL (31/10/2026) — à supprimer après usage. Lecture seule : interroge uniquement GET /api/v1/key avec la clé du secret
+# OPENROUTER_API_KEY et affiche son étiquette partielle (fournie par OpenRouter), son plafond et ses compteurs : aucun secret n'est affiché,
+# aucun appel de modèle n'est fait, aucun coût. But : établir si GitHub et le poste local utilisent la MÊME clé.
+name: diag-cle-openrouter
+on:
+  workflow_dispatch:
+permissions: {}
+jobs:
+  cle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Paramètres effectifs de la clé du secret (sans exposer la clé)
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          curl -sS --fail -H "Authorization: Bearer $OPENROUTER_API_KEY" https://openrouter.ai/api/v1/key | jq '.data | {label, limit, limit_reset, limit_remaining, usage, usage_daily, usage_weekly, usage_monthly, is_management_key}'
