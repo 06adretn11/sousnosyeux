@@ -1434,6 +1434,20 @@
           "is_primary": true
         },
         {
+          "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+          "media": "France 3 Nouvelle-Aquitaine",
+          "publication_date": "2026-09-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+          "media": "ICI Gironde",
+          "publication_date": "2026-09-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ouest-france.fr/societe/justice/images-pedopornographiques-un-animateur-periscolaire-de-gironde-soupconne-dagression-sexuelle-sur-une-enfant-de-4-ans-763fea5e-b5bc-11f1-8815-214ab2555576",
           "media": "Ouest-France",
           "publication_date": "2026-09-21",
