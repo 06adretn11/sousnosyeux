@@ -39,6 +39,10 @@ console.log(`${ids.length} affaire(s) publiée(s) avec une décision appliquée 
 
 const empreinte = () => createHash('sha256').update(readFileSync('data/cases.json')).digest('hex');
 const changees = [];
+// Chaque projection repart de l'artefact COMMITTÉ (HEAD) : projeter deux affaires l'une après l'autre sans commit entre les deux perdait la première
+// (constaté le 31/10/2026 : FR-2026-0003 et FR-2026-0047 annoncées « mises à jour », seule la seconde figurait dans le commit). On repasse donc, à chaque
+// affaire, la liste cumulée des projections réussies : `--modifier a,b` remplace ces entrées, et elles seules.
+const reussies = [];
 for (const id of ids) {
   if (DRY) { console.log(`· ${id} (à blanc)`); continue; }
   const avant = empreinte();
@@ -48,8 +52,9 @@ for (const id of ids) {
     continue;
   }
   let erreur = null;
-  try { execFileSync(process.execPath, ['scripts/project-public.mjs', '--modifier', id], { stdio: 'pipe' }); }
+  try { execFileSync(process.execPath, ['scripts/project-public.mjs', '--modifier', [...reussies, id].join(',')], { stdio: 'pipe' }); }
   catch (e) { erreur = String(e.stderr || e.message); }
+  if (!erreur) reussies.push(id);
   if (erreur) {
     if (classerProjection({ dansArtefact, erreur }) === 'CONFLIT') {
       // Jamais de retrait silencieux ni d'échec du job : le conflit est dit, l'arbitrage demandé (une seule fois).

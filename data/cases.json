@@ -92,11 +92,25 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "tiers",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.851216,
       "lng": 2.403689,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": null,
+        "type_evenement": "décision",
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "Le Parisien",
+            "date": "2026-10-16",
+            "url": "https://www.leparisien.fr/paris-75/paris-75020/paris-le-compagnon-dune-institutrice-condamne-a-trois-ans-de-prison-avec-sursis-pour-des-attouchements-sur-deux-enfants-16-10-2026-M4QK4THCFFAUNMLWVBC44EQ2TI.php"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
@@ -152,11 +166,42 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "violences sexuelles",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "mise en examen",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.859887,
       "lng": 2.311121,
+      "etat": {
+        "statut": "mise en examen",
+        "date": "2026-05-22",
+        "type_evenement": "mise_en_examen",
+        "finalite": null,
+        "suites": [],
+        "sources": [
+          {
+            "media": "franceinfo",
+            "date": "2026-05-22",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html"
+          }
+        ]
+      },
+      "etablissements": [
+        {
+          "etablissement": "École maternelle Saint-Dominique",
+          "commune": "Paris 7e",
+          "role": "principal"
+        },
+        {
+          "etablissement": "École La Rochefoucauld",
+          "commune": "Paris 7e",
+          "role": "concerné"
+        },
+        {
+          "etablissement": "École Rapp",
+          "commune": "Paris 7e",
+          "role": "concerné"
+        }
+      ],
       "sources": [
         {
           "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
@@ -291,6 +336,13 @@
           "publication_date": "2025-11-28",
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://www.leparisien.fr/faits-divers/il-y-a-ce-monstre-en-moi-qui-merite-detre-puni-en-essonne-les-glacantes-confessions-de-lanimateur-pedophile-16-12-2025-RWXRLOEDAREWFPUCB5Y6JWGBPM.php",
+          "media": "Le Parisien",
+          "publication_date": "2025-12-16",
+          "source_type": "presse",
+          "is_primary": false
         },
         {
           "url": "https://www.rtl.fr/actu/justice-faits-divers/essonne-l-animateur-periscolaire-mis-en-examen-pour-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-7900572122",
@@ -716,16 +768,16 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/03/13/un-parent-d-eleve-suspecte-de-viols-et-d-agressions-sexuelles-sur-plusieurs-enfants",
           "media": "Le Dauphiné Libéré",
-          "publication_date": "2026-04-30",
+          "publication_date": "2025-03-13",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.ledauphine.com/faits-divers-justice/2025/03/13/un-parent-d-eleve-suspecte-de-viols-et-d-agressions-sexuelles-sur-plusieurs-enfants",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
           "media": "Le Dauphiné Libéré",
-          "publication_date": "2025-03-13",
+          "publication_date": "2026-04-30",
           "source_type": "presse",
           "is_primary": false
         }
@@ -1128,6 +1180,13 @@
           "publication_date": "2024-03-27",
           "source_type": "presse",
           "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/infos/faits-divers-justice/propositions-sexuelles-a-une-eleve-mineur-un-enseignant-de-delle-suspendu-6854847",
+          "media": "ICI Belfort-Montbéliard (France Bleu)",
+          "publication_date": "2024-03-27",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     },
@@ -1389,6 +1448,20 @@
           "is_primary": true
         },
         {
+          "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+          "media": "France 3 Nouvelle-Aquitaine",
+          "publication_date": "2026-09-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+          "media": "ICI Gironde",
+          "publication_date": "2026-09-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ouest-france.fr/societe/justice/images-pedopornographiques-un-animateur-periscolaire-de-gironde-soupconne-dagression-sexuelle-sur-une-enfant-de-4-ans-763fea5e-b5bc-11f1-8815-214ab2555576",
           "media": "Ouest-France",
           "publication_date": "2026-09-21",
@@ -1448,7 +1521,42 @@
           "is_primary": false
         },
         {
+          "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
+          "media": "La Provence",
+          "publication_date": "2026-07-08",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/landes/tarnos/soupcons-d-agressions-sexuelles-au-centre-de-loisirs-de-tarnos-la-ville-s-est-bien-constituee-partie-civile-30766778.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-09-24",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/pyrenees-atlantiques/pays-basque/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-le-deuxieme-animateur-ecarte-avait-ete-exclu-du-periscolaire-de-bayonne-30608547.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-09-13",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-07-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ici.fr/emissions/l-invite-d-ici-matin-pays-basque/violences-sexuelles-au-centre-de-loisirs-de-tarnos-il-y-aura-un-avant-et-un-apres-assure-le-maire-marc-mabillet-8534796",
+          "media": "ici",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-au-pays-basque/il-faut-que-les-choses-avancent-a-tarnos-la-mairie-lance-un-plan-d-action-pour-mieux-proteger-les-enfants-2629404",
           "media": "ici",
           "publication_date": "2026-10-07",
           "source_type": "presse",
@@ -1517,6 +1625,13 @@
           "is_primary": true
         },
         {
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-rennes/4247926-20260923-bretagne-animateur-periscolaire-mis-examen-viols-agressions-sexuelles-deux-fillettes-4-5-ans",
+          "media": "20 Minutes",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ouest-france.fr/bretagne/ille-et-vilaine/vise-par-deux-plaintes-pour-violences-sexuelles-lanimateur-periscolaire-dune-commune-au-nord-de-rennes-mis-en-examen-9dd9909e-b6af-11f1-b8f7-5b3ca074ea4b",
           "media": "Ouest-France",
           "publication_date": "2026-09-22",
@@ -1527,6 +1642,20 @@
           "url": "https://www.rennes-infos-autrement.fr/saint-aubin-daubigne-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineures/",
           "media": "Rennes Infos Autrement",
           "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.tf1info.fr/justice-faits-divers/ille-et-vilaine-un-animateur-periscolaire-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-fillettes-2465720.html",
+          "media": "TF1 INFO",
+          "publication_date": "2026-09-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-armorique/j-y-pense-tout-le-temps-les-parents-d-eleves-de-saint-aubin-d-aubigne-demunis-apres-la-mise-en-examen-d-un-animateur-5869620",
+          "media": "ici",
+          "publication_date": "2026-09-28",
           "source_type": "presse",
           "is_primary": false
         }
@@ -1569,16 +1698,16 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/26/agressions-sexuelles-presumees-en-periscolaire-l-animateur-mis-en-examen",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
           "media": "Le Dauphiné Libéré",
-          "publication_date": "2026-06-26",
+          "publication_date": "2026-06-22",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/26/agressions-sexuelles-presumees-en-periscolaire-l-animateur-mis-en-examen",
           "media": "Le Dauphiné Libéré",
-          "publication_date": "2026-06-22",
+          "publication_date": "2026-06-26",
           "source_type": "presse",
           "is_primary": false
         },
@@ -1817,6 +1946,13 @@
         {
           "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
           "media": "Ouest-France",
+          "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+          "media": "ici",
           "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
@@ -2306,6 +2442,27 @@
           "publication_date": null,
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://portail.free.fr/actualites/societe/periscolaire-a-paris-la-relaxe-de-lanimateur-de-lecole-titon-indigne-les-parents-le-parquet-fait-appel/",
+          "media": "ELLE (via portail Free)",
+          "publication_date": "2026-06-18",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140",
+          "media": "ICI (France Bleu)",
+          "publication_date": "2026-06-17",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+          "media": "franceinfo",
+          "publication_date": "2026-06-17",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     },
