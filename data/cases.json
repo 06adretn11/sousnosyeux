@@ -92,11 +92,25 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "tiers",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.851216,
       "lng": 2.403689,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": null,
+        "type_evenement": "décision",
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "Le Parisien",
+            "date": "2026-10-16",
+            "url": "https://www.leparisien.fr/paris-75/paris-75020/paris-le-compagnon-dune-institutrice-condamne-a-trois-ans-de-prison-avec-sursis-pour-des-attouchements-sur-deux-enfants-16-10-2026-M4QK4THCFFAUNMLWVBC44EQ2TI.php"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
