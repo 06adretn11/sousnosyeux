@@ -2428,6 +2428,27 @@
           "publication_date": null,
           "source_type": "presse",
           "is_primary": true
+        },
+        {
+          "url": "https://portail.free.fr/actualites/societe/periscolaire-a-paris-la-relaxe-de-lanimateur-de-lecole-titon-indigne-les-parents-le-parquet-fait-appel/",
+          "media": "ELLE (via portail Free)",
+          "publication_date": "2026-06-18",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/infos/faits-divers-justice/periscolaire-a-paris-le-parquet-fait-appel-de-la-relaxe-d-un-ex-animateur-3174140",
+          "media": "ICI (France Bleu)",
+          "publication_date": "2026-06-17",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/pourquoi-l-animateur-periscolaire-juge-pour-agressions-et-harcelement-sexuels-sur-neuf-fillettes-de-l-ecole-titon-a-paris-a-ete-relaxe_8065391.html",
+          "media": "franceinfo",
+          "publication_date": "2026-06-17",
+          "source_type": "presse",
+          "is_primary": false
         }
       ]
     },
