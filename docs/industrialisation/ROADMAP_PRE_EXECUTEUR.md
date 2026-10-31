@@ -42,6 +42,14 @@ mentions légales du site en production s’engagent à les retirer. Voir `CORPU
 - la clé OpenRouter de GitHub et celle du poste sont la même (étiquette et compteur d’usage identiques, établi par un diagnostic en lecture seule) ; la dépense par jour n’est lisible que par une clé de gestion : aucune trace côté dépôt ne dit ce qui a été facturé un jour donné. Le coût réel d’un appel (`cout_usd`) est consigné dans le cache disque `.cache/fiches/llm`, propre à chaque arbre de travail ;
 - une modification du contrat d’extraction ou du prompt invalide tout le cache d’extraction : un rejeu complet du stock coûte ≈ 2,5 $ (constaté les 19 et 21/10).
 
+**Mission « couverture en fiches individuelles » (31 octobre 2026)** :
+- **corrigé** : une réponse vide `{}` du modèle (1 entrée sur 1 550 du cache) était servie à chaque rejeu : la passe du verdict de La Provence (FR-2026-0047) restait « ambiguë » et la génération BLOQUÉE ; une extraction sans « pertinence » n’est plus servie ni écrite (`extractionValide`, testé) ;
+- **corrigé** : `go-lot-24-10.mjs` approuve désormais un dossier de Hub tel que la page le lit (empreinte du dossier du Hub, sources à rattacher comprises) ; avant, une fiche dont le dossier ne vit que dans un Hub était refusée (« aucune fiche générée ») ;
+- constaté : le classement sans suite de juin 2019 rapporté par 20 Minutes pour PARIS-004 n’est pas l’issue (l’enquête a redémarré, information judiciaire en septembre 2019) : la proposition « relaxe / non-lieu / classement » du générateur était fausse ; carte « enquête » exacte ;
+- constaté : FR-2026-0007 (Reuilly II) et PARIS-007 (Reuilly) sont la même affaire (même article de 20 Minutes en source) ;
+- le `statut_libelle` du dossier (option de présentation existante) permet d’écrire « classement sans suite rapporté — aucune décision consultée » sans modifier la carte (FR-2026-0024) ; le compte rendu du Conseil de Paris n’a pas été trouvé par son identifiant (186284) : le PDF des débats de mai 2026 du Bulletin municipal officiel a été lu à la place ;
+- `fusionnerPasses` garde la pertinence la plus réservée : un article que le modèle juge « ambigu » à une passe sur deux est écarté (cas Orange/JDD pour Belzunce, article qui ne nomme pas l’école) — comportement voulu.
+
 ## 1. Décision directrice
 
 Le système distant ne doit pas être le prochain chantier. Le prochain chantier est de rendre **la production manuelle déterministe, vérifiable et maintenable**.

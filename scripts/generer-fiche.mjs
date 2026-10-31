@@ -21,7 +21,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { reunirSources, affairesSoeurs, rattachementInsuffisant } from './lib/fiche-sources.mjs';
-import { SYSTEME_REGROUPEMENT, invitesRegroupement, groupesValides, SYSTEME, invite, CONTRAT_VERSION, appelerModele, verifier, fusionnerPasses } from './lib/fiche-extraction.mjs';
+import { SYSTEME_REGROUPEMENT, invitesRegroupement, groupesValides, SYSTEME, invite, CONTRAT_VERSION, appelerModele, verifier, fusionnerPasses, extractionValide } from './lib/fiche-extraction.mjs';
 import { composer, evenementsBruts, regressionJudiciaire } from './lib/fiche-composer.mjs';
 import { rendreMarkdown } from './lib/fiche-rendu.mjs';
 
@@ -53,13 +53,15 @@ async function extraire({ fiche, soeurs, doc, cout, sel = '' }) {
   const utilisateur = invite({ fiche, soeurs, article });
   const cle = createHash('sha1').update(`${MODELE}|${CONTRAT_VERSION}|${utilisateur}${sel ? `|${sel}` : ''}`).digest('hex').slice(0, 24);
   const f = new URL(`${cle}.json`, CACHE_LLM);
-  if (existsSync(f)) { cout.cache++; return JSON.parse(readFileSync(f, 'utf8')).reponse; }
+  // Une réponse sans « pertinence » n'est pas une extraction : jamais servie depuis le cache, jamais mise en cache (voir extractionValide).
+  const valide = extractionValide;
+  if (existsSync(f)) { const r = JSON.parse(readFileSync(f, 'utf8')).reponse; if (valide(r)) { cout.cache++; return r; } }
   if (HORS_LIGNE) return null;
   const { reponse, cout: c } = await appelerModele({ systeme: SYSTEME, utilisateur, modele: MODELE });
   cout.appels++; cout.input_tokens += c.input_tokens; cout.output_tokens += c.output_tokens; cout.latence_ms += c.latence_ms;
   if (c.cout_usd != null) cout.cout_usd = (cout.cout_usd ?? 0) + c.cout_usd; else cout.sans_cout++;
-  if (reponse) { mkdirSync(CACHE_LLM, { recursive: true }); writeFileSync(f, JSON.stringify({ modele: MODELE, contrat: CONTRAT_VERSION, reponse, cout: c })); }
-  return reponse;
+  if (valide(reponse)) { mkdirSync(CACHE_LLM, { recursive: true }); writeFileSync(f, JSON.stringify({ modele: MODELE, contrat: CONTRAT_VERSION, reponse, cout: c })); }
+  return valide(reponse) ? reponse : null;
 }
 
 const bilan = [];

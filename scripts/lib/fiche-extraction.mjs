@@ -233,6 +233,12 @@ export function phraseContenant(corps, citation) {
 }
 
 /**
+ * Une réponse du modèle n'est une extraction que si elle porte une « pertinence » : un objet vide `{}` (constaté le 31/10/2026 sur La Provence / FR-2026-0047,
+ * 1 entrée sur 1 550) ne doit jamais être servi depuis le cache ni y être écrit — il empoisonnerait la passe pour toujours (pertinence AMBIGU, verdict perdu).
+ */
+export const extractionValide = (r) => !!r && typeof r === 'object' && !!r.pertinence;
+
+/**
  * Fusion de plusieurs extractions VÉRIFIÉES d'un même document (le modèle n'extrait pas deux fois les mêmes faits : mesuré 69 % d'événements appariés entre deux
  * passes, dont des décisions et recours présents dans une seule). Union des éléments — la déduplication est celle de la composition —, pertinence prudente
  * (accord de toutes les passes, sinon la plus réservée), issue conservée seulement si les passes ne se contredisent pas.

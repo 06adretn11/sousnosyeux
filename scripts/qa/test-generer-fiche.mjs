@@ -5,7 +5,7 @@ import { mkdtempSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { SYSTEME, RE_NOMBRE_ENFANTS, fusionnerPasses, recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee } from '../lib/fiche-extraction.mjs';
+import { SYSTEME, RE_NOMBRE_ENFANTS, fusionnerPasses, recupererCitation, citationPresente, dateAttestee, quantitesNonAttestees, issuesNonAttestees, verifier, nomsPresents, sembleAnnoncee, extractionValide } from '../lib/fiche-extraction.mjs';
 import { composer, attribue, regressionJudiciaire } from '../lib/fiche-composer.mjs';
 import { payloadFiche, dossierGeneree, hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
@@ -434,6 +434,12 @@ t('deux passes : union des éléments vérifiés (une décision vue par une seul
   const i2 = verifier(base({ issue_judiciaire: { nature: 'relaxe', date: null, citation_date: null, appel: 'INCONNU', definitive: 'INCONNU', citation: "Il a aussi relaxé l'enseignant pour un autre fait" } }), { corps: fauxCorps, publieLe: PUB });
   const k = fusionnerPasses([i1, i2]);
   assert.equal(k.issue, null); assert.ok(k.ecartes.some((e) => e.raison === 'ISSUE_INSTABLE_ENTRE_PASSES'));
+});
+
+t('cache du modèle : une réponse vide ({}), nulle ou sans pertinence n’est pas une extraction (jamais servie ni écrite — FR-2026-0047, 31/10/2026)', () => {
+  assert.equal(extractionValide({}), false); assert.equal(extractionValide(null), false); assert.equal(extractionValide(undefined), false);
+  assert.equal(extractionValide('x'), false); assert.equal(extractionValide({ evenements: [] }), false);
+  assert.equal(extractionValide({ pertinence: 'CETTE_AFFAIRE', evenements: [] }), true);
 });
 
 t('fonction unique + accusation (« la plainte visant le chef des animateurs ») : jamais READY sans regard humain ; une direction qui agit ou parle ne déclenche rien', () => {

@@ -15,7 +15,7 @@
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { connecter } from '../../scripts/lib/neon.mjs';
-import { dossierGeneree, hashDossier, payloadFiche } from '../../scripts/lib/fiche-page.mjs';
+import { dossierGeneree, dossierFiche, hashDossier, payloadFiche } from '../../scripts/lib/fiche-page.mjs';
 import { rattacherSources } from '../../scripts/lib/rattacher-sources.mjs';
 
 const A = process.argv.slice(2);
@@ -36,7 +36,10 @@ const { sql } = connecter();
 
 for (const id of ids) {
   if (!autorisees[id]) { console.log(`· ${id} : non autorisée par le GO de lot — ignorée`); continue; }
-  const g = dossierGeneree(id);
+  // Affaire dont le dossier VIT DÉJÀ dans un Hub approuvé : la fiche individuelle en reprend la rédaction (aucune génération) ; l'approbation porte l'empreinte de CE dossier,
+  // celle que la page lit (lib/fiche.ts dossierDe) et que project-evenements compare. Sinon : dossier produit par le générateur.
+  const dansHub = dossierFiche(id);
+  const g = dansHub?.hub ? dansHub : dossierGeneree(id);
   const h = g ? hashDossier(g.d) : null;
   if (h !== autorisees[id]) { console.log(`· ${id} : REFUS — empreinte du dossier local ${h} ≠ autorisée ${autorisees[id]}`); continue; }
   const [k] = await sql`select publication_status::text ps from cases where case_id = ${id}`;
