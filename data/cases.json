@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 65,
+    "total_cases": 66,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -2044,6 +2044,44 @@
           "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
           "media": "ici",
           "publication_date": "2026-10-16",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0142",
+      "etablissement": "Lycée d'Orange",
+      "commune": "Orange",
+      "departement": "Vaucluse",
+      "type_structure": "autre",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "non précisé",
+      "lat": 44.129795,
+      "lng": 4.813318,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/07/02/un-enseignant-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineurs",
+          "media": "L'Alsace",
+          "publication_date": "2026-07-02",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/vaucluse/avignon/viols-agressions-sexuelles-enquete-ce-que-l-on-sait-de-la-mise-en-examen-d-un-enseignant-soupconne-de-violences-sexuelles-sur-plusieurs-eleves-3380596.html",
+          "media": "France 3",
+          "publication_date": "2026-07-02",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
+          "media": "franceinfo",
+          "publication_date": "2026-07-02",
           "source_type": "presse",
           "is_primary": false
         }
