@@ -25,12 +25,15 @@ const SOURCES = [
     motif: 'Le Parisien du 20/05/2026 : l’article porte sur l’école Saint-Dominique du 7e arrondissement de Paris (périscolaire), non sur l’Institution Saint-Dominique de Neuilly-sur-Seine' },
   { fragment: 'msn.com/fr-fr/actualite/france/violences-dans-le-p', de: 'PARIS-001', vers: 'FR-2026-0005',
     motif: 'source unique de PARIS-001, même événement (16 gardes à vue du 20/05/2026 à l’école Saint-Dominique, Paris 7e) : doublon établi de FR-2026-0005' },
+  { fragment: 'linfo.re/france/faits-divers/soupcons-d-agression-sexuelle-un-animateur', de: 'FR-2026-0007', vers: 'PARIS-007',
+    motif: 'Linfo.re : même événement (animateur de l’école maternelle Reuilly, Paris 12e, écarté de ses fonctions en septembre 2025) que l’article de 20 Minutes du 19/09/2025, source commune de FR-2026-0007 et de PARIS-007' },
 ];
 // Doublons établis (voir REVUE_GLOBALE_STOCK_2.md, section E) : la carte retirée → la carte conservée.
 const RETRAITS = [
   { id: 'PARIS-001', garde: 'FR-2026-0005', motif: 'même école maternelle Saint-Dominique (Paris 7e), mêmes faits (suspensions de janvier 2026, 16 gardes à vue du 20/05/2026, mises en examen du 22/05) : deux cartes pour une affaire' },
   { id: 'PARIS-008', garde: 'FR-2026-0008', motif: 'même école Boulard (Paris 14e), mêmes trois animateurs suspendus depuis la mi-février 2026, même article (Le Parisien, 11/03/2026) déjà source de FR-2026-0008' },
   { id: 'PARIS-010', garde: 'FR-2026-0003', motif: 'même école des Grands-Champs (Paris 20e), même compagnon d’une institutrice, même plainte du 30/09/2025, même condamnation du 16/10/2026 ; source (Le Parisien, 20/03/2026) déjà source de FR-2026-0003' },
+  { id: 'FR-2026-0007', garde: 'PARIS-007', motif: 'même école maternelle Reuilly (Paris 12e), même animateur écarté en septembre 2025, même article de 20 Minutes du 19/09/2025 source des deux cartes ; la carte conservée PARIS-007 porte la fiche individuelle approuvée du 24/10/2026 (hash d73547b2edf3aac7, non modifiée)' },
 ];
 
 for (const s of SOURCES) {
