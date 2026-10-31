@@ -34,6 +34,14 @@ mentions légales du site en production s’engagent à les retirer. Voir `CORPU
 - la clé OpenRouter a un plafond de dépense propre (30 $) distinct du solde du compte ; la Maintenance et la Discovery le dépassent sans échec visible (workflow vert, résultats vides) ;
 - des cartes publiques peuvent différer de Neon sans alerte (10 cartes au 30/10 : état de FR-2026-0005, sources de 9 cartes approuvées).
 
+**Ajouts du 31 octobre 2026** (même règle : rien n’est lancé) :
+- **corrigé le 31/10** : `publier-evolutions.mjs` projetait deux évolutions de suite sans commit entre les deux, et la première était perdue (FR-2026-0003 annoncée « mise à jour », absente du commit) ; `verifier-site.mjs` comparant le site à l’artefact COMMITÉ (et non à Neon), « site conforme » a été annoncé à tort. Le projecteur est corrigé ; le vérificateur ne compare toujours que le site à l’artefact ;
+- **corrigé le 31/10** : le garde-fou d’issue ignorait « vient d’écoper de N mois de prison » (France 3, FR-2026-0029) ; l’idiome est reconnu à l’indicatif seulement (pas « risque / pourrait écoper »), avec une peine dans la phrase ; le titre seul n’atteste toujours rien ;
+- les dates de parution partielles de l’import CSV (« mars 2026 ») sont normalisées au 1er du mois : 3 sources fausses sur 185 (FR-2026-0001 Courrier des Stratèges 01/03 → 25/03 ; FR-2026-0033 Linfo.re 01/04 → 14/04 et Zinfos974 01/04 → 13/04). La correction passe par `_dates_sources` du manifeste ;
+- une source de la mémoire peut être une page d’accueil locale (flux glissant, sans date) : `ici.fr/…/chauny` pour FR-2026-0029 ;
+- la clé OpenRouter de GitHub et celle du poste sont la même (étiquette et compteur d’usage identiques, établi par un diagnostic en lecture seule) ; la dépense par jour n’est lisible que par une clé de gestion : aucune trace côté dépôt ne dit ce qui a été facturé un jour donné. Le coût réel d’un appel (`cout_usd`) est consigné dans le cache disque `.cache/fiches/llm`, propre à chaque arbre de travail ;
+- une modification du contrat d’extraction ou du prompt invalide tout le cache d’extraction : un rejeu complet du stock coûte ≈ 2,5 $ (constaté les 19 et 21/10).
+
 ## 1. Décision directrice
 
 Le système distant ne doit pas être le prochain chantier. Le prochain chantier est de rendre **la production manuelle déterministe, vérifiable et maintenable**.

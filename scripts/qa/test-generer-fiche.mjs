@@ -45,6 +45,16 @@ t('issue : « condamné » ne peut pas sortir d’une citation de relaxe (l’er
   assert.deepEqual(issuesNonAttestees('le tribunal a relaxé l’enseignant', 'le tribunal a relaxé l’enseignant'), []);
   assert.deepEqual(issuesNonAttestees('la condamnation est définitive', 'condamné à deux ans'), ['definitif']);
 });
+t('issue : « écoper de N mois de prison » constate une condamnation ; « risque / pourrait écoper » non (FR-2026-0029)', () => {
+  const peine = 'Il vient d’écoper de 24 mois de prison, dont 18 avec sursis probatoire pour une durée de deux ans';
+  assert.deepEqual(issuesNonAttestees('l’enseignant a été condamné à 24 mois de prison', peine), [], 'passage du corps de France 3 : condamnation attestée');
+  assert.deepEqual(issuesNonAttestees('condamné', 'Il a écopé de trois ans de prison'), []);
+  assert.deepEqual(issuesNonAttestees('condamné', 'Il écope de deux ans de prison avec sursis'), []);
+  assert.deepEqual(issuesNonAttestees('condamné', 'Il risque d’écoper de cinq ans de prison'), ['condamnation'], 'menace ≠ condamnation');
+  assert.deepEqual(issuesNonAttestees('condamné', 'Il pourrait écoper de dix ans de prison'), ['condamnation']);
+  assert.deepEqual(issuesNonAttestees('condamné', 'Il a écopé d’un rappel à l’ordre'), ['condamnation'], 'sans peine dans la phrase : rien n’est attesté');
+  assert.deepEqual(issuesNonAttestees('condamné', 'Un enseignant d’un collège privé a été jugé ce mardi'), ['condamnation'], 'jugé ≠ condamné');
+});
 t('mesure : une citation qui annonce ne peut être « réalisée »', () => {
   assert.ok(sembleAnnoncee('Le rectorat va mettre en place une cellule d’écoute'));
   assert.ok(!sembleAnnoncee('Le rectorat a suspendu l’enseignant'));
