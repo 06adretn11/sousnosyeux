@@ -18,6 +18,20 @@
         }
       }
     ],
+    "FR-2026-0003": [
+      {
+        "event_id": "b142beed-6444-48cd-a6ea-2358432f0787",
+        "date": null,
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Une source publique rapporte une condamnation non définitive, susceptible d’appel.",
+        "source": {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-75020/paris-le-compagnon-dune-institutrice-condamne-a-trois-ans-de-prison-avec-sursis-pour-des-attouchements-sur-deux-enfants-16-10-2026-M4QK4THCFFAUNMLWVBC44EQ2TI.php",
+          "publie_le": "2026-10-16"
+        }
+      }
+    ],
     "FR-2026-0004": [
       {
         "event_id": "deefe35b-ca3b-4823-99c0-59e594a947f4",
@@ -112,6 +126,20 @@
           "media": "ICI (France Bleu)",
           "url": "https://www.francebleu.fr/infos/faits-divers-justice/un-ancien-surveillant-du-college-de-saint-valery-en-caux-condamne-a-six-ans-de-prison-pour-agressions-sexuelles-7726539",
           "publie_le": "2025-09-17"
+        }
+      }
+    ],
+    "FR-2026-0047": [
+      {
+        "event_id": "1efe381e-7c89-42f4-818c-5b516615d76e",
+        "date": null,
+        "type": "décision",
+        "statut": "condamnation non définitive",
+        "libelle": "Une source publique rapporte une condamnation non définitive, susceptible d’appel.",
+        "source": {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+          "publie_le": "2026-03-30"
         }
       }
     ],
