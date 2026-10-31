@@ -152,11 +152,42 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "violences sexuelles",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "mise en examen",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 48.859887,
       "lng": 2.311121,
+      "etat": {
+        "statut": "mise en examen",
+        "date": "2026-05-22",
+        "type_evenement": "mise_en_examen",
+        "finalite": null,
+        "suites": [],
+        "sources": [
+          {
+            "media": "franceinfo",
+            "date": "2026-05-22",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html"
+          }
+        ]
+      },
+      "etablissements": [
+        {
+          "etablissement": "École maternelle Saint-Dominique",
+          "commune": "Paris 7e",
+          "role": "principal"
+        },
+        {
+          "etablissement": "École La Rochefoucauld",
+          "commune": "Paris 7e",
+          "role": "concerné"
+        },
+        {
+          "etablissement": "École Rapp",
+          "commune": "Paris 7e",
+          "role": "concerné"
+        }
+      ],
       "sources": [
         {
           "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
