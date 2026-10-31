@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-10-29"
+    "generated_at": "2026-10-31"
   },
   "cases": [
     {
@@ -1294,11 +1294,25 @@
       "type_structure": "autre",
       "role_mis_en_cause": "intervenant extérieur",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "procès",
+      "statut_judiciaire": "condamnation non définitive",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "1 enfant",
       "lat": 43.29373,
       "lng": 5.390849,
+      "etat": {
+        "statut": "condamnation non définitive",
+        "date": null,
+        "type_evenement": "décision",
+        "finalite": "inconnue",
+        "suites": [],
+        "sources": [
+          {
+            "media": "La Provence",
+            "date": "2026-03-30",
+            "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
