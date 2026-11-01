@@ -2,14 +2,16 @@
 
 `PARIS-004` · périscolaire · rôle : animateur périscolaire · état de la carte : **enquête**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `91993f1c537309d8`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `62c33d9fa80aafde`.
 
 ## Situation judiciaire
 
-- Selon 20 Minutes (20 février 2026), une information judiciaire est ouverte depuis septembre 2019 ; aucune mise en examen n’est rapportée.
-- Le classement sans suite de l’enquête préliminaire en juin 2019 a été suivi de la reprise de l’enquête, puis de l’information judiciaire : il n’est pas l’issue de la procédure.
+- **Situation judiciaire · Enquête** (information judiciaire · depuis septembre 2019) — Selon 20 Minutes (20 février 2026), une information judiciaire est ouverte depuis septembre 2019 ; aucune mise en examen n’est rapportée.
+- **Suite · Jugement sur le fond non documenté** (dans la source consultée)
+  - La personne mise en cause est présumée innocente.
+  - Le classement sans suite de l’enquête préliminaire en juin 2019 a été suivi de la reprise de l’enquête, puis de l’information judiciaire : il n’est pas l’issue de la procédure.
 
-## Faits publiquement rapportés
+## Faits publiquement rapportés (champ réutilisable, non affiché par la page)
 
 Selon 20 Minutes, un animateur périscolaire de l’école maternelle Paul-Dubois (Paris 3e) est mis en cause dans une affaire de violences sexuelles présumées sur des enfants, dont les premiers signalements remontent à début 2019 ; une information judiciaire est ouverte depuis septembre 2019.
 
@@ -19,13 +21,15 @@ Selon 20 Minutes, un animateur périscolaire de l’école maternelle Paul-Duboi
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
 - **13 février 2019** · Mesure de l’établissement (Ville de Paris) — Selon 20 Minutes, l’animateur est suspendu le 13 février 2019.  
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
-- **date non écrite · paru le 20 février 2026** · Garde à vue — Selon 20 Minutes, l’animateur a été placé en garde à vue au cours de l’enquête préliminaire.  
-  Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
 - **vers mai 2019** · Enquête (brigade des mineurs) — Selon 20 Minutes, la perquisition du domicile de la personne mise en cause n’intervient qu’en mai 2019, plus de trois mois après la suspension.  
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
-- **vers juin 2019** · Enquête (parquet) — Selon 20 Minutes, l’enquête préliminaire est classée sans suite en juin 2019, au bout de trois mois ; elle redémarre pourtant quelques semaines plus tard : ce classement n’est pas l’issue de la procédure.  
+- **date non écrite · paru le 20 février 2026** · Garde à vue — Selon 20 Minutes, l'animateur a été placé en garde à vue au cours de l'enquête préliminaire ; le classement sans suite est intervenu deux heures après la fin de cette garde à vue.  
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
-- **vers septembre 2019** · Enquête (justice) — Selon 20 Minutes, une information judiciaire est ouverte en septembre 2019 et une juge d’instruction est désignée.  
+- **vers juin 2019** · Décision (parquet) — Classement sans suite : selon 20 Minutes, l'enquête préliminaire est classée sans suite en juin 2019, au bout de trois mois d'enquête.  
+  Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
+- **date non écrite · paru le 20 février 2026** · Enquête (parquet) — Reprise de l'enquête : selon 20 Minutes, l'enquête redémarre quelques semaines après le classement sans suite, à la suite d'alertes de médecins ; ce classement n'est donc pas l'issue de la procédure.  
+  Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
+- **vers septembre 2019** · Enquête (justice) — Information judiciaire : selon 20 Minutes, une instruction judiciaire est ouverte en septembre 2019 et une juge d'instruction est désignée.  
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)
 - **date non écrite · paru le 20 février 2026** · Contexte (collectif de parents) — Selon 20 Minutes, des parents d’élèves dénoncent, dans une tribune publiée par Libération, des défaillances de la justice, de la police et de la Ville de Paris, et craignent que l’instruction n’aboutisse à un non-lieu ; la personne mise en cause conteste les faits.  
   Source : [20 Minutes](https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris)

@@ -1,0 +1,132 @@
+{
+  "etat_actuel": [
+    "Selon BFM DICI, le tribunal correctionnel de Gap a condamné l’enseignant le 26 novembre 2025 à trois ans de prison avec sursis pour « atteintes sexuelles par autorité », avec interdiction définitive d’exercer au contact de mineurs.",
+    "Il a été relaxé pour les autres faits poursuivis (agressions sexuelles, corruption de mineurs), le tribunal estimant à plusieurs reprises qu’il manquait « d’investigations et d’éléments ».",
+    "Aucun appel n’est rapporté par la presse : SNY ne sait pas si cette décision est définitive."
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "statut_libelle": "Condamnation en 1re instance — relaxe partielle",
+  "jugement": {
+    "poursuivi": "Corruption de mineurs, agressions sexuelles et atteintes sexuelles, aggravées par l’abus d’autorité (période 2015 – février 2025).",
+    "requis": "Cinq ans de prison, dont deux avec sursis, et interdiction définitive d’exercer auprès de mineurs (parquet, 3 novembre 2025).",
+    "retenu": "« Atteintes sexuelles par autorité » sur une partie des plaignants : trois ans avec sursis, interdiction définitive d’exercer au contact de mineurs.",
+    "ecarte": "Agressions sexuelles et corruption de mineurs : relaxe, faute « d’investigations et d’éléments ».",
+    "defense": "L’enseignant conteste tout ; son avocat plaidait la relaxe, soulignant l’absence d’éléments matériels (« parole contre parole »).",
+    "appel": "Aucun appel rapporté par la presse."
+  },
+  "lecture": "Les titres de presse parlent d’« abus sexuels pendant dix ans » : c’est la période poursuivie, pas ce que le tribunal a retenu.",
+  "deroule": [
+    {
+      "date": "2022-12",
+      "date_nature": "approximative",
+      "type": "decision",
+      "acteur": "Parquet de Gap",
+      "texte": "Selon BFM DICI, une plainte antérieure visant le même enseignant, déposée en avril 2022 par une ancienne élève, a été classée par le parquet en décembre 2022, avant d’être rouverte « au regard de la nouvelle procédure ». France 3 évoque pour sa part un signalement en 2021, classé sans suite.",
+      "source": {
+        "media": "BFM DICI",
+        "url": "https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html",
+        "publie_le": "2025-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": "Élèves ; directeur de l’établissement",
+      "texte": "Deux lettres d’élèves parviennent à l’établissement ; le directeur dit les avoir « immédiatement » signalées à la procureure de Gap, puis au diocèse et au directeur académique.",
+      "source": {
+        "media": "France 3 Provence-Alpes",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/gap/il-y-avait-beaucoup-de-rumeurs-sur-ce-professeur-le-college-lycee-prive-de-saint-joseph-sous-le-choc-apres-la-denonciation-d-agressions-sexuelles-3155648.html",
+        "publie_le": "2025-05-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04",
+      "date_nature": "approximative",
+      "type": "enquete",
+      "acteur": "Parquet de Gap",
+      "texte": "Enquête ouverte « depuis mi-avril » pour corruption de mineurs, selon la procureure.",
+      "source": {
+        "media": "BFM DICI",
+        "url": "https://www.bfmtv.com/bfm-dici/gap-un-professeur-de-l-etablissement-saint-joseph-suspendu-apres-des-temoignages-d-agressions-sexuelles_AN-202505160442.html",
+        "publie_le": "2025-05-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04",
+      "date_nature": "approximative",
+      "type": "mesure_etat",
+      "acteur": "Éducation nationale",
+      "texte": "L’enseignant est suspendu à titre conservatoire par l’Éducation nationale ; cette suspension date d’avril 2025, selon la direction académique (BFM DICI).",
+      "source": {
+        "media": "BFM DICI",
+        "url": "https://www.bfmtv.com/bfm-dici/gap-un-professeur-de-l-etablissement-saint-joseph-suspendu-apres-des-temoignages-d-agressions-sexuelles_AN-202505160442.html",
+        "publie_le": "2025-05-16",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "BFM DICI",
+          "url": "https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html",
+          "publie_le": "2025-06-21",
+          "acces": "libre"
+        },
+        {
+          "media": "BFM DICI",
+          "url": "https://www.bfmtv.com/bfm-dici/atteintes-sexuelles-au-college-lycee-saint-joseph-a-gap-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis_AN-202511260744.html",
+          "publie_le": "2025-11-26",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-09-08",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "Police ; parquet de Gap",
+      "texte": "Garde à vue pour des faits s’étalant de 2015 à février 2025 ; l’enseignant nie. Le parquet requiert un contrôle judiciaire très strict jusqu’à l’audience.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/gap-un-enseignant-place-en-garde-a-vue-pour-des-faits-de-violences-sexuelles-sur-mineurs-20250909",
+        "publie_le": "2025-09-09",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-11-03",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "Tribunal correctionnel de Gap",
+      "texte": "Procès : le parquet requiert cinq ans dont deux avec sursis ; la défense plaide la relaxe sur tous les faits.",
+      "source": {
+        "media": "France 3 Provence-Alpes",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/gap/abus-sexuels-au-college-saint-joseph-j-ai-toujours-joue-a-la-console-avec-des-eleves-5-ans-de-prison-requis-contre-le-professeur-3244135.html",
+        "publie_le": "2025-11-04",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-11-26",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "Tribunal correctionnel de Gap",
+      "texte": "Condamnation pour atteintes sexuelles par autorité ; relaxe pour les autres faits.",
+      "source": {
+        "media": "BFM DICI",
+        "url": "https://www.bfmtv.com/bfm-dici/atteintes-sexuelles-au-college-lycee-saint-joseph-a-gap-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis_AN-202511260744.html",
+        "publie_le": "2025-11-26",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Appel : aucun article, ni du prévenu ni du parquet.",
+    "Dates exactes de la suspension et de l’ouverture d’enquête : avril selon le parquet et la direction académique, mai selon d’autres articles.",
+    "Aucune réaction de l’enseignement catholique après le jugement n’a été retrouvée."
+  ],
+  "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)",
+  "faits": "Selon BFM DICI, Le Figaro et France 3, un enseignant du collège-lycée Saint-Joseph de Gap a été poursuivi pour des atteintes sexuelles, des agressions sexuelles et de la corruption de mineurs commises avec abus d’autorité sur des élèves, sur une période allant de 2015 à 2025 ; il conteste les faits."
+}

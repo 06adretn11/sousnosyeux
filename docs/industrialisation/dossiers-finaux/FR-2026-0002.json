@@ -1,0 +1,130 @@
+{
+  "etat_actuel": [
+    "Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré."
+  ],
+  "appel": false,
+  "faits": "Selon Le Monde.fr, à l'école Aqueduc, dans le Xe arrondissement, un signalement de parents concernant un enseignant a été fait le 14 octobre. Selon Le Monde.fr, l'enseignant a été suspendu le jour même et un signalement à la procureure a été fait.",
+  "deroule": [
+    {
+      "date": "2025-10-14",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon le rectorat, un signalement de parents concernant un enseignant de l'école Aqueduc (Paris 10e) a été fait le 14 octobre.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/soupcons-de-violences-sexuelles-trois-enseignants-de-maternelle-a-paris-suspendus-20251107",
+        "publie_le": "2025-11-07",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Monde.fr",
+          "url": "https://www.lemonde.fr/societe/article/2025/11/07/soupcons-de-violences-sexuelles-dans-des-ecoles-maternelles-a-paris-trois-enseignants-suspendus_6652612_3224.html",
+          "publie_le": "2025-11-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-10-14",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat de Paris",
+      "texte": "Selon Le Figaro (rectorat), l’enseignant de l’école Aqueduc a été suspendu le jour même du signalement, et un signalement à la procureure de la République a été fait.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/soupcons-de-violences-sexuelles-trois-enseignants-de-maternelle-a-paris-suspendus-20251107",
+        "publie_le": "2025-11-07",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Monde.fr",
+          "url": "https://www.lemonde.fr/societe/article/2025/11/07/soupcons-de-violences-sexuelles-dans-des-ecoles-maternelles-a-paris-trois-enseignants-suspendus_6652612_3224.html",
+          "publie_le": "2025-11-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-10-16",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat",
+      "texte": "Selon Le Monde.fr, une réunion avec les parents s'est tenue le 16 octobre et une cellule psychologique a été ouverte à l'école Aqueduc.",
+      "source": {
+        "media": "Le Monde.fr",
+        "url": "https://www.lemonde.fr/societe/article/2025/11/07/soupcons-de-violences-sexuelles-dans-des-ecoles-maternelles-a-paris-trois-enseignants-suspendus_6652612_3224.html",
+        "publie_le": "2025-11-07",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/soupcons-de-violences-sexuelles-trois-enseignants-de-maternelle-a-paris-suspendus-20251107",
+          "publie_le": "2025-11-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/actualite-france/paris-trois-hommes-dont-deux-animateurs-interpelles-pour-des-agressions-sexuelles-sur-douze-enfants-20260320",
+        "publie_le": "2026-03-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
+          "publie_le": "2026-03-20",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+          "publie_le": "2026-03-21",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucune suite à la garde à vue n’est rapportée (déferrement, mise en examen, classement) : la procédure est inconnue au-delà de mars 2026.",
+    "Les « deux plaintes contre X » mentionnées par Le Monde le 07/11/2025 ont été retirées de cette fiche : le journal a rectifié leur attribution le jour même. La carte « enquête » repose sur la garde à vue rapportée par l’AFP, non sur une plainte.",
+    "L’animateur de la même école (FR-2026-0001) est une autre procédure : l’AFP distingue les deux personnes ; rien n’est transféré.",
+    "Libération (06/11/2025) n’a pas pu être lu (accès refusé) : aucun fait n’en est tiré. Le dossier repose sur 5 articles lus (Le Figaro ×2, Le Monde, Le Parisien, Le Journal du Dimanche)."
+  ],
+  "synthese": {
+    "decision": "Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré."
+  },
+  "reactions": [],
+  "statut_affiche": "enquête",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Enquête",
+      "meta": "garde à vue · rapportée en mars 2026",
+      "cat": "blue",
+      "texte": "Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Figaro (rectorat), l’enseignant a été suspendu le jour même du signalement du 14 octobre 2025.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Monde, une réunion avec les parents s’est tenue le 16 octobre et une cellule psychologique a été ouverte."
+      ]
+    }
+  }
+}

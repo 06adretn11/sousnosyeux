@@ -1,0 +1,292 @@
+{
+  "etat_actuel": [
+    "Selon Sud Ouest, France 3 et ICI, l'animateur visé est renvoyé devant le tribunal correctionnel de Bordeaux ; l'audience est fixée au 22 février 2027. Il est poursuivi pour agression sexuelle sur mineur et détention d'images pédopornographiques, et placé sous contrôle judiciaire strict depuis le 26 août 2026.",
+    "Il n'a pas été jugé : il est présumé innocent. Une seconde famille a annoncé avoir déposé plainte contre le même animateur ; cette plainte n'a donné lieu à aucune décision connue.",
+    "Le second animateur placé en garde à vue dans la même affaire n'a pas fait l'objet de poursuites : selon le parquet de Bordeaux, la procédure le concernant a été classée sans suite. Cette décision est distincte de la procédure visant le premier animateur."
+  ],
+  "statut_affiche": "procès",
+  "statut_libelle": "Renvoyé devant le tribunal — audience à venir",
+  "statut_cat": "enquête",
+  "lecture": "« Procès » désigne ici un renvoi : l'audience n'a pas encore eu lieu.",
+  "deroule": [
+    {
+      "date": "2026-06-10",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": "Une enfant de maternelle et sa famille",
+      "texte": "Une enfant de maternelle se rend avec sa famille au commissariat de Bordeaux pour dénoncer des attouchements sexuels, indique le parquet de Bordeaux à ICI. Deux animateurs des centres de loisirs de Cenon sont soupçonnés ; tous deux sont suspendus. L'association employeuse affirme (selon Sud Ouest) les avoir écartés à titre conservatoire le jour même.",
+      "source": {
+        "media": "ICI Gironde",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+        "publie_le": "2026-09-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-06-11",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "Police, parquet de Bordeaux",
+      "texte": "Les deux animateurs sont placés en garde à vue ; les policiers saisissent du matériel informatique. Chez le plus âgé, des fichiers pédopornographiques sont retrouvés, téléchargés en 2012, selon ICI.",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+        "publie_le": "2026-09-21",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "ICI Gironde",
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+          "publie_le": "2026-09-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-08-26",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "Parquet de Bordeaux",
+      "texte": "L'animateur est replacé en garde à vue puis déféré le jour même devant le parquet « dans le cadre d'une procédure de comparution par procès-verbal » : il n'y a pas eu de mise en examen. Il est placé sous contrôle judiciaire, avec interdiction de se rendre à Cenon, d'entrer en contact avec la victime présumée et sa famille et d'exercer une activité impliquant des enfants.",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+        "publie_le": "2026-09-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-09-05",
+      "date_nature": "evenement",
+      "type": "mobilisation",
+      "acteur": "actuBordeaux ; parents ; mairie de Cenon",
+      "texte": "Le placement sous contrôle judiciaire est révélé par actuBordeaux (5 septembre) et, selon ICI, inquiète les parents. La mairie publie ensuite un communiqué justifiant son silence initial par le secret de l'enquête (ICI).",
+      "source": {
+        "media": "ICI Gironde",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+        "publie_le": "2026-09-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-09",
+      "date_nature": "approximative",
+      "type": "mesure_collectivite",
+      "acteur": "Mairie de Cenon",
+      "texte": "Selon ICI, la mairie a mis en place une adresse mail d'écoute pour les parents. Annonces, sans confirmation de leur réalisation dans les sources lues : la mairie se constituera partie civile (ICI, France 3) et le maire annonce un renforcement des contrôles des animateurs (France 3).",
+      "source": {
+        "media": "ICI Gironde",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+        "publie_le": "2026-09-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Nouvelle-Aquitaine",
+          "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+          "publie_le": "2026-09-21",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-29",
+      "date_nature": "evenement",
+      "type": "mobilisation",
+      "acteur": "Mairie de Cenon ; parents",
+      "texte": "Réunion d'information des parents organisée par le maire de Cenon. Les parents d'un autre enfant y annoncent avoir déposé plainte il y a deux semaines contre le même animateur, pour des attouchements de nature sexuelle au printemps 2026 dans le même cadre périscolaire. Le délégataire du périscolaire (Les Francas) a changé pour 2026-2027, « sans lien avec l’affaire » selon ICI.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+        "publie_le": "2026-09-30",
+        "acces": "partiel"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": "Parquet de Bordeaux",
+      "texte": "Selon le communiqué du parquet de Bordeaux repris par France 3, le second animateur mis en cause n'a pas fait l'objet de poursuites : la procédure le concernant a été classée sans suite (rien n'ayant été trouvé sur son matériel informatique, selon ICI). Cette décision est distincte de la procédure engagée contre le premier animateur.",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+        "publie_le": "2026-09-21",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "ICI Gironde",
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+          "publie_le": "2026-09-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2027-02-22",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "Tribunal correctionnel de Bordeaux",
+      "texte": "Date fixée pour l'audience (événement futur, présomption d'innocence). Elle ne concerne, d'après Sud Ouest, que la première plainte.",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/un-animateur-d-un-centre-de-loisirs-pres-de-bordeaux-poursuivi-pour-attouchements-sur-une-petite-fille-de-4-ans-3420674.html",
+        "publie_le": "2026-09-21",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "La deuxième plainte : ni sa date exacte, ni son traitement par le parquet ne sont connus ; elle est rapportée par Sud Ouest d'après l'annonce des parents.",
+    "Les mesures de la préfecture / des services de l'État (contrôle des accueils collectifs de mineurs) : aucune déclaration retrouvée.",
+    "Le sort administratif de l'animateur (licenciement, rupture) n'est pas établi par les articles relus.",
+    "Aucune mise en examen n'est rapportée : l'animateur a été déféré devant un magistrat du parquet dans le cadre d'une comparution par procès-verbal."
+  ],
+  "versions": {
+    "titre": "Deux versions sur la transmission des informations",
+    "a": {
+      "acteur": "Jean-François Egron, maire de Cenon",
+      "texte": "Il reproche à l’association Les Francas, employeuse de l’animateur, de ne pas lui avoir transmis des documents demandés, comme les lieux où il avait exercé en ville depuis plus de dix ans.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+        "publie_le": "2026-10-08"
+      }
+    },
+    "b": {
+      "acteur": "Odile Rapeau, présidente des Francas de Gironde (communiqué)",
+      "texte": "Elles disent avoir écarté les salariés concernés à titre conservatoire le jour de la connaissance des faits, sans que le maire ait eu à l’exiger ; que l’animateur, embauché en 2013 par une autre association, avait fait l’objet des contrôles réglementaires ; et que les documents seront transmis « dans un cadre juridiquement sécurisé ». Elles regrettent de ne pas avoir été invitées à la réunion publique.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+        "publie_le": "2026-10-08"
+      }
+    },
+    "note": "SNY rapporte les deux positions ; aucun article relu ne permet de les départager."
+  },
+  "cadre": {
+    "texte": "L’animateur n’était pas directement employé par la mairie, mais par l’association délégataire du périscolaire, les Francas. Le délégataire a changé pour l’année 2026-2027, sans lien avec l’affaire, selon ICI.",
+    "source": {
+      "media": "ICI Gironde",
+      "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+      "publie_le": "2026-09-19",
+      "acces": "libre"
+    }
+  },
+  "points": {
+    "honorabilite": "Contrôle d’honorabilité",
+    "documents": "Transmission des documents",
+    "suspension": "Suspension de l’animateur",
+    "information_familles": "Information des familles"
+  },
+  "paroles": [
+    {
+      "acteur": "Jean-François Egron",
+      "qualite": "maire de Cenon",
+      "camp": "mairie",
+      "date": "2026-09-19",
+      "date_nature": "evenement",
+      "attribution": "PAROLE_ETABLIE",
+      "acte": "entretien rapporté par ICI",
+      "contexte": "À propos du certificat d’honorabilité demandé à l’animateur, selon la mairie. Il annonce aussi un renforcement des contrôles (vérification du fichier des auteurs d’infractions sexuelles).",
+      "citations": [
+        {
+          "texte": "C’est la personne qui rédige ce certificat, donc c’est selon sa bonne volonté et sa clarté morale que ça vaut quelque chose",
+          "point": "honorabilite"
+        }
+      ],
+      "source": {
+        "media": "ICI Gironde",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-gironde/des-fichiers-pedopornographiques-retrouves-chez-un-animateur-periscolaire-de-cenon-soupconne-d-agression-sexuelle-6747336",
+        "publie_le": "2026-09-19",
+        "acces": "libre"
+      },
+      "a_propos": "Le certificat d’honorabilité de l’animateur"
+    },
+    {
+      "acteur": "Le maire de Cenon",
+      "qualite": "position rapportée par Sud Ouest, sans citation",
+      "camp": "mairie",
+      "date": "2026-09-29",
+      "date_nature": "evenement",
+      "attribution": "POSITION_ATTRIBUEE",
+      "acte": "réunion publique du 29 septembre",
+      "contexte": "Le journal écrit que le maire se plaignait de documents demandés et non transmis, comme les lieux où l’ex-animateur avait exercé depuis plus de dix ans. Selon ICI, la ville a aussi adressé une lettre de sommation aux Francas pour connaître l’historique de l’animateur.",
+      "points": [
+        "documents"
+      ],
+      "citations": [],
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+        "publie_le": "2026-10-08",
+        "acces": "libre"
+      },
+      "a_propos": "Les documents demandés aux Francas",
+      "paraphrase": "Le journal écrit que le maire se plaignait de documents demandés et non transmis, comme les lieux où l’ex-animateur avait exercé depuis plus de dix ans."
+    },
+    {
+      "acteur": "Odile Rapeau",
+      "qualite": "présidente des Francas de Gironde (employeur)",
+      "camp": "francas",
+      "date": "2026-10-08",
+      "date_nature": "article",
+      "attribution": "POSITION_ATTRIBUEE",
+      "acte": "communiqué rapporté par Sud Ouest",
+      "contexte": "Communiqué en réponse aux mises en cause de la gestion de l’affaire ; sa date exacte n’est pas donnée (article du 8 octobre).",
+      "citations": [
+        {
+          "texte": "l’association a immédiatement pris les mesures relevant de sa responsabilité d’employeur et de gestionnaire à cette date. Les salariés concernés […] ont été écartés de leurs fonctions à titre conservatoire le jour même",
+          "point": "suspension",
+          "vedette": true
+        },
+        {
+          "texte": "à aucun moment, le maire de Cenon n’a eu à demander ou à exiger de l’association la suspension de ces animateurs",
+          "point": "suspension"
+        },
+        {
+          "texte": "dans un cadre juridiquement sécurisé, dans le respect des droits des personnes et sans interférer avec la procédure en cours",
+          "point": "documents",
+          "vedette": true
+        },
+        {
+          "texte": "Les Francas n’ayant pas été invités à la réunion publique […], nous n’avons pas été en mesure, à cette occasion, d’apporter directement aux familles les réponses légitimes qu’elles peuvent attendre",
+          "point": "information_familles"
+        },
+        {
+          "texte": "les personnels sont déclarés auprès des services de l’État par l’intermédiaire du système de télédéclaration des accueils de mineurs (TAM), dans le cadre duquel sont réalisés les contrôles administratifs prévus par la réglementation",
+          "point": "honorabilite"
+        }
+      ],
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+        "publie_le": "2026-10-08",
+        "acces": "libre"
+      },
+      "a_propos": "Les mises en cause de la gestion de l’affaire"
+    }
+  ],
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Renvoi devant le tribunal",
+      "meta": "Tribunal correctionnel de Bordeaux · animateur visé",
+      "cat": "blue",
+      "texte": "Sous contrôle judiciaire strict depuis le 26 août 2026. Aucune condamnation prononcée."
+    },
+    "suite": {
+      "label": "Prochaine étape",
+      "titre": "Audience le 22 février 2027",
+      "meta": "à venir · le procès n’a pas eu lieu",
+      "cat": "blue",
+      "lignes": [
+        "L’animateur est présumé innocent."
+      ]
+    }
+  },
+  "suivre_neon": true,
+  "faits": "Selon le parquet de Bordeaux, cité par ICI Gironde et France 3, un animateur de centres de loisirs de Cenon (Gironde) est poursuivi pour agression sexuelle sur mineur et détention d’images pédopornographiques, à la suite de la plainte de la famille d’une enfant de maternelle ; il est présumé innocent."
+}

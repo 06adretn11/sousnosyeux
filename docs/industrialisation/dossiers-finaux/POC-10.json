@@ -1,0 +1,101 @@
+{
+  "etat_actuel": [
+    "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+  ],
+  "appel": false,
+  "faits": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires du 15e arrondissement.",
+      "source": {
+        "media": "ELLE",
+        "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
+        "publie_le": "2026-03-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-02",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien (article du 10 mars 2026), les parents d'un enfant scolarisé à l'école Volontaires ont porté plainte à la mi-février au commissariat, d'après une source proche du dossier citée par l'AFP.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/periscolaire-a-paris-un-animateur-dune-ecole-du-xve-vise-par-trois-plaintes-pour-viol-sur-mineur-10-03-2026-ODNJZZILXJCGHFQHXTLJR7PLJ4.php",
+        "publie_le": "2026-03-10",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Le Parisien (article du 10 mars 2026), qui reprend une information de France Inter, l'animateur visé par trois plaintes pour viol sur mineur était alors « actuellement suspendu ».",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/periscolaire-a-paris-un-animateur-dune-ecole-du-xve-vise-par-trois-plaintes-pour-viol-sur-mineur-10-03-2026-ODNJZZILXJCGHFQHXTLJR7PLJ4.php",
+        "publie_le": "2026-03-10",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Les sources lues rapportent des plaintes : elles ne disent pas si une enquête judiciaire est ouverte sur ces plaintes ni où en est la procédure. Le 10 mars 2026, la famille d'un enfant de l'école Volontaires réclamait la désignation d'un juge d'instruction.",
+    "Le Parisien (10 mars 2026) rapporte que l'animateur est visé par trois plaintes et que les parents d'un enfant scolarisé à Volontaires ont porté plainte mi-février ; il ne précise pas combien des trois plaintes émanent de cette école.",
+    "Le dossier ne repose que sur 2 articles lus (ELLE, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Le Parisien) : la famille d’un enfant scolarisé à l’école Volontaires, qui a porté plainte mi-février, réclame la désignation d’un juge d’instruction ; son avocat appelle à « l’ouverture d’une information judiciaire dans les plus brefs délais ».",
+      "acteur": "Me Louis Cailliez, avocat de la famille d'un enfant de l'école Volontaires",
+      "qualite": "propos rapportés par Le Parisien (communiqué transmis à l’AFP)",
+      "date": "2026-03-10",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la lenteur de la procédure judiciaire, selon l'avocat de la famille",
+      "citations": [
+        {
+          "texte": "l’absence de célérité judiciaire est incompréhensible et place mes clients dans une situation très douloureuse et intenable",
+          "pour": "la lenteur de la procédure judiciaire, selon l'avocat de la famille"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/periscolaire-a-paris-un-animateur-dune-ecole-du-xve-vise-par-trois-plaintes-pour-viol-sur-mineur-10-03-2026-ODNJZZILXJCGHFQHXTLJR7PLJ4.php",
+        "publie_le": "2026-03-10",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "plainte",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Plainte",
+      "cat": "orange",
+      "texte": "Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien (10 mars 2026), qui reprend France Inter, l'animateur visé était alors « actuellement suspendu »."
+      ]
+    }
+  }
+}

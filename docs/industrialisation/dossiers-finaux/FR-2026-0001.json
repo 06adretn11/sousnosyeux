@@ -1,0 +1,180 @@
+{
+  "etat_actuel": [
+    "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.",
+    "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+  ],
+  "appel": false,
+  "faits": "Selon CNEWS, un animateur ayant exercé à l’école maternelle Aqueduc (Paris 10e) a été jugé puis condamné pour atteinte sexuelle sur une enfant. Selon l’AFP citée par Le Figaro, l’école Aqueduc était concernée par des faits d’agression sexuelle commis par un animateur sur une enfant.",
+  "deroule": [
+    {
+      "date": "2025-09-17",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon CNEWS, le signalement a été effectué le 17 septembre 2025 par la mère de la victime.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon l'AFP, une école du Xe arrondissement de Paris (l'école Aqueduc) est concernée par des faits d'agression sexuelle commis par un animateur sur une enfant.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/actualite-france/paris-trois-hommes-dont-deux-animateurs-interpelles-pour-des-agressions-sexuelles-sur-douze-enfants-20260320",
+        "publie_le": "2026-03-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
+          "publie_le": "2026-03-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": "justice",
+      "texte": "Selon Le Courrier des Stratèges, la justice a estimé les charges suffisantes pour une convocation par procès-verbal, assortie d’un contrôle judiciaire strict : interdiction de contact avec des mineurs et d’accès à l’établissement (détails rapportés par cette seule source). L’AFP, citée par franceinfo, mentionne elle aussi un placement sous contrôle judiciaire.",
+      "source": {
+        "media": "Le Courrier des Stratèges",
+        "url": "https://www.lecourrierdesstrateges.fr/paris-un-animateur-periscolaire-renvoye-devant-le-tribunal-pour-agression-sexuelle/",
+        "publie_le": "2026-03-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+          "publie_le": "2026-07-09",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "renvoi",
+      "acteur": null,
+      "texte": "Selon Le Courrier des Stratèges, un animateur de l'école Aqueduc a été renvoyé devant le tribunal correctionnel pour agression sexuelle.",
+      "source": {
+        "media": "Le Courrier des Stratèges",
+        "url": "https://www.lecourrierdesstrateges.fr/paris-un-animateur-periscolaire-renvoye-devant-le-tribunal-pour-agression-sexuelle/",
+        "publie_le": "2026-03-25",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-07-10",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Paris",
+      "texte": "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-07-10",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Paris",
+      "texte": "Selon CNEWS, dans son jugement du 10 juillet 2026, le tribunal a relevé la cohérence et la constance de la parole de l’enfant, face aux « déclarations évolutives » du mis en cause, et indiqué que celui-ci n’avait donné « aucune explication convaincante » sur les raisons pour lesquelles l’enfant l’aurait dénoncé.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.",
+    "Le dossier repose sur 6 médias (Le Parisien, Le Courrier des Stratèges, CNEWS, franceinfo, Le Journal du Dimanche, Le Figaro), soit 7 pages lues, dont deux adresses CNEWS au contenu identique.",
+    "Date des faits : non établie (une source isole « juillet 2025, lors d'un centre de loisirs », sans recoupement ; le signalement date du 17 septembre 2025)."
+  ],
+  "synthese": {
+    "decision": "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.",
+    "ouvert": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+  },
+  "reactions": [
+    {
+      "acteur": "Charles Héran, avocat de la famille",
+      "qualite": "propos rapportés par CNEWS",
+      "date": "2026-07-10",
+      "date_nature": "evenement",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la décision rendue",
+      "citations": [
+        {
+          "texte": "On est très satisfait de cette décision qui vient d'être rendue",
+          "pour": "la décision rendue"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par CNEWS. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Charles Héran, avocat de la famille",
+      "qualite": "propos rapportés par CNEWS",
+      "date": "2026-07-10",
+      "date_nature": "evenement",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la parole de l'enfant victime",
+      "citations": [
+        {
+          "texte": "On est content que la parole de cette enfant ait été entendue",
+          "pour": "la parole de l'enfant victime"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par CNEWS. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "10 juillet 2026 · Tribunal correctionnel de Paris",
+      "cat": "red",
+      "texte": "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Aucun appel rapporté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+      ]
+    }
+  }
+}

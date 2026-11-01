@@ -1,0 +1,53 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien (27 mars 2026), un animateur périscolaire a été suspendu après des accusations de viol visant un enfant de l'école maternelle Voltaire (11e). Une enquête a été ouverte et confiée à la brigade de protection des mineurs.",
+    "L'ouverture d'une enquête ne vaut pas culpabilité."
+  ],
+  "deroule": [
+    {
+      "date": "2026-03-20",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": "Parents, directrice de l'école",
+      "texte": "Selon Le Parisien, qui cite une source policière, les faits présumés se seraient déroulés le 20 mars. Alertés par les mots de leur enfant, les parents contactent la directrice, qui procède à un signalement ; un avis est fait au parquet.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
+        "publie_le": "2026-03-27",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-03",
+      "date_nature": "approximative",
+      "type": "mesure_etablissement",
+      "acteur": "Employeur (non précisé)",
+      "texte": "Selon Le Parisien, l'animateur mis en cause est suspendu sans délai, à la suite du signalement.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
+        "publie_le": "2026-03-27",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-03",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": "Mère de l'enfant",
+      "texte": "Quelques jours après les faits présumés, la mère dépose plainte au commissariat du 11e arrondissement. Selon Le Parisien, l'enquête est désormais ouverte et confiée à la brigade de protection des mineurs.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/paris-un-animateur-periscolaire-suspendu-pour-un-viol-sur-un-enfant-de-trois-ans-27-03-2026-RC37EXX6FRCSPLA2SQC6PL2HKI.php",
+        "publie_le": "2026-03-27",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucune suite postérieure à mars 2026 n'a été trouvée.",
+    "La date d'ouverture de l'enquête n'est pas précisée."
+  ],
+  "statut_affiche": "enquête",
+  "faits": "Selon Le Parisien (27 mars 2026), qui cite une source policière, des faits présumés se seraient déroulés le 20 mars à l'école maternelle Voltaire (11e) ; après le signalement de la directrice, l'animateur mis en cause a été suspendu sans délai. La mère de l'enfant a déposé plainte et, selon le journal, l'enquête est ouverte et confiée à la brigade de protection des mineurs. Ces faits sont allégués."
+}

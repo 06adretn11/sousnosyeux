@@ -1,0 +1,217 @@
+{
+  "etat_actuel": [
+    "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs.",
+    "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
+  ],
+  "appel": false,
+  "faits": "Selon Ouest-France, les faits sont survenus dans une école maternelle de La Courneuve. Selon Ouest-France, l'ordinateur du suspect a été saisi mais aucun fichier ni image ni pédopornographique n'a été retrouvé.",
+  "deroule": [
+    {
+      "date": "2025-02-07",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Femme Actuelle, l'affaire commence le 7 février 2025, lorsqu'une élève révèle à sa mère des faits imputés à son enseignant.",
+      "source": {
+        "media": "Femme Actuelle",
+        "url": "https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908",
+        "publie_le": "2026-03-28",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "directrice de l'école Charlie-Chaplin",
+      "texte": "Selon Le Parisien, la directrice de l'école a adressé un signalement au parquet après avoir reçu la mère d'une fillette le 7 février.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Femme Actuelle, une plainte a été déposée et les faits ont été détaillés par l'élève auprès des enquêteurs de la brigade des mineurs.",
+      "source": {
+        "media": "Femme Actuelle",
+        "url": "https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908",
+        "publie_le": "2026-03-28",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
+          "publie_le": "2026-03-30",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": null,
+      "texte": "Selon Ouest-France, dans le cadre de l'enquête, tous les autres enfants de la classe ont été interrogés.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
+        "publie_le": "2026-03-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+          "publie_le": "2025-12-17",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'enseignant mis en cause a été immédiatement suspendu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'enseignant mis en cause fait l'objet d'un contrôle judiciaire lui interdisant de travailler avec des mineurs et l'obligeant à suivre des soins, maintenu en attendant le procès.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-12-12",
+      "date_nature": "evenement",
+      "type": "renvoi",
+      "acteur": "tribunal correctionnel de Bobigny",
+      "texte": "Selon Le Parisien (article du 17 décembre 2025), l'enseignant, convoqué le 12 décembre 2025 devant le tribunal correctionnel de Bobigny, n'a pas été jugé ce jour-là : à l'audience, le tribunal a renvoyé le procès au 27 mars après avoir demandé aux deux plaignantes non représentées si elles souhaitaient un avocat.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "tribunal",
+      "texte": "Selon Femme Actuelle, lors de son audience, l'enseignant a nié les faits qui lui sont reprochés.",
+      "source": {
+        "media": "Femme Actuelle",
+        "url": "https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908",
+        "publie_le": "2026-03-28",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-03-27",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Bobigny",
+      "texte": "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
+        "publie_le": "2026-03-30",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "appel",
+      "acteur": null,
+      "texte": "Selon Femme Actuelle, l'enseignant souhaite faire appel de cette décision de justice, ce qu'a confirmé son avocat.",
+      "source": {
+        "media": "Femme Actuelle",
+        "url": "https://www.femmeactuelle.fr/actu/news-actu/un-enseignant-de-maternelle-condamne-pour-agression-sexuelle-sur-trois-fillettes-de-4-ans-a-la-courneuve-2205908",
+        "publie_le": "2026-03-28",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
+          "publie_le": "2026-03-30",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Appel : annoncé (Femme Actuelle) ; dépôt effectif et suites non confirmés dans les sources lues.",
+    "Le dossier ne repose que sur 3 articles lus (Ouest-France, Femme Actuelle, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs.",
+    "ouvert": "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
+  },
+  "reactions": [
+    {
+      "acteur": "Me David Curiel, avocat du prévenu",
+      "qualite": "propos rapportés par Le Parisien le 17 décembre 2025, avant le procès et la condamnation du 27 mars 2026 (contexte historique)",
+      "date": "2025-12-17",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "le parcours de son client dans l'école et l'absence de signalement antérieur",
+      "citations": [
+        {
+          "texte": "Mon client travaille depuis des années comme professeur auprès des enfants dans cette école et n’a jamais eu de souci ou fait l’objet d’un signalement quelconque",
+          "pour": "le parcours de son client dans l'école et l'absence de signalement antérieur"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "27 mars 2026 · Tribunal correctionnel de Bobigny",
+      "cat": "red",
+      "texte": "Le tribunal correctionnel de Bobigny a condamné l'enseignant à quatre ans de prison dont deux ferme, avec obligation de soins, indemnisation des victimes et interdiction d'exercer un métier en lien avec des mineurs."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Appel annoncé",
+      "meta": "selon Femme Actuelle",
+      "cat": "orange",
+      "lignes": [
+        "Un appel est annoncé (Femme Actuelle) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien, l'enseignant mis en cause a été immédiatement suspendu."
+      ]
+    }
+  }
+}

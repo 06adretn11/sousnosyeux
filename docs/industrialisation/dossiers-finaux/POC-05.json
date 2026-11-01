@@ -1,0 +1,124 @@
+{
+  "etat_actuel": [
+    "Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute sérieux ».",
+    "Le même jugement l'a en revanche condamné à huit mois de prison avec sursis pour harcèlement sexuel sur deux collègues (il est relaxé de l'agression sexuelle visée sur l'une d'elles).",
+    "Le parquet de Paris a annoncé le 8 juillet faire appel de la relaxe, pour une partie seulement des faits reprochés : celle-ci n'est donc pas définitive sur ce point et la procédure se poursuit."
+  ],
+  "appel": true,
+  "lecture": "Le jugement contient deux décisions distinctes : une relaxe pour les faits visant des enfants, une condamnation pour des faits visant des collègues. Parler seulement de « relaxe » est incomplet ; parler de « condamnation » serait faux pour les faits visant les enfants.",
+  "deroule": [
+    {
+      "date": "2025-04-09",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": "Directeur de l'école",
+      "texte": "Le directeur transmet une « information préoccupante » à propos du comportement d'un animateur, après l'inquiétude de parents.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04-09",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "Employeur (non précisé)",
+      "texte": "L'animateur est suspendu de ses fonctions dès le 9 avril.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04-11",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": "Parents",
+      "texte": "Un courrier d'autres parents ayant déposé plainte est joint à la procédure. Le parquet des mineurs saisit la brigade de protection des mineurs.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-06",
+      "date_nature": "approximative",
+      "type": "garde_a_vue",
+      "acteur": "Police judiciaire",
+      "texte": "L'animateur est placé en garde à vue fin juin.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-05-26",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "Tribunal correctionnel de Paris",
+      "texte": "Le procès se tient ; les faits poursuivis couvrent la période de septembre 2024 à avril 2025. Le ministère public requiert trois ans de prison dont un an ferme sous bracelet électronique. Le prévenu nie en bloc ; il reconnaît seulement un manque de distance avec les enfants.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
+        "publie_le": "2026-05-27",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-07-07",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "Tribunal correctionnel de Paris",
+      "texte": "Jugement rendu le 7 juillet : relaxe pour les agressions sexuelles sur mineurs. Condamnation à huit mois de prison avec sursis pour harcèlement sexuel sur deux collègues, avec obligation de soins ; relaxe en revanche de l'agression sexuelle visée sur l'une d'elles.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
+        "publie_le": "2026-07-07",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-07-08",
+      "date_nature": "evenement",
+      "type": "appel",
+      "acteur": "Parquet de Paris",
+      "texte": "Le parquet annonce faire appel de la relaxe. L'appel ne porte que sur une partie des enfants concernés par le procès. Le ministre de la Justice écrit sur X que cette décision d'appel est conforme à ses instructions de politique pénale « qui appellent à la plus grande fermeté ».",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+        "publie_le": "2026-07-09",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-07-09",
+      "date_nature": "evenement",
+      "type": "mobilisation",
+      "acteur": "Parents, collectif #MeTooEcole",
+      "texte": "Le jeudi 9 juillet, une centaine de parents se réunissent devant l'école pour contester la relaxe ; des familles de l'école Titon sont venues les soutenir, ainsi que des conseillers de Paris. La cofondatrice du collectif #MeTooEcole critique la manière dont le tribunal a interprété les auditions des enfants.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+        "publie_le": "2026-07-09",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Date de l'audience d'appel : non trouvée au 29 octobre 2026 (recherche de presse ; franceinfo, ICI, France 3, BFMTV).",
+    "Aucune source lue ne dit si la condamnation pour harcèlement sexuel sur des collègues a fait l'objet d'un appel : son caractère définitif n'est pas documenté.",
+    "Les motifs ne sont connus que par la presse : le jugement n'est pas public.",
+    "Le nombre d'enfants concernés diffère selon les articles (procès, calendrier du parquet) : SNY ne le reprend pas.",
+    "Une constitution de partie civile d'associations est évoquée ailleurs ; elle n'est pas confirmée par les articles relus."
+  ],
+  "statut_affiche": "relaxe / non-lieu / classement",
+  "faits": "Selon franceinfo, un animateur périscolaire de l'école maternelle Alphonse-Baudin, suspendu le 9 avril 2025 après l'inquiétude de parents, était jugé pour agressions sexuelles sur des élèves et pour harcèlement sexuel sur deux collègues. Le tribunal l'a relaxé des agressions sexuelles sur mineurs le 7 juillet 2026 et condamné pour le harcèlement de collègues ; le parquet a annoncé faire appel de la relaxe. Ces faits sont allégués."
+}

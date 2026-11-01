@@ -1,0 +1,75 @@
+{
+  "etat_actuel": [
+    "Selon le parquet de Paris, cité par Le Figaro et par une dépêche AFP (6-7 février 2026), un animateur de l'école a été mis en examen le 6 février pour des faits d'agression sexuelle sur mineur, d'exhibition sexuelle et de corruption de mineur, et placé sous contrôle judiciaire, avec l'interdiction d'entrer en contact avec les victimes.",
+    "Une mise en examen n'est pas une condamnation."
+  ],
+  "statut_affiche": "mise en examen",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "Ville de Paris",
+      "texte": "Trois animateurs de l'école sont suspendus depuis la rentrée ; selon la mairie de Paris, ils sont soupçonnés respectivement de « faits à caractère sexuel », d'« exhibition » et de « faits d'agression sexuelle ». La mairie dépose plainte et met en place des permanences d'écoute et un suivi psychologique pour les familles et les enfants.",
+      "source": {
+        "media": "France 3 Paris Île-de-France",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/agression-sexuelle-exhibition-trois-animateurs-d-ecole-maternelle-suspendus-a-paris-apres-des-soupcons-de-faits-a-caractere-sexuel-3234806.html",
+        "publie_le": "2025-10-17",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "Mère d'une élève, avocat Arié Alimi",
+      "texte": "Une plainte pour viol aggravé avec constitution de partie civile, destinée à faire désigner un juge d'instruction, est annoncée à l'AFP le 13 novembre par l'avocat de la mère d'une élève, contre un animateur de la Ville ; selon l'avocat, l'animateur visé travaillait à l'école Bullourde.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "contradiction",
+      "acteur": "Mère d'une élève ; Ville de Paris",
+      "texte": "Selon le récit d'une mère rapporté par franceinfo, près de deux semaines se sont écoulées entre le signalement à la direction du périscolaire et l'information des parents. La Ville affirme, elle, que les agents visés ont été retirés du terrain et suspendus dès la connaissance des alertes. Les deux versions sont rapportées ; SNY ne les tranche pas.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-02-06",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "Parquet de Paris",
+      "texte": "Le 6 février, un animateur périscolaire de l'école est mis en examen et placé sous contrôle judiciaire, conformément aux réquisitions du parquet (selon une dépêche AFP). Selon Le Figaro, qui reprend une information de BFMTV, l'homme a reconnu « une certaine proximité » avec des enfants mais nié tout geste à connotation sexuelle.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/un-animateur-scolaire-mis-en-examen-pour-agressions-sexuelles-sur-des-enfants-de-maternelle-20260206",
+        "publie_le": "2026-02-06",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Minute (dépêche AFP)",
+          "url": "https://laminute.info/2026/02/07/paris-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-sur-mineur/",
+          "publie_le": "2026-02-07",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Trois animateurs ont été suspendus : les articles relus ne disent pas si l'animateur mis en examen est l'un d'eux, ni s'il est celui visé par la plainte pour viol aggravé. L'identité entre ces procédures n'est pas établie.",
+    "Les qualifications diffèrent selon les sources (viol aggravé dans la plainte, agression sexuelle et exhibition dans la mise en examen).",
+    "Aucune suite postérieure à février 2026 n'a été trouvée."
+  ],
+  "faits": "Selon la mairie de Paris, trois animateurs de l'école Bullourde ont été suspendus depuis la rentrée 2025, soupçonnés respectivement de faits distincts à caractère sexuel. Selon l'avocat d'une mère, une plainte pour « viol aggravé » avec constitution de partie civile vise un animateur de la Ville travaillant à cette école. Selon le parquet de Paris, un animateur a été mis en examen le 6 février 2026 pour agression sexuelle sur mineur, exhibition sexuelle et corruption de mineur, et placé sous contrôle judiciaire. Les sources lues ne disent pas si ces procédures visent la même personne. Ces faits sont allégués ; une mise en examen n'est pas une condamnation."
+}

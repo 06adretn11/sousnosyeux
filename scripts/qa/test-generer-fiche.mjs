@@ -627,6 +627,17 @@ t('chronologie qui rapporte un classement/verdict sans issue établie → point 
   const cond = composer({ c: carte('condamnation non définitive'), extractions: [ext(doc(), { evenements: [E({ type: 'decision', texte: 'Selon CNEWS, le tribunal a condamné l’animateur à 18 mois avec sursis.', date: '2026-07-10', citation: 'x' })] })] });
   assert.ok(!cond.dossier.inconnues.some((i) => /Aucune décision rendue/.test(i)) && cond.dossier.inconnues.some((i) => /Issue de la procédure à documenter/.test(i)));
   assert.ok(!JSON.stringify(cond.dossier.situation ?? {}).includes('Aucune décision rendue'));
+  // Sans jugement documenté : le libellé dit « jugement sur le fond », jamais « aucune décision » (un contrôle judiciaire, une détention ou un classement sont des décisions).
+  const sans = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Selon CNEWS, l’animateur a été mis en examen.', date: '2026-01-10', citation: 'x' })] })] });
+  assert.ok(sans.dossier.inconnues.some((i) => /Aucun jugement sur le fond n’est rapporté/.test(i)) && !JSON.stringify(sans.dossier).includes('Aucune décision rendue'));
+});
+t('aperçu de revue : fidèle à la page — blocs `situation` rendus, jamais de fausse absence de faits ni de mesures, réaction sans citation (paraphrase seule) acceptée', () => {
+  const d = { situation: { decision: { label: 'Décision', titre: 'Relaxe', texte: 'Le tribunal a relaxé.' }, suite: { label: 'Suite', titre: 'Jugement sur le fond non documenté', lignes: ['Appel annoncé.'] } },
+    deroule: [{ date: '2026-03-01', date_nature: 'evenement', type: 'suspension', texte: 'Selon X, l’agent est suspendu.', source: { media: 'X', url: 'https://x/a' } }],
+    reactions: [{ acteur: 'La défense', qualite: 'propos rapportés', paraphrase: 'Selon X, la défense conteste.', citations: [], source: { media: 'X', url: 'https://x/a' } }], inconnues: [] };
+  const md = rendreMarkdown({ c: { case_id: 'T-1', etablissement: 'École', commune: 'Ville', type_structure: 'maternelle', role_mis_en_cause: 'animateur', statut_judiciaire: 'relaxe / non-lieu / classement' }, dossier: d, generation: { qualification: 'A_REVOIR', blocages: [], attention: [], sources: [], ecartes: [], stats: {}, cout: {} } }, { complet: false });
+  assert.match(md, /Relaxe/); assert.match(md, /Jugement sur le fond non documenté/); assert.match(md, /l’agent est suspendu/); assert.match(md, /la défense conteste/);
+  assert.ok(!/Aucun fait rapporté|Aucune mesure documentée/.test(md));
 });
 t('garde-fou judiciaire : issue perdue alors que sa source est toujours retenue → régression (variance), version précédente conservée', () => {
   assert.deepEqual(regressionJudiciaire(genIssue('classement 2019-06', 'https://x/a'), genIssue(null, 'https://x/a')), { avant: 'classement 2019-06', apres: null });

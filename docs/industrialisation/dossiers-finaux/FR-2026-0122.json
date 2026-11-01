@@ -1,0 +1,397 @@
+{
+  "etat_actuel": [
+    "Selon L’Indépendant (AFP), l’intervenant extérieur à l’école maternelle privée Saint-Laurent à Paris a été présenté à un juge puis mis en examen et écroué (placé en détention provisoire conformément aux réquisitions du parquet), soupçonné de viol, agression sexuelle et violence sur plusieurs enfants."
+  ],
+  "appel": false,
+  "faits": "Selon Midi Libre (AFP), l'intervenant extérieur exerçait au sein de l'école privée Saint-Laurent, dans le Xe arrondissement de Paris, établissement catholique privé sous contrat d'association avec l'État. Selon Midi Libre (AFP), l'intervenant, employé par une société prestataire, est intervenu dans cette école de septembre 2025 au 23 juin 2026.",
+  "deroule": [
+    {
+      "date": "2026-06-23",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": "directrice de l'école",
+      "texte": "Selon le parquet, la directrice de l'école avait signalé au procureur, le 23 juin 2026, le dépôt de plainte du père d'une fillette au sujet d’un intervenant extérieur.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/09/24/un-intervenant-dans-une-ecole-maternelle-ecroue-pour-viol-agression-et-violence-sur-22-enfants",
+        "publie_le": "2026-09-24",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Monde",
+          "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Indépendant",
+          "url": "https://www.lindependant.fr/2026/09/25/soupconne-de-viol-agression-sexuelle-et-violence-sur-22-enfants-un-intervenant-en-anglais-dans-une-ecole-maternelle-mis-en-examen-13568944.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/societe/30805939822102/scandale-du-periscolaire-a-paris-garde-a-vue-dun-enseignant-suspecte-dabus-sexuels-sur-une-fillette-de-3-ans",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-23",
+      "date_nature": "evenement",
+      "type": "enquete",
+      "acteur": "parquet de Paris",
+      "texte": "Selon Midi Libre (AFP), la section du parquet de Paris en charge des mineurs a saisi le commissariat du 10e arrondissement de la centralisation des plaintes, avant leur transmission à la Brigade de protection des mineurs.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Monde",
+          "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/09/24/un-intervenant-dans-une-ecole-maternelle-ecroue-pour-viol-agression-et-violence-sur-22-enfants",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Indépendant",
+          "url": "https://www.lindependant.fr/2026/09/25/soupconne-de-viol-agression-sexuelle-et-violence-sur-22-enfants-un-intervenant-en-anglais-dans-une-ecole-maternelle-mis-en-examen-13568944.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/societe/30805939822102/scandale-du-periscolaire-a-paris-garde-a-vue-dun-enseignant-suspecte-dabus-sexuels-sur-une-fillette-de-3-ans",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-23",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "la société prestataire, employeur de l’intervenant",
+      "texte": "Selon le parquet, l'intervenant a été suspendu de ses fonctions le 23 juin 2026 ; la société prestataire indique l'avoir immédiatement écarté de toute intervention auprès des élèves à titre conservatoire.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+        "publie_le": "2026-09-24",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "L'Indépendant",
+          "url": "https://www.lindependant.fr/2026/09/25/soupconne-de-viol-agression-sexuelle-et-violence-sur-22-enfants-un-intervenant-en-anglais-dans-une-ecole-maternelle-mis-en-examen-13568944.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/09/24/un-intervenant-dans-une-ecole-maternelle-ecroue-pour-viol-agression-et-violence-sur-22-enfants",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/societe/30805939822102/scandale-du-periscolaire-a-paris-garde-a-vue-dun-enseignant-suspecte-dabus-sexuels-sur-une-fillette-de-3-ans",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Journal du Dimanche (d’après Le Parisien), une enquête a été ouverte après la plainte de parents d’une fillette ; plusieurs autres plaintes ont depuis été déposées contre l’intervenant pour viols, agressions sexuelles et violence.",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+        "publie_le": "2026-09-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nouveau-scandale-de-pedophilie-dans-une-ecole-maternelle-a-paris-un-professeur-danglais-en-garde-a-vue-22-09-2026-QZW66NOKHRGD5ABBAJBQIQPVGM.php",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "direction de l'école",
+      "texte": "Selon Le Journal du Dimanche, une cellule d'écoute psychologique a été mise en place.",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+        "publie_le": "2026-09-22",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-09-22",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Journal du Dimanche, l'homme a été placé en garde à vue dans la matinée du mardi 22 septembre.",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+        "publie_le": "2026-09-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Monde",
+          "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/09/24/un-intervenant-dans-une-ecole-maternelle-ecroue-pour-viol-agression-et-violence-sur-22-enfants",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Indépendant",
+          "url": "https://www.lindependant.fr/2026/09/25/soupconne-de-viol-agression-sexuelle-et-violence-sur-22-enfants-un-intervenant-en-anglais-dans-une-ecole-maternelle-mis-en-examen-13568944.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nouveau-scandale-de-pedophilie-dans-une-ecole-maternelle-a-paris-un-professeur-danglais-en-garde-a-vue-22-09-2026-QZW66NOKHRGD5ABBAJBQIQPVGM.php",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le télégramme",
+          "url": "https://www.letelegramme.fr/france/soupcons-de-viols-sur-des-enfants-de-maternelle-un-intervenant-en-anglais-en-garde-a-vue-a-paris-7123375.php",
+          "publie_le": "2026-09-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-24",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "juge d'instruction",
+      "texte": "Selon L’Indépendant (AFP), l’intervenant extérieur à l’école maternelle privée Saint-Laurent à Paris a été présenté à un juge puis mis en examen et écroué (placé en détention provisoire conformément aux réquisitions du parquet), soupçonné de viol, agression sexuelle et violence sur plusieurs enfants.",
+      "source": {
+        "media": "L'Indépendant",
+        "url": "https://www.lindependant.fr/2026/09/25/soupconne-de-viol-agression-sexuelle-et-violence-sur-22-enfants-un-intervenant-en-anglais-dans-une-ecole-maternelle-mis-en-examen-13568944.php",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/09/25/penetrations-coups-et-attouchements-un-intervenant-en-maternelle-mis-en-examen-pour-des-violences-sexuelles-sur-22-tres-jeunes-enfants-13568108.php",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/faits-divers/periscolaire-a-paris-l-intervenant-en-anglais-soupconne-de-violences-sexuelles-en-maternelle-presente-a-la-justice-20260924",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Monde",
+          "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/09/24/un-intervenant-dans-une-ecole-maternelle-ecroue-pour-viol-agression-et-violence-sur-22-enfants",
+          "publie_le": "2026-09-24",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Date du signalement et de la suspension : le parquet (AFP) indique le 23 juin 2026, La Provence le 22 juin ; la fiche retient la date du parquet.",
+    "Le dossier repose sur 9 articles lus (Le Monde, Le Figaro, Midi Libre (AFP), Le Journal du Dimanche, L’Indépendant, La Provence, Le Dauphiné Libéré, Le Parisien, Le Télégramme), dont plusieurs reprises d’une même dépêche AFP ou d’une information du Parisien : ils ne sont pas autant de confirmations indépendantes."
+  ],
+  "synthese": {
+    "decision": "Selon L’Indépendant (AFP), l’intervenant extérieur à l’école maternelle privée Saint-Laurent à Paris a été présenté à un juge puis mis en examen et écroué (placé en détention provisoire conformément aux réquisitions du parquet), soupçonné de viol, agression sexuelle et violence sur plusieurs enfants."
+  },
+  "reactions": [
+    {
+      "acteur": "Philippe Benamou, avocat du mis en examen",
+      "qualite": "propos rapportés par Le Monde",
+      "date": "2026-09-24",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "les charges et la stratégie de la défense",
+      "citations": [
+        {
+          "texte": "Il faut des charges consistantes pour soutenir de telles accusations, que la défense va désormais s’employer à dissiper",
+          "pour": "les charges et la stratégie de la défense"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Monde. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+        "publie_le": "2026-09-24",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Antonin Gravelin-Rodriguez, avocat de plusieurs parents d’élèves",
+      "qualite": "propos rapportés par Le Monde",
+      "date": "2026-09-24",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la gestion de l’affaire et la recherche des responsabilités institutionnelles",
+      "citations": [
+        {
+          "texte": "Cette affaire n’a pas été gérée en interne comme elle aurait dû. Au drame humain s’ajoute la légèreté blâmable de responsables manifestement inconséquents",
+          "pour": "la gestion de l'affaire et la responsabilité des responsables"
+        },
+        {
+          "texte": "Nous veillerons à ce que la lumière soit faite sur les dysfonctionnements institutionnels et à ce que toutes les responsabilités qui doivent l’être soient engagées",
+          "pour": "la recherche des responsabilités institutionnelles"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Monde. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/09/24/a-paris-un-intervenant-en-anglais-ecroue-pour-viol-agression-sexuelle-et-violence-sur-22-enfants-de-maternelle_6781580_3224.html",
+        "publie_le": "2026-09-24",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Le Journal du Dimanche) : Dans un courriel adressé aux parents, elle a assuré que « toutes les démarches auprès des autorités judiciaires » ont été engagées.",
+      "acteur": "direction de l’école Saint-Laurent",
+      "qualite": "propos rapportés par Le Journal du Dimanche",
+      "date": "2026-09-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "démarches engagées auprès des autorités judiciaires",
+      "citations": [
+        {
+          "texte": "toutes les démarches auprès des autorités judiciaires",
+          "pour": "démarches engagées auprès des autorités judiciaires"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Journal du Dimanche. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/nouveau-scandale-de-pedocriminalite-a-paris-un-professeur-accuse-dabus-sexuels-dans-une-ecole-maternelle-184086",
+        "publie_le": "2026-09-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "24 septembre 2026 · Juge d'instruction",
+      "cat": "blue",
+      "texte": "Selon L’Indépendant (AFP), l’intervenant extérieur à l’école maternelle privée Saint-Laurent à Paris a été présenté à un juge puis mis en examen et écroué (placé en détention provisoire conformément aux réquisitions du parquet), soupçonné de viol, agression sexuelle et violence sur plusieurs enfants."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon le parquet, l'intervenant a été suspendu de ses fonctions le 23 juin 2026 ; la société prestataire indique l'avoir immédiatement écarté de toute intervention auprès des élèves à titre conservatoire.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Journal du Dimanche, une cellule d'écoute psychologique a été mise en place."
+      ]
+    }
+  }
+}

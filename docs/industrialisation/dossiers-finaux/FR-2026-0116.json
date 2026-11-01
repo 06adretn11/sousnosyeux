@@ -1,0 +1,189 @@
+{
+  "etat_actuel": [
+    "Selon le parquet de Dax, cité par Sud Ouest, l’enseignant remplaçant mis en cause a été placé sous contrôle judiciaire, avec interdiction d’exercer une activité en contact avec des mineurs, et sera jugé selon la procédure de comparution à délai différé. Aucune date d’audience n’est rapportée.",
+    "Il bénéficie de la présomption d’innocence, rappelle le parquet."
+  ],
+  "statut_libelle": "Jugement annoncé, audience non rapportée",
+  "appel": false,
+  "faits": "Selon Sud Ouest, un enseignant remplaçant de l’école de Mées est soupçonné d’agression sexuelle sur une élève de maternelle ; les faits auraient été commis le 15 septembre 2026.",
+  "deroule": [
+    {
+      "date": "2026-09-15",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Sud Ouest, les faits reprochés à l’enseignant remplaçant auraient été commis le 15 septembre au sein de l’école de Mées.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+        "publie_le": "2026-09-29",
+        "acces": "partiel"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon ICI Gascogne, une famille a déposé plainte pour violences sexuelles sur un élève de maternelle de l’école de Mées.",
+      "source": {
+        "media": "ICI Gascogne",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+          "publie_le": "2026-09-25",
+          "acces": "partiel"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "Éducation nationale",
+      "texte": "Selon ICI Gascogne, les services de l’Éducation nationale ont écarté l’enseignant remplaçant le soir même où ils ont appris la plainte, et l’ont suspendu pour quatre mois le temps de la procédure judiciaire.",
+      "source": {
+        "media": "ICI Gascogne",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+          "publie_le": "2026-09-25",
+          "acces": "partiel"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon ICI Gascogne, l’enseignant a été placé en garde à vue dans les jours précédant le 25 septembre, après la plainte de la famille.",
+      "source": {
+        "media": "ICI Gascogne",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+          "publie_le": "2026-09-25",
+          "acces": "partiel"
+        },
+        {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+          "publie_le": "2026-09-29",
+          "acces": "partiel"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-21",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "DSDEN des Landes",
+      "texte": "Selon ICI Gascogne, la direction des services départementaux de l’Éducation nationale a mis en place une cellule d’écoute psychologique au sein de l’école du lundi 21 au vendredi 25 septembre.",
+      "source": {
+        "media": "ICI Gascogne",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+        "publie_le": "2026-09-25",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+          "publie_le": "2026-09-25",
+          "acces": "partiel"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-23",
+      "date_nature": "evenement",
+      "type": "mesure_etat",
+      "acteur": "Éducation nationale, gendarmerie, parquet, Adavem",
+      "texte": "Selon le parquet cité par Sud Ouest, une réunion publique s’est tenue le 23 septembre à la mairie de Mées, à l’initiative de l’inspectrice d’académie, en présence des parents d’élèves, du commandant de compagnie de gendarmerie de Dax, de l’association d’aide aux victimes Adavem et du procureur de la République.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+        "publie_le": "2026-09-29",
+        "acces": "partiel"
+      },
+      "sources_complementaires": [
+        {
+          "media": "ICI Gascogne",
+          "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-29",
+      "date_nature": "evenement",
+      "type": "communication_parquet",
+      "acteur": "parquet de Dax",
+      "texte": "Selon Sud Ouest, le parquet de Dax a confirmé qu’un enseignant avait fait l’objet d’une enquête pénale pour agression sexuelle sur mineur de moins de 15 ans, et a indiqué que « les investigations ont établi qu’il s’agit d’un fait isolé et que l’intéressé n’a aucun antécédent judiciaire ».",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+        "publie_le": "2026-09-29",
+        "acces": "partiel"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": "parquet de Dax",
+      "texte": "Selon le parquet cité par Sud Ouest, l’enseignant, présenté au parquet de Dax après sa garde à vue, a été placé sous contrôle judiciaire, avec notamment l’interdiction d’exercer une activité en contact avec les mineurs.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+        "publie_le": "2026-09-29",
+        "acces": "partiel"
+      },
+      "sources_complementaires": [
+        {
+          "media": "ICI Gascogne",
+          "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
+          "publie_le": "2026-09-25",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "renvoi",
+      "acteur": "parquet de Dax",
+      "texte": "Selon le parquet cité par Sud Ouest, l’enseignant sera jugé selon la procédure de comparution à délai différé ; aucune date d’audience n’est rapportée.",
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
+        "publie_le": "2026-09-29",
+        "acces": "partiel"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue. Aucune date d’audience n’est rapportée (recherche de presse du 29 octobre 2026).",
+    "La date de l’écartement de l’enseignant n’est pas établie : ICI Gascogne la situe au 17 puis au 18 septembre dans le même article.",
+    "Le dossier ne repose que sur 3 articles (Sud Ouest ×2, partiellement en accès abonnés, et ICI Gascogne).",
+    "Le type d’école n’est pas établi : « école maternelle » dans un passage de Sud Ouest du 25 septembre, « école élémentaire » dans deux passages de Sud Ouest des 25 et 29 septembre ; les articles parlent d’une élève de maternelle sans trancher le type de l’établissement. Le dossier emploie donc « école de Mées »."
+  ],
+  "statut_affiche": "procès"
+}

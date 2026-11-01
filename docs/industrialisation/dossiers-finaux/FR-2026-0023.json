@@ -1,0 +1,54 @@
+{
+  "etat_actuel": [
+    "Selon 20 minutes (8 décembre 2025), la mère d'une élève de maternelle a déposé plainte un samedi pour agression sexuelle et violences sur mineur contre un animateur de l'école de la rue Faidherbe. Le parquet de Paris n'avait pas pu confirmer l'information ; selon une source policière citée par le journal, une enquête préliminaire était ouverte.",
+    "Le dépôt d'une plainte ne vaut pas culpabilité."
+  ],
+  "statut_affiche": "enquête",
+  "deroule": [
+    {
+      "date": "2025-11",
+      "date_nature": "approximative",
+      "type": "mesure_etablissement",
+      "acteur": "Employeur (non précisé)",
+      "texte": "Selon 20 minutes, qui cite Le Parisien, deux animateurs de l'école avaient déjà été suspendus en novembre, l'un après un signalement pour des faits d'agression sexuelle. L'article ne dit pas si la plainte ci-dessous vise l'un d'eux.",
+      "source": {
+        "media": "20 minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle",
+        "publie_le": "2025-12-08",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "Mère d'une élève",
+      "texte": "Plainte déposée « samedi » (le samedi précédant l'article du lundi 8 décembre) pour agression sexuelle et violences sur mineur. Les parents disent avoir constaté un changement de comportement de l'enfant depuis la rentrée.",
+      "source": {
+        "media": "20 minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle",
+        "publie_le": "2025-12-08",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "Source policière citée par 20 minutes",
+      "texte": "Selon une source policière citée par 20 minutes, une enquête préliminaire est ouverte. Le parquet de Paris n'a pas pu confirmer l'information au journal.",
+      "source": {
+        "media": "20 minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle",
+        "publie_le": "2025-12-08",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Ouverture officielle d'une enquête : non confirmée par le parquet dans l'article ; elle repose sur une source policière.",
+    "Aucune suite postérieure à décembre 2025 n'a été trouvée.",
+    "La plainte vise-t-elle l'un des deux animateurs déjà suspendus ? Les articles lus ne le disent pas."
+  ],
+  "faits": "Selon 20 minutes (8 décembre 2025), la mère d'une élève de maternelle a déposé plainte pour agression sexuelle et violences sur mineur contre un animateur de l'école de la rue Faidherbe. Le parquet de Paris n'a pas pu confirmer l'information ; selon une source policière citée par le journal, une enquête préliminaire est ouverte. Selon le même article, qui cite Le Parisien, deux animateurs de l'école avaient été suspendus en novembre ; le lien entre ces suspensions et la plainte n'est pas établi. Ces faits sont allégués."
+}

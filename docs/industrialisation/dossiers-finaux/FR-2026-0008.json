@@ -1,0 +1,184 @@
+{
+  "etat_actuel": [
+    "Selon France Culture, la mairie du 14e arrondissement a annoncé avoir saisi le procureur de la République et initié une enquête administrative (non judiciaire). L'ouverture d'une enquête judiciaire n'est pas rapportée par les sources lues ; la suite donnée à la saisine du procureur est inconnue."
+  ],
+  "appel": false,
+  "faits": "Selon France Culture, trois animateurs de l'école maternelle Boulard, dans le 14e arrondissement de Paris, ont été suspendus mi-février après des signalements de violences sexuelles. Selon France Culture, deux animateurs sont soupçonnés de comportements inappropriés, dont certains à caractère sexuel, et un troisième est accusé de viol.",
+  "deroule": [
+    {
+      "date": "2026-03-08",
+      "date_nature": "evenement",
+      "type": "mesure_collectivite",
+      "acteur": "Direction des affaires scolaires (Dasco) de la Ville de Paris",
+      "texte": "Selon Le Parisien, l'information sur ces suspensions a été communiquée aux familles par un mail de la Direction des affaires scolaires (Dasco) de la Ville de Paris le dimanche 8 mars, la veille du retour en classe.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France Culture",
+          "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+          "publie_le": "2026-03-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-03-10",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon France Culture, une réunion d'information sur des cas de violences sexuelles dans le périscolaire s'est tenue le 10 mars à l'école maternelle Boulard, devant des parents qui en sont sortis insatisfaits ; Le Parisien la décrit comme tendue.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
+          "publie_le": "2026-03-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": "Direction des affaires scolaires (Dasco) de la Ville de Paris",
+      "texte": "Selon Le Parisien, la Dasco pointe une « attitude éducative » inappropriée de la part d'au moins un agent mis en cause.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon France Culture, des signalements de violences sexuelles ont visé trois animateurs de l'école maternelle Boulard, dans le 14e arrondissement de Paris.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-animateurs-ecartes-dune-maternelle-apres-des-soupcons-de-violences-sexuelles-les-parents-se-sentent-trahis-11-03-2026-LNLFZH5QCJGERBX7QFERMSZDAI.php",
+          "publie_le": "2026-03-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "mairie du 14e arrondissement",
+      "texte": "La mairie du 14e arrondissement a annoncé avoir saisi le procureur de la République.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "mairie du 14e arrondissement",
+      "texte": "La mairie du 14e arrondissement a initié une enquête administrative (non judiciaire).",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "circonscription des affaires scolaires et de la petite enfance (CASPE)",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon France Culture, la circonscription des affaires scolaires et de la petite enfance (CASPE) prévoit des rappels pédagogiques aux autres animateurs de l'établissement.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "mairie du 14e arrondissement",
+      "texte": "La mairie du 14e arrondissement assure que les agents soupçonnés ne travaillent plus au contact des enfants, dans aucune école parisienne.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "Carine Petit, maire Les Ecologistes du 14e arrondissement",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon France Culture, la maire du 14e arrondissement indique que différentes options vont être étudiées dans les prochains jours.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "L'ouverture d'une enquête judiciaire n'est pas rapportée par les sources lues : l'enquête mentionnée est administrative (mairie du 14e) ; la saisine du procureur est annoncée par la mairie, sans suite connue.",
+    "Le dossier ne repose que sur 2 articles lus (France Culture, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Selon France Culture, la mairie du 14e arrondissement a annoncé avoir saisi le procureur de la République et initié une enquête administrative (non judiciaire). L'ouverture d'une enquête judiciaire n'est pas rapportée par les sources lues ; la suite donnée à la saisine du procureur est inconnue."
+  },
+  "reactions": [
+    {
+      "acteur": "Ville de Paris",
+      "qualite": "propos rapportés par France Culture",
+      "date": "2026-03-11",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "écartement immédiat des adultes mis en cause",
+      "citations": [
+        {
+          "texte": "Dès la prise de connaissance de chaque signalement, l’adulte mis en cause a été immédiatement écarté du terrain",
+          "pour": "écartement immédiat des adultes mis en cause"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France Culture. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France Culture",
+        "url": "https://www.radiofrance.fr/franceculture/podcasts/l-info-de-france-culture/violences-sexuelles-dans-le-periscolaire-a-paris-le-desarroi-des-parents-apres-de-nouvelles-suspensions-d-animateurs-9194534",
+        "publie_le": "2026-03-11",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "à qualifier",
+  "statut_libelle": "Enquête administrative"
+}

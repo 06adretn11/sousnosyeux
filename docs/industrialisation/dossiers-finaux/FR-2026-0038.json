@@ -1,0 +1,305 @@
+{
+  "etat_actuel": [
+    "Selon Ouest-France, déféré jeudi 26 juin au parquet de Tours, un enseignant du primaire a été mis en examen et placé en détention provisoire dans la soirée ; le parquet de Tours l'a annoncé le 27 juin."
+  ],
+  "appel": false,
+  "faits": "Selon Le Parisien, un enseignant exerçant dans plusieurs communes d'Indre-et-Loire, suspecté d'atteintes sexuelles sur des élèves, a été mis en examen et placé en détention provisoire. Selon Le Parisien, l'enseignant exerce dans trois communes d'Indre-et-Loire : Saché, Montlouis-sur-Loire et Ligré.",
+  "deroule": [
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "enquete",
+      "acteur": "parquet de Tours",
+      "texte": "Selon la procureure de la République de Tours, une enquête pénale a été ouverte en mars 2025 sur des suspicions de corruption de mineurs et d'atteintes sexuelles sur mineurs par personne ayant autorité, par un enseignant, professeur des écoles.",
+      "source": {
+        "media": "RTL",
+        "url": "https://www.rtl.fr/actu/justice-faits-divers/indre-et-loire-un-maitre-d-ecole-mis-en-examen-et-ecroue-pour-atteintes-sexuelles-sur-ses-eleves-7900519908",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, plusieurs plaintes avaient été déposées par des parents au mois de mars 2025.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Ouest-France, l'enseignant a été suspendu en mars 2025, à la suite de plusieurs dépôts de plainte.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "RTL",
+          "url": "https://www.rtl.fr/actu/justice-faits-divers/indre-et-loire-un-maitre-d-ecole-mis-en-examen-et-ecroue-pour-atteintes-sexuelles-sur-ses-eleves-7900519908",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-06-25",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Ouest-France, l'enseignant a été interpellé à son domicile le 25 juin puis déféré au parquet de Tours.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-06-26",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon Ouest-France, déféré jeudi (26 juin) au parquet de Tours, l'enseignant a été mis en examen et placé en détention provisoire dans la soirée.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "RTL",
+          "url": "https://www.rtl.fr/actu/justice-faits-divers/indre-et-loire-un-maitre-d-ecole-mis-en-examen-et-ecroue-pour-atteintes-sexuelles-sur-ses-eleves-7900519908",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-06-27",
+      "date_nature": "evenement",
+      "type": "communication_parquet",
+      "acteur": "parquet de Tours",
+      "texte": "Le parquet de Tours a annoncé le 27 juin 2025 la mise en examen et le placement en détention provisoire de l'enseignant.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, des parents s'étaient mobilisés pour défendre l'enseignant et une réunion publique de soutien avait été organisée.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "Éducation nationale",
+      "texte": "Selon la procureure de la République de Tours, un signalement a été adressé par l'Éducation nationale, à l'origine de l'ouverture de l'enquête pénale.",
+      "source": {
+        "media": "RTL",
+        "url": "https://www.rtl.fr/actu/justice-faits-divers/indre-et-loire-un-maitre-d-ecole-mis-en-examen-et-ecroue-pour-atteintes-sexuelles-sur-ses-eleves-7900519908",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/centre-val-de-loire/indre-et-loire/en-indre-et-loire-un-enseignant-suspecte-datteintes-sexuelles-sur-eleves-mis-en-examen-et-ecroue-f1f94942-5348-11f0-8d7d-49e18ac65051",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        },
+        {
+          "media": "Europe1",
+          "url": "https://www.europe1.fr/Police-Justice/un-enseignant-suspecte-datteintes-sexuelles-sur-des-eleves-mis-en-examen-et-ecroue-761277",
+          "publie_le": "2025-06-27",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Divergence entre sources — annonce du parquet : jeudi 26 juin selon RTL, vendredi 27 juin selon Ouest-France, Le Parisien et Europe 1 ; la mise en examen est datée du soir du jeudi 26 juin.",
+    "Le dossier ne repose que sur 4 articles lus (Le Parisien, RTL, Europe1, Ouest-France)."
+  ],
+  "synthese": {
+    "decision": "Selon Ouest-France, déféré jeudi 26 juin au parquet de Tours, un enseignant du primaire a été mis en examen et placé en détention provisoire dans la soirée ; le parquet de Tours l'a annoncé le 27 juin."
+  },
+  "reactions": [
+    {
+      "acteur": "Catherine Sorita-Minard, procureure de la République de Tours",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2025-06-27",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "les auditions menées",
+      "citations": [
+        {
+          "texte": "De nombreuses auditions ont été menées, de témoins et de victimes mineures",
+          "pour": "les auditions menées"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Catherine Sorita-Minard, procureure de la République de Tours",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2025-06-27",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la poursuite des investigations",
+      "citations": [
+        {
+          "texte": "pour notamment identifier et entendre l’ensemble des victimes, poursuivre l’exploitation des éléments recueillis",
+          "pour": "la poursuite des investigations"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/indre-et-loire-un-enseignant-de-cm1-cm2-mis-en-examen-et-ecroue-pour-des-atteintes-sexuelles-27-06-2025-4VD453AL45H3PEYYCSHIK42NUI.php",
+        "publie_le": "2025-06-27",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "26 juin 2025 · Parquet de Tours",
+      "cat": "blue",
+      "texte": "Selon Ouest-France, déféré jeudi 26 juin au parquet de Tours, un enseignant du primaire a été mis en examen et placé en détention provisoire dans la soirée ; le parquet de Tours l'a annoncé le 27 juin."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Ouest-France, l'enseignant a été suspendu en mars 2025, à la suite de plusieurs dépôts de plainte."
+      ]
+    }
+  }
+}

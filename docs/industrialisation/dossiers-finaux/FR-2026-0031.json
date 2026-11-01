@@ -1,0 +1,63 @@
+{
+  "etat_actuel": [
+    "Selon Alpes 1, le tribunal de Gap a condamné l’enseignant, qui contestait les faits, à trois mois de prison avec sursis probatoire et à une interdiction d’exercer une activité en lien avec des mineurs, pour une agression sexuelle sur une élève.",
+    "Aucun appel n’est rapporté par la presse : SNY ne sait pas si cette décision est définitive."
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "statut_libelle": "Condamnation en 1re instance",
+  "jugement": {
+    "poursuivi": "Agression sexuelle sur une élève (faits du 11 septembre 2025, selon le titre et le chapô du Dauphiné).",
+    "requis": "Dix mois de prison avec sursis (ministère public).",
+    "retenu": "Trois mois avec sursis probatoire et interdiction d’exercer une activité en lien avec des mineurs.",
+    "ecarte": "Non précisé par les sources libres.",
+    "defense": "L’enseignant n’a pas reconnu les faits.",
+    "appel": "Aucun appel rapporté par la presse."
+  },
+  "deroule": [
+    {
+      "date": "2025-09-11",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": "Collège",
+      "texte": "Selon le chapô du Dauphiné, les faits ont lieu lors d’un exercice incendie, quelques jours après la rentrée ; l’élève en parle à l’infirmière.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/02/20/coupable-d-agression-sexuelle-sur-une-eleve-un-professeur-de-college-condamne-a-de-la-prison-avec-sursis",
+        "publie_le": "2026-02-20",
+        "acces": "paywall"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "garde_a_vue",
+      "acteur": "Police",
+      "texte": "Garde à vue (date non publiée) ; d’autres élèves témoignent, selon Alpes 1.",
+      "source": {
+        "media": "Alpes 1",
+        "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-02-19",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "Tribunal correctionnel de Gap",
+      "texte": "Audience (« ce jeudi ») et décision : dix mois avec sursis requis, trois mois avec sursis probatoire prononcés.",
+      "source": {
+        "media": "Alpes 1",
+        "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Signalement, plainte, suspension éventuelle par l’Éducation nationale : derrière le paywall du Dauphiné, introuvables ailleurs.",
+    "Appel : aucun article."
+  ],
+  "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)",
+  "faits": "Selon Alpes 1 et Le Dauphiné Libéré, un enseignant du collège Simone-Veil de La Bâtie-Neuve (Hautes-Alpes) a comparu devant le tribunal correctionnel de Gap pour agression sexuelle sur une élève, faits situés le 11 septembre 2025 lors d’un exercice d’incendie ; il n’a pas reconnu les faits."
+}

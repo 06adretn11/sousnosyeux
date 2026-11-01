@@ -1,0 +1,131 @@
+{
+  "etat_actuel": [
+    "Selon Zinfos974, l’enseignant, présenté à un juge d’instruction à l’issue de sa garde à vue le lundi 13 avril, a été mis en examen pour des faits d’atteintes sexuelles par personne ayant autorité."
+  ],
+  "appel": false,
+  "faits": "Selon Linfo.re, dans un collège de Sainte-Suzanne, un professeur aurait eu des relations intimes avec une élève. Selon Linfo.re, la relation entre une élève et son professeur aurait débuté à la rentrée scolaire 2025.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Linfo.re, un professeur d'un collège de Sainte-Suzanne aurait eu des relations intimes avec une élève.",
+      "source": {
+        "media": "Linfo.re",
+        "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+        "publie_le": "2026-04-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "direction de l'établissement",
+      "texte": "Selon Zinfos974, les informations remontées à la direction de l'établissement ont fait l'objet d'un signalement au titre de l'article 40.",
+      "source": {
+        "media": "Zinfos974",
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "publie_le": "2026-04-13",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Linfo.re",
+          "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+          "publie_le": "2026-04-14",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet de Saint-Denis",
+      "texte": "Le parquet de Saint-Denis a ouvert une enquête confiée à la gendarmerie.",
+      "source": {
+        "media": "Zinfos974",
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "publie_le": "2026-04-13",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat",
+      "texte": "Selon Zinfos974, l'enseignant a été suspendu de ses fonctions à titre conservatoire par sa hiérarchie et avait l'interdiction de paraître au collège de Quartier-Français où il était en poste.",
+      "source": {
+        "media": "Zinfos974",
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "publie_le": "2026-04-13",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-04-13",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "juge d’instruction",
+      "texte": "Selon Zinfos974, l’enseignant, présenté à un juge d’instruction à l’issue de sa garde à vue le lundi 13 avril, a été mis en examen pour des faits d’atteintes sexuelles par personne ayant autorité.",
+      "source": {
+        "media": "Zinfos974",
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "publie_le": "2026-04-13",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Linfo.re",
+          "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+          "publie_le": "2026-04-14",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": "juge d'instruction",
+      "texte": "Selon Zinfos974, l'enseignant a été remis en liberté sous contrôle judiciaire avec interdiction d'entrer en contact avec la collégienne et d'exercer son métier.",
+      "source": {
+        "media": "Zinfos974",
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "publie_le": "2026-04-13",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 2 articles lus (Linfo.re, Zinfos974)."
+  ],
+  "synthese": {
+    "decision": "Selon Zinfos974, l’enseignant, présenté à un juge d’instruction à l’issue de sa garde à vue le lundi 13 avril, a été mis en examen pour des faits d’atteintes sexuelles par personne ayant autorité."
+  },
+  "reactions": [],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "cat": "blue",
+      "texte": "Selon Zinfos974, l’enseignant, présenté à un juge d’instruction à l’issue de sa garde à vue le lundi 13 avril, a été mis en examen pour des faits d’atteintes sexuelles par personne ayant autorité.",
+      "meta": "13 avril 2026"
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Zinfos974, l'enseignant a été suspendu de ses fonctions à titre conservatoire par sa hiérarchie et avait l'interdiction de paraître au collège de Quartier-Français où il était en poste."
+      ]
+    }
+  }
+}

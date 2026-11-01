@@ -2,15 +2,18 @@
 
 `POC-10` · périscolaire · rôle : animateur périscolaire · état de la carte : **plainte**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `c300e67bbd798e1a`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-20 (contrat `fiche-extraction-1+be6a01c4`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `99673d401ef0fb4e`.
 
 ## Situation judiciaire
 
-- Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris.
+- **Situation judiciaire · Plainte** — Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris.
+- **Suite · Jugement sur le fond non documenté** (dans les sources consultées)
+  - La personne mise en cause est présumée innocente.
+  - Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien (10 mars 2026), qui reprend France Inter, l'animateur visé était alors « actuellement suspendu ».
 
-## Faits publiquement rapportés
+## Faits publiquement rapportés (champ réutilisable, non affiché par la page)
 
-Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris, qui y travaillait depuis décembre 2025.
+Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont été déposées contre un animateur de l'école Volontaires, dans le 15e arrondissement de Paris.
 
 ## Chronologie
 
@@ -27,16 +30,16 @@ Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont ét�
 
 ## Réactions et déclarations attribuées
 
-- **Me Louis Cailliez, avocat des familles plaignantes** — propos rapportés par ici · à propos de : impunité des responsables et gravité des viols commis sur de très jeunes enfants  
-  > « On ne parle pas d'une impéritie sans conséquence, mais de viols de tous petits enfants qui auraient dû être évités »  
-  Source : [ici](https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315)
+- **Me Louis Cailliez, avocat de la famille d'un enfant de l'école Volontaires** — propos rapportés par Le Parisien (communiqué transmis à l’AFP) · à propos de : la lenteur de la procédure judiciaire, selon l'avocat de la famille  
+  > « l’absence de célérité judiciaire est incompréhensible et place mes clients dans une situation très douloureuse et intenable »  
+  Contexte dans l’article (Le Parisien) : la famille d’un enfant scolarisé à l’école Volontaires, qui a porté plainte mi-février, réclame la désignation d’un juge d’instruction ; son avocat appelle à « l’ouverture d’une information judiciaire dans les plus brefs délais ».  
+  Source : [Le Parisien](https://www.leparisien.fr/paris-75/periscolaire-a-paris-un-animateur-dune-ecole-du-xve-vise-par-trois-plaintes-pour-viol-sur-mineur-10-03-2026-ODNJZZILXJCGHFQHXTLJR7PLJ4.php)
 
 ## Sources utilisées
 
 | Source | Accès | Origine | Rattachement à l’affaire |
 |---|---|---|---|
-| [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600) (date ?) | libre | memoire | rattachement établi — utilisée |
-| [ici](https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315) (2026-10-11) | libre | decouverte | rattachement établi — utilisée |
+| [ELLE](https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600) (2026-03-16) | libre | memoire | rattachement établi — utilisée |
 | [Le Parisien](https://www.leparisien.fr/paris-75/periscolaire-a-paris-un-animateur-dune-ecole-du-xve-vise-par-trois-plaintes-pour-viol-sur-mineur-10-03-2026-ODNJZZILXJCGHFQHXTLJR7PLJ4.php) (2026-03-10) | libre | arbitrage | rattachement établi — utilisée |
 
 ## Inventaire des autres sources (écartées, non lues ou sans apport)
@@ -47,12 +50,14 @@ Selon ELLE, trois plaintes pour viol et agressions sexuelles sur mineur ont ét�
 | [Le Parisien](https://www.leparisien.fr/paris-75/il-y-a-une-complicite-passive-apres-le-scandale-du-periscolaire-a-paris-ces-parents-portent-plainte-contre-la-mairie-12-10-2026-IWW2SJAZTBH6XGFA5VT3MGOZKA.php) (2026-10-12) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 | [Libération](https://www.liberation.fr/politique/elections/violences-sexuelles-dans-le-periscolaire-a-paris-le-deplacement-dun-animateur-entre-deux-ecoles-revele-une-chaine-de-defaillances-20260320_KYX3MFULHJFQ5B5NWUXTHSX6WM/) (2026-03-20) | inaccessible — HTTP 403 | decouverte | non lue (inaccessible) — NON utilisée |
 | [France Info](https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/une-nouvelle-plainte-collective-deposee-dans-le-scandale-du-periscolaire-a-paris-pour-combattre-l-impunite-de-tous-les-responsables-de-l-administration-de-la-ville_8232583.html) (2026-10-11) | libre | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
+| [ici](https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315) (2026-10-11) | libre | decouverte | rattachement établi, mais aucune étape ni réaction n’en provient — NON utilisée |
 | [L'Humanité](https://www.humanite.fr/societe-2/mineurs/violences-sexuelles-dans-le-periscolaire-24-familles-annoncent-porter-plainte-contre-la-ville-de-paris) (2026-10-11) | partiel (début seulement, réservé aux abonnés) | decouverte | rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée |
 
 ## Inconnues et limites documentaires
 
-- Les sources lues rapportent des plaintes : elles ne disent pas si une enquête judiciaire est ouverte sur ces plaintes ni où en est la procédure.
-- Le dossier ne repose que sur 3 articles lus (ELLE, ici, Le Parisien).
+- Les sources lues rapportent des plaintes : elles ne disent pas si une enquête judiciaire est ouverte sur ces plaintes ni où en est la procédure. Le 10 mars 2026, la famille d'un enfant de l'école Volontaires réclamait la désignation d'un juge d'instruction.
+- Le Parisien (10 mars 2026) rapporte que l'animateur est visé par trois plaintes et que les parents d'un enfant scolarisé à Volontaires ont porté plainte mi-février ; il ne précise pas combien des trois plaintes émanent de cette école.
+- Le dossier ne repose que sur 2 articles lus (ELLE, Le Parisien).
 
 ## Points nécessitant une attention particulière
 

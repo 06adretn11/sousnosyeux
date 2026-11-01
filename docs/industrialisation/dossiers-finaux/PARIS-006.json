@@ -1,0 +1,54 @@
+{
+  "etat_actuel": [
+    "Selon franceinfo, une plainte pour « viol aggravé », avec constitution de partie civile, a été déposée le lundi 17 novembre 2025 par la mère d'un enfant contre un animateur de la Ville à l'école maternelle Parmentier.",
+    "Le dépôt d'une plainte ne vaut pas culpabilité."
+  ],
+  "deroule": [
+    {
+      "date": "2025-07-18",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": "Famille d'un enfant",
+      "texte": "Après des propos inquiétants d'un enfant, sa famille prévient les autorités (le 18 juillet, selon ICI). La Ville envoie ensuite un mail aux parents des élèves concernés, sans préciser la nature de la plainte.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/info-ici-paris-idf-un-animateur-soupconne-de-violences-sexuelles-sur-mineur-dans-le-11eme-arrondissement-de-paris-8633975",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "Employeur (non précisé)",
+      "texte": "Selon ICI, un animateur qui intervenait dans les centres de loisirs de deux maternelles, Roquette et Parmentier, est suspendu à titre conservatoire : la mesure rapportée n'est donc pas propre à Parmentier. Les sources lues ne disent pas expressément que cet animateur est celui visé par la plainte de novembre.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/info-ici-paris-idf-un-animateur-soupconne-de-violences-sexuelles-sur-mineur-dans-le-11eme-arrondissement-de-paris-8633975",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-11-17",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": "Mère d'un enfant",
+      "texte": "Plainte pour « viol aggravé » avec constitution de partie civile, qui vise à faire désigner un juge d'instruction.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/une-plainte-pour-viol-aggrave-deposee-a-paris-contre-un-animateur-dans-une-ecole-maternelle-la-deuxieme-en-quelques-jours_7623686.html",
+        "publie_le": "2025-11-18",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucune suite postérieure à novembre 2025 n'a été trouvée (information judiciaire, mise en examen, classement).",
+    "L'animateur suspendu en juillet intervenait dans les centres de loisirs de deux maternelles (Roquette et Parmentier) ; la plainte de novembre vise un animateur de l'école Parmentier. Les articles lus ne disent pas expressément qu'il s'agit de la même personne.",
+    "ICI indique aussi qu'un autre animateur de la maternelle Parmentier avait été écarté environ un mois plus tôt, pour des raisons similaires : les sources lues ne précisent aucun lien avec la plainte de novembre."
+  ],
+  "statut_affiche": "plainte",
+  "faits": "Selon ICI (1er août 2025), après des propos inquiétants d'un enfant, sa famille a prévenu les autorités le 18 juillet ; un animateur intervenant dans les centres de loisirs de deux maternelles (Roquette et Parmentier) a été suspendu à titre conservatoire. Selon franceinfo (18 novembre 2025), une plainte pour « viol aggravé », avec constitution de partie civile, a été déposée le 17 novembre contre un animateur de la Ville à l'école maternelle Parmentier. Les sources lues ne disent pas expressément s'il s'agit du même animateur. Ces faits sont allégués ; une plainte, même avec constitution de partie civile, ne vaut pas ouverture d'une information judiciaire."
+}

@@ -1,0 +1,168 @@
+{
+  "etat_actuel": [
+    "Selon 20 Minutes (20 février 2026), une information judiciaire est ouverte depuis septembre 2019 ; aucune mise en examen n’est rapportée.",
+    "Le classement sans suite de l’enquête préliminaire en juin 2019 a été suivi de la reprise de l’enquête, puis de l’information judiciaire : il n’est pas l’issue de la procédure."
+  ],
+  "appel": false,
+  "faits": "Selon 20 Minutes, un animateur périscolaire de l’école maternelle Paul-Dubois (Paris 3e) est mis en cause dans une affaire de violences sexuelles présumées sur des enfants, dont les premiers signalements remontent à début 2019 ; une information judiciaire est ouverte depuis septembre 2019.",
+  "deroule": [
+    {
+      "date": "2019-02-09",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": "parents",
+      "texte": "Selon 20 Minutes, une première plainte est déposée le 9 février 2019 auprès de la brigade des mineurs de Paris.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2019-02-13",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "Ville de Paris",
+      "texte": "Selon 20 Minutes, l’animateur est suspendu le 13 février 2019.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2019-05",
+      "date_nature": "approximative",
+      "type": "enquete",
+      "acteur": "brigade des mineurs",
+      "texte": "Selon 20 Minutes, la perquisition du domicile de la personne mise en cause n’intervient qu’en mai 2019, plus de trois mois après la suspension.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon 20 Minutes, l'animateur a été placé en garde à vue au cours de l'enquête préliminaire ; le classement sans suite est intervenu deux heures après la fin de cette garde à vue.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2019-06",
+      "date_nature": "approximative",
+      "type": "decision",
+      "acteur": "parquet",
+      "texte": "Classement sans suite : selon 20 Minutes, l'enquête préliminaire est classée sans suite en juin 2019, au bout de trois mois d'enquête.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet",
+      "texte": "Reprise de l'enquête : selon 20 Minutes, l'enquête redémarre quelques semaines après le classement sans suite, à la suite d'alertes de médecins ; ce classement n'est donc pas l'issue de la procédure.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2019-09",
+      "date_nature": "approximative",
+      "type": "enquete",
+      "acteur": "justice",
+      "texte": "Information judiciaire : selon 20 Minutes, une instruction judiciaire est ouverte en septembre 2019 et une juge d'instruction est désignée.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-02-20",
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": "collectif de parents",
+      "texte": "Selon 20 Minutes, des parents d’élèves dénoncent, dans une tribune publiée par Libération, des défaillances de la justice, de la police et de la Ville de Paris, et craignent que l’instruction n’aboutisse à un non-lieu ; la personne mise en cause conteste les faits.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Suite postérieure au 20 février 2026 : non documentée (mise en examen, non-lieu, renvoi) ; les parents craignent un non-lieu, rien ne l’établit.",
+    "Le dossier ne repose que sur un article lu (20 Minutes, 20/02/2026) ; Mediapart et Libération, cités par cet article, n’ont pas pu être lus (accès refusé) : aucun fait n’en est tiré.",
+    "Les dates exactes de la garde à vue, de la reprise de l’enquête et de l’ouverture de l’information judiciaire ne sont pas écrites (mois indiqués seulement)."
+  ],
+  "synthese": {
+    "decision": "Selon 20 Minutes (20 février 2026), une information judiciaire est ouverte depuis septembre 2019 ; aucune mise en examen n’est rapportée.",
+    "ouvert": "Le classement sans suite de l’enquête préliminaire en juin 2019 a été suivi de la reprise de l’enquête, puis de l’information judiciaire : il n’est pas l’issue de la procédure."
+  },
+  "reactions": [
+    {
+      "acteur": "Céline Astolfe, avocate de la Fondation pour l'Enfance, partie civile",
+      "qualite": "propos rapportés par 20 Minutes",
+      "date": "2026-02-20",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "l'absence de mise en examen dans cette affaire",
+      "citations": [
+        {
+          "texte": "Malgré les révélations réitérées des enfants, les conclusions des expertises psychologiques, il n'y a pas de mise en examen. C'est illisible et incompréhensible par les familles",
+          "pour": "l'absence de mise en examen dans cette affaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4202456-20260220-violences-sexuelles-periscolaire-passe-ecole-maternelle-paul-dubois-paris",
+        "publie_le": "2026-02-20",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "enquête",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Enquête",
+      "meta": "information judiciaire · depuis septembre 2019",
+      "cat": "blue",
+      "texte": "Selon 20 Minutes (20 février 2026), une information judiciaire est ouverte depuis septembre 2019 ; aucune mise en examen n’est rapportée."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans la source consultée",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Le classement sans suite de l’enquête préliminaire en juin 2019 a été suivi de la reprise de l’enquête, puis de l’information judiciaire : il n’est pas l’issue de la procédure."
+      ]
+    }
+  }
+}

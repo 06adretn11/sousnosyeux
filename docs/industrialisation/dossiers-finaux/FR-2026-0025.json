@@ -1,0 +1,79 @@
+{
+  "etat_actuel": [
+    "Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire."
+  ],
+  "appel": false,
+  "faits": "Selon France info, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et placé sous contrôle judiciaire. Selon France info, le mis en cause nie avec fermeté l'accusation de viol et se dit humilié et effondré.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Linfo.re, l'homme est poursuivi pour viol et agression sexuelle par personne abusant de sa fonction, pour des faits qui se seraient déroulés les 30 juin et 1er juillet 2001 à Pontoise (Val-d'Oise), la victime étant un mineur sous sa responsabilité à l'internat Saint-Martin-de-France.",
+      "source": {
+        "media": "Linfo.re",
+        "url": "https://www.linfo.re/france/faits-divers/un-ancien-maitre-d-internat-de-l-ecole-stanislas-ecope-d-un-an-de-prison-avec-sursis",
+        "publie_le": "2024-09-10",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Europe 1",
+          "url": "https://www.europe1.fr/Police-Justice/stanislas-un-ancien-maitre-dinternat-juge-en-septembre-pour-des-violences-contre-six-eleves-4231027",
+          "publie_le": null,
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2024-01",
+      "date_nature": "approximative",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et placé sous contrôle judiciaire ; l'affaire est instruite à Valenciennes. Selon l'AFP (Europe 1), la mise en examen date du 26 janvier et la personne a l'interdiction d'entrer en contact avec la victime, selon le parquet de Valenciennes. Note de contexte : selon Europe 1, la même personne devait aussi être jugée à Valenciennes pour des violences commises à Stanislas ; cette procédure est distincte et ne concerne pas les faits de Pontoise.",
+      "source": {
+        "media": "France info",
+        "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+        "publie_le": "2024-02-15",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Europe 1",
+          "url": "https://www.europe1.fr/Police-Justice/stanislas-un-ancien-maitre-dinternat-juge-en-septembre-pour-des-violences-contre-six-eleves-4231027",
+          "publie_le": null,
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
+    "Le dossier ne repose que sur 3 articles lus (France info, Linfo.re, Europe 1)."
+  ],
+  "synthese": {
+    "decision": "Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire."
+  },
+  "reactions": [],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "Mise en examen fin janvier 2024 (26 janvier selon l’AFP), révélée le 14 février 2024 par franceinfo · pour des faits datant de 2001 à Pontoise",
+      "cat": "blue",
+      "texte": "Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente."
+      ]
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien, un professeur de mathématiques a été mis en examen « ce jeudi » à Versailles pour atteinte sexuelle sur mineure, avant d’être placé sous contrôle judiciaire ; il est sorti libre du tribunal avec interdiction d’exercer sa profession pendant la procédure. La Gazette en Yvelines, qui relaie Le Parisien, écrit « le 11 février » : les deux indications de date ne concordent pas."
+  ],
+  "appel": false,
+  "faits": "Selon La Gazette en Yvelines, un professeur de mathématiques a été mis en examen pour atteinte sexuelle sur une mineure.",
+  "deroule": [
+    {
+      "date": "2024",
+      "date_nature": "approximative",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, le professeur est soupçonné d’avoir agressé sexuellement, entre septembre et décembre 2024, une adolescente qui avait été son élève.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/yvelines-un-professeur-de-mathematiques-soupconne-datteinte-sexuelle-sur-une-ado-de-15-ans-14-02-2025-UQG2VTVHRRBCBNDIPDPXJWBNBA.php",
+        "publie_le": "2025-02-14",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mise_en_examen",
+      "acteur": "tribunal de Versailles",
+      "texte": "Selon Le Parisien, un professeur de mathématiques a été mis en examen « ce jeudi » à Versailles pour atteinte sexuelle sur mineure, avant d’être placé sous contrôle judiciaire ; il est sorti libre du tribunal avec interdiction d’exercer sa profession pendant la procédure. La Gazette en Yvelines, qui relaie Le Parisien, écrit « le 11 février » : les deux indications de date ne concordent pas.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/yvelines-un-professeur-de-mathematiques-soupconne-datteinte-sexuelle-sur-une-ado-de-15-ans-14-02-2025-UQG2VTVHRRBCBNDIPDPXJWBNBA.php",
+        "publie_le": "2025-02-14",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Gazette en Yvelines",
+          "url": "https://lagazette-yvelines.fr/2025/02/19/un-professeur-de-maths-mis-en-examen-pour-viol-sur-mineur/",
+          "publie_le": "2025-02-19",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Date exacte de la mise en examen : « ce jeudi » (Le Parisien, 14/02/2025) ou « le 11 février » (La Gazette en Yvelines, qui relaie Le Parisien) — non tranchée par les sources lues.",
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
+    "Le dossier repose sur 2 articles lus (Le Parisien ; La Gazette en Yvelines, qui reprend Le Parisien) : une seule source d’origine, sans confirmation indépendante."
+  ],
+  "synthese": {
+    "decision": "Selon Le Parisien, un professeur de mathématiques a été mis en examen « ce jeudi » à Versailles pour atteinte sexuelle sur mineure, avant d’être placé sous contrôle judiciaire ; il est sorti libre du tribunal avec interdiction d’exercer sa profession pendant la procédure. La Gazette en Yvelines, qui relaie Le Parisien, écrit « le 11 février » : les deux indications de date ne concordent pas."
+  },
+  "reactions": [],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "Février 2025 · Versailles (date discordante entre les sources)",
+      "cat": "blue",
+      "texte": "Selon Le Parisien, un professeur de mathématiques a été mis en examen « ce jeudi » à Versailles pour atteinte sexuelle sur mineure, avant d’être placé sous contrôle judiciaire ; il est sorti libre du tribunal avec interdiction d’exercer sa profession pendant la procédure. La Gazette en Yvelines, qui relaie Le Parisien, écrit « le 11 février » : les deux indications de date ne concordent pas."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente."
+      ]
+    }
+  }
+}

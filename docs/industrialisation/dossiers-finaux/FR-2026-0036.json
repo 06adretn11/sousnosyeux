@@ -1,0 +1,290 @@
+{
+  "etat_actuel": [
+    "Selon France 3 Régions, après un nouvel incident survenu début juin à la crèche Chat Perché, une nouvelle procédure disciplinaire est engagée et le salarié est à nouveau suspendu ; selon Lyon Capitale, il a été immédiatement mis à pied."
+  ],
+  "appel": false,
+  "faits": "Selon les informations de Médiacités, un salarié de la crèche du Chat Perché (Lyon 3e) fait l'objet d'accusations de « comportements inappropriés » à caractère sexuel. Selon Lyon capitale, un signalement a été fait à l'encontre d'un salarié du groupe People & Baby exerçant dans une crèche du 3e arrondissement de Lyon.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon les informations de Médiacités, un salarié de la crèche du Chat Perché (Lyon 3e) fait l'objet d'accusations de comportements inappropriés à caractère sexuel.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Lyon Capitale, un signalement a été fait à l'encontre d'un salarié du groupe People & Baby exerçant dans une crèche du 3e arrondissement de Lyon.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "services de la Protection maternelle et infantile (PMI)",
+      "texte": "Selon Lyon capitale, les services de la Protection maternelle et infantile (PMI) ont été alertés au sujet de la crèche du Chat Perché.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-06",
+      "date_nature": "approximative",
+      "acteur": "People&Baby",
+      "type": "mesure_etablissement",
+      "texte": "Selon France 3 Régions, après un nouvel incident survenu début juin à la crèche Chat Perché, une nouvelle procédure disciplinaire est engagée et le salarié est à nouveau suspendu ; selon Lyon Capitale, il a été immédiatement mis à pied.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Lyon capitale",
+          "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+          "publie_le": "2025-06-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "groupe People & Baby",
+      "type": "mesure_etablissement",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Lyon Capitale, People & Baby a précisé que le salarié ne sera pas réintégré dans une crèche du groupe.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "People & Baby (groupe de crèches)",
+      "texte": "Selon Lyon Capitale, le groupe People & Baby devrait déposer plainte contre le salarié.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "publie_le": "2025-06-18",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-06-16",
+      "date_nature": "evenement",
+      "acteur": "crèche Chat Perché",
+      "type": "mesure_etablissement",
+      "texte": "Selon France 3 Régions, la crèche a organisé en urgence une réunion le 16 juin pour informer les parents.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": null,
+      "type": "fait_rapporte",
+      "texte": "Selon France 3 Régions, aucun des parents rencontrés par Médiacités n'avait été informé des soupçons ayant conduit à la précédente mise à pied du salarié.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Médiacités",
+          "url": "https://www.mediacites.fr/enquete/lyon/2025/06/17/creches-peoplebaby-de-nouveau-mis-en-cause-a-lyon-apres-des-accusations-de-violences-sexuelles-sur-des-enfants/",
+          "publie_le": "2025-06-17",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "People & Baby",
+      "type": "fait_rapporte",
+      "texte": "Selon Lyon Capitale, People & Baby assure qu'aucune responsabilité seul avec un enfant n'avait été donnée au salarié après sa reprise de fonction.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04",
+      "date_nature": "approximative",
+      "acteur": "People&Baby",
+      "type": "contexte",
+      "texte": "Selon France 3 Régions, début avril, le salarié, mis en cause en février à la crèche Joyeuse Tribu, a été affecté à la crèche Chat Perché (Lyon 3e), avant les faits rapportés ici.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Médiacités",
+          "url": "https://www.mediacites.fr/enquete/lyon/2025/06/17/creches-peoplebaby-de-nouveau-mis-en-cause-a-lyon-apres-des-accusations-de-violences-sexuelles-sur-des-enfants/",
+          "publie_le": "2025-06-17",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-02",
+      "date_nature": "approximative",
+      "acteur": null,
+      "type": "contexte",
+      "texte": "Affaire distincte (crèche Joyeuse Tribu, Lyon 6e, traitée dans une fiche séparée) : selon Lyon Capitale, le même salarié avait déjà été mis en cause en février alors qu'il travaillait dans cette crèche, et une famille avait porté plainte.",
+      "source": {
+        "media": "Lyon capitale",
+        "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "publie_le": "2025-06-18",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "direction du groupe People&Baby",
+      "type": "contexte",
+      "texte": "Affaire distincte (crèche Joyeuse Tribu) : selon France 3 Régions, la direction du groupe affirme avoir signalé les faits à la PMI et à la CRIP et indique que l'enquête préliminaire confiée à la brigade des mineurs aurait été classée sans suite, faute d'éléments constitutifs d'une infraction (information de source unique : le gestionnaire).",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Lyon capitale",
+          "url": "https://www.lyoncapitale.fr/actualite/le-groupe-people-baby-encore-epingle-a-lyon-le-salarie-d-une-creche-suspecte-de-comportement-inapproprie",
+          "publie_le": "2025-06-20",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucune plainte déposée pour cet établissement n’est rapportée : la plainte de la famille (février) concerne la crèche Joyeuse Tribu (fiche liée) ; celle du groupe contre le salarié est annoncée, non confirmée.",
+    "Le dossier ne repose que sur 3 articles lus (Lyon capitale, France 3 Régions, Médiacités)."
+  ],
+  "synthese": {
+    "decision": "Selon France 3 Régions, après un nouvel incident survenu début juin à la crèche Chat Perché, une nouvelle procédure disciplinaire est engagée et le salarié est à nouveau suspendu ; selon Lyon Capitale, il a été immédiatement mis à pied."
+  },
+  "reactions": [
+    {
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "validation": "POSITION_ATTRIBUEE",
+      "date_nature": "article",
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "acteur": "People&Baby (groupe gestionnaire des crèches)",
+      "qualite": "propos rapportés par France 3 Régions",
+      "a_propos": "l'affectation puis la reprise de fonction du salarié",
+      "citations": [
+        {
+          "texte": "l’enquête interne et l'enquête de police aient débouché sur un classement sans suite, le salarié a été réintégré sous strict encadrement et dans des conditions sécurisées, après concertation avec les autorités compétentes",
+          "pour": "l'affectation puis la reprise de fonction du salarié"
+        }
+      ],
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "date": "2025-06-18",
+      "paraphrase": "Contexte dans l'article (France 3 Régions) : cette déclaration du gestionnaire porte sur l'enquête de police visant le salarié lorsqu'il travaillait à la crèche Joyeuse Tribu (Lyon 6e, fiche séparée) ; elle ne concerne pas la crèche Chat Perché."
+    },
+    {
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "validation": "POSITION_ATTRIBUEE",
+      "date_nature": "article",
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "acteur": "People&Baby (groupe gestionnaire des crèches)",
+      "qualite": "propos rapportés par France 3 Régions",
+      "a_propos": "l'information des familles de la crèche",
+      "citations": [
+        {
+          "texte": "les familles de la crèche ont été informées de manière systématique et régulière",
+          "pour": "l'information des familles de la crèche"
+        }
+      ],
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "date": "2025-06-18"
+    }
+  ],
+  "statut_affiche": "à qualifier",
+  "situation": {
+    "decision": {
+      "label": "Situation",
+      "titre": "Suspension et procédure disciplinaire",
+      "meta": "People&Baby",
+      "cat": "orange",
+      "texte": "Selon France 3 Régions, après un nouvel incident survenu début juin à la crèche Chat Perché, une nouvelle procédure disciplinaire est engagée et le salarié est à nouveau suspendu ; selon Lyon Capitale, il a été immédiatement mis à pied."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Aucune procédure judiciaire documentée",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Plainte annoncée du groupe contre le salarié (selon Lyon Capitale et France 3 Régions) : aucun dépôt n’est confirmé dans les sources lues.",
+        "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Lyon Capitale, People & Baby a précisé que le salarié ne sera pas réintégré dans une crèche du groupe."
+      ]
+    }
+  }
+}
