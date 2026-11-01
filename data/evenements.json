@@ -278,103 +278,204 @@
   },
   "fiches_approuvees": {
     "POC-09": {
-      "hash": "b1389eedbc0e7c7d"
+      "hash": "3142989bfb102f51"
     },
     "FR-2026-0042": {
-      "hash": "07c4467d69ad1b45"
+      "hash": "1afd5e9a22e903fc"
     },
     "FR-2026-0114": {
-      "hash": "e88bdcd643defd55"
+      "hash": "c9af161bdd06f0d9"
     },
     "FR-2026-0117": {
-      "hash": "ec6c7dcc3b4838d7"
+      "hash": "9353bf677116def7"
     },
     "FR-2026-0115": {
-      "hash": "ec1f26661dfc9608"
+      "hash": "05f44d689b750122"
     },
     "POC-02": {
-      "hash": "53dcbef1f29f68eb"
+      "hash": "4f0b75486dfa4a70"
     },
     "FR-2026-0025": {
-      "hash": "a328daccc2ffef42"
+      "hash": "7c92fed95fdedaa6"
     },
     "FR-2026-0027": {
-      "hash": "04ca3c7a38e157eb"
+      "hash": "773d64814328ad06"
     },
     "FR-2026-0124": {
-      "hash": "16071cfe70469bad"
+      "hash": "4928d93420fc036d"
     },
     "FR-2026-0038": {
-      "hash": "161dba70870f535c"
+      "hash": "bbeb9b641a8bcb08"
     },
     "FR-2026-0139": {
-      "hash": "7bea2f3e47af82bf"
+      "hash": "1e84bfc4edc4263b"
     },
     "FR-2026-0006": {
-      "hash": "fb80fca964705d6e"
+      "hash": "5fc1ee060312fbbd"
     },
     "FR-2026-0028": {
-      "hash": "cc4d35f3858e5324"
+      "hash": "d39a19b227b385fe"
     },
     "FR-2026-0012": {
-      "hash": "a1165cf2585c95b8"
+      "hash": "687a8e29d6e74149"
     },
     "FR-2026-0046": {
-      "hash": "e984bd7210939752"
+      "hash": "4083cdfdbb384981"
     },
     "FR-2026-0123": {
-      "hash": "7d45756c4d0e8418"
+      "hash": "236939af3ee9852f"
     },
     "FR-2026-0119": {
-      "hash": "d887a53e930a8f49"
+      "hash": "bc6346f88cf59b0c"
     },
     "FR-2026-0030": {
-      "hash": "0b212daa94d6ce9c"
+      "hash": "4e6c35dd60c677e6"
     },
     "FR-2026-0008": {
-      "hash": "82fdc1186464a565"
+      "hash": "f7554f0a677855ca"
     },
     "FR-2026-0036": {
-      "hash": "73661843f953c783"
+      "hash": "87ac5b5c823b01dd"
     },
     "FR-2026-0035": {
-      "hash": "bfbe4b4100cc2c30"
+      "hash": "472285357efe95c8"
     },
     "PARIS-007": {
-      "hash": "d73547b2edf3aac7"
+      "hash": "ccc3e8ecb884b382"
     },
     "FR-2026-0043": {
-      "hash": "19a5f159833a99e8"
+      "hash": "8f444a54dfd5d746"
     },
     "FR-2026-0045": {
-      "hash": "5b6c8dfc662e4430"
+      "hash": "8f7278c2bc1dcf8a"
     },
     "FR-2026-0011": {
-      "hash": "fe1fd4e2452b05e2"
+      "hash": "1c56bcb0cff3c19c"
     },
     "FR-2026-0020": {
       "hash": "b3b8afcf8402bdcf"
     },
     "FR-2026-0037": {
-      "hash": "21768971b6575383"
+      "hash": "e0738e103890970b"
     },
     "FR-2026-0120": {
-      "hash": "b3b0ce29f2d73f64"
+      "hash": "1976c0794b7740b0"
     },
     "FR-2026-0133": {
-      "hash": "64e579a72c9cf9f8"
+      "hash": "9618383317ae989e"
     },
     "FR-2026-0041": {
       "hash": "47a158705b78aa24"
     },
     "POC-04": {
-      "hash": "301b5f3da6f70f99"
+      "hash": "ed20ddf58faf654a"
     },
     "POC-10": {
-      "hash": "b6c0d06e024d87e3"
+      "hash": "99673d401ef0fb4e"
+    },
+    "FR-2026-0001": {
+      "hash": "5d9c5ba2fb532698"
+    },
+    "FR-2026-0002": {
+      "hash": "ab9ef095d6882e3c"
+    },
+    "FR-2026-0003": {
+      "hash": "1f72bdcf3086a8f9"
+    },
+    "FR-2026-0005": {
+      "hash": "64c762d1cd1a169f"
+    },
+    "FR-2026-0021": {
+      "hash": "81e9ffd46ddb043f"
+    },
+    "FR-2026-0022": {
+      "hash": "0be3869dfff247a3"
+    },
+    "FR-2026-0023": {
+      "hash": "cb2b8c10e2cc4a5f"
+    },
+    "FR-2026-0024": {
+      "hash": "4b5da72b233be843"
+    },
+    "FR-2026-0029": {
+      "hash": "1fbdf20d3daa8e1f"
+    },
+    "FR-2026-0031": {
+      "hash": "c521aa05d1a04156"
+    },
+    "FR-2026-0032": {
+      "hash": "79d7479bd1b14c1a"
+    },
+    "FR-2026-0033": {
+      "hash": "1dbb3dc36a716a61"
+    },
+    "FR-2026-0044": {
+      "hash": "f4c8088a21494702"
+    },
+    "FR-2026-0047": {
+      "hash": "96cec49e8226b6ce"
+    },
+    "FR-2026-0113": {
+      "hash": "fa7a412f94bd5b04"
+    },
+    "FR-2026-0116": {
+      "hash": "16e455c2e61ec619"
+    },
+    "FR-2026-0122": {
+      "hash": "5ba52da10fd42f5a"
+    },
+    "FR-2026-0137": {
+      "hash": "ed062e30e5bc8223"
+    },
+    "FR-2026-0142": {
+      "hash": "e723564d191547d7"
+    },
+    "PARIS-004": {
+      "hash": "62c33d9fa80aafde"
+    },
+    "PARIS-006": {
+      "hash": "527e46fbedc74469"
+    },
+    "POC-03": {
+      "hash": "30cb057803c8ee5f"
+    },
+    "POC-05": {
+      "hash": "b0d36eade7a33635"
+    },
+    "POC-06": {
+      "hash": "2016aa47896c0adb"
+    },
+    "POC-07": {
+      "hash": "a6be119b416bc279"
+    },
+    "POC-08": {
+      "hash": "a9a3088b7ed0dfbf"
     }
   },
   "matiere": [
+    {
+      "id": "18ef6a395255",
+      "nature": "mobilisation",
+      "libelle": "Selon la presse, des parents et des enseignants ont tenu un rassemblement.",
+      "realisation": "réalisée",
+      "portee": "établissement",
+      "acteur": "parents, enseignants",
+      "territoire": null,
+      "date": "2026-10-15",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/instituteur-interpelle-a-soyaux-nous-exigeons-de-la-transparence-parents-et-enseignants-rassembles-a-l-ecole-3444426",
+        "publie_le": "2026-10-15"
+      },
+      "etablissement": "école maternelle Julie-Victoire Daubié",
+      "case_id": "FR-2026-0137",
+      "event_id": "d533f367-456e-4050-bc36-3458bdd0748a",
+      "destinations": {
+        "fiche": "FR-2026-0137",
+        "hubs": []
+      }
+    },
     {
       "id": "47242a094799",
       "nature": "mesure",
@@ -393,7 +494,7 @@
       "case_id": "FR-2026-0001",
       "event_id": null,
       "destinations": {
-        "fiche": null,
+        "fiche": "FR-2026-0001",
         "hubs": [
           {
             "hub": "paris-11e",
@@ -470,7 +571,7 @@
       "case_id": "POC-07",
       "event_id": null,
       "destinations": {
-        "fiche": null,
+        "fiche": "POC-07",
         "hubs": [
           {
             "hub": "paris-11e",

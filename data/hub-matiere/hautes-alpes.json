@@ -81,7 +81,7 @@
       "statut_affiche": "condamnation non définitive",
       "statut_libelle": "Condamnation en 1re instance — relaxe partielle",
       "jugement": {
-        "poursuivi": "Huit faits : corruption de mineurs, agressions sexuelles, atteintes sexuelles, aggravés par l’abus d’autorité (période 2015 – février 2025).",
+        "poursuivi": "Corruption de mineurs, agressions sexuelles et atteintes sexuelles, aggravées par l’abus d’autorité (période 2015 – février 2025).",
         "requis": "Cinq ans de prison, dont deux avec sursis, et interdiction définitive d’exercer auprès de mineurs (parquet, 3 novembre 2025).",
         "retenu": "« Atteintes sexuelles par autorité » sur une partie des plaignants : trois ans avec sursis, interdiction définitive d’exercer au contact de mineurs.",
         "ecarte": "Agressions sexuelles et corruption de mineurs : relaxe, faute « d’investigations et d’éléments ».",
@@ -93,9 +93,9 @@
         {
           "date": "2022-12",
           "date_nature": "approximative",
-          "type": "plainte",
-          "acteur": "Une ancienne élève ; parquet de Gap",
-          "texte": "Une plainte antérieure visant le même enseignant avait été classée par le parquet en décembre 2022, avant d’être rouverte « au regard de la nouvelle procédure » (BFM DICI). France 3 situe ce premier signalement en 2021.",
+          "type": "decision",
+          "acteur": "Parquet de Gap",
+          "texte": "Selon BFM DICI, une plainte antérieure visant le même enseignant, déposée en avril 2022 par une ancienne élève, a été classée par le parquet en décembre 2022, avant d’être rouverte « au regard de la nouvelle procédure ». France 3 évoque pour sa part un signalement en 2021, classé sans suite.",
           "source": {
             "media": "BFM DICI",
             "url": "https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html",
@@ -107,8 +107,8 @@
           "date": "2025-04",
           "date_nature": "approximative",
           "type": "signalement",
-          "acteur": "Anciens élèves ; directeur de l’établissement",
-          "texte": "Deux lettres d’anciens élèves parviennent à l’établissement ; le directeur dit les avoir « immédiatement » signalées à la procureure de Gap, puis au diocèse et au directeur académique.",
+          "acteur": "Élèves ; directeur de l’établissement",
+          "texte": "Deux lettres d’élèves parviennent à l’établissement ; le directeur dit les avoir « immédiatement » signalées à la procureure de Gap, puis au diocèse et au directeur académique.",
           "source": {
             "media": "France 3 Provence-Alpes",
             "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/gap/il-y-avait-beaucoup-de-rumeurs-sur-ce-professeur-le-college-lycee-prive-de-saint-joseph-sous-le-choc-apres-la-denonciation-d-agressions-sexuelles-3155648.html",
@@ -121,13 +121,40 @@
           "date_nature": "approximative",
           "type": "enquete",
           "acteur": "Parquet de Gap",
-          "texte": "Enquête ouverte « depuis mi-avril » pour corruption de mineurs, selon la procureure ; l’enseignant est suspendu.",
+          "texte": "Enquête ouverte « depuis mi-avril » pour corruption de mineurs, selon la procureure.",
           "source": {
             "media": "BFM DICI",
             "url": "https://www.bfmtv.com/bfm-dici/gap-un-professeur-de-l-etablissement-saint-joseph-suspendu-apres-des-temoignages-d-agressions-sexuelles_AN-202505160442.html",
             "publie_le": "2025-05-16",
             "acces": "libre"
           }
+        },
+        {
+          "date": "2025-04",
+          "date_nature": "approximative",
+          "type": "mesure_etat",
+          "acteur": "Éducation nationale",
+          "texte": "L’enseignant est suspendu à titre conservatoire par l’Éducation nationale ; cette suspension date d’avril 2025, selon la direction académique (BFM DICI).",
+          "source": {
+            "media": "BFM DICI",
+            "url": "https://www.bfmtv.com/bfm-dici/gap-un-professeur-de-l-etablissement-saint-joseph-suspendu-apres-des-temoignages-d-agressions-sexuelles_AN-202505160442.html",
+            "publie_le": "2025-05-16",
+            "acces": "libre"
+          },
+          "sources_complementaires": [
+            {
+              "media": "BFM DICI",
+              "url": "https://www.bfmtv.com/bfm-dici/violences-sexuelles-presumees-a-saint-joseph-a-gap-ou-en-est-l-enquete_AN-202506210031.html",
+              "publie_le": "2025-06-21",
+              "acces": "libre"
+            },
+            {
+              "media": "BFM DICI",
+              "url": "https://www.bfmtv.com/bfm-dici/atteintes-sexuelles-au-college-lycee-saint-joseph-a-gap-le-professeur-condamne-a-trois-ans-de-prison-avec-sursis_AN-202511260744.html",
+              "publie_le": "2025-11-26",
+              "acces": "libre"
+            }
+          ]
         },
         {
           "date": "2025-09-08",
@@ -174,7 +201,8 @@
         "Dates exactes de la suspension et de l’ouverture d’enquête : avril selon le parquet et la direction académique, mai selon d’autres articles.",
         "Aucune réaction de l’enseignement catholique après le jugement n’a été retrouvée."
       ],
-      "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)"
+      "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)",
+      "faits": "Selon BFM DICI, Le Figaro et France 3, un enseignant du collège-lycée Saint-Joseph de Gap a été poursuivi pour des atteintes sexuelles, des agressions sexuelles et de la corruption de mineurs commises avec abus d’autorité sur des élèves, sur une période allant de 2015 à 2025 ; il conteste les faits."
     },
     "FR-2026-0031": {
       "etat_actuel": [
@@ -197,7 +225,7 @@
           "date_nature": "evenement",
           "type": "fait_rapporte",
           "acteur": "Collège",
-          "texte": "Selon le chapô du Dauphiné, les faits ont lieu lors d’un exercice incendie, quelques jours après la prise de poste de l’enseignant ; l’élève en parle à l’infirmière.",
+          "texte": "Selon le chapô du Dauphiné, les faits ont lieu lors d’un exercice incendie, quelques jours après la rentrée ; l’élève en parle à l’infirmière.",
           "source": {
             "media": "Le Dauphiné Libéré",
             "url": "https://www.ledauphine.com/faits-divers-justice/2026/02/20/coupable-d-agression-sexuelle-sur-une-eleve-un-professeur-de-college-condamne-a-de-la-prison-avec-sursis",
@@ -223,7 +251,7 @@
           "date_nature": "evenement",
           "type": "audience",
           "acteur": "Tribunal correctionnel de Gap",
-          "texte": "Audience (« ce jeudi ») et décision : dix mois avec sursis requis, trois mois avec sursis probatoire prononcés. Selon Alpes 1, l’enseignant avait déjà été condamné pour des propos sexistes tenus devant des élèves dans un autre établissement du département.",
+          "texte": "Audience (« ce jeudi ») et décision : dix mois avec sursis requis, trois mois avec sursis probatoire prononcés.",
           "source": {
             "media": "Alpes 1",
             "url": "https://alpesdusud.alpes1.com/news/hautes-alpes/110923/trois-mois-de-prison-avec-sursis-pour-un-professeur-de-la-batie-neuve",
@@ -234,10 +262,10 @@
       ],
       "inconnues": [
         "Signalement, plainte, suspension éventuelle par l’Éducation nationale : derrière le paywall du Dauphiné, introuvables ailleurs.",
-        "Conditions d’affectation de l’enseignant après sa première condamnation : non documentées. SNY n’en tire aucune conclusion.",
         "Appel : aucun article."
       ],
-      "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)"
+      "faits_libelle": "faits retenus en 1re instance (caractère définitif non établi)",
+      "faits": "Selon Alpes 1 et Le Dauphiné Libéré, un enseignant du collège Simone-Veil de La Bâtie-Neuve (Hautes-Alpes) a comparu devant le tribunal correctionnel de Gap pour agression sexuelle sur une élève, faits situés le 11 septembre 2025 lors d’un exercice d’incendie ; il n’a pas reconnu les faits."
     }
   },
   "reponses": [
