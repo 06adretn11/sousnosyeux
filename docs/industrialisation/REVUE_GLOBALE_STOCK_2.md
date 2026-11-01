@@ -159,7 +159,7 @@ Aucun défaut prioritaire confirmé ne subsiste dans les versions recommandées.
 | FR-2026-0114 | Annonces de la mairie (partie civile, adresse mail, contrôles) déplacées en « annonces non confirmées » | Ligne retirée : Hub et fiche inchangés |
 | FR-2026-0027 | Suite du 09/09/2026 ajoutée au résumé ; jour de l'appel non établi (mois d'août) | Ligne retirée |
 | FR-2026-0005 | Étape ajoutée sur le sort des gardes à vue (13 relâchées, 3 présentées au juge), non demandée | Ligne retirée |
-| FR-2026-0003, 0029 | Jour du verdict déduit (« vendredi » / « vient d'écoper ») | Ligne retirée |
+| FR-2026-0003, 0029 | Jour du verdict : **conservé, déduction univoque** — Le Monde du vendredi 16/10/2026 écrit « l'homme condamné vendredi » et « rapport du Sénat publié jeudi » (la veille) ; France 3 du 03/03/2026 écrit « jugé le mardi 3 mars » et « vient d'écoper » le jour même | Ligne retirée |
 | FR-2026-0133 | Titre « Aucune décision judiciaire rapportée » (et non le libellé standard) | Ligne retirée |
 | PARIS-004 | Source unique ; « même procédure » non écrit en toutes lettres par 20 Minutes | Ligne retirée (la carte « enquête » reste exacte) |
 | FR-2026-0116 / 0142 (en-têtes) | **Fermées** : corrections de champs de carte incluses dans la décision 3 (section D) | Si la correction de carte est refusée, retirer aussi la ligne de la fiche (un en-tête contredit la fiche) |
