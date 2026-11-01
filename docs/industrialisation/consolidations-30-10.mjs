@@ -37,12 +37,16 @@ const RETRAITS = [
 ];
 
 for (const s of SOURCES) {
-  const [l] = await sql`select source_id, case_id from sources where url like ${'%' + s.fragment + '%'} and case_id in (${s.de}, ${s.vers}) limit 1`;
+  const [l] = await sql`select source_id, case_id, is_primary from sources where url like ${'%' + s.fragment + '%'} and case_id in (${s.de}, ${s.vers}) limit 1`;
   if (!l) { console.log(`· source ${s.fragment.slice(0, 40)}… : introuvable`); continue; }
   if (l.case_id === s.vers) { console.log(`· source ${s.fragment.slice(0, 40)}… : déjà sous ${s.vers}`); continue; }
   console.log(`· source ${s.fragment.slice(0, 40)}… : ${s.de} → ${s.vers}${ECRIRE ? '' : ' (à écrire)'}`);
   if (!ECRIRE) continue;
-  await sql`update sources set case_id = ${s.vers} where source_id = ${l.source_id}`;
+  // Index unique « une seule source primaire par affaire » : la ligne déplacée devient secondaire si la cible a déjà sa primaire ; si l'affaire d'origine perd sa primaire, sa plus ancienne source restante le devient.
+  const [cible] = await sql`select 1 as x from sources where case_id = ${s.vers} and is_primary`;
+  await sql`update sources set case_id = ${s.vers}, is_primary = ${cible ? false : l.is_primary} where source_id = ${l.source_id}`;
+  const [reste] = await sql`select 1 as x from sources where case_id = ${s.de} and is_primary`;
+  if (!reste) await sql`update sources set is_primary = true where source_id = (select source_id from sources where case_id = ${s.de} order by publication_date limit 1)`;
   for (const id of [s.de, s.vers]) await sql`insert into reviews (case_id, reviewed_by, decision, comment) values (${id}, ${PAR}, 'validé', ${`[Source déplacée ${GO}] ${s.de} → ${s.vers} : ${s.motif}. La ligne est conservée (réaffectée), rien n’est supprimé.`})`;
   console.log('  ✅ réaffectée');
 }

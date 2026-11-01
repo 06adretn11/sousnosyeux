@@ -44,13 +44,14 @@ for (const id of ids) {
   const dansHub = dossierFiche(id);
   let g = dansHub?.hub ? dansHub : dossierGeneree(id);
   // Dossier de Hub corrigé : la version finale est suivie dans docs/industrialisation/dossiers-finaux ; elle est écrite dans le Hub par appliquer-hubs-01-11.mjs (étape distincte, après GO).
-  // L'approbation porte l'empreinte de cette version finale, que la page lira une fois appliquée.
+  // L'approbation n'est écrite qu'une fois le Hub appliqué : le dossier du Hub doit déjà être l'empreinte autorisée.
   // Contrôle de version (contrat scripts/lib/hub-application.mjs) : le dossier actuel du Hub doit être la version publique attendue (`_hub_avant`) ou déjà la version finale ; sinon la ligne est refusée.
   if (dansHub?.hub && hashDossier(dansHub.d) !== autorisees[id]) { // (dossier du Hub déjà égal à l'empreinte autorisée : approbation du dossier tel quel, circuit historique)
     const chemin = new URL(`./dossiers-finaux/${id}.json`, import.meta.url);
     const v = verifierLigneHub({ finale: existsSync(chemin) ? JSON.parse(readFileSync(chemin, 'utf8')) : null, hubDossier: dansHub.d, hashAutorise: autorisees[id], hashAvant: HUB_AVANT[id] });
     if (v.etat === 'refus') { console.log(`· ${id} : REFUS — ${v.motif}${v.hashHub ? ` (dossier du Hub ${v.hashHub})` : ''}`); continue; }
-    if (v.etat === 'a_ecrire') g = { ...dansHub, d: JSON.parse(readFileSync(chemin, 'utf8')) };
+    // Hub pas encore appliqué (ou ligne exclue/refusée par appliquer-hubs) : on n'approuve JAMAIS une empreinte que la page ne sert pas.
+    if (v.etat === 'a_ecrire') { console.log('· '+id+' : REFUS — dossier du Hub non appliqué (exécuter appliquer-hubs-01-11.mjs d’abord ; ligne exclue ou refusée = non approuvée)'); continue; }
   }
   const h = g ? hashDossier(g.d) : null;
   if (h !== autorisees[id]) { console.log(`· ${id} : REFUS — empreinte du dossier local ${h} ≠ autorisée ${autorisees[id]}`); continue; }

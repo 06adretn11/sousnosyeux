@@ -165,7 +165,10 @@ await t('proposition actionnable : elle NOMME les pages qu’un VALIDATE mettrai
   assert.ok(tarnos.some((x) => /^Hub Landes, bloc « Collectivités et Éducation nationale » — https:\/\/sousnosyeux\.org\/territoires\/landes\/$/.test(x)), tarnos.join(' | '));
   assert.ok(tarnos.some((x) => x.startsWith('fiche FR-2026-0115 — https://sousnosyeux.org/affaires/fr-2026-0115/')));
   const mees = pagesSiValide([{ case_id: 'FR-2026-0116', nature: 'mobilisation', portee: 'établissement', territoire: null }], ctx);
-  assert.deepEqual(mees, ['Hub Landes, bloc « Familles et associations d’aide aux victimes » — https://sousnosyeux.org/territoires/landes/'], 'pas de fiche approuvée pour Mées : le Hub seul');
+  const hubMees = 'Hub Landes, bloc « Familles et associations d’aide aux victimes » — https://sousnosyeux.org/territoires/landes/';
+  assert.ok(mees.includes(hubMees) && mees.includes('fiche FR-2026-0116 — https://sousnosyeux.org/affaires/fr-2026-0116/'), 'fiche de Mées approuvée (GO du 01/11/2026) : le Hub et la fiche : ' + mees.join(' | '));
+  const sansFiche = pagesSiValide([{ case_id: 'FR-2026-0116', nature: 'mobilisation', portee: 'établissement', territoire: null }], { ...ctx, approuvees: new Set([...ctx.approuvees].filter((x) => x !== 'FR-2026-0116')) });
+  assert.deepEqual(sansFiche, [hubMees], 'pas de fiche approuvée : le Hub seul');
   assert.deepEqual(pagesSiValide([{ case_id: 'FR-2026-0004', nature: 'mesure', portee: 'établissement', territoire: null }], ctx), [], 'affaire sous HOLD : aucune page');
   // Hub rédigé : une réponse déjà écrite dans le bloc à la même date est citée (doublon probable : la décision reste humaine, rien n'est masqué).
   const items = Object.fromEntries(lire('data/hub-matiere/landes.json').reponses.map((g) => [g.titre, g.items]));

@@ -100,7 +100,7 @@
     "FR-2026-0115": {
       "etat_actuel": [
         "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
-        "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
+        "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention. La date de cette remise en liberté n’est pas établie : les sources lues divergent."
       ],
       "appel": false,
       "faits": "Selon La Dépêche, un animateur du centre de loisirs de Tarnos (Landes) a été mis en examen pour des faits de viols et d'agressions sexuelles sur plusieurs enfants. Selon La Dépêche, l'animateur a été mis en examen pour des viols et des agressions sexuelles, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
@@ -250,7 +250,7 @@
           "date_nature": "article",
           "type": "mesure_etablissement",
           "acteur": "La mairie de Tarnos",
-          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, le centre de loisirs sera fermé le mercredi 15 juillet 2026, avec l'accord du maire.",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, fermeture du centre de loisirs annoncée pour le mercredi 15 juillet 2026, avec l'accord du maire.",
           "source": {
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
@@ -276,7 +276,7 @@
           "date_nature": "article",
           "type": "mesure_collectivite",
           "acteur": "La Ville de Tarnos",
-          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, une réunion d'information à l'intention des parents dont les enfants fréquentent le centre de loisirs est organisée le mercredi 15 juillet 2026 à 18 heures au gymnase Léo-Lagrange.",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, une réunion d'information à l'intention des parents dont les enfants fréquentent le centre de loisirs est annoncée pour le mercredi 15 juillet 2026 à 18 heures au gymnase Léo-Lagrange.",
           "source": {
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/landes/tarnos/violences-sexuelles-dans-le-centre-de-loisirs-de-tarnos-la-mairie-se-tient-au-cote-des-victimes-des-parents-et-des-agents-du-centre-de-loisirs-29872665.php",
@@ -289,13 +289,21 @@
           "date_nature": "inconnue",
           "type": "decision",
           "acteur": "chambre de l'instruction",
-          "texte": "Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention.",
+          "texte": "Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention. La date de cette remise en liberté n’est pas établie : les sources lues divergent.",
           "source": {
             "media": "La Dépêche",
             "url": "https://www.ladepeche.fr/2026/09/04/accuse-de-viols-et-dagressions-sexuelles-sur-enfants-un-animateur-du-periscolaire-vise-par-14-plaintes-est-remis-en-liberte-suscitant-la-colere-des-13535638.php",
             "publie_le": "2026-09-04",
             "acces": "libre"
-          }
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/justice/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-la-justice-n-avance-pas-et-rien-ne-justifie-la-sortie-de-detention-provisoire-du-suspect-deplore-l-un-des-avocats-des-victimes-30545985.php",
+              "publie_le": "2026-09-09",
+              "acces": "libre"
+            }
+          ]
         },
         {
           "date": null,
@@ -441,11 +449,11 @@
         "Les sources lues ne rapportent pas de jugement sur le fond. L’issue de la procédure reste à documenter.",
         "Le nombre de chefs de mise en examen diffère selon les sources lues : trois viols et trois agressions sexuelles dans le communiqué du parquet de Dax (La Provence, avec l’AFP, 9 juillet) ; quatre viols et trois agressions sexuelles selon La Dépêche (4 septembre). Les sources lues ne disent pas si l’écart tient à une évolution de la procédure.",
         "Date de la remise en liberté : « près de quinze jours » après le 8 juillet selon Sud Ouest (9 septembre), « en août » selon La Dépêche (4 septembre). Les sources lues ne permettent pas de trancher.",
-        "Le dossier ne repose que sur 9 articles lus (Sud Ouest, La Dépêche, La Montagne (AFP), ici, La Provence)."
+        "Le dossier ne repose que sur 10 articles lus (Sud Ouest ×5, La Dépêche, ici ×2, La Montagne (AFP) et La Provence, ces deux derniers étant des reprises de la même dépêche)."
       ],
       "synthese": {
         "decision": "Selon La Dépêche, l'animateur du centre de loisirs de Tarnos a été mis en examen pour des viols et des agressions sexuelles sur plusieurs enfants, puis écroué au centre pénitentiaire de Mont-de-Marsan.",
-        "ouvert": "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention."
+        "ouvert": "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention. La date de cette remise en liberté n’est pas établie : les sources lues divergent."
       },
       "reactions": [
         {
@@ -539,7 +547,8 @@
             "publie_le": "2026-09-24",
             "acces": "libre"
           },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "paraphrase": "Contexte dans l’article (Sud Ouest, 24 septembre) : ces propos ont été contredits par le maire lors du Conseil municipal du 22 septembre, qui a confirmé que la Ville s’est bien constituée partie civile."
         },
         {
           "acteur": "La mairie de Tarnos",
@@ -625,9 +634,9 @@
           "meta": "dans les sources consultées",
           "cat": "blue",
           "lignes": [
-            "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire en août, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention.",
+            "Évolution rapportée : Selon La Dépêche, la chambre de l'instruction a remis l'animateur en liberté sous contrôle judiciaire, mesure justifiée par le fait que sa sécurité ne peut plus être garantie en détention. La date de cette remise en liberté n’est pas établie : les sources lues divergent.",
             "La personne mise en cause est présumée innocente.",
-            "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, le centre de loisirs sera fermé le mercredi 15 juillet 2026, avec l'accord du maire.",
+            "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Sud Ouest, fermeture du centre de loisirs annoncée pour le mercredi 15 juillet 2026, avec l'accord du maire.",
             "Mesure institutionnelle (distincte de la décision judiciaire) : la Ville a sollicité le Service départemental à la jeunesse, à l'engagement et aux sports, l'Agence régionale de santé, le centre médico-psycho-pédagogique, l'Unité d'accueil pédiatrique pour enfants en danger, l'Association d'aide aux victimes et de médiation ainsi que l'association Colosses aux pieds d'argile."
           ]
         }
@@ -652,7 +661,7 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
-            "acces": "libre"
+            "acces": "partiel"
           }
         },
         {
@@ -672,7 +681,7 @@
               "media": "Sud Ouest",
               "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
               "publie_le": "2026-09-25",
-              "acces": "libre"
+              "acces": "partiel"
             }
           ]
         },
@@ -687,7 +696,15 @@
             "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
             "publie_le": "2026-09-25",
             "acces": "libre"
-          }
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+              "publie_le": "2026-09-25",
+              "acces": "partiel"
+            }
+          ]
         },
         {
           "date": null,
@@ -706,19 +723,19 @@
               "media": "Sud Ouest",
               "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
               "publie_le": "2026-09-25",
-              "acces": "libre"
+              "acces": "partiel"
             },
             {
               "media": "Sud Ouest",
               "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
               "publie_le": "2026-09-29",
-              "acces": "libre"
+              "acces": "partiel"
             }
           ]
         },
         {
-          "date": null,
-          "date_nature": "article",
+          "date": "2026-09-21",
+          "date_nature": "evenement",
           "type": "mesure_etablissement",
           "acteur": "DSDEN des Landes",
           "texte": "Selon ICI Gascogne, la direction des services départementaux de l’Éducation nationale a mis en place une cellule d’écoute psychologique au sein de l’école du lundi 21 au vendredi 25 septembre.",
@@ -727,7 +744,15 @@
             "url": "https://www.ici.fr/nouvelle-aquitaine/landes-40/mees/un-enseignant-de-l-ecole-de-mees-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-un-eleve-de-maternelle-5437754",
             "publie_le": "2026-09-25",
             "acces": "libre"
-          }
+          },
+          "sources_complementaires": [
+            {
+              "media": "Sud Ouest",
+              "url": "https://www.sudouest.fr/faits-divers/faits-divers-dans-les-landes/landes-un-enseignant-remplacant-ecarte-apres-une-plainte-pour-agression-sexuelle-sur-une-enfant-de-3-ans-30784529.php",
+              "publie_le": "2026-09-25",
+              "acces": "partiel"
+            }
+          ]
         },
         {
           "date": "2026-09-23",
@@ -739,7 +764,7 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
-            "acces": "libre"
+            "acces": "partiel"
           },
           "sources_complementaires": [
             {
@@ -760,7 +785,7 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
-            "acces": "libre"
+            "acces": "partiel"
           }
         },
         {
@@ -773,7 +798,7 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
-            "acces": "libre"
+            "acces": "partiel"
           },
           "sources_complementaires": [
             {
@@ -794,15 +819,15 @@
             "media": "Sud Ouest",
             "url": "https://www.sudouest.fr/faits-divers/landes-enseignant-remplacant-soupconne-d-agression-sexuelle-sur-une-fillette-les-investigations-ont-etabli-un-fait-isole-30838015.php",
             "publie_le": "2026-09-29",
-            "acces": "libre"
+            "acces": "partiel"
           }
         }
       ],
       "inconnues": [
-        "Aucune date d’audience ni décision de justice n’est rapportée par les sources lues (recherche de presse du 29 octobre 2026) : la suite de la procédure est inconnue.",
+        "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue. Aucune date d’audience n’est rapportée (recherche de presse du 29 octobre 2026).",
         "La date de l’écartement de l’enseignant n’est pas établie : ICI Gascogne la situe au 17 puis au 18 septembre dans le même article.",
         "Le dossier ne repose que sur 3 articles (Sud Ouest ×2, partiellement en accès abonnés, et ICI Gascogne).",
-        "Type d’école : « école maternelle » selon ICI Gascogne et Sud Ouest du 25 septembre, « école élémentaire » selon Sud Ouest du 29 septembre ; la fiche retient « maternelle »."
+        "Le type d’école n’est pas établi : « école maternelle » dans un passage de Sud Ouest du 25 septembre, « école élémentaire » dans deux passages de Sud Ouest des 25 et 29 septembre ; les articles parlent d’une élève de maternelle sans trancher le type de l’établissement. Le dossier emploie donc « école de Mées »."
       ],
       "statut_affiche": "procès"
     }
