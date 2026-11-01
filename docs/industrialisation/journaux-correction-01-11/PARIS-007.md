@@ -36,3 +36,6 @@
 
 ## Proposition de carte
 PARIS-007 (et la fusion FR-2026-0007 → PARIS-007) : `statut_judiciaire` « enquête » → « à qualifier » ; preuve : ci-dessus (enquête administrative + signalement promis ; aucun acte judiciaire rapporté). Wording (popup) : « Selon 20 Minutes, des faits ont été signalés ; la qualification reste à préciser. » Hypothèse B rend le texte le plus cohérent ; A reste acceptable grâce à la pastille « Enquête administrative ». Si B : changer `statut_affiche` en « à qualifier » dans le dossier.
+
+## Revue de clôture et relecture du rendu
+- revue du lot : statut_affiche aligné sur la carte proposée (« à qualifier ») ; champ non rendu par le gabarit, libellé « Enquête administrative » inchangé

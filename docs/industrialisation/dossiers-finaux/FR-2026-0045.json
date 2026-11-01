@@ -7,98 +7,6 @@
   "faits": "Selon Ouest-France, un ancien surveillant d'un collège de Saint-Valéry-en-Caux a été poursuivi pour des agressions sexuelles multiples et de la corruption de mineurs, des faits commis entre 2015 et 2023. Selon Ouest-France, les faits se sont produits à l'internat du collège où il travaillait ainsi qu'au club de football où il était entraîneur.",
   "deroule": [
     {
-      "date": "2023-07",
-      "date_nature": "approximative",
-      "type": "fait_rapporte",
-      "acteur": null,
-      "texte": "Selon lamontagne.fr, l'ancien surveillant était en détention provisoire depuis juillet 2023.",
-      "source": {
-        "media": "lamontagne.fr",
-        "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-        "publie_le": "2025-09-17",
-        "acces": "libre"
-      },
-      "sources_complementaires": [
-        {
-          "media": "La Dépêche",
-          "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        },
-        {
-          "media": "Ouest-France",
-          "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        },
-        {
-          "media": "Le Parisien",
-          "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        }
-      ]
-    },
-    {
-      "date": null,
-      "date_nature": "article",
-      "type": "fait_rapporte",
-      "acteur": null,
-      "texte": "Selon Le Parisien, l'assistant d'éducation à l'internat avait démissionné le lendemain de l'alerte.",
-      "source": {
-        "media": "Le Parisien",
-        "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-        "publie_le": "2025-09-17",
-        "acces": "libre"
-      }
-    },
-    {
-      "date": null,
-      "date_nature": "article",
-      "type": "fait_rapporte",
-      "acteur": null,
-      "texte": "Selon La Dépêche, l'assistant d'éducation à l'internat a démissionné le lendemain et a contacté plusieurs victimes ou collègues pour les dissuader de témoigner.",
-      "source": {
-        "media": "La Dépêche",
-        "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-        "publie_le": "2025-09-17",
-        "acces": "libre"
-      },
-      "sources_complementaires": [
-        {
-          "media": "Ouest-France",
-          "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        },
-        {
-          "media": "lamontagne.fr",
-          "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        },
-        {
-          "media": "Le Parisien",
-          "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-          "publie_le": "2025-09-17",
-          "acces": "libre"
-        }
-      ]
-    },
-    {
-      "date": null,
-      "date_nature": "article",
-      "type": "fait_rapporte",
-      "acteur": null,
-      "texte": "Selon Le Parisien, le prévenu a reconnu une partie des faits durant l'enquête et au premier jour de son procès.",
-      "source": {
-        "media": "Le Parisien",
-        "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-        "publie_le": "2025-09-17",
-        "acces": "libre"
-      }
-    },
-    {
       "date": "2023-05",
       "date_nature": "approximative",
       "type": "signalement",
@@ -134,6 +42,72 @@
     {
       "date": null,
       "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon La Dépêche, l'assistant d'éducation à l'internat a démissionné le lendemain et a contacté plusieurs victimes ou collègues pour les dissuader de témoigner.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+        "publie_le": "2025-09-17",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        },
+        {
+          "media": "lamontagne.fr",
+          "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2023-07",
+      "date_nature": "approximative",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon lamontagne.fr, l'ancien surveillant était en détention provisoire depuis juillet 2023.",
+      "source": {
+        "media": "lamontagne.fr",
+        "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+        "publie_le": "2025-09-17",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        },
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+          "publie_le": "2025-09-17",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
       "type": "audience",
       "acteur": "tribunal correctionnel de Rouen",
       "texte": "Selon Le Parisien, l'ancien surveillant d'un collège de Saint-Valery-en-Caux est jugé devant le tribunal correctionnel de Rouen pour agressions sexuelles et corruption de mineurs.",
@@ -151,6 +125,19 @@
           "acces": "libre"
         }
       ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, le prévenu a reconnu une partie des faits durant l'enquête et au premier jour de son procès.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+        "publie_le": "2025-09-17",
+        "acces": "libre"
+      }
     },
     {
       "date": null,
@@ -206,19 +193,6 @@
           "acces": "libre"
         }
       ]
-    },
-    {
-      "date": null,
-      "date_nature": "article",
-      "type": "audience",
-      "acteur": "parquet",
-      "texte": "Le tribunal a suivi les réquisitions du parquet.",
-      "source": {
-        "media": "lamontagne.fr",
-        "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-        "publie_le": "2025-09-17",
-        "acces": "libre"
-      }
     },
     {
       "date": "2025-09-17",

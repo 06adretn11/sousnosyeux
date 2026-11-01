@@ -17,6 +17,7 @@ import { createHash } from 'node:crypto';
 import { connecter } from '../../scripts/lib/neon.mjs';
 import { dossierGeneree, dossierFiche, hashDossier, payloadFiche } from '../../scripts/lib/fiche-page.mjs';
 import { rattacherSources } from '../../scripts/lib/rattacher-sources.mjs';
+import { verifierLigneHub } from '../../scripts/lib/hub-application.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire');
@@ -25,8 +26,10 @@ const autorisees = JSON.parse(readFileSync(new URL(`./${liste}`, import.meta.url
 const LOT = autorisees._lot ?? 'publication';
 // Date du GO (défaut : 24/10/2026, lot historique) ; `_cartes` : changements de CARTE couverts par le même GO (id → état) ; `_dates_sources` : dates de parution lues sur la page (id → [{url, date}]).
 const DATE = autorisees._date ?? '24/10/2026';
-const CARTES = autorisees._cartes ?? {}, DATES_SOURCES = autorisees._dates_sources ?? {};
-delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources; delete autorisees._cartes_seules; delete autorisees._hub_avant;
+// `_hub_avant` : empreinte attendue du dossier de Hub avant application (lignes de Hub) — LUE ICI avant d'être retirée des lignes : elle sert au contrôle de version ci-dessous.
+// `_champs_carte` : corrections de CHAMPS de carte couvertes par le même GO (id → {etablissement | type_structure | role_mis_en_cause : valeur}).
+const CARTES = autorisees._cartes ?? {}, DATES_SOURCES = autorisees._dates_sources ?? {}, HUB_AVANT = autorisees._hub_avant ?? {}, CHAMPS_CARTE = autorisees._champs_carte ?? {};
+delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources; delete autorisees._cartes_seules; delete autorisees._hub_avant; delete autorisees._champs_carte;
 const demandes = A.filter((a) => !a.startsWith('--'));
 const ids = (demandes.length ? demandes : Object.keys(autorisees)).filter((id) => id !== 'FR-2026-0115' || autorisees['FR-2026-0115']); // Tarnos : approuvée par clic Telegram (af7a64e7) ; un manifeste qui la porte explicitement (nouvelle empreinte) la couvre
 const ID8 = createHash('sha256').update(LOT === 'publication' ? 'GO-lot-publication-2026-10-24' : `GO-lot-${LOT}`).digest('hex').slice(0, 8);
@@ -42,8 +45,13 @@ for (const id of ids) {
   let g = dansHub?.hub ? dansHub : dossierGeneree(id);
   // Dossier de Hub corrigé : la version finale est suivie dans docs/industrialisation/dossiers-finaux ; elle est écrite dans le Hub par appliquer-hubs-01-11.mjs (étape distincte, après GO).
   // L'approbation porte l'empreinte de cette version finale, que la page lira une fois appliquée.
-  const finale = new URL(`./dossiers-finaux/${id}.json`, import.meta.url);
-  if (dansHub?.hub && hashDossier(dansHub.d) !== autorisees[id] && existsSync(finale)) { const f = JSON.parse(readFileSync(finale, 'utf8')); if (hashDossier(f) === autorisees[id]) g = { ...dansHub, d: f }; }
+  // Contrôle de version (contrat scripts/lib/hub-application.mjs) : le dossier actuel du Hub doit être la version publique attendue (`_hub_avant`) ou déjà la version finale ; sinon la ligne est refusée.
+  if (dansHub?.hub && hashDossier(dansHub.d) !== autorisees[id]) { // (dossier du Hub déjà égal à l'empreinte autorisée : approbation du dossier tel quel, circuit historique)
+    const chemin = new URL(`./dossiers-finaux/${id}.json`, import.meta.url);
+    const v = verifierLigneHub({ finale: existsSync(chemin) ? JSON.parse(readFileSync(chemin, 'utf8')) : null, hubDossier: dansHub.d, hashAutorise: autorisees[id], hashAvant: HUB_AVANT[id] });
+    if (v.etat === 'refus') { console.log(`· ${id} : REFUS — ${v.motif}${v.hashHub ? ` (dossier du Hub ${v.hashHub})` : ''}`); continue; }
+    if (v.etat === 'a_ecrire') g = { ...dansHub, d: JSON.parse(readFileSync(chemin, 'utf8')) };
+  }
   const h = g ? hashDossier(g.d) : null;
   if (h !== autorisees[id]) { console.log(`· ${id} : REFUS — empreinte du dossier local ${h} ≠ autorisée ${autorisees[id]}`); continue; }
   const [k] = await sql`select publication_status::text ps from cases where case_id = ${id}`;
@@ -83,4 +91,27 @@ for (const [id, vers] of Object.entries(CARTES_SEULES)) {
   await sql`update cases set statut_judiciaire = ${vers}::statut_judiciaire, updated_at = now() where case_id = ${id}`;
   await sql`insert into reviews (case_id, reviewed_by, decision, comment) values (${id}, ${PAR}, 'validé', ${`[Carte ${ID8}] ${id} : « ${av.s} » → « ${vers} » — GO collectif d'Adrien du ${DATE} : les sources lues établissent « ${vers} » (voir REVUE_GLOBALE_STOCK_2) ; la fiche viendra après correction de la carte`})`;
   console.log(`  ✅ ${id} : carte « ${av.s} » → « ${vers} » (à projeter : project-public.mjs --modifier ${id})`);
+}
+
+// CORRECTIONS DE CHAMPS DE CARTE couvertes par le même GO (en-tête de page contredit par les sources lues) : id → { etablissement | type_structure | role_mis_en_cause : valeur }.
+// Même écriture que `etat()` d'appliquer-decisions : UPDATE de la ligne + revue séparée ; la projection (project-public --modifier <id>, une affaire à la fois) est l'étape suivante.
+const CHAMPS_AUTORISES = ['etablissement', 'type_structure', 'role_mis_en_cause'];
+for (const [id, champs] of Object.entries(CHAMPS_CARTE)) {
+  if (demandes.length && !demandes.includes(id)) continue;
+  const [av] = await sql`select etablissement, type_structure::text ts, role_mis_en_cause::text r, publication_status::text ps from cases where case_id = ${id}`;
+  if (!av || av.ps !== 'publiée') { console.log(`· ${id} : REFUS — l’affaire n’est pas publique`); continue; }
+  const inconnus = Object.keys(champs).filter((k) => !CHAMPS_AUTORISES.includes(k));
+  if (inconnus.length) { console.log(`· ${id} : REFUS — champ(s) non autorisé(s) : ${inconnus.join(', ')}`); continue; }
+  const actuel = { etablissement: av.etablissement, type_structure: av.ts, role_mis_en_cause: av.r };
+  const diff = Object.entries(champs).filter(([k, v]) => actuel[k] !== v);
+  if (!diff.length) { console.log(`· ${id} : champs de carte déjà à jour`); continue; }
+  console.log(`· ${id} : CHAMPS DE CARTE ${diff.map(([k, v]) => `${k} « ${actuel[k]} » → « ${v} »`).join(' ; ')}${ECRIRE ? '' : ' · à écrire'}`);
+  if (!ECRIRE) continue;
+  for (const [k, v] of diff) {
+    if (k === 'etablissement') await sql`update cases set etablissement = ${v}, updated_at = now() where case_id = ${id}`;
+    else if (k === 'type_structure') await sql`update cases set type_structure = ${v}::type_structure, updated_at = now() where case_id = ${id}`;
+    else await sql`update cases set role_mis_en_cause = ${v}::role_mis_en_cause, updated_at = now() where case_id = ${id}`;
+  }
+  await sql`insert into reviews (case_id, reviewed_by, decision, comment) values (${id}, ${PAR}, 'validé', ${`[Carte ${ID8}] ${id} : ${diff.map(([k, v]) => `${k} « ${actuel[k]} » → « ${v} »`).join(' ; ')} — GO collectif d'Adrien du ${DATE} : en-tête de la page contredit par les sources lues (voir REVUE_GLOBALE_STOCK_2)`})`;
+  console.log(`  ✅ ${id} : champs de carte corrigés (à projeter : project-public.mjs --modifier ${id})`);
 }

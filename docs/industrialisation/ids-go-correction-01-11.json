@@ -1,33 +1,33 @@
 {
   "_lot": "lot-correction-2026-11-01",
   "_date": "01/11/2026",
-  "_note": "Manifeste du GO collectif de correction (REVUE_GLOBALE_STOCK_2.md, version du 01/11/2026) : identifiant -> empreinte EXACTE autorisée. Remplace le manifeste ids-go-lot-stock-27-10.json : 26 créations (candidates corrigées) et 30 mises à jour de fiches publiées (dont POC-04 et POC-10, une seule version finale). FR-2026-0020 et FR-2026-0041 sont inchangées : absentes du manifeste, leur approbation reste valable. `_hub_avant` : empreinte du dossier de Hub attendue avant application (appliquer-hubs-01-11.mjs) pour les lignes dont le dossier vit dans un Hub. `_cartes` : changement de CARTE couvert par le GO (ligne distincte, retirable sans toucher aux fiches). `_dates_sources` : dates de parution rectifiées d’après les pages. NON exécuté : attend le GO écrit d’Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n’est couverte.",
+  "_note": "Manifeste du GO collectif de correction (REVUE_GLOBALE_STOCK_2.md, version du 01/11/2026) : identifiant -> empreinte EXACTE autorisée. Remplace le manifeste ids-go-lot-stock-27-10.json : 26 créations (candidates corrigées) et 30 mises à jour de fiches publiées (dont POC-04 et POC-10, une seule version finale). FR-2026-0020 et FR-2026-0041 sont inchangées : absentes du manifeste, leur approbation reste valable. `_hub_avant` : empreinte du dossier de Hub attendue avant application (appliquer-hubs-01-11.mjs) pour les lignes dont le dossier vit dans un Hub. `_cartes` : changement d’ÉTAT de carte couvert par le GO (ligne distincte, retirable sans toucher aux fiches). `_champs_carte` : corrections de CHAMPS de carte (Mées : type d’établissement ; Orange : établissement non nommé, type, rôle) couvertes par le même GO, rattachées aux fiches FR-2026-0116 et FR-2026-0142 (une fiche n’est pas présentée prête avec un en-tête que les sources contredisent). `_dates_sources` : dates de parution rectifiées d’après les pages. NON exécuté : attend le GO écrit d’Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n’est couverte.",
   "POC-09": "3142989bfb102f51",
   "FR-2026-0042": "1afd5e9a22e903fc",
   "FR-2026-0114": "c9af161bdd06f0d9",
   "FR-2026-0117": "9353bf677116def7",
-  "FR-2026-0115": "81abc4c7ae3f5a62",
+  "FR-2026-0115": "05f44d689b750122",
   "POC-02": "4f0b75486dfa4a70",
   "FR-2026-0025": "7c92fed95fdedaa6",
-  "FR-2026-0027": "998225fe92e1d632",
+  "FR-2026-0027": "773d64814328ad06",
   "FR-2026-0124": "4928d93420fc036d",
   "FR-2026-0038": "bbeb9b641a8bcb08",
   "FR-2026-0139": "1e84bfc4edc4263b",
-  "FR-2026-0006": "7aaf17feeec5e4d9",
-  "FR-2026-0028": "0f2e8f1e0a0dee00",
+  "FR-2026-0006": "5fc1ee060312fbbd",
+  "FR-2026-0028": "d39a19b227b385fe",
   "FR-2026-0012": "687a8e29d6e74149",
   "FR-2026-0046": "4083cdfdbb384981",
   "FR-2026-0123": "236939af3ee9852f",
-  "FR-2026-0119": "2db23b69a0d9809a",
-  "FR-2026-0030": "d95a61fabb485412",
+  "FR-2026-0119": "bc6346f88cf59b0c",
+  "FR-2026-0030": "4e6c35dd60c677e6",
   "FR-2026-0008": "f7554f0a677855ca",
   "FR-2026-0036": "87ac5b5c823b01dd",
   "FR-2026-0035": "472285357efe95c8",
   "PARIS-007": "ccc3e8ecb884b382",
   "FR-2026-0043": "8f444a54dfd5d746",
-  "FR-2026-0045": "9045c27a34f3f88f",
+  "FR-2026-0045": "8f7278c2bc1dcf8a",
   "FR-2026-0011": "1c56bcb0cff3c19c",
-  "FR-2026-0037": "535dc096e9916ab3",
+  "FR-2026-0037": "e0738e103890970b",
   "FR-2026-0120": "1976c0794b7740b0",
   "FR-2026-0133": "9618383317ae989e",
   "POC-04": "ed20ddf58faf654a",
@@ -49,7 +49,7 @@
   "FR-2026-0113": "fa7a412f94bd5b04",
   "FR-2026-0116": "16e455c2e61ec619",
   "FR-2026-0122": "5ba52da10fd42f5a",
-  "FR-2026-0137": "180479b6cd6acdb7",
+  "FR-2026-0137": "ed062e30e5bc8223",
   "FR-2026-0142": "e723564d191547d7",
   "PARIS-004": "62c33d9fa80aafde",
   "PARIS-006": "527e46fbedc74469",
@@ -76,6 +76,16 @@
   "_cartes": {
     "FR-2026-0008": "à qualifier",
     "PARIS-007": "à qualifier"
+  },
+  "_champs_carte": {
+    "FR-2026-0116": {
+      "type_structure": "autre"
+    },
+    "FR-2026-0142": {
+      "etablissement": "Lycée non nommé (secteur d’Orange)",
+      "type_structure": "lycée",
+      "role_mis_en_cause": "enseignant"
+    }
   },
   "_dates_sources": {
     "FR-2026-0001": [

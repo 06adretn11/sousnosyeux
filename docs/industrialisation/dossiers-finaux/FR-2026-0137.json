@@ -384,7 +384,7 @@
       "date_nature": "evenement",
       "type": "mesure_etablissement",
       "acteur": null,
-      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, une cellule psychologique sera mise en place le 15 octobre à l'école Julie-Victoire Daubié de Soyaux.",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, une cellule psychologique devait être mise en place le 15 octobre à l'école Julie-Victoire Daubié de Soyaux.",
       "source": {
         "media": "ici",
         "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/un-instituteur-interpelle-a-soyaux-apres-des-accusations-d-agressions-sexuelles-sur-cinq-enfants-de-maternelle-5048456",
@@ -443,7 +443,7 @@
       "date_nature": "article",
       "type": "fait_rapporte",
       "acteur": null,
-      "texte": "Selon ICI, certains parents d'élèves ont signé une lettre qui sera envoyée au rectorat pour demander plus de transparence sur la situation.",
+      "texte": "Selon ICI, certains parents d'élèves ont signé une lettre destinée au rectorat pour demander plus de transparence sur la situation.",
       "source": {
         "media": "ici",
         "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/instituteur-interpelle-a-soyaux-nous-exigeons-de-la-transparence-parents-et-enseignants-rassembles-a-l-ecole-3444426",
@@ -456,7 +456,7 @@
       "date_nature": "article",
       "type": "signalement",
       "acteur": null,
-      "texte": "Selon ici, l’enseignant avait déjà été signalé pour des comportements décrits comme problématiques ; selon la mairie d’Angoulême, citée par Sud Ouest, ces signalements ne portaient pas sur des faits visant des enfants.",
+      "texte": "Selon ici, l’enseignant avait déjà été signalé pour des comportements décrits comme problématiques ; selon la mairie d’Angoulême, citée par Sud Ouest, ces signalements, relatifs à des difficultés relationnelles avec des adultes, ne portaient pas sur des faits visant des enfants.",
       "source": {
         "media": "ici",
         "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/a-soyaux-les-parents-traumatises-apres-l-arrestation-d-un-enseignant-pour-agressions-sexuelles-et-viol-sur-enfants-3216307",

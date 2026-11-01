@@ -6,11 +6,11 @@
   "faits": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart ; la victime aurait décrit un geste présumé à caractère sexuel de la part d'un professionnel de l'équipe d'animation de l'école. Selon ELLE, la personne mise en cause à l'école maternelle Rochechouart est un animateur périscolaire.",
   "deroule": [
     {
-      "date": "2026-02",
+      "date": "2026-01",
       "date_nature": "approximative",
-      "type": "plainte",
-      "acteur": "parents d'un enfant scolarisé",
-      "texte": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris.",
+      "type": "mesure_collectivite",
+      "acteur": null,
+      "texte": "Selon ELLE, l'animateur périscolaire mis en cause à l'école maternelle Rochechouart a été suspendu fin janvier 2026, au moment du signalement des faits.",
       "source": {
         "media": "ELLE",
         "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
@@ -19,11 +19,11 @@
       }
     },
     {
-      "date": "2026-01",
+      "date": "2026-02",
       "date_nature": "approximative",
-      "type": "mesure_collectivite",
-      "acteur": null,
-      "texte": "Selon ELLE, l'animateur périscolaire mis en cause à l'école maternelle Rochechouart a été suspendu fin janvier 2026, au moment du signalement des faits.",
+      "type": "plainte",
+      "acteur": "parents d'un enfant scolarisé",
+      "texte": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris.",
       "source": {
         "media": "ELLE",
         "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",

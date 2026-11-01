@@ -173,7 +173,7 @@
       "date_nature": "article",
       "type": "mesure_etat",
       "acteur": "parquet de Villefranche-sur-Saône",
-      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : le parquet de Villefranche-sur-Saône indique qu'une réunion d'information rassemblant les familles, la procureure et la juge d'instruction aura lieu dans les prochaines semaines.",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : le parquet de Villefranche-sur-Saône indique qu'une réunion d'information rassemblant les familles, la procureure et la juge d'instruction serait organisée « dans les prochaines semaines » (annonce du 30 avril 2026).",
       "source": {
         "media": "Le Progrès",
         "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
@@ -268,7 +268,7 @@
       "validation": "POSITION_ATTRIBUEE"
     },
     {
-      "paraphrase": "Contexte dans l’article (Le Progrès) : Le parquet de Villefranche-sur-Saône indique qu'une réunion d'information aura lieu « dans les prochaines semaines », rassemblant les familles, la procureure et la juge d'instruction.",
+      "paraphrase": "Contexte dans l’article (Le Progrès) : Le parquet de Villefranche-sur-Saône indique qu'une réunion d'information serait organisée « dans les prochaines semaines » (annonce du 30 avril 2026), rassemblant les familles, la procureure et la juge d'instruction.",
       "acteur": "Parquet de Villefranche-sur-Saône",
       "qualite": "propos rapportés par Le Progrès",
       "date": "2026-04-30",
