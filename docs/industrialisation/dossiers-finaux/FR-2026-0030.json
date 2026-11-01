@@ -60,51 +60,11 @@
       ]
     },
     {
-      "date": "2025-07",
-      "date_nature": "approximative",
-      "type": "signalement",
-      "acteur": null,
-      "texte": "Selon Actu17, en juillet 2025, l'ex-femme du suspect s'est présentée au commissariat pour signaler sa disparition.",
-      "source": {
-        "media": "Actu17",
-        "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
-        "publie_le": "2026-01-21",
-        "acces": "libre"
-      }
-    },
-    {
-      "date": "2025-09",
-      "date_nature": "approximative",
-      "type": "signalement",
-      "acteur": null,
-      "texte": "Selon Le Parisien, en septembre 2025, sans avoir été prévenue de l’enquête en cours, la compagne du membre de la direction s’est présentée au commissariat de Toulouse pour signaler la disparition de son mari.",
-      "source": {
-        "media": "Le Parisien",
-        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
-        "publie_le": "2026-01-19",
-        "acces": "libre"
-      },
-      "sources_complementaires": [
-        {
-          "media": "La Voix du Nord",
-          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
-          "publie_le": "2026-01-21",
-          "acces": "libre"
-        },
-        {
-          "media": "20 Minutes",
-          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
-          "publie_le": "2026-01-19",
-          "acces": "libre"
-        }
-      ]
-    },
-    {
       "date": "2026-01-15",
       "date_nature": "evenement",
       "type": "garde_a_vue",
       "acteur": null,
-      "texte": "Selon Le Parisien, ce jeudi 15 janvier, après six mois d’enquête, le membre de la direction a été arrêté à Thèbes, dans les Hautes-Pyrénées, et placé en garde à vue ; son ordinateur et son téléphone portable ont été saisis.",
+      "texte": "Selon Le Parisien, ce jeudi 15 janvier, après six mois d’enquête, le membre de la direction a été arrêté et placé en garde à vue ; son ordinateur et son téléphone portable ont été saisis.",
       "source": {
         "media": "Le Parisien",
         "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
@@ -431,7 +391,6 @@
   "inconnues": [
     "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
     "Divergence entre sources — signalement : dates divergentes selon les sources (juillet 2025 / juin 2025).",
-    "La démarche de l'ex-compagne au commissariat est datée de juillet 2025 par Actu17 et de septembre 2025 par Le Parisien, 20 Minutes, BFMTV et La Voix du Nord (AFP) : les deux étapes sont conservées séparément, sans établir qu'il s'agit du même épisode.",
     "Le dossier ne repose que sur 6 articles lus (Le Parisien, Actu17, BFMTV, 20 Minutes, La Voix du Nord, Ouest-France)."
   ],
   "synthese": {
@@ -457,29 +416,6 @@
       "source": {
         "media": "Le Parisien",
         "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
-        "publie_le": "2026-01-19",
-        "acces": "libre"
-      },
-      "validation": "POSITION_ATTRIBUEE"
-    },
-    {
-      "acteur": "Christophe Amunzateguy, procureur de Saint-Gaudens",
-      "qualite": "propos rapportés par 20 Minutes",
-      "date": "2026-01-19",
-      "date_nature": "article",
-      "portee": "affaire",
-      "attribution": "POSITION_ATTRIBUEE",
-      "a_propos": "la démarche de l'ex-épouse du mis en cause au commissariat",
-      "citations": [
-        {
-          "texte": "Cette femme vient se présenter au niveau de la cellule psy du commissariat pour annoncer que son ex-conjoint était parti et était injoignable.",
-          "pour": "la démarche de l'ex-épouse du mis en cause au commissariat"
-        }
-      ],
-      "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
-      "source": {
-        "media": "20 Minutes",
-        "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
         "publie_le": "2026-01-19",
         "acces": "libre"
       },

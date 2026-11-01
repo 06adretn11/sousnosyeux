@@ -144,6 +144,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Application d’une version finale de fiche à un dossier de Hub — empreinte exacte, refus sur modification concurrente, cumul de lignes, exception sans effet sur le contenu public, lot réel cohérent',
+    script: 'scripts/qa/test-appliquer-hubs.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Diagnostic territorial — évolue avec la mémoire, aucune notification sans changement',
     script: 'scripts/qa/test-diagnostic.mjs',
     bloquant: true,
