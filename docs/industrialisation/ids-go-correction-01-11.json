@@ -1,0 +1,110 @@
+{
+  "_lot": "lot-correction-2026-11-01",
+  "_date": "01/11/2026",
+  "_note": "Manifeste du GO collectif de correction (REVUE_GLOBALE_STOCK_2.md, version du 01/11/2026) : identifiant -> empreinte EXACTE autorisée. Remplace le manifeste ids-go-lot-stock-27-10.json : 26 créations (candidates corrigées) et 30 mises à jour de fiches publiées (dont POC-04 et POC-10, une seule version finale). FR-2026-0020 et FR-2026-0041 sont inchangées : absentes du manifeste, leur approbation reste valable. `_hub_avant` : empreinte du dossier de Hub attendue avant application (appliquer-hubs-01-11.mjs) pour les lignes dont le dossier vit dans un Hub. `_cartes` : changement de CARTE couvert par le GO (ligne distincte, retirable sans toucher aux fiches). `_dates_sources` : dates de parution rectifiées d’après les pages. NON exécuté : attend le GO écrit d’Adrien ; toute exception retire la ligne correspondante, aucune version modifiée n’est couverte.",
+  "POC-09": "3142989bfb102f51",
+  "FR-2026-0042": "1afd5e9a22e903fc",
+  "FR-2026-0114": "c9af161bdd06f0d9",
+  "FR-2026-0117": "9353bf677116def7",
+  "FR-2026-0115": "81abc4c7ae3f5a62",
+  "POC-02": "4f0b75486dfa4a70",
+  "FR-2026-0025": "7c92fed95fdedaa6",
+  "FR-2026-0027": "998225fe92e1d632",
+  "FR-2026-0124": "4928d93420fc036d",
+  "FR-2026-0038": "bbeb9b641a8bcb08",
+  "FR-2026-0139": "1e84bfc4edc4263b",
+  "FR-2026-0006": "7aaf17feeec5e4d9",
+  "FR-2026-0028": "0f2e8f1e0a0dee00",
+  "FR-2026-0012": "687a8e29d6e74149",
+  "FR-2026-0046": "4083cdfdbb384981",
+  "FR-2026-0123": "236939af3ee9852f",
+  "FR-2026-0119": "2db23b69a0d9809a",
+  "FR-2026-0030": "d95a61fabb485412",
+  "FR-2026-0008": "f7554f0a677855ca",
+  "FR-2026-0036": "87ac5b5c823b01dd",
+  "FR-2026-0035": "472285357efe95c8",
+  "PARIS-007": "ccc3e8ecb884b382",
+  "FR-2026-0043": "8f444a54dfd5d746",
+  "FR-2026-0045": "9045c27a34f3f88f",
+  "FR-2026-0011": "1c56bcb0cff3c19c",
+  "FR-2026-0037": "535dc096e9916ab3",
+  "FR-2026-0120": "1976c0794b7740b0",
+  "FR-2026-0133": "9618383317ae989e",
+  "POC-04": "ed20ddf58faf654a",
+  "POC-10": "99673d401ef0fb4e",
+  "FR-2026-0001": "5d9c5ba2fb532698",
+  "FR-2026-0002": "ab9ef095d6882e3c",
+  "FR-2026-0003": "1f72bdcf3086a8f9",
+  "FR-2026-0005": "64c762d1cd1a169f",
+  "FR-2026-0021": "81e9ffd46ddb043f",
+  "FR-2026-0022": "0be3869dfff247a3",
+  "FR-2026-0023": "cb2b8c10e2cc4a5f",
+  "FR-2026-0024": "4b5da72b233be843",
+  "FR-2026-0029": "1fbdf20d3daa8e1f",
+  "FR-2026-0031": "c521aa05d1a04156",
+  "FR-2026-0032": "79d7479bd1b14c1a",
+  "FR-2026-0033": "1dbb3dc36a716a61",
+  "FR-2026-0044": "f4c8088a21494702",
+  "FR-2026-0047": "96cec49e8226b6ce",
+  "FR-2026-0113": "fa7a412f94bd5b04",
+  "FR-2026-0116": "16e455c2e61ec619",
+  "FR-2026-0122": "5ba52da10fd42f5a",
+  "FR-2026-0137": "180479b6cd6acdb7",
+  "FR-2026-0142": "e723564d191547d7",
+  "PARIS-004": "62c33d9fa80aafde",
+  "PARIS-006": "527e46fbedc74469",
+  "POC-03": "30cb057803c8ee5f",
+  "POC-05": "b0d36eade7a33635",
+  "POC-06": "2016aa47896c0adb",
+  "POC-07": "a6be119b416bc279",
+  "POC-08": "a9a3088b7ed0dfbf",
+  "_hub_avant": {
+    "POC-09": "b1389eedbc0e7c7d",
+    "FR-2026-0114": "e88bdcd643defd55",
+    "FR-2026-0115": "ec1f26661dfc9608",
+    "FR-2026-0023": "5d7fcf75d28adcd3",
+    "FR-2026-0031": "4be017e7def7ec66",
+    "FR-2026-0032": "3ab3197ce41f24fa",
+    "FR-2026-0113": "d08a133aa745107d",
+    "FR-2026-0116": "e1c9d0b08b59ddd5",
+    "PARIS-006": "9312131e1bbda47f",
+    "POC-05": "9579d7ff4af98ecc",
+    "POC-06": "05b67e0fce75a362",
+    "POC-07": "75ce3dc64e6d3a51",
+    "POC-08": "86ab451a1ff36ad8"
+  },
+  "_cartes": {
+    "FR-2026-0008": "à qualifier",
+    "PARIS-007": "à qualifier"
+  },
+  "_dates_sources": {
+    "FR-2026-0001": [
+      {
+        "url": "https://www.lecourrierdesstrateges.fr/paris-un-animateur-periscolaire-renvoye-devant-le-tribunal-pour-agression-sexuelle/",
+        "date": "2026-03-25"
+      }
+    ],
+    "FR-2026-0033": [
+      {
+        "url": "https://www.linfo.re/la-reunion/faits-divers/un-professeur-de-college-a-sainte-suzanne-suspecte-d-entretenir-une-relation-avec-une-eleve-il-est-mis-en-examen",
+        "date": "2026-04-14"
+      },
+      {
+        "url": "https://www.zinfos974.com/le-prof-de-maths-soupconne-dentretenir-une-liaison-avec-une-eleve-a-sainte-suzanne-mis-en-examen/",
+        "date": "2026-04-13"
+      }
+    ],
+    "FR-2026-0114": [
+      {
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+        "date": "2026-09-30"
+      }
+    ],
+    "FR-2026-0115": [
+      {
+        "url": "https://www.laprovence.com/article/faits-divers-justice/14155219399177/landes-un-animateur-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-six-enfants-a-tarnos",
+        "date": "2026-07-09"
+      }
+    ]
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "etat_actuel": [
+    "Selon France 3 Régions, l'enquête préliminaire aurait été classée sans suite faute d'éléments constitutifs d'une infraction, selon la direction du groupe.",
+    "Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci."
+  ],
+  "appel": false,
+  "faits": "Selon France 3 Régions, Fin février, à la crèche Joyeuse Tribu (Lyon 6e), les parents d'un enfant se sont étonnés de « bisous politesse » évoqués par leur fils et ont signalé l'événement. Selon France 3 Régions, la famille a porté plainte.",
+  "deroule": [
+    {
+      "date": "2025-02",
+      "date_nature": "approximative",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, Fin février, à la crèche Joyeuse Tribu dans le 6e arrondissement de Lyon, les parents d'un enfant s'étonnent de « bisous politesse » évoqués par leur fils et signalent l'évènement.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "People&Baby (groupe)",
+      "texte": "Selon l'attachée presse du groupe, le salarié a fait l'objet d'une mise à pied conservatoire avec effet immédiat, assortie d'un entretien préalable dans le cadre d'une procédure disciplinaire et d'une enquête interne approfondie.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Magic Maman",
+          "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+          "publie_le": "2025-06-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, l'enquête préliminaire aurait été classée sans suite faute d'éléments constitutifs d'une infraction, selon la direction du groupe.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Magic Maman",
+          "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+          "publie_le": "2025-06-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": "People&Baby",
+      "texte": "Selon France 3 Régions, le groupe a tenté de déposer une main courante, sans pouvoir le faire pour défaut d'intérêt à agir.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "People & Baby",
+      "texte": "Selon Magic Maman, People & Baby avait informé les services de la protection maternelle et infantile (PMI) de cette affaire et avait transmis le dossier à la Cellule départementale de recueil des informations préoccupantes (Crip).",
+      "source": {
+        "media": "Magic Maman",
+        "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "publie_le": "2025-06-18",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "People & Baby",
+      "texte": "Selon Magic Maman, à la suite d'un nouveau signalement concernant la crèche Chat Perché (affaire liée, fiche séparée), People & Baby a porté plainte contre son salarié ; selon France 3 Régions, la direction annonce vouloir le faire.",
+      "source": {
+        "media": "Magic Maman",
+        "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "publie_le": "2025-06-18",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "brigade de protection des mineurs",
+      "texte": "Selon Magic Maman, une enquête de la brigade de protection des mineurs a été menée.",
+      "source": {
+        "media": "Magic Maman",
+        "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+          "publie_le": "2025-06-18",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "People & Baby",
+      "texte": "Selon Magic Maman, People & Baby s'est dit obligé d'autoriser le salarié à reprendre ses fonctions, conformément au droit du travail, mais l'a changé d'établissement.",
+      "source": {
+        "media": "Magic Maman",
+        "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "People & Baby",
+      "texte": "Selon Magic Maman, le groupe dit avoir pris des mesures : le salarié accusé ne pouvait plus interagir seul avec les enfants et une procédure de surveillance a été instaurée.",
+      "source": {
+        "media": "Magic Maman",
+        "url": "https://www.magicmaman.com/creche-un-employe-de-people-baby-soupconne-d-agressions-sexuelles-sur-des-enfants,3774602.asp",
+        "publie_le": "2025-06-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04",
+      "date_nature": "approximative",
+      "acteur": "People&Baby",
+      "type": "contexte",
+      "texte": "Affaire liée (crèche Chat Perché, Lyon 3e, fiche séparée) : selon France 3 Régions, début avril, le même salarié a été affecté à la crèche Chat Perché, où un nouvel incident a ensuite été rapporté en juin.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.",
+    "Le classement n'est rapporté, dans les sources lues, qu'à partir de la déclaration du groupe gestionnaire (France 3 Régions : « selon la direction du groupe ») : aucune source judiciaire ne le confirme.",
+    "Le dossier ne repose que sur 2 articles lus (France 3 Régions, Magic Maman)."
+  ],
+  "synthese": {
+    "decision": "Selon France 3 Régions, l'enquête préliminaire aurait été classée sans suite faute d'éléments constitutifs d'une infraction, selon la direction du groupe.",
+    "ouvert": "Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci."
+  },
+  "reactions": [],
+  "statut_affiche": "relaxe / non-lieu / classement",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Classement rapporté",
+      "cat": "green",
+      "texte": "Selon France 3 Régions, l'enquête préliminaire aurait été classée sans suite faute d'éléments constitutifs d'une infraction, selon la direction du groupe."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Aucun recours rapporté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon l'attachée presse du groupe, le salarié a fait l'objet d'une mise à pied conservatoire avec effet immédiat, assortie d'un entretien préalable dans le cadre d'une procédure disciplinaire et d'une enquête interne approfondie.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Magic Maman, People & Baby s'est dit obligé d'autoriser le salarié à reprendre ses fonctions, conformément au droit du travail, mais l'a changé d'établissement."
+      ]
+    }
+  }
+}

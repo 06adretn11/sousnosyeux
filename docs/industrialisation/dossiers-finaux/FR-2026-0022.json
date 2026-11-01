@@ -1,0 +1,176 @@
+{
+  "etat_actuel": [
+    "Selon France 3, le parquet de Nanterre a ouvert mi-mars 2025 une enquête préliminaire."
+  ],
+  "appel": false,
+  "faits": "Selon France 3, deux plaintes pour harcèlement sexuel, viol et agression sexuelle avaient été déposées dans les deux semaines précédant l’article du 7 avril 2025 par d’anciens élèves de Saint-Dominique de Neuilly ; selon 20 Minutes, cinq plaintes avaient été déposées au 18 avril. Elles visent plusieurs enseignants et encadrants sur une période allant des années 1980 aux années 2000.",
+  "deroule": [
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon 20 Minutes, un groupe Facebook d’anciens élèves de l’établissement a été lancé début mars 2025 pour recueillir la parole de victimes potentielles.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4149187-20250418-ecole-privee-saint-dominique-neuilly-entendait-violence-travers-murs",
+        "publie_le": "2025-04-18",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "enquete",
+      "acteur": "parquet de Nanterre",
+      "texte": "Selon France 3, le parquet de Nanterre a ouvert mi-mars 2025 une enquête préliminaire.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon France 3, deux plaintes pour harcèlement sexuel, viol et agression sexuelle ont été déposées ces deux dernières semaines par d'anciens élèves de Saint-Dominique de Neuilly.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "la direction de l'établissement et l'Enseignement catholique des Hauts-de-Seine",
+      "texte": "Selon France 3, la direction de l'établissement et l'Enseignement catholique des Hauts-de-Seine ont confirmé avoir reçu plusieurs témoignages pouvant mettre en cause des personnes ayant travaillé à Saint-Dominique, portés à la connaissance du procureur de Nanterre.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "l'enseignement catholique des Yvelines",
+      "texte": "Selon France 3, une personne visée par les témoignages a été mise en retrait conservatoire à titre temporaire de ses fonctions dans deux établissements privés par l'enseignement catholique des Yvelines.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-04-18",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": "Mouv'Enfants",
+      "texte": "Selon 20 Minutes, des militants de l’association Mouv’Enfants ont mené le 18 avril 2025 une action devant l’institution Saint-Dominique de Neuilly-sur-Seine en soutien aux enfants victimes d’abus dans l’enseignement catholique.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4149187-20250418-ecole-privee-saint-dominique-neuilly-entendait-violence-travers-murs",
+        "publie_le": "2025-04-18",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon 20 Minutes, cinq plaintes, pour violences psychologiques, harcèlement, agression sexuelle ou viol, avaient été déposées à la date de l’article contre d’anciens employés de l’établissement.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4149187-20250418-ecole-privee-saint-dominique-neuilly-entendait-violence-travers-murs",
+        "publie_le": "2025-04-18",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucune suite à l’enquête préliminaire (classement, mise en examen, jugement) n’est rapportée par les sources lues : la procédure est inconnue au-delà d’avril 2025.",
+    "Le dossier ne repose que sur 2 articles lus (France 3, 20 Minutes)."
+  ],
+  "synthese": {
+    "decision": "Selon France 3, le parquet de Nanterre a ouvert mi-mars 2025 une enquête préliminaire."
+  },
+  "reactions": [
+    {
+      "acteur": "l'actuelle direction de l'établissement et l'Enseignement catholique des Hauts-de-Seine",
+      "qualite": "propos rapportés par France 3",
+      "date": "2025-04-07",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la coopération avec les autorités et la libération de la parole",
+      "citations": [
+        {
+          "texte": "Nous redisons notre compassion pour les victimes et notre volonté claire : tout doit être mis en œuvre (...) pour que la parole soit libérée, que la lumière soit faite, dans une coopération sans réserve, sans restriction, avec les autorités publiques compétentes",
+          "pour": "la coopération avec les autorités et la libération de la parole"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (France 3) : Il est \" dispensé d'activité jusqu'à nouvel ordre\" , précise le courrier de l’enseignement catholique.",
+      "acteur": "l'enseignement catholique",
+      "qualite": "propos rapportés par France 3",
+      "date": "2025-04-07",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "dispense d'activité de la personne mise en cause",
+      "citations": [
+        {
+          "texte": "dispensé d'activité jusqu'à nouvel ordre",
+          "pour": "dispense d'activité de la personne mise en cause"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/temoignage-j-etais-sous-emprise-j-ai-eu-honte-de-nouvelles-plaintes-dont-l-une-pour-viol-deposees-contre-l-institution-saint-dominique-de-neuilly-3134809.html",
+        "publie_le": "2025-04-07",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "enquête",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Enquête",
+      "meta": "Parquet de Nanterre",
+      "cat": "blue",
+      "texte": "Selon France 3, le parquet de Nanterre a ouvert mi-mars 2025 une enquête préliminaire."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon France 3, une personne visée par les témoignages a été mise en retrait conservatoire à titre temporaire de ses fonctions dans deux établissements privés par l'enseignement catholique des Yvelines."
+      ]
+    }
+  }
+}

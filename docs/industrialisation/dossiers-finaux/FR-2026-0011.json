@@ -1,0 +1,143 @@
+{
+  "etat_actuel": [
+    "Selon le parquet d'Evry, un animateur périscolaire a été mis en examen et écroué le 27 novembre 2025 pour agressions sexuelles sur plusieurs enfants en Essonne. Selon Le Parisien (article du 16 décembre 2025), il a ensuite été maintenu en détention après avoir demandé sa remise en liberté devant la chambre de l'instruction de Paris.",
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue."
+  ],
+  "appel": false,
+  "faits": "Selon Le Parisien, l'enquête porte sur des agressions sexuelles sur mineurs commises à Morigny-Champigny. Selon le parquet, le suspect a reconnu les faits et évoqué « des pulsions ».",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet d'Évry",
+      "texte": "Selon Le Parisien, qui cite le parquet d'Évry, l'enquête porte sur des agressions sexuelles sur mineurs qui auraient été commises entre le 1er janvier 2021 et le 30 avril 2024 à Morigny-Champigny.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+        "publie_le": "2025-11-28",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, plusieurs familles auraient porté plainte pour agressions sexuelles sur mineurs, une information que le parquet d'Evry n'a pas confirmée.",
+      "source": {
+        "media": "RTL",
+        "url": "https://www.rtl.fr/actu/justice-faits-divers/essonne-l-animateur-periscolaire-mis-en-examen-pour-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-7900572122",
+        "publie_le": "2025-11-28",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+          "publie_le": "2025-11-28",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l’animateur périscolaire avait été placé en garde à vue avant sa mise en examen et son écrou.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+        "publie_le": "2025-11-28",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-11-27",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "parquet d'Evry",
+      "texte": "Selon le parquet d'Evry, un animateur périscolaire a été mis en examen et écroué le 27 novembre 2025 pour agressions sexuelles sur plusieurs enfants en Essonne.",
+      "source": {
+        "media": "RTL",
+        "url": "https://www.rtl.fr/actu/justice-faits-divers/essonne-l-animateur-periscolaire-mis-en-examen-pour-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-7900572122",
+        "publie_le": "2025-11-28",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+          "publie_le": "2025-11-28",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "parquet d'Evry",
+      "texte": "Selon le parquet d'Evry, le mis en cause a reconnu les faits et a évoqué des pulsions.",
+      "source": {
+        "media": "RTL",
+        "url": "https://www.rtl.fr/actu/justice-faits-divers/essonne-l-animateur-periscolaire-mis-en-examen-pour-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-7900572122",
+        "publie_le": "2025-11-28",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+          "publie_le": "2025-11-28",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "chambre de l'instruction de Paris",
+      "texte": "Selon Le Parisien (article du 16 décembre 2025), l'animateur a comparu devant la chambre de l'instruction de Paris pour demander sa remise en liberté et a été maintenu en détention.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/il-y-a-ce-monstre-en-moi-qui-merite-detre-puni-en-essonne-les-glacantes-confessions-de-lanimateur-pedophile-16-12-2025-RWXRLOEDAREWFPUCB5Y6JWGBPM.php",
+        "publie_le": "2025-12-16",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Situation après le 16 décembre 2025 (détention, éventuel renvoi devant une juridiction de jugement) : aucune source lue ne la documente ; ce n'est pas une preuve qu'elle n'a pas évolué.",
+    "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
+    "Le dossier ne repose que sur 3 articles lus (Le Parisien ×2, RTL)."
+  ],
+  "synthese": {
+    "decision": "Selon le parquet d'Evry, un animateur périscolaire a été mis en examen et écroué le 27 novembre 2025 pour agressions sexuelles sur plusieurs enfants en Essonne. Selon Le Parisien (article du 16 décembre 2025), il a ensuite été maintenu en détention après avoir demandé sa remise en liberté devant la chambre de l'instruction de Paris.",
+    "ouvert": "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue."
+  },
+  "reactions": [],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "27 novembre 2025 · Parquet d'Evry",
+      "cat": "blue",
+      "texte": "Selon le parquet d'Evry, un animateur périscolaire a été mis en examen et écroué le 27 novembre 2025 pour agressions sexuelles sur plusieurs enfants en Essonne."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Maintien en détention ; jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Selon Le Parisien (article du 16 décembre 2025), l'animateur a comparu devant la chambre de l'instruction de Paris pour demander sa remise en liberté et a été maintenu en détention.",
+        "La personne mise en cause est présumée innocente."
+      ]
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien, l'animateur d'un centre périscolaire près de Lyon a été mis en examen pour viol et agressions sexuelles et placé sous contrôle judiciaire, selon son avocat."
+  ],
+  "appel": false,
+  "faits": "Selon BFMTV Lyon, à Charly, des plaintes pour viols et agressions sexuelles sur mineurs ont été déposées contre un animateur d'un centre périscolaire.",
+  "deroule": [
+    {
+      "date": "2026-04",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Le Figaro, c'est en avril que le récit d'une enfant à ses parents a conduit sa famille à mettre en cause un animateur périscolaire du centre de loisirs de la commune de Charly.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/lyon/eviter-une-autre-lyhanna-la-colere-d-un-pere-apres-la-mise-en-cause-d-un-animateur-periscolaire-pour-des-viols-sur-des-fillettes-pres-de-lyon-20260611",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-04",
+      "date_nature": "approximative",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'animateur avait été entendu fin avril lors d'une garde à vue de 36 heures.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon l'avocat des familles, une nouvelle plainte a été déposée par une famille, qui dit que son enfant aurait été victime d'une agression sexuelle.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "BFMTV Lyon",
+          "url": "https://www.bfmtv.com/lyon/faits-divers/c-est-inquietant-la-crainte-des-parents-d-eleves-apres-des-plaintes-pour-viols-et-agressions-sexuelles-sur-mineurs-contre-des-animateurs-periscolaires-a-charly-et-villeurbanne_AV-202607020580.html",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet de Lyon",
+      "texte": "Le parquet de Lyon a indiqué avoir ouvert une information judiciaire pour viol et agression sexuelle sur mineur par une personne ayant autorité sur la victime.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'animateur d'un centre périscolaire près de Lyon a été mis en examen pour viol et agressions sexuelles et placé sous contrôle judiciaire, selon son avocat.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "mairie de Charly",
+      "texte": "Selon BFMTV Lyon, l'animateur du centre périscolaire de Charly avait été suspendu par la mairie de Charly.",
+      "source": {
+        "media": "BFMTV Lyon",
+        "url": "https://www.bfmtv.com/lyon/faits-divers/c-est-inquietant-la-crainte-des-parents-d-eleves-apres-des-plaintes-pour-viols-et-agressions-sexuelles-sur-mineurs-contre-des-animateurs-periscolaires-a-charly-et-villeurbanne_AV-202607020580.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+          "publie_le": "2026-06-11",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 3 articles lus (Le Parisien, BFMTV Lyon, Le Figaro — ce dernier lu partiellement : seul le début de l’article est accessible)."
+  ],
+  "synthese": {
+    "decision": "Selon Le Parisien, l'animateur d'un centre périscolaire près de Lyon a été mis en examen pour viol et agressions sexuelles et placé sous contrôle judiciaire, selon son avocat."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Le Parisien) : Me Sébastien Soy rappelle que son client, « déterminé à démontrer son innocence », est « présumé innocent ».",
+      "acteur": "Me Sébastien Soy, avocat de l'animateur mis en examen",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2026-06-11",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "position de son client",
+      "citations": [
+        {
+          "texte": "déterminé à démontrer son innocence",
+          "pour": "position de son client"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Me Sébastien Soy, avocat de l'animateur mis en examen",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2026-06-11",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "déroulement de l'information judiciaire",
+      "citations": [
+        {
+          "texte": "Nous espérons avec mon client que l’information judiciaire pourra se dérouler sereinement dans le respect des droits de chacun",
+          "pour": "déroulement de l'information judiciaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "cat": "blue",
+      "texte": "Selon Le Parisien, l'animateur d'un centre périscolaire près de Lyon a été mis en examen pour viol et agressions sexuelles et placé sous contrôle judiciaire, selon son avocat."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon BFMTV Lyon, l'animateur du centre périscolaire de Charly avait été suspendu par la mairie de Charly."
+      ]
+    }
+  }
+}

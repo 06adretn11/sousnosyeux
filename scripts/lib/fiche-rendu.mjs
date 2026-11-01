@@ -18,19 +18,25 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   L.push(`# ${c.etablissement} — ${c.commune}`, '', `\`${c.case_id}\` · ${c.type_structure} · rôle : ${c.role_mis_en_cause} · état de la carte : **${c.statut_judiciaire}**`, '', `**Qualification : ${BADGE[g.qualification]}** — fiche générée le ${g.genere_le} (contrat \`${g.contrat}\`, modèle \`${g.modele}\`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : \`${empreinte}\`.`, '');
   if (g.blocages.length) L.push('### Blocages', ...g.blocages.map((b) => `- **${b.code}** — ${b.texte}`), '');
   if (g.proposition_etat) L.push(`> Proposition à transmettre à la Maintenance (non appliquée) : « ${g.proposition_etat.de} » → « ${g.proposition_etat.vers} »${g.proposition_etat.preuve ? ` — preuve : ${g.proposition_etat.preuve.media}, ${g.proposition_etat.preuve.url}` : ''}`, '');
+  // Ce que la page affiche (FicheUnique.astro) : les blocs `situation` s'ils existent, sinon la `synthese`, sinon les phrases d'état. Le libellé de statut n'est affiché qu'en leur absence.
   L.push('## Situation judiciaire', '');
-  if (d.etat_actuel?.length) L.push(...d.etat_actuel.map((x) => `- ${x}`)); else L.push('*Aucune décision ni étape établie par les sources lues.*');
+  if (d.situation) for (const b of [d.situation.decision, d.situation.suite]) { if (b) L.push(`- **${b.label} · ${b.titre}**${b.meta ? ` (${b.meta})` : ''}${b.texte ? ` — ${b.texte}` : ''}`, ...(b.lignes || []).map((x) => `  - ${x}`)); }
+  else if (d.synthese) L.push(`- ${d.synthese.decision}`, ...(d.synthese.ouvert ? [`- ${d.synthese.ouvert}`] : []));
+  else if (d.etat_actuel?.length) L.push(...d.etat_actuel.map((x) => `- ${x}`)); else L.push('*Aucune décision ni étape établie par les sources lues.*');
+  if (d.statut_libelle && !d.situation) L.push('', `Libellé de statut affiché : « ${d.statut_libelle} »`);
   L.push('');
-  L.push('## Faits publiquement rapportés', '', d.faits ?? '*Aucun fait rapporté de façon exploitable par les sources lues.*', '');
+  // `faits` n'est pas affiché par la page : la section n'est donnée que si le champ existe (jamais de fausse mention d'absence quand le déroulé porte des faits).
+  if (d.faits) L.push('## Faits publiquement rapportés (champ réutilisable, non affiché par la page)', '', d.faits, '');
   L.push('## Chronologie', '');
   if (!d.deroule?.length) L.push('*Aucune étape datée et sourcée.*');
   for (const e of d.deroule || []) L.push(`- **${quand(e)}** · ${TYPE[e.type] ?? e.type}${e.acteur ? ` (${e.acteur})` : ''} — ${e.texte}  \n  Source : [${e.source.media}](${e.source.url})${(e.sources_complementaires || []).length ? ` · aussi : ${e.sources_complementaires.map((s) => `[${s.media}](${s.url})`).join(', ')}` : ''}`);
   L.push('');
-  const mesures = (d.deroule || []).filter((e) => /^mesure_/.test(e.type));
-  L.push('## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)', '', ...(mesures.length ? mesures.map((e) => `- ${e.texte} ([${e.source.media}](${e.source.url}))`) : ['*Aucune mesure documentée par les sources lues.*']), '');
+  // Une suspension ou une mesure rapportée dans le déroulé n'est jamais déclarée absente : la section n'existe que s'il y a une mesure typée.
+  const mesures = (d.deroule || []).filter((e) => /^mesure_|^suspension/.test(e.type));
+  if (mesures.length) L.push('## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)', '', ...mesures.map((e) => `- ${e.texte} ([${e.source.media}](${e.source.url}))`), '');
   L.push('## Réactions et déclarations attribuées', '');
   if (!d.reactions?.length) L.push('*Aucune déclaration d’une personne ou institution nommée dans les sources lues.*');
-  for (const r of d.reactions || []) L.push(`- **${r.acteur}** — ${r.qualite}${r.a_propos ? ` · à propos de : ${r.a_propos}` : ''}  \n  > « ${r.citations[0].texte} »  \n  Source : [${r.source.media}](${r.source.url})`);
+  for (const r of d.reactions || []) L.push(`- **${r.acteur}** — ${r.qualite}${r.a_propos ? ` · à propos de : ${r.a_propos}` : ''}${(r.citations || []).slice(0, 2).map((c) => `  \n  > « ${c.texte} »`).join('')}${r.paraphrase ? `  \n  ${r.paraphrase}` : ''}  \n  Source : [${r.source.media}](${r.source.url})`);
   L.push('');
   // Une source listée n'est pas une source utilisée : seule « établi » alimente la fiche.
   // Trois niveaux distincts : listée · qualifiée « utilisée » · citée par une étape ou une réaction. Seule la source CITÉE alimente la fiche.

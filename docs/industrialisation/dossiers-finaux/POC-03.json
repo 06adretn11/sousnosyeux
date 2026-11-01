@@ -1,0 +1,300 @@
+{
+  "etat_actuel": [
+    "Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.",
+    "Un appel est rapporté comme formé après la condamnation (La Gazette en Yvelines, d’après 78actu), après une intention d’appel annoncée en décembre 2024 (Europe 1). La Cour d’appel de Versailles a ordonné la remise en liberté de l’enseignant le 27 janvier 2025 : décision sur sa détention, non jugement d’appel sur le fond ; la suite de l’appel est inconnue."
+  ],
+  "appel": false,
+  "faits": "Selon Le Parisien, l'enseignant est soupçonné d'avoir profité de ses fonctions pour agresser sexuellement plusieurs enfants dans une école élémentaire de Plaisir durant l'année scolaire 2023-2024. Selon Le Parisien, une seconde victime s'est manifestée.",
+  "deroule": [
+    {
+      "date": "2024-03-25",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, les faits ont été révélés le 25 mars, lorsqu'une mère a recueilli les confidences de sa fille.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2024-06-19",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "brigade des mineurs de Viroflay",
+      "texte": "Selon Le Parisien, Convoqué le 19 juin dans les locaux de la brigade des mineurs à Viroflay, l'enseignant y a été placé en garde à vue.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, un instituteur est soupçonné d'avoir agressé sexuellement plusieurs enfants dans une école élémentaire de Plaisir au cours de l'année scolaire 2023-2024.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "éducation nationale",
+      "texte": "Selon Le Parisien, un signalement auprès du procureur a été réalisé par l'éducation nationale après que la mère a prévenu la direction de l'établissement.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Temps Réel 78",
+          "url": "https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/",
+          "publie_le": "2024-12-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": null,
+      "texte": "Selon Le Parisien, une perquisition a été menée au domicile du suspect et a permis de saisir des téléphones, un ordinateur et une clé USB.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "renvoi",
+      "acteur": "parquet de Versailles",
+      "texte": "Selon Le Parisien, l'enseignant a été déféré devant le parquet de Versailles, qui a ordonné sa remise en liberté sous contrôle judiciaire avec une prochaine convocation devant le tribunal correctionnel.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Europe 1, un signalement d'une des victimes a été effectué.",
+      "source": {
+        "media": "Europe 1",
+        "url": "https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648",
+        "publie_le": "2024-12-05",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Europe 1, le professeur était suspendu de ses fonctions depuis le signalement d'une des victimes.",
+      "source": {
+        "media": "Europe 1",
+        "url": "https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648",
+        "publie_le": "2024-12-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Gazette en Yvelines",
+          "url": "https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/",
+          "publie_le": "2025-02-05",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+          "publie_le": "2024-06-21",
+          "acces": "libre"
+        },
+        {
+          "media": "Temps Réel 78",
+          "url": "https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/",
+          "publie_le": "2024-12-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2024-12-05",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "tribunal correctionnel de Versailles",
+      "texte": "Selon Temps Réel 78, le procès a eu lieu le jeudi 5 décembre devant le tribunal correctionnel de Versailles.",
+      "source": {
+        "media": "Temps Réel 78",
+        "url": "https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/",
+        "publie_le": "2024-12-11",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2024-12-05",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Versailles",
+      "texte": "Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.",
+      "source": {
+        "media": "La Gazette en Yvelines",
+        "url": "https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/",
+        "publie_le": "2025-02-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Europe 1",
+          "url": "https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648",
+          "publie_le": "2024-12-05",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2024-12",
+      "date_nature": "approximative",
+      "type": "appel",
+      "acteur": "Me Marc Mandicas, conseil du professeur",
+      "texte": "Selon Europe 1, le conseil du professeur a indiqué à l’AFP, au moment du jugement, que son client comptait faire appel de la décision (intention d’appel annoncée, distincte de l’appel formé rapporté plus tard).",
+      "source": {
+        "media": "Europe 1",
+        "url": "https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648",
+        "publie_le": "2024-12-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Temps Réel 78",
+          "url": "https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/",
+          "publie_le": "2024-12-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "appel",
+      "acteur": null,
+      "texte": "Selon 78actu, cité par La Gazette en Yvelines, l’enseignant a formé appel après sa condamnation.",
+      "source": {
+        "media": "La Gazette en Yvelines",
+        "url": "https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/",
+        "publie_le": "2025-02-05",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-01-27",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "Cour d'appel de Versailles",
+      "texte": "Selon 78actu, cité par La Gazette en Yvelines, l’enseignant a obtenu sa remise en liberté par la Cour d’appel de Versailles le lundi 27 janvier 2025, à la suite de sa demande de remise en liberté formée après son appel ; il s’agit d’une décision sur sa détention, non d’une relaxe ni d’un jugement d’appel sur le fond.",
+      "source": {
+        "media": "La Gazette en Yvelines",
+        "url": "https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/",
+        "publie_le": "2025-02-05",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Appel : intention annoncée en décembre 2024 (Europe 1), appel formé rapporté en février 2025 (La Gazette en Yvelines, d’après 78actu) ; la suite de l’appel (audience, jugement, caractère définitif) est inconnue.",
+    "Peine : 36 mois de prison dont 18 mois ferme (La Gazette d’après 78actu) ; France 3 et Europe 1 titrent « un an et demi de prison ferme » : même peine, seule la partie ferme est titrée.",
+    "Le dossier ne repose que sur 4 articles lus (Le Parisien, Temps Réel 78, La Gazette en Yvelines, Europe 1)."
+  ],
+  "synthese": {
+    "decision": "Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.",
+    "ouvert": "Un appel est rapporté comme formé après la condamnation (La Gazette en Yvelines, d’après 78actu), après une intention d’appel annoncée en décembre 2024 (Europe 1). La Cour d’appel de Versailles a ordonné la remise en liberté de l’enseignant le 27 janvier 2025 : décision sur sa détention, non jugement d’appel sur le fond ; la suite de l’appel est inconnue."
+  },
+  "reactions": [
+    {
+      "acteur": "l'avocat du mis en cause",
+      "qualite": "propos rapportés par Temps Réel 78",
+      "date": "2024-12-11",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la personnalité et le parcours de son client",
+      "citations": [
+        {
+          "texte": "Il a toujours été bien noté par sa hiérarchie, il n’a jamais posé de problème",
+          "pour": "la personnalité et le parcours de son client"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Temps Réel 78. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Temps Réel 78",
+        "url": "https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/",
+        "publie_le": "2024-12-11",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Me Marc Mandicas, conseil du professeur",
+      "qualite": "propos rapportés par Europe 1",
+      "date": "2024-12-05",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la défense du professeur",
+      "citations": [
+        {
+          "texte": "On ne peut pas reprocher à quelqu'un de se défendre",
+          "pour": "la défense du professeur"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Europe 1. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Europe 1",
+        "url": "https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648",
+        "publie_le": "2024-12-05",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "Tribunal correctionnel de Versailles",
+      "cat": "red",
+      "texte": "Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Appel formé",
+      "meta": "selon La Gazette en Yvelines (d’après 78actu)",
+      "cat": "orange",
+      "lignes": [
+        "Un appel est rapporté comme formé après la condamnation (La Gazette en Yvelines, d’après 78actu), après une intention d’appel annoncée en décembre 2024 (Europe 1). La Cour d’appel de Versailles a ordonné la remise en liberté de l’enseignant le 27 janvier 2025 : décision sur sa détention, non jugement d’appel sur le fond ; la suite de l’appel est inconnue.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Europe 1, le professeur était suspendu de ses fonctions depuis le signalement d'une des victimes."
+      ]
+    }
+  }
+}

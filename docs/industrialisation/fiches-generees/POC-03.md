@@ -2,14 +2,16 @@
 
 `POC-03` · élémentaire · rôle : enseignant · état de la carte : **condamnation non définitive**
 
-**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-31 (contrat `fiche-extraction-1+7483e87e`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `9d13e7414edcd94c`.
+**Qualification : 🟠 À REVOIR** — fiche générée le 2026-10-31 (contrat `fiche-extraction-1+7483e87e`, modèle `deepseek/deepseek-v4.1-flash`). *Aperçu de revue : ce n’est pas la page publique.* Empreinte du dossier (celle de la proposition Telegram) : `30cb057803c8ee5f`.
 
 ## Situation judiciaire
 
-- Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.
-- Un appel est annoncé (Europe 1) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés.
+- **Décision · Condamnation** (Tribunal correctionnel de Versailles) — Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.
+- **Suite · recours · Appel formé** (selon La Gazette en Yvelines (d’après 78actu))
+  - Un appel est rapporté comme formé après la condamnation (La Gazette en Yvelines, d’après 78actu), après une intention d’appel annoncée en décembre 2024 (Europe 1). La Cour d’appel de Versailles a ordonné la remise en liberté de l’enseignant le 27 janvier 2025 : décision sur sa détention, non jugement d’appel sur le fond ; la suite de l’appel est inconnue.
+  - Mesure institutionnelle (distincte de la décision judiciaire) : selon Europe 1, le professeur était suspendu de ses fonctions depuis le signalement d'une des victimes.
 
-## Faits publiquement rapportés
+## Faits publiquement rapportés (champ réutilisable, non affiché par la page)
 
 Selon Le Parisien, l'enseignant est soupçonné d'avoir profité de ses fonctions pour agresser sexuellement plusieurs enfants dans une école élémentaire de Plaisir durant l'année scolaire 2023-2024. Selon Le Parisien, une seconde victime s'est manifestée.
 
@@ -33,13 +35,13 @@ Selon Le Parisien, l'enseignant est soupçonné d'avoir profité de ses fonction
   Source : [Europe 1](https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648) · aussi : [La Gazette en Yvelines](https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/), [Le Parisien](https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php), [Temps Réel 78](https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/)
 - **5 décembre 2024** · Audience (tribunal correctionnel de Versailles) — Selon Temps Réel 78, le procès a eu lieu le jeudi 5 décembre devant le tribunal correctionnel de Versailles.  
   Source : [Temps Réel 78](https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/)
-- **5 décembre 2024** · Décision (tribunal correctionnel de Versailles) — Selon La Gazette en Yvelines, le tribunal correctionnel de Versailles a condamné l'enseignant à un an et demi de prison ferme.  
+- **5 décembre 2024** · Décision (tribunal correctionnel de Versailles) — Selon La Gazette en Yvelines (d’après 78actu), le tribunal correctionnel de Versailles a condamné l’enseignant le 5 décembre 2024 à 36 mois de prison, dont la moitié avec incarcération immédiate.  
   Source : [La Gazette en Yvelines](https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/) · aussi : [Europe 1](https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648)
-- **date non écrite · paru le 5 décembre 2024** · Appel (Me Marc Mandicas, conseil du professeur) — Selon Europe 1, le conseil du professeur a indiqué à l'AFP que son client comptait faire appel de la décision du tribunal.  
+- **vers décembre 2024** · Appel (Me Marc Mandicas, conseil du professeur) — Selon Europe 1, le conseil du professeur a indiqué à l’AFP, au moment du jugement, que son client comptait faire appel de la décision (intention d’appel annoncée, distincte de l’appel formé rapporté plus tard).  
   Source : [Europe 1](https://www.europe1.fr/faits-divers/yvelines-prison-ferme-pour-un-professeur-des-ecoles-juge-pour-attouchements-sexuels-4283648) · aussi : [Temps Réel 78](https://tr78.fr/2024/12/11/un-professeur-des-ecoles-accuse-dattouchements-est-condamne-a-de-la-prison-ferme/)
-- **27 janvier 2025** · Décision (Cour d'appel de Versailles) — Selon 78actu, l'enseignant a obtenu sa remise en liberté par la Cour d'appel de Versailles.  
+- **date non écrite · paru le 5 février 2025** · Appel — Selon 78actu, cité par La Gazette en Yvelines, l’enseignant a formé appel après sa condamnation.  
   Source : [La Gazette en Yvelines](https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/)
-- **date non écrite · paru le 5 février 2025** · Appel — Selon 78actu, l'enseignant a formulé un appel après sa condamnation.  
+- **27 janvier 2025** · Décision (Cour d'appel de Versailles) — Selon 78actu, cité par La Gazette en Yvelines, l’enseignant a obtenu sa remise en liberté par la Cour d’appel de Versailles le lundi 27 janvier 2025, à la suite de sa demande de remise en liberté formée après son appel ; il s’agit d’une décision sur sa détention, non d’une relaxe ni d’un jugement d’appel sur le fond.  
   Source : [La Gazette en Yvelines](https://lagazette-yvelines.fr/2025/02/05/le-professeur-des-ecoles-accuse-dattouchements-a-obtenu-sa-remise-en-liberte/)
 
 ## Mesures institutionnelles (autres que les suites judiciaires, suivies plus haut)
@@ -73,7 +75,7 @@ Selon Le Parisien, l'enseignant est soupçonné d'avoir profité de ses fonction
 
 ## Inconnues et limites documentaires
 
-- Appel : annoncé (Europe 1) ; dépôt effectif et suites non confirmés dans les sources lues.
+- Appel : intention annoncée en décembre 2024 (Europe 1), appel formé rapporté en février 2025 (La Gazette en Yvelines, d’après 78actu) ; la suite de l’appel (audience, jugement, caractère définitif) est inconnue.
 - Peine : 36 mois de prison dont 18 mois ferme (La Gazette d’après 78actu) ; France 3 et Europe 1 titrent « un an et demi de prison ferme » : même peine, seule la partie ferme est titrée.
 - Le dossier ne repose que sur 4 articles lus (Le Parisien, Temps Réel 78, La Gazette en Yvelines, Europe 1).
 

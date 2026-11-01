@@ -1,0 +1,76 @@
+{
+  "etat_actuel": [
+    "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris."
+  ],
+  "appel": false,
+  "faits": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart ; la victime aurait décrit un geste présumé à caractère sexuel de la part d'un professionnel de l'équipe d'animation de l'école. Selon ELLE, la personne mise en cause à l'école maternelle Rochechouart est un animateur périscolaire.",
+  "deroule": [
+    {
+      "date": "2026-02",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": "parents d'un enfant scolarisé",
+      "texte": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris.",
+      "source": {
+        "media": "ELLE",
+        "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
+        "publie_le": "2026-03-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-01",
+      "date_nature": "approximative",
+      "type": "mesure_collectivite",
+      "acteur": null,
+      "texte": "Selon ELLE, l'animateur périscolaire mis en cause à l'école maternelle Rochechouart a été suspendu fin janvier 2026, au moment du signalement des faits.",
+      "source": {
+        "media": "ELLE",
+        "url": "https://www.elle.fr/Societe/News/Violences-sexuelles-dans-le-periscolaire-quelles-sont-les-ecoles-parisiennes-les-plus-touchees-4459600",
+        "publie_le": "2026-03-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-10-05",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "école maternelle Rochechouart",
+      "texte": "Selon Le Parisien, une enquête interne menée au sein de l'école a été restituée aux familles le 5 octobre 2026 et fait état de 3 plaintes et de 8 signalements.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-a-paris-linterminable-attente-de-deux-familles-de-lecole-maternelle-rochechouart-16-10-2026-V5ONJN4FCZHHRLL3HL234VGSWY.php",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Le dossier ne repose que sur 2 articles lus (ELLE, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris."
+  },
+  "reactions": [],
+  "statut_affiche": "plainte",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Plainte",
+      "meta": "Parents d'un enfant scolarisé",
+      "cat": "orange",
+      "texte": "Selon ELLE, une plainte contre X a été déposée début février par les parents d'un enfant scolarisé à l'école maternelle Rochechouart, dans le IXe arrondissement de Paris."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon ELLE, l'animateur périscolaire mis en cause à l'école maternelle Rochechouart a été suspendu fin janvier 2026, au moment du signalement des faits.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien, une enquête interne menée au sein de l'école a été restituée aux familles le 5 octobre 2026 et fait état de 3 plaintes et de 8 signalements."
+      ]
+    }
+  }
+}

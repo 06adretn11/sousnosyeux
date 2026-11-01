@@ -1,0 +1,211 @@
+{
+  "etat_actuel": [
+    "Selon La Dépêche, un animateur du centre de loisirs du Chambon, à Laguenne-sur-Avalouze (Corrèze), a été mis en examen pour viol et agressions sexuelles sur mineurs, a annoncé le procureur de la République de Tulle. Selon La Dépêche (article du 19 août 2025), il a été placé en détention provisoire le 14 août 2025 ; les sources lues ne disent pas s'il est toujours détenu.",
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue."
+  ],
+  "appel": false,
+  "faits": "Selon Le Parisien, un animateur d'un centre de loisirs en Corrèze a été mis en examen pour viol et agressions sexuelles sur mineur et écroué, soupçonné d'avoir réalisé des vidéos à caractère pornographique en filmant les enfants qu'il gardait. Selon une source proche de l'enquête, l'animateur profitait des siestes des enfants pour filmer.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "parents",
+      "texte": "Selon Le Parisien, des parents ont déposé plainte.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+          "publie_le": "2025-08-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "brigade de recherches de la gendarmerie de Tulle",
+      "texte": "Selon La Dépêche, l'enquête judiciaire a été confiée à la brigade de recherches de la gendarmerie de Tulle, avec le concours des enquêteurs de la Maison de la protection des familles.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+          "publie_le": "2025-08-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'animateur a été placé en garde à vue avant sa mise en examen.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-08-14",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon La Dépêche, un animateur du centre de loisirs du Chambon, à Laguenne-sur-Avalouze (Corrèze), a été mis en examen pour viol et agressions sexuelles sur mineurs, a annoncé le procureur de la République de Tulle.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+          "publie_le": "2025-08-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-08-14",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": null,
+      "texte": "Selon La Dépêche (article du 19 août 2025), l'animateur a été placé en détention provisoire le jeudi 14 août 2025, a annoncé le procureur de la République de Tulle.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "mairie de Tulle",
+      "texte": "La mairie de Tulle a fait savoir dans un communiqué que l'animateur saisonnier du centre de loisirs avait aussitôt été suspendu à titre conservatoire.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+          "publie_le": "2025-08-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etat",
+      "acteur": "préfecture de la Corrèze",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : la préfecture de la Corrèze a annoncé l'ouverture d'une enquête administrative concernant le centre de loisirs du Chambon, afin d'en vérifier le fonctionnement.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+          "publie_le": "2025-08-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "procureur de la République de Tulle",
+      "texte": "Le procureur de la République de Tulle a précisé que les investigations se poursuivent sous le contrôle du magistrat instructeur et que le mis en examen est présumé innocent à ce stade de la procédure.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/08/19/il-profitait-des-siestes-des-enfants-pour-les-filmer-un-animateur-dun-centre-de-loisirs-accuse-de-viols-et-dagressions-sexuelles-sur-mineurs-12883105.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Situation de la personne mise en cause depuis le 19 août 2025 (maintien ou fin de la détention, éventuel renvoi devant une juridiction de jugement) : aucune source lue ne la documente ; ce n'est pas une preuve qu'elle n'a pas évolué.",
+    "Le dossier ne repose que sur 2 articles lus (Le Parisien, La Dépêche)."
+  ],
+  "synthese": {
+    "decision": "Selon La Dépêche, un animateur du centre de loisirs du Chambon, à Laguenne-sur-Avalouze (Corrèze), a été mis en examen pour viol et agressions sexuelles sur mineurs, a annoncé le procureur de la République de Tulle. Selon La Dépêche (article du 19 août 2025), il a été placé en détention provisoire le 14 août 2025 ; les sources lues ne disent pas s'il est toujours détenu.",
+    "ouvert": "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Le Parisien) : « Les investigations vont désormais se poursuivre (…) sous le contrôle du magistrat instructeur, étant rappelé qu’à ce stade de la procédure, le mis en examen est présumé innocent », a précisé le procureur.",
+      "acteur": "François Tessier, procureur de la République à Tulle",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2025-08-19",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la poursuite de l'enquête et la présomption d'innocence du mis en examen",
+      "citations": [
+        {
+          "texte": "étant rappelé qu’à ce stade de la procédure, le mis en examen est présumé innocent",
+          "pour": "la poursuite de l'enquête et la présomption d'innocence du mis en examen"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/correze-un-animateur-dun-centre-de-loisirs-mis-en-examen-pour-viol-et-agressions-sexuelles-19-08-2025-NEELX7X2PRCN7APOYEM7AIOUBE.php",
+        "publie_le": "2025-08-19",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "cat": "blue",
+      "texte": "Selon La Dépêche, un animateur du centre de loisirs du Chambon, à Laguenne-sur-Avalouze (Corrèze), a été mis en examen pour viol et agressions sexuelles sur mineurs, a annoncé le procureur de la République de Tulle.",
+      "meta": "14 août 2025 · Procureur de la République de Tulle"
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Détention provisoire rapportée en août 2025 ; jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Selon La Dépêche (article du 19 août 2025), l'animateur a été placé en détention provisoire le jeudi 14 août 2025, a annoncé le procureur de la République de Tulle. Les sources lues ne disent pas s'il est toujours détenu.",
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : la mairie de Tulle a fait savoir dans un communiqué que l'animateur saisonnier du centre de loisirs avait aussitôt été suspendu à titre conservatoire.",
+        "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : la préfecture de la Corrèze a annoncé l'ouverture d'une enquête administrative concernant le centre de loisirs du Chambon, afin d'en vérifier le fonctionnement."
+      ]
+    }
+  }
+}

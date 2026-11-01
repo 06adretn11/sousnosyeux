@@ -1,0 +1,141 @@
+{
+  "etat_actuel": [
+    "Selon ici, une enquête a été ouverte pour des suspicions d'agressions sexuelles dans le périscolaire Les Tournesols à Lingolsheim, confiée à la brigade des mineurs."
+  ],
+  "appel": false,
+  "faits": "Selon Les Dernières Nouvelles d'Alsace, un animateur du périscolaire de Lingolsheim aurait agressé sexuellement une enfant au réveil de la sieste, au sein de l'accueil de loisirs les Tournesols. Selon Les Dernières Nouvelles d'Alsace, des gestes répétés sont évoqués sur plusieurs autres enfants.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Les Dernières Nouvelles d'Alsace, la mère de la victime a déposé plainte après les confidences de sa fille.",
+      "source": {
+        "media": "Les Dernières Nouvelles d'Alsace",
+        "url": "https://www.dna.fr/faits-divers-justice/2026/10/15/accuse-d-agressions-sexuelles-sur-des-enfants-un-animateur-du-periscolaire-de-lingolsheim-suspendu",
+        "publie_le": "2026-10-15",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "ici",
+          "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+          "publie_le": "2026-10-16",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": null,
+      "texte": "Selon ici, une enquête a été ouverte pour des suspicions d'agressions sexuelles dans le périscolaire Les Tournesols à Lingolsheim, confiée à la brigade des mineurs.",
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Les Dernières Nouvelles d'Alsace",
+          "url": "https://www.dna.fr/faits-divers-justice/2026/10/15/accuse-d-agressions-sexuelles-sur-des-enfants-un-animateur-du-periscolaire-de-lingolsheim-suspendu",
+          "publie_le": "2026-10-15",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "services de l'Etat",
+      "texte": "Selon ici, les services de l'Etat ont pris une mesure de suspension d'exercer dans un accueil collectif de mineurs à l'encontre de l'animateur.",
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "municipalité de Lingolsheim",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, la municipalité annonce qu'elle va renforcer l'encadrement sur les accueils de loisirs maternels afin qu'un adulte ne reste pas seul avec un enfant.",
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "municipalité de Lingolsheim",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, un temps d'échange sera organisé dans le courant du mois de novembre avec les parents et les enfants scolarisés sur le thème de la prévention des violences sexuelles.",
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Le dossier ne repose que sur 2 articles lus (Les Dernières Nouvelles d'Alsace, ici)."
+  ],
+  "synthese": {
+    "decision": "Selon ici, une enquête a été ouverte pour des suspicions d'agressions sexuelles dans le périscolaire Les Tournesols à Lingolsheim, confiée à la brigade des mineurs."
+  },
+  "reactions": [
+    {
+      "acteur": "la municipalité (de Lingolsheim)",
+      "qualite": "propos rapportés par ici",
+      "date": "2026-10-16",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la mesure de suspension provisoire de l'animateur",
+      "citations": [
+        {
+          "texte": "Une mesure de suspension provisoire de ses fonctions a été prise par précaution pour le temps de l'enquête par la police",
+          "pour": "la mesure de suspension provisoire de l'animateur"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/grand-est/alsace-cea/lingolsheim/a-lingolsheim-un-animateur-periscolaire-suspendu-apres-des-accusations-d-agressions-sexuelles-sur-une-enfant-7842867",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "enquête",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Enquête",
+      "cat": "blue",
+      "texte": "Selon ici, une enquête a été ouverte pour des suspicions d'agressions sexuelles dans le périscolaire Les Tournesols à Lingolsheim, confiée à la brigade des mineurs."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon ici, les services de l'Etat ont pris une mesure de suspension d'exercer dans un accueil collectif de mineurs à l'encontre de l'animateur.",
+        "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon ici, la municipalité annonce qu'elle va renforcer l'encadrement sur les accueils de loisirs maternels afin qu'un adulte ne reste pas seul avec un enfant."
+      ]
+    }
+  }
+}

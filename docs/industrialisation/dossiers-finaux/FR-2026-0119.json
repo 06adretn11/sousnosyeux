@@ -1,0 +1,597 @@
+{
+  "etat_actuel": [
+    "Selon La Provence, le vendredi 26 juin 2026, à l'issue de sa garde à vue, le mis en cause a été mis en examen pour agressions sexuelles sur mineurs et placé sous contrôle judiciaire, conformément aux réquisitions du parquet, avec obligation de soins, interdiction de paraître dans le Vaucluse et aux abords des établissements scolaires, interdiction d'exercer une profession en contact avec les mineurs et interdiction d'entrer en contact avec les enfants et familles, victimes et témoins."
+  ],
+  "appel": false,
+  "faits": "Selon L'Alsace.fr, deux plaintes ont été déposées pour des agressions sexuelles présumées à Morières-lès-Avignon, où un animateur d'un centre aéré est mis en cause. Selon L'Alsace.fr, l'animateur mis en cause intervenait notamment dans un centre aéré installé dans une école maternelle.",
+  "deroule": [
+    {
+      "date": "2026-06-10",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon La Provence, depuis le 10 juin 2026, l'animateur était visé par une première accusation, dans le cadre d'une enquête des gendarmes de la brigade de Saint-Saturnin-lès-Avignon.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon La Provence, une plainte a été déposée mercredi 10 juin par les parents d'un enfant, élève de maternelle, après des soupçons d'agression sexuelle commis par un animateur du périscolaire à Morières-lès-Avignon.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/3098391912503414/soupcon-d-agression-sexuelle-dans-le-periscolaire-a-morieres-les-avignon-une-plainte-deposee-contre-un-animateur",
+        "publie_le": "2026-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-10",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "municipalité de Morières-lès-Avignon",
+      "texte": "Selon La Provence, la municipalité de Morières-lès-Avignon a suspendu l'animateur visé par le dépôt de plainte dès qu'elle en a été informée, le 10 juin.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/3098391912503414/soupcon-d-agression-sexuelle-dans-le-periscolaire-a-morieres-les-avignon-une-plainte-deposee-contre-un-animateur",
+        "publie_le": "2026-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+          "publie_le": "2026-06-26",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-15",
+      "date_nature": "evenement",
+      "type": "mesure_collectivite",
+      "acteur": "mairie de Morières-lès-Avignon",
+      "texte": "Selon La Provence, une réunion d'urgence s'est tenue lundi 15 juin en présence de parents d'élèves et d'élus municipaux, dont le premier adjoint en charge de l'Éducation et le maire.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/3098391912503414/soupcon-d-agression-sexuelle-dans-le-periscolaire-a-morieres-les-avignon-une-plainte-deposee-contre-un-animateur",
+        "publie_le": "2026-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "gendarmerie",
+      "texte": "Selon La Provence, une audition a eu lieu dans le cadre de l'enquête de la gendarmerie, confirmée par une source judiciaire, et les investigations sont toujours en cours au 18 juin.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/3098391912503414/soupcon-d-agression-sexuelle-dans-le-periscolaire-a-morieres-les-avignon-une-plainte-deposee-contre-un-animateur",
+        "publie_le": "2026-06-18",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+          "publie_le": "2026-06-26",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": "mairie de Morières-lès-Avignon",
+      "texte": "Selon Le Parisien, l'animateur avait fait l'objet en 2025 d'une procédure disciplinaire, sanctionnée par une mise à pied de cinq jours, selon le maire ; cet épisode antérieur n'est pas rapporté comme lié aux plaintes actuelles.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Le Dauphiné Libéré (22 juin 2026), l'animateur mis en cause n'avait alors pas été placé en garde à vue ; il n'aurait pas d'antécédent judiciaire en lien avec des affaires de nature sexuelle.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/22/soupcons-d-agressions-sexuelles-dans-un-centre-aere-deux-plaintes-et-un-animateur-suspendu",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, une deuxième plainte a été déposée contre X, ce que la procureure d'Avignon a confirmé.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre (AFP)",
+          "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "mairie de Morières-lès-Avignon",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : la mairie a décidé dès vendredi qu'en aucun cas un animateur ou animatrice ne se retrouve seul avec un enfant qui demande à aller aux toilettes.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/periscolaire-deux-plaintes-deposees-pour-des-soupcons-dagressions-sexuelles-visant-un-animateur-pres-davignon-22-06-2026-3H5XBRKYYJGFBPOBUAGZAW2G6U.php",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace.fr",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+          "publie_le": "2026-06-22",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-06-24",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon La Provence, la garde à vue du mis en cause a débuté le mercredi 24 juin 2026.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon La Provence, un peu plus tard au cours de l'enquête, une deuxième dénonciation est intervenue pour des faits similaires.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon une source judiciaire citée par Le Dauphiné Libéré, quatre plaintes auraient été déposées, plusieurs enfants étant concernés dans au moins l'une d'entre elles.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/26/agressions-sexuelles-presumees-en-periscolaire-l-animateur-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Provence",
+          "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+          "publie_le": "2026-06-26",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "autorités judiciaires",
+      "texte": "Selon La Provence, les autorités judiciaires ont recueilli deux nouvelles plaintes.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-06-26",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon La Provence, le vendredi 26 juin 2026, à l'issue de sa garde à vue, le mis en cause a été mis en examen pour agressions sexuelles sur mineurs et placé sous contrôle judiciaire, conformément aux réquisitions du parquet, avec obligation de soins, interdiction de paraître dans le Vaucluse et aux abords des établissements scolaires, interdiction d'exercer une profession en contact avec les mineurs et interdiction d'entrer en contact avec les enfants et familles, victimes et témoins.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/06/26/agressions-sexuelles-presumees-en-periscolaire-l-animateur-mis-en-examen",
+          "publie_le": "2026-06-26",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": "Association d'aide aux victimes (Amav)",
+      "texte": "Selon La Provence, l'Association d'aide aux victimes (Amav), une association, a contacté toutes les familles identifiées dans le cadre de la procédure afin de leur proposer un soutien psychologique et un accompagnement juridique.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "parquet d'Avignon",
+      "texte": "Le parquet d'Avignon fait savoir dans un communiqué que les investigations vont se poursuivre sous la direction du magistrat instructeur, afin notamment d'identifier de potentielles autres victimes.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/22419835210543/agressions-sexuelles-dans-le-periscolaire-a-morieres-les-avignon-lanimateur-de-centre-aere-mis-en-examen",
+        "publie_le": "2026-06-26",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 7 articles lus (La Provence, Midi Libre (AFP), Le Dauphiné Libéré, L'Alsace.fr, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Selon La Provence, le vendredi 26 juin 2026, à l'issue de sa garde à vue, le mis en cause a été mis en examen pour agressions sexuelles sur mineurs et placé sous contrôle judiciaire, conformément aux réquisitions du parquet, avec obligation de soins, interdiction de paraître dans le Vaucluse et aux abords des établissements scolaires, interdiction d'exercer une profession en contact avec les mineurs et interdiction d'entrer en contact avec les enfants et familles, victimes et témoins."
+  },
+  "reactions": [
+    {
+      "acteur": "Grégoire Souque, maire de Morières-lès-Avignon",
+      "qualite": "propos rapportés par Midi Libre (AFP)",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "mesure de suspension et interdiction d'approcher les écoles",
+      "citations": [
+        {
+          "texte": "Il ne peut plus s'approcher d'aucune école pendant 4 mois minimum",
+          "pour": "mesure de suspension et interdiction d'approcher les écoles"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Midi Libre (AFP). Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Midi Libre (AFP)) : La procureure d'Avignon Stéphanie Aouine a confirmé lundi à l'AFP \"l'existence d'une deuxième plainte.\" \"Des auditions sont en cours\", a-t-elle encore précisé, sans plus de détails.",
+      "acteur": "Stéphanie Aouine, procureure d'Avignon",
+      "qualite": "propos rapportés par Midi Libre (AFP)",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "existence d'une deuxième plainte",
+      "citations": [
+        {
+          "texte": "l'existence d'une deuxième plainte.",
+          "pour": "existence d'une deuxième plainte"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Midi Libre (AFP). Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Stéphanie Aouine, procureure d'Avignon",
+      "qualite": "propos rapportés par Midi Libre (AFP)",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "auditions en cours",
+      "citations": [
+        {
+          "texte": "Des auditions sont en cours",
+          "pour": "auditions en cours"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Midi Libre (AFP). Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Fédération des Conseils de Parents d'Élèves",
+      "qualite": "propos rapportés par Midi Libre (AFP)",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "information des familles et mesures de protection",
+      "citations": [
+        {
+          "texte": "Les familles ont besoin d'être rassurées, informées sur les mesures de protection mises en place et assurées que toutes les dispositions nécessaires sont prises pour garantir la sécurité des enfants",
+          "pour": "information des familles et mesures de protection"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Midi Libre (AFP). Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Midi Libre (AFP)",
+        "url": "https://www.midilibre.fr/2026/06/22/soupcons-dagressions-sexuelles-dans-un-centre-aere-du-vaucluse-un-animateur-deja-sanctionne-en-2025-vises-pour-des-faits-dattouchements-13432038.php",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Grégoire Souque, maire de Morières-lès-Avignon",
+      "qualite": "propos rapportés par L'Alsace.fr",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "encadrement des animateurs avec les enfants",
+      "citations": [
+        {
+          "texte": "en aucun cas, un animateur ou animatrice ne va se retrouver seul avec un enfant qui demande à aller aux toilettes",
+          "pour": "encadrement des animateurs avec les enfants"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par L'Alsace.fr. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "L'Alsace.fr",
+        "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Jessica Cattier, représentante élue de la FCPE de Morières-lès-Avignon",
+      "qualite": "propos rapportés par L'Alsace.fr",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "absence d'une cellule d'urgence pour accompagner les familles",
+      "citations": [
+        {
+          "texte": "cellule d'urgence pour accompagner les familles, leur proposer une écoute [...], les aider à accompagner au mieux leurs enfants.",
+          "pour": "absence d'une cellule d'urgence pour accompagner les familles"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par L'Alsace.fr. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "L'Alsace.fr",
+        "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (L'Alsace.fr) : Une réunion était organisée lundi matin par la mairie pour discuter avec les familles, mais elle a déploré l'absence d'une « cellule d'urgence pour accompagner les familles, leur proposer une écoute [...], les aider à accompagner au mieux leurs enfants. »",
+      "acteur": "Jessica Cattier, représentante élue de la FCPE de Morières-lès-Avignon",
+      "qualite": "propos rapportés par L'Alsace.fr",
+      "date": "2026-06-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "l'absence de cellule d'urgence pour accompagner les familles",
+      "citations": [
+        {
+          "texte": "cellule d'urgence pour accompagner les familles",
+          "pour": "l'absence de cellule d'urgence pour accompagner les familles"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par L'Alsace.fr. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "L'Alsace.fr",
+        "url": "https://www.lalsace.fr/faits-divers-justice/2026/06/22/vaucluse-deux-plaintes-pour-des-soupcons-d-agressions-sexuelles-dans-le-periscolaire",
+        "publie_le": "2026-06-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Édouard Devalquenaire, premier adjoint en charge de l'Éducation",
+      "qualite": "propos rapportés par La Provence",
+      "date": "2026-06-18",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la durée de la suspension de l'animateur",
+      "citations": [
+        {
+          "texte": "Il est arrêté quatre mois le temps de l’enquête",
+          "pour": "la durée de la suspension de l'animateur"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par La Provence. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "La Provence",
+        "url": "https://www.laprovence.com/article/faits-divers-justice/3098391912503414/soupcon-d-agression-sexuelle-dans-le-periscolaire-a-morieres-les-avignon-une-plainte-deposee-contre-un-animateur",
+        "publie_le": "2026-06-18",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "26 juin 2026",
+      "cat": "blue",
+      "texte": "Selon La Provence, le vendredi 26 juin 2026, à l'issue de sa garde à vue, le mis en cause a été mis en examen pour agressions sexuelles sur mineurs et placé sous contrôle judiciaire, conformément aux réquisitions du parquet, avec obligation de soins, interdiction de paraître dans le Vaucluse et aux abords des établissements scolaires, interdiction d'exercer une profession en contact avec les mineurs et interdiction d'entrer en contact avec les enfants et familles, victimes et témoins."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon La Provence, la municipalité de Morières-lès-Avignon a suspendu l'animateur visé par le dépôt de plainte dès qu'elle en a été informée, le 10 juin.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon La Provence, une réunion d'urgence s'est tenue lundi 15 juin en présence de parents d'élèves et d'élus municipaux, dont le premier adjoint en charge de l'Éducation et le maire."
+      ]
+    }
+  }
+}

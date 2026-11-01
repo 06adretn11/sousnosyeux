@@ -1,0 +1,556 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien, qui cite le procureur de la République de Saint-Gaudens, le membre de la direction du lycée Bagatelle de Saint-Gaudens a été mis en examen pour « viol par personne abusant de son autorité » et « harcèlement scolaire » et placé sous contrôle judiciaire."
+  ],
+  "appel": false,
+  "faits": "Selon Actu17, l'affaire débute par le signalement d'une lycéenne qui échangeait des messages fréquents avec l'ancien membre de la direction. Selon Actu17, une plainte a été déposée par cette lycéenne, qui assure avoir été sous l'emprise de l'ancien membre de la direction.",
+  "deroule": [
+    {
+      "date": "2025-06",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": "rectorat",
+      "texte": "Selon Ouest-France, en juin 2025, après les confidences d'une élève de terminale, un signalement a été effectué auprès du rectorat, qui a ensuite saisi le parquet de Saint-Gaudens.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+        "publie_le": "2026-01-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-07",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": "Education nationale",
+      "texte": "Selon 20 Minutes, en juillet 2025, une lycéenne s'est confiée à un professeur en alertant sur une relation inappropriée avec un membre de la direction ; le témoin a fait un signalement à l'Éducation nationale, transmis par la suite au parquet.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        },
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-07",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Actu17, en juillet 2025, l'ex-femme du suspect s'est présentée au commissariat pour signaler sa disparition.",
+      "source": {
+        "media": "Actu17",
+        "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+        "publie_le": "2026-01-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-09",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Le Parisien, en septembre 2025, sans avoir été prévenue de l’enquête en cours, la compagne du membre de la direction s’est présentée au commissariat de Toulouse pour signaler la disparition de son mari.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-01-15",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, ce jeudi 15 janvier, après six mois d’enquête, le membre de la direction a été arrêté à Thèbes, dans les Hautes-Pyrénées, et placé en garde à vue ; son ordinateur et son téléphone portable ont été saisis.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        },
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-01-16",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon Le Parisien, qui cite le procureur de la République de Saint-Gaudens, le membre de la direction du lycée Bagatelle de Saint-Gaudens a été mis en examen pour « viol par personne abusant de son autorité » et « harcèlement scolaire » et placé sous contrôle judiciaire.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+          "publie_le": "2026-01-20",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        },
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-01-20",
+      "date_nature": "evenement",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat de Toulouse",
+      "texte": "Selon Le Parisien, le rectorat de Toulouse a annoncé une cellule d'écoute dans l'établissement à partir du mardi 20 janvier ; selon La Voix du Nord (AFP), une cellule d'écoute a été mise en place mardi dans un lycée de Saint-Gaudens après la mise en examen.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+          "publie_le": "2026-01-20",
+          "acces": "libre"
+        },
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        },
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l’élève de Terminale concernée a déposé plainte contre le membre de la direction.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, une ancienne élève du lycée porte plainte à son tour, dénonçant un viol survenu au cours de l'année scolaire 2021-2022.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon 20 Minutes, citant La Dépêche du Midi, deux plaintes sont recensées à ce stade, avec des suspicions sur d'autres victimes.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet de Saint-Gaudens",
+      "texte": "Selon Le Parisien, face au caractère sensible de l’affaire, le parquet de Saint-Gaudens a décidé d’ouvrir une information judiciaire et les investigations ont été confiées à la police judiciaire de Toulouse.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        },
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+          "publie_le": "2026-01-20",
+          "acces": "libre"
+        },
+        {
+          "media": "Actu17",
+          "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat de Toulouse",
+      "texte": "Selon Le Parisien, le rectorat de Toulouse confirme que le membre de la direction a été suspendu et n’est plus au contact d’élèves depuis la fin de l’année scolaire 2025.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Voix du Nord",
+          "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+          "publie_le": "2026-01-21",
+          "acces": "libre"
+        },
+        {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+          "publie_le": "2026-01-20",
+          "acces": "libre"
+        },
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "publie_le": "2026-01-19",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "parquet de Saint-Gaudens",
+      "texte": "Selon les informations fournies à 20 Minutes par le procureur, il n'y aurait pour l'instant qu'une seule victime confirmée, l'enquête visant à vérifier les accusations d'une autre lycéenne et à retrouver d'éventuelles autres victimes.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Ouest-France, à ce stade, une seule plainte pour viol aurait été déposée par l'une des jeunes filles identifiées dans les vidéos.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+        "publie_le": "2026-01-20",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon La Voix du Nord, une élève de terminale avait fait part de messages insistants envoyés par le membre de la direction en 2025, selon le procureur de Saint-Gaudens.",
+      "source": {
+        "media": "La Voix du Nord",
+        "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+        "publie_le": "2026-01-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": "parquet",
+      "texte": "Selon La Voix du Nord, le mis en cause a admis des rapports consentis avec la jeune fille de Saint-Gaudens, évoquant une incompréhension entre eux, selon le magistrat.",
+      "source": {
+        "media": "La Voix du Nord",
+        "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+        "publie_le": "2026-01-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "procureur de la République de Saint-Gaudens",
+      "texte": "Le procureur de la République de Saint-Gaudens a souligné que les victimes présumées sont toutes mineures et que leur nombre et leur ampleur restent à confirmer.",
+      "source": {
+        "media": "Actu17",
+        "url": "https://www.actu17.fr/faits-divers/haute-garonne-un-ancien-proviseur-adjoint-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-des-eleves.html",
+        "publie_le": "2026-01-21",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": null,
+      "texte": "Selon La Voix du Nord, une expertise psychologique doit être conduite, en raison de l'emprise qu'a pu exercer le membre de la direction sur sa victime présumée.",
+      "source": {
+        "media": "La Voix du Nord",
+        "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
+        "publie_le": "2026-01-21",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Divergence entre sources — signalement : dates divergentes selon les sources (juillet 2025 / juin 2025).",
+    "La démarche de l'ex-compagne au commissariat est datée de juillet 2025 par Actu17 et de septembre 2025 par Le Parisien, 20 Minutes, BFMTV et La Voix du Nord (AFP) : les deux étapes sont conservées séparément, sans établir qu'il s'agit du même épisode.",
+    "Le dossier ne repose que sur 6 articles lus (Le Parisien, Actu17, BFMTV, 20 Minutes, La Voix du Nord, Ouest-France)."
+  ],
+  "synthese": {
+    "decision": "Selon Le Parisien, qui cite le procureur de la République de Saint-Gaudens, le membre de la direction du lycée Bagatelle de Saint-Gaudens a été mis en examen pour « viol par personne abusant de son autorité » et « harcèlement scolaire » et placé sous contrôle judiciaire."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Le Parisien) : « Il n’est plus au contact d’élèves depuis la fin de l’année scolaire 2025 », précise le rectorat, qui fait savoir qu’une cellule d’écoute sera mise en place dans l’établissement scolaire à partir de ce mardi 20 janvier « pour accompagner les élèves et les personnels qui le souhaitent ».",
+      "acteur": "rectorat de Toulouse",
+      "qualite": "propos rapportés par Le Parisien",
+      "date": "2026-01-19",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la cellule d’écoute mise en place dans l’établissement",
+      "citations": [
+        {
+          "texte": "pour accompagner les élèves et les personnels qui le souhaitent",
+          "pour": "la cellule d’écoute mise en place dans l’établissement"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/tu-deviendras-une-belle-femme-le-proviseur-adjoint-dun-lycee-de-haute-garonne-mis-en-examen-pour-le-viol-et-le-harcelement-de-lyceennes-19-01-2026-LBA2RQ3T2FA4DD27777UTTTJOE.php",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Christophe Amunzateguy, procureur de Saint-Gaudens",
+      "qualite": "propos rapportés par 20 Minutes",
+      "date": "2026-01-19",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la démarche de l'ex-épouse du mis en cause au commissariat",
+      "citations": [
+        {
+          "texte": "Cette femme vient se présenter au niveau de la cellule psy du commissariat pour annoncer que son ex-conjoint était parti et était injoignable.",
+          "pour": "la démarche de l'ex-épouse du mis en cause au commissariat"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/4196911-20260119-haute-garonne-accuse-viols-eleves-proviseur-adjoint-lycee-mis-examen",
+        "publie_le": "2026-01-19",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Christophe Amunzateguy, procureur de la République de Saint-Gaudens",
+      "qualite": "propos rapportés par Ouest-France",
+      "date": "2026-01-20",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "La nature des faits visibles sur les vidéos",
+      "citations": [
+        {
+          "texte": "Les images laissaient peu de doute sur la nature des faits",
+          "pour": "La nature des faits visibles sur les vidéos"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+        "publie_le": "2026-01-20",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Christophe Amunzateguy, procureur de la République de Saint-Gaudens",
+      "qualite": "propos rapportés par Ouest-France",
+      "date": "2026-01-20",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "La question du consentement et de l'emprise dans l'affaire",
+      "citations": [
+        {
+          "texte": "La question du consentement, de l’emprise et de l’ascendant professeur-élève est centrale",
+          "pour": "La question du consentement et de l'emprise dans l'affaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Ouest-France",
+        "url": "https://www.ouest-france.fr/societe/faits-divers/lex-proviseur-adjoint-dun-lycee-pres-de-toulouse-soupconne-de-viol-sur-une-eleve-770610b8-f5ea-11f0-a8b8-742962f64e2d",
+        "publie_le": "2026-01-20",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "16 janvier 2026",
+      "cat": "blue",
+      "texte": "Selon Le Parisien, qui cite le procureur de la République de Saint-Gaudens, le membre de la direction du lycée Bagatelle de Saint-Gaudens a été mis en examen pour « viol par personne abusant de son autorité » et « harcèlement scolaire » et placé sous contrôle judiciaire."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien, le rectorat de Toulouse confirme que le membre de la direction a été suspendu et n’est plus au contact d’élèves depuis la fin de l’année scolaire 2025.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Parisien, le rectorat de Toulouse a annoncé une cellule d'écoute dans l'établissement à partir du mardi 20 janvier ; selon La Voix du Nord (AFP), une cellule d'écoute a été mise en place mardi dans un lycée de Saint-Gaudens après la mise en examen."
+      ]
+    }
+  }
+}

@@ -1,0 +1,576 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien, une ATSEM employée dans une école maternelle de Vic-la-Gardiole a été mise en examen et placée en détention provisoire le 29 juillet 2025.",
+    "Évolution rapportée : Selon L'indépendant, la cour d'appel de Montpellier a ordonné la remise en liberté sous contrôle judiciaire de l'ATSEM, avec notamment l'obligation de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault. Selon Midi Libre (9 septembre 2026), l'instruction se poursuit : un réquisitoire supplétif de janvier 2026 vise de nouvelles victimes potentielles, sur lesquelles la mise en cause n'avait pas encore été entendue."
+  ],
+  "appel": false,
+  "faits": "Selon Le Parisien, l'Atsem de l'école maternelle de Vic-la-Gardiole (Hérault) a été mise en examen dans une affaire de viols et agressions sexuelles présumés sur de tout jeunes enfants. Selon Le Parisien, les faits se seraient déroulés entre le 1er octobre 2024 et le 2 juillet 2025.",
+  "deroule": [
+    {
+      "date": "2025-07-02",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon le parquet, l'enquête a débuté à la suite de la plainte déposée par les familles de plusieurs enfants.",
+      "source": {
+        "media": "France 24",
+        "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        },
+        {
+          "media": "Ladepeche.fr",
+          "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+          "publie_le": "2025-08-01",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-07-03",
+      "date_nature": "evenement",
+      "type": "mesure_collectivite",
+      "acteur": "mairie de Vic-la-Gardiole",
+      "texte": "Selon France 24, le 3 juillet, l'Atsem mise en cause a fait l'objet d'une suspension administrative à titre conservatoire par son employeur, la mairie de Vic-la-Gardiole.",
+      "source": {
+        "media": "France 24",
+        "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        },
+        {
+          "media": "Ladepeche.fr",
+          "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+          "publie_le": "2025-08-01",
+          "acces": "libre"
+        },
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-07-04",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "gendarmerie",
+      "texte": "Selon Ladepeche.fr, l'employée a été placée une première fois en garde à vue le 4 juillet, mesure qui n'a duré que quelques heures avant d'être levée.",
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        },
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "type": "garde_a_vue",
+      "date": "2025-07-28",
+      "date_nature": "evenement",
+      "acteur": null,
+      "texte": "Selon Ladepeche.fr, l'enquête s'est poursuivie « en toute discrétion », conduisant à une nouvelle garde à vue le 28 juillet.",
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-07-29",
+      "date_nature": "evenement",
+      "type": "enquete",
+      "acteur": "tribunal judiciaire de Montpellier",
+      "texte": "Selon Ladepeche.fr, le 29 juillet, une information judiciaire a été ouverte au tribunal judiciaire de Montpellier pour viols sur mineurs de moins de 15 ans et agressions sexuelles aggravées par personne ayant autorité, l'affaire étant confiée à la brigade de recherche de la gendarmerie de Castelnau-le-Lez.",
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        },
+        {
+          "media": "MidiLibre",
+          "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+          "publie_le": "2026-01-23",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre",
+          "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "France 24",
+          "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-07-29",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon Le Parisien, l'ATSEM a été mise en examen et placée en détention provisoire le 29 juillet 2025 ; selon Midi Libre, elle a été écrouée à la maison d'arrêt de Nîmes.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/atsem-soupconnee-de-viols-et-dagressions-sexuelles-sur-neuf-enfants-dans-lherault-cest-la-sideration-01-08-2025-DA5SRIGRBRAJPFJQNTP6DWXX3M.php",
+        "publie_le": "2025-08-01",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Dépêche",
+          "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        },
+        {
+          "media": "Midi Libre",
+          "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "France 24",
+          "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "MidiLibre",
+          "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+          "publie_le": "2026-01-23",
+          "acces": "libre"
+        },
+        {
+          "media": "L'indépendant",
+          "url": "https://www.lindependant.fr/2025/08/14/assistante-decole-maternelle-accusee-de-viols-a-vic-la-gardiole-latsem-mise-en-examen-pour-viols-et-agressions-sexuelles-sur-9-enfants-a-ete-remise-en-12876411.php",
+          "publie_le": "2025-08-14",
+          "acces": "libre"
+        },
+        {
+          "media": "Ladepeche.fr",
+          "url": "https://www.ladepeche.fr/2025/08/01/lassistante-maternelle-accusee-de-viols-sur-plusieurs-mineurs-conteste-les-faits-et-denonce-un-complot-de-la-mairie-12855650.php",
+          "publie_le": "2025-08-01",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-08",
+      "date_nature": "approximative",
+      "type": "appel",
+      "acteur": "la défense",
+      "texte": "Selon Le Figaro, l'ATSEM, placée en détention provisoire depuis le 29 juillet, a fait appel de cette décision (contestation de son placement en détention, avec demande de remise en liberté). Un extrait de page thématique de Midi Libre rapporte cet appel au 11 août 2025.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/agressions-sexuelles-et-viols-sur-neuf-enfants-dans-l-herault-l-atsem-fait-appel-et-demande-sa-remise-en-liberte-20250812",
+        "publie_le": "2025-08-12",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre",
+          "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+          "publie_le": null,
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-08",
+      "date_nature": "approximative",
+      "type": "mesure_etat",
+      "acteur": "rectorat",
+      "texte": "Le rectorat a décidé, fin août 2025, de changer l'intégralité de l'équipe enseignante.",
+      "source": {
+        "media": "MidiLibre",
+        "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+        "publie_le": "2026-01-23",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-08-12",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "cour d'appel de Montpellier",
+      "texte": "Selon Le Parisien, une audience s'est tenue à huis clos devant la chambre de l'instruction de la cour d'appel de Montpellier sur la demande de remise en liberté de l'Atsem.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+        "publie_le": "2025-08-12",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre",
+          "url": "https://www.midilibre.fr/2025/08/12/viols-a-lecole-de-vic-la-gardiole-elle-nie-et-parle-dun-complot-lassistante-maternelle-veut-etre-liberee-decision-le-14-aout-12872316.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-08-14",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "cour d'appel de Montpellier",
+      "texte": "Selon L'indépendant, la cour d'appel de Montpellier a ordonné la remise en liberté sous contrôle judiciaire de l'ATSEM, avec notamment l'obligation de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault.",
+      "source": {
+        "media": "L'indépendant",
+        "url": "https://www.lindependant.fr/2025/08/14/assistante-decole-maternelle-accusee-de-viols-a-vic-la-gardiole-latsem-mise-en-examen-pour-viols-et-agressions-sexuelles-sur-9-enfants-a-ete-remise-en-12876411.php",
+        "publie_le": "2025-08-14",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Midi Libre",
+          "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+          "publie_le": "2025-07-31",
+          "acces": "libre"
+        },
+        {
+          "media": "MidiLibre",
+          "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+          "publie_le": "2026-01-23",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+          "publie_le": "2025-08-12",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-01",
+      "date_nature": "approximative",
+      "acteur": "parquet de Montpellier",
+      "type": "enquete",
+      "texte": "Selon Midi Libre, en janvier 2026, dans un réquisitoire supplétif, le parquet de Montpellier a identifié de nouvelles victimes potentielles.",
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+        "publie_le": "2026-09-09",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon La Dépêche, une cellule psychologique va être mise en place à l'école dès la rentrée, selon Ici Hérault.",
+      "source": {
+        "media": "La Dépêche",
+        "url": "https://www.ladepeche.fr/2025/07/31/une-assistante-maternelle-mise-en-examen-pour-des-actes-de-penetration-digitale-et-de-masturbation-sur-neufs-enfants-dans-lherault-12853965.php",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "rectorat de Montpellier",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : le rectorat de Montpellier a annoncé qu'un accompagnement spécifique serait mis en place pour toute la communauté éducative.",
+      "source": {
+        "media": "France 24",
+        "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Parisien, les parents se sont constitués partie civile.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/herault-lassistante-decole-maternelle-soupconnee-de-viols-demande-sa-remise-en-liberte-12-08-2025-B7HKIAIPSNBSFPXBE5PYJQNKVE.php",
+        "publie_le": "2025-08-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "juge d'instruction",
+      "type": "enquete",
+      "texte": "Selon Midi Libre, à la date de l'article (9 septembre 2026), la mise en cause, placée sous contrôle judiciaire depuis le 14 août 2025, n'avait pas encore été entendue par le juge d'instruction au sujet de ces nouvelles victimes potentielles, en vue ou non de nouvelles mises en examen.",
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+        "publie_le": "2026-09-09",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "juge d'instruction",
+      "type": "enquete",
+      "texte": "Selon Midi Libre, les expertises psychologiques des enfants concernés ont été rendues au fil de l'année, les dernières récemment, à l'été.",
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+        "publie_le": "2026-09-09",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Divergence entre sources — enquête : dates divergentes selon les sources (29 juillet 2025 / décembre 2025).",
+    "Divergence entre sources — mise en examen : le 29 juillet 2025 selon Le Parisien (qui date le même jour la détention, comme Midi Libre et Le Figaro) ; La Dépêche la rapporte « ce jeudi 31 juillet », jour de sa dépêche.",
+    "Le dossier ne repose que sur 10 articles ou pages lus (Le Parisien ×2, La Dépêche ×2, Midi Libre ×3 dont une page thématique, France 24, L'indépendant, Le Figaro)."
+  ],
+  "synthese": {
+    "decision": "Selon Le Parisien, une ATSEM employée dans une école maternelle de Vic-la-Gardiole a été mise en examen et placée en détention provisoire le 29 juillet 2025.",
+    "ouvert": "Évolution rapportée : Selon L'indépendant, la cour d'appel de Montpellier a ordonné la remise en liberté sous contrôle judiciaire de l'ATSEM, avec notamment l'obligation de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault. Selon Midi Libre (9 septembre 2026), l'instruction se poursuit : un réquisitoire supplétif de janvier 2026 vise de nouvelles victimes potentielles, sur lesquelles la mise en cause n'avait pas encore été entendue."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Midi Libre) : Les services de l’Éducation nationale se mobilisent après \"des faits d’une grande gravité, actuellement examinés par la justice\" indique l’académie de Montpellier dans un communiqué en lien avec la...",
+      "acteur": "l'académie de Montpellier",
+      "qualite": "propos rapportés par Midi Libre",
+      "date": "2025-07-31",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la mobilisation des services de l'Éducation nationale",
+      "citations": [
+        {
+          "texte": "des faits d'une grande gravité, actuellement examinés par la justice",
+          "pour": "la mobilisation des services de l'Éducation nationale"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Midi Libre. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/faits-divers/viols-a-lecole-de-vic-la-gardiole/",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (MidiLibre) : Devant le grand climat de défiance régnant entre parents d'élèves et l'ancienne équipe, le rectorat avait toutefois décidé, fin août 2025, à quelques jours de la rentrée, de changer l'intégralité de l'équipe enseignante, \"afin de protéger l'ancienne équipe et de rassurer les parents\".",
+      "acteur": "rectorat",
+      "qualite": "propos rapportés par MidiLibre",
+      "date": "2026-01-23",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "changement de l'intégralité de l'équipe enseignante",
+      "citations": [
+        {
+          "texte": "afin de protéger l'ancienne équipe et de rassurer les parents",
+          "pour": "changement de l'intégralité de l'équipe enseignante"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par MidiLibre. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "MidiLibre",
+        "url": "https://www.midilibre.fr/2026/01/23/une-institutrice-suspendue-et-remplacee-apres-avoir-gifle-un-eleve-a-lecole-maternelle-de-vic-la-gardiole-13182322.php",
+        "publie_le": "2026-01-23",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "rectorat de Montpellier",
+      "qualite": "propos rapportés par France 24",
+      "date": "2025-07-31",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "mobilisation des équipes éducatives pour accompagner les élèves et les familles",
+      "citations": [
+        {
+          "texte": "Dans ces circonstances particulièrement difficiles, l'ensemble des équipes éducatives, en collaboration étroite avec la collectivité territoriale, reste pleinement mobilisé pour accompagner les élèves et les familles",
+          "pour": "mobilisation des équipes éducatives pour accompagner les élèves et les familles"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 24. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 24",
+        "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "rectorat de Montpellier",
+      "qualite": "propos rapportés par France 24",
+      "date": "2025-07-31",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "transmission des éléments détenus par l'Education nationale à la justice",
+      "citations": [
+        {
+          "texte": "tous les éléments en possession des services de l'Education nationale sont naturellement transmis à la justice, sachant que le personnel mis en cause relève de la collectivité territoriale",
+          "pour": "transmission des éléments détenus par l'Education nationale à la justice"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 24. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 24",
+        "url": "https://www.france24.com/fr/info-en-continu/20250731-h%C3%A9rault-une-assistante-d-%C3%A9cole-maternelle-%C3%A9crou%C3%A9e-pour-viols-et-agressions-sexuelles",
+        "publie_le": "2025-07-31",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (L'indépendant) : Parmi les obligations de ce contrôle judiciaire figurent \"notamment celles de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault\" , a déclaré Me Marc Gallix à l'issue d'une courte audience à huis clos.",
+      "acteur": "Me Marc Gallix, avocat des parties civiles",
+      "qualite": "propos rapportés par L'indépendant",
+      "date": "2025-08-14",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "les obligations du contrôle judiciaire",
+      "citations": [
+        {
+          "texte": "notamment celles de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault",
+          "pour": "les obligations du contrôle judiciaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par L'indépendant. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "L'indépendant",
+        "url": "https://www.lindependant.fr/2025/08/14/assistante-decole-maternelle-accusee-de-viols-a-vic-la-gardiole-latsem-mise-en-examen-pour-viols-et-agressions-sexuelles-sur-9-enfants-a-ete-remise-en-12876411.php",
+        "publie_le": "2025-08-14",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "validation": "POSITION_ATTRIBUEE",
+      "date_nature": "article",
+      "etabli": "Établi : propos rapportés par Midi Libre. Une prise de parole n’établit pas son contenu.",
+      "acteur": "Me Rémi Bertrand, avocat de la défense",
+      "qualite": "propos rapportés par Midi Libre",
+      "a_propos": "l'absence de nouvelle convocation de la mise en cause",
+      "citations": [
+        {
+          "texte": "Elle n'a toujours pas été convoquée pour un deuxième interrogatoire",
+          "pour": "l'absence de nouvelle convocation de la mise en cause"
+        }
+      ],
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+        "publie_le": "2026-09-09",
+        "acces": "libre"
+      },
+      "date": "2026-09-09"
+    },
+    {
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "validation": "POSITION_ATTRIBUEE",
+      "date_nature": "article",
+      "etabli": "Établi : propos rapportés par Midi Libre. Une prise de parole n’établit pas son contenu.",
+      "acteur": "Me Florian Medico, avocat de parties civiles",
+      "qualite": "propos rapportés par Midi Libre",
+      "a_propos": "les délais de la procédure",
+      "citations": [
+        {
+          "texte": "Mes clients font preuve de patience et de confiance en l'institution judiciaire malgré les délais qui leur sont difficilement supportables",
+          "pour": "les délais de la procédure"
+        }
+      ],
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/09/09/viols-a-lecole-de-vic-la-gardiole-un-an-apres-la-mise-en-cause-de-latsem-limpatience-des-familles-et-la-prudence-des-experts-13532491.php",
+        "publie_le": "2026-09-09",
+        "acces": "libre"
+      },
+      "date": "2026-09-09"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "cat": "blue",
+      "texte": "Selon Le Parisien, une ATSEM employée dans une école maternelle de Vic-la-Gardiole a été mise en examen et placée en détention provisoire le 29 juillet 2025.",
+      "meta": "29 juillet 2025"
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Évolution rapportée : Selon L'indépendant, la cour d'appel de Montpellier a ordonné la remise en liberté sous contrôle judiciaire de l'ATSEM, avec notamment l'obligation de ne pas être en contact avec les enfants et de ne plus résider dans l'Hérault. Selon Midi Libre (9 septembre 2026), l'instruction se poursuit : un réquisitoire supplétif de janvier 2026 vise de nouvelles victimes potentielles, sur lesquelles la mise en cause n'avait pas encore été entendue.",
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon France 24, le 3 juillet, l'Atsem mise en cause a fait l'objet d'une suspension administrative à titre conservatoire par son employeur, la mairie de Vic-la-Gardiole.",
+        "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon La Dépêche, une cellule psychologique va être mise en place à l'école dès la rentrée, selon Ici Hérault."
+      ]
+    }
+  }
+}

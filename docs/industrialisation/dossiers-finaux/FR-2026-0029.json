@@ -1,0 +1,174 @@
+{
+  "etat_actuel": [
+    "Selon France 3 Régions, l’enseignant, jugé le mardi 3 mars 2026 pour agressions sexuelles sur l’une de ses élèves, a été condamné à 24 mois de prison, dont 18 avec sursis probatoire pour une durée de deux ans, les six mois fermes étant aménagés sous la forme d’un bracelet électronique ; la justice lui interdit en outre définitivement d’exercer une activité professionnelle en contact avec des mineurs.",
+    "Selon France 3 Régions, l’enseignant disposait de dix jours pour faire appel et le procureur ignorait s’il le ferait ; aucun appel n’est rapporté dans les sources lues, et le caractère définitif de la condamnation n’est pas documenté."
+  ],
+  "appel": false,
+  "faits": "Selon MidiLibre, un enseignant du collège privé Saint-Charles à Chauny (Aisne) a été renvoyé devant le tribunal pour agressions sexuelles et corruption de mineure sur une de ses élèves ; selon France 3 Régions, il a été jugé le 3 mars 2026 et condamné. Selon MidiLibre, il avait été placé sous contrôle judiciaire, avec interdiction d’exercer sa profession ou toute autre activité impliquant des mineurs.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon MidiLibre, l’enseignant avait été placé en garde à vue pour viol, avant que les faits ne soient requalifiés en agressions sexuelles et corruption de mineure de moins de 15 ans.",
+      "source": {
+        "media": "MidiLibre",
+        "url": "https://www.midilibre.fr/2026/01/08/elle-evoque-une-relation-amoureuse-un-professeur-bientot-juge-pour-agressions-sexuelles-sur-lune-de-ses-eleves-agee-de-14-ans-13149727.php",
+        "publie_le": "2026-01-08",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/aisne-un-enseignant-juge-pour-agressions-sexuelles-sur-une-collegienne-de-14-ans-07-01-2026-YFU7KRP3WRDZRCCADQQQH6L45E.php",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        },
+        {
+          "media": "lamontagne.fr",
+          "url": "https://www.lamontagne.fr/chauny-02300/faits-divers/un-professeur-d-histoire-geographie-juge-pour-agressions-sexuelles-sur-une-eleve-en-classe-de-troisieme_14809862/",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        },
+        {
+          "media": "MidiLibre",
+          "url": "https://www.midilibre.fr/2026/01/08/elle-evoque-une-relation-amoureuse-un-professeur-bientot-juge-pour-agressions-sexuelles-sur-lune-de-ses-eleves-agee-de-14-ans-13149727.php",
+          "publie_le": "2026-01-08",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-01-07",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "justice",
+      "texte": "Selon France 3 Régions, l’enseignant a été placé sous contrôle judiciaire le 7 janvier, à sa sortie de garde à vue et après avoir été déféré au parquet ; selon le procureur de Laon (Le Parisien), avec interdiction d’exercer sa profession ou toute activité impliquant des mineurs.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/hauts-de-france/aisne/un-enseignant-d-un-college-prive-condamne-a-24-mois-de-prison-pour-agressions-sexuelles-sur-une-eleve-de-14-ans-3309333.html",
+        "publie_le": "2026-03-03",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "MidiLibre",
+          "url": "https://www.midilibre.fr/2026/01/08/elle-evoque-une-relation-amoureuse-un-professeur-bientot-juge-pour-agressions-sexuelles-sur-lune-de-ses-eleves-agee-de-14-ans-13149727.php",
+          "publie_le": "2026-01-08",
+          "acces": "libre"
+        },
+        {
+          "media": "CNEWS",
+          "url": "https://www.cnews.fr/faits-divers/2026-03-03/un-enseignant-suspecte-davoir-eu-une-relation-avec-une-eleve-de-14-ans-juge",
+          "publie_le": "2026-03-03",
+          "acces": "libre"
+        },
+        {
+          "media": "lamontagne.fr",
+          "url": "https://www.lamontagne.fr/chauny-02300/faits-divers/un-professeur-d-histoire-geographie-juge-pour-agressions-sexuelles-sur-une-eleve-en-classe-de-troisieme_14809862/",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/aisne-un-enseignant-juge-pour-agressions-sexuelles-sur-une-collegienne-de-14-ans-07-01-2026-YFU7KRP3WRDZRCCADQQQH6L45E.php",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "renvoi",
+      "acteur": "parquet de Laon",
+      "texte": "Selon le procureur de Laon, l’enseignant du collège Saint-Charles à Chauny devait être jugé le 3 mars pour agressions sexuelles et corruption de mineure sur une de ses élèves.",
+      "source": {
+        "media": "MidiLibre",
+        "url": "https://www.midilibre.fr/2026/01/08/elle-evoque-une-relation-amoureuse-un-professeur-bientot-juge-pour-agressions-sexuelles-sur-lune-de-ses-eleves-agee-de-14-ans-13149727.php",
+        "publie_le": "2026-01-08",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "lamontagne.fr",
+          "url": "https://www.lamontagne.fr/chauny-02300/faits-divers/un-professeur-d-histoire-geographie-juge-pour-agressions-sexuelles-sur-une-eleve-en-classe-de-troisieme_14809862/",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/aisne-un-enseignant-juge-pour-agressions-sexuelles-sur-une-collegienne-de-14-ans-07-01-2026-YFU7KRP3WRDZRCCADQQQH6L45E.php",
+          "publie_le": "2026-01-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-03-03",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": null,
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/hauts-de-france/aisne/un-enseignant-d-un-college-prive-condamne-a-24-mois-de-prison-pour-agressions-sexuelles-sur-une-eleve-de-14-ans-3309333.html",
+        "publie_le": "2026-03-03",
+        "acces": "libre"
+      },
+      "texte": "Selon France 3 Régions, l’enseignant, jugé le mardi 3 mars 2026 pour agressions sexuelles sur l’une de ses élèves, a été condamné à 24 mois de prison, dont 18 avec sursis probatoire pour une durée de deux ans, les six mois fermes étant aménagés sous la forme d’un bracelet électronique ; la justice lui interdit en outre définitivement d’exercer une activité professionnelle en contact avec des mineurs."
+    }
+  ],
+  "inconnues": [
+    "Appel et caractère définitif : France 3 Régions indique que l’enseignant disposait de dix jours pour faire appel ; aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.",
+    "Le dossier ne repose que sur 5 articles lus (CNEWS, Le Parisien, France 3 Régions, MidiLibre, lamontagne.fr)."
+  ],
+  "synthese": {
+    "decision": "Selon France 3 Régions, l’enseignant, jugé le mardi 3 mars 2026 pour agressions sexuelles sur l’une de ses élèves, a été condamné à 24 mois de prison, dont 18 avec sursis probatoire pour une durée de deux ans, les six mois fermes étant aménagés sous la forme d’un bracelet électronique ; la justice lui interdit en outre définitivement d’exercer une activité professionnelle en contact avec des mineurs.",
+    "ouvert": "Selon France 3 Régions, l’enseignant disposait de dix jours pour faire appel et le procureur ignorait s’il le ferait ; aucun appel n’est rapporté dans les sources lues, et le caractère définitif de la condamnation n’est pas documenté."
+  },
+  "reactions": [
+    {
+      "acteur": "Alexis Briaux, directeur du collège privé catholique Saint-Charles de Chauny",
+      "qualite": "propos rapportés par CNEWS",
+      "date": "2026-03-03",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "réaction de la direction de l'établissement à l'affaire",
+      "citations": [
+        {
+          "texte": "Personne n'en avait connaissance",
+          "pour": "réaction de la direction de l'établissement à l'affaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par CNEWS. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/faits-divers/2026-03-03/un-enseignant-suspecte-davoir-eu-une-relation-avec-une-eleve-de-14-ans-juge",
+        "publie_le": "2026-03-03",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "3 mars 2026",
+      "cat": "red",
+      "texte": "Selon France 3 Régions, l’enseignant, jugé le mardi 3 mars 2026 pour agressions sexuelles sur l’une de ses élèves, a été condamné à 24 mois de prison, dont 18 avec sursis probatoire pour une durée de deux ans, les six mois fermes étant aménagés sous la forme d’un bracelet électronique ; la justice lui interdit en outre définitivement d’exercer une activité professionnelle en contact avec des mineurs."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Appel et caractère définitif non documentés",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Selon France 3 Régions, l’enseignant disposait de dix jours pour faire appel et le procureur ignorait s’il le ferait ; aucun appel n’est rapporté dans les sources lues, et le caractère définitif de la condamnation n’est pas documenté."
+      ]
+    }
+  }
+}

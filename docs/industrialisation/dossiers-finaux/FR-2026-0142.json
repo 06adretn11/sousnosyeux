@@ -1,0 +1,172 @@
+{
+  "etat_actuel": [
+    "Selon franceinfo, l’enseignant d’un lycée non nommé du secteur d’Orange a été mis en examen dans le cadre d’une information judiciaire ouverte pour des faits présumés de viols, d’agressions sexuelles et de tentative d’agression sexuelle ; le parquet de Carpentras l’a annoncé le 2 juillet 2026 (franceinfo situe l’interpellation et la mise en examen le 1er juillet ; L’Alsace et France 3 parlent d’une présentation au parquet le jeudi : la date exacte de la mise en examen n’est pas établie)."
+  ],
+  "appel": false,
+  "faits": "Selon franceinfo, un enseignant exerçant dans un lycée non nommé du secteur d’Orange (Vaucluse) a été interpellé et mis en examen pour des faits présumés de viols, d’agressions sexuelles et de tentative d’agression sexuelle. Selon franceinfo, les faits dénoncés par plusieurs victimes, dont des mineures au moment des faits, se seraient déroulés entre 2003 et 2026.",
+  "deroule": [
+    {
+      "date": "2026-07-01",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon franceinfo, un enseignant exerçant dans un lycée non nommé du secteur d’Orange (Vaucluse) a été interpellé le mercredi 1er juillet.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon franceinfo, l’enseignant, interpellé le mercredi 1er juillet, a été mis en examen dans le cadre d’une information judiciaire ouverte pour des faits présumés de viols, d’agressions sexuelles et de tentative d’agression sexuelle, a annoncé le procureur de la République de Carpentras le jeudi 2 juillet.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "L'Alsace",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/07/02/un-enseignant-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineurs",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        },
+        {
+          "media": "France 3",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/vaucluse/avignon/viols-agressions-sexuelles-enquete-ce-que-l-on-sait-de-la-mise-en-examen-d-un-enseignant-soupconne-de-violences-sexuelles-sur-plusieurs-eleves-3380596.html",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet",
+      "texte": "Selon L'Alsace, après avoir recueilli les témoignages de plusieurs victimes présumées, le parquet a ouvert une information judiciaire notamment en vue d'identifier d'éventuelles victimes supplémentaires.",
+      "source": {
+        "media": "L'Alsace",
+        "url": "https://www.lalsace.fr/faits-divers-justice/2026/07/02/un-enseignant-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineurs",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        },
+        {
+          "media": "France 3",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/vaucluse/avignon/viols-agressions-sexuelles-enquete-ce-que-l-on-sait-de-la-mise-en-examen-d-un-enseignant-soupconne-de-violences-sexuelles-sur-plusieurs-eleves-3380596.html",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "parquet de Carpentras",
+      "texte": "Selon France 3, le procureur avait requis le placement en détention provisoire de l'enseignant présenté au parquet.",
+      "source": {
+        "media": "France 3",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/vaucluse/avignon/viols-agressions-sexuelles-enquete-ce-que-l-on-sait-de-la-mise-en-examen-d-un-enseignant-soupconne-de-violences-sexuelles-sur-plusieurs-eleves-3380596.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "decision",
+      "acteur": "juge des libertés et de la détention",
+      "texte": "Selon franceinfo, après la mise en examen, le juge des libertés et de la détention a ordonné le placement sous contrôle judiciaire, assorti de plusieurs obligations et interdictions, notamment l’interdiction d’exercer une activité professionnelle en contact avec des mineurs et d’entrer en relation avec les victimes, et l’obligation de se soumettre à un suivi médical ou à des soins.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/vaucluse/avignon/viols-agressions-sexuelles-enquete-ce-que-l-on-sait-de-la-mise-en-examen-d-un-enseignant-soupconne-de-violences-sexuelles-sur-plusieurs-eleves-3380596.html",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        },
+        {
+          "media": "L'Alsace",
+          "url": "https://www.lalsace.fr/faits-divers-justice/2026/07/02/un-enseignant-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineurs",
+          "publie_le": "2026-07-02",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Date exacte de la mise en examen : franceinfo situe l’interpellation et la mise en examen au 1er juillet 2026 ; L’Alsace et France 3 indiquent une présentation au parquet le jeudi (2 juillet). Seule l’annonce du parquet, le 2 juillet, est établie.",
+    "Les sources divergent sur la portée géographique du contrôle judiciaire (interdiction de quitter le Vaucluse selon L’Alsace et France 3, de paraître dans le département selon franceinfo) : ce détail n’est pas retenu.",
+    "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
+    "Le dossier ne repose que sur 3 articles lus (L'Alsace, France 3, franceinfo)."
+  ],
+  "synthese": {
+    "decision": "Selon franceinfo, l’enseignant d’un lycée non nommé du secteur d’Orange a été mis en examen dans le cadre d’une information judiciaire ouverte pour des faits présumés de viols, d’agressions sexuelles et de tentative d’agression sexuelle ; le parquet de Carpentras l’a annoncé le 2 juillet 2026 (franceinfo situe l’interpellation et la mise en examen le 1er juillet ; L’Alsace et France 3 parlent d’une présentation au parquet le jeudi : la date exacte de la mise en examen n’est pas établie)."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (L'Alsace) : Après avoir recueilli les témoignages de plusieurs victimes présumées qui ont dénoncé des faits qui auraient été commis entre 2003 et 2026, le parquet a ouvert une information judiciaire « notamment en vue d'identifier d'éventuelles victimes supplémentaires ».",
+      "acteur": "parquet de Carpentras",
+      "qualite": "propos rapportés par L'Alsace",
+      "date": "2026-07-02",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "objet de l'information judiciaire ouverte",
+      "citations": [
+        {
+          "texte": "notamment en vue d'identifier d'éventuelles victimes supplémentaires",
+          "pour": "objet de l'information judiciaire ouverte"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par L'Alsace. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "L'Alsace",
+        "url": "https://www.lalsace.fr/faits-divers-justice/2026/07/02/un-enseignant-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-mineurs",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "Annoncée le 2 juillet 2026 · parquet de Carpentras",
+      "cat": "blue",
+      "texte": "Selon franceinfo, l’enseignant d’un lycée non nommé du secteur d’Orange a été mis en examen dans le cadre d’une information judiciaire ouverte pour des faits présumés de viols, d’agressions sexuelles et de tentative d’agression sexuelle ; le parquet de Carpentras l’a annoncé le 2 juillet 2026 (franceinfo situe l’interpellation et la mise en examen le 1er juillet ; L’Alsace et France 3 parlent d’une présentation au parquet le jeudi : la date exacte de la mise en examen n’est pas établie)."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Après la mise en examen, le juge des libertés et de la détention a ordonné un contrôle judiciaire, alors que le parquet avait requis la détention provisoire (franceinfo ; France 3)."
+      ]
+    }
+  }
+}

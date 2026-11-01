@@ -1,0 +1,339 @@
+{
+  "etat_actuel": [
+    "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, le parent d'élève de Lucenay a été mis en examen le 31 janvier 2025 pour viols et agressions sexuelles sur mineurs de moins de 15 ans, entre autres chefs, et placé en détention provisoire ; une mise en examen supplétive a été réalisée le 10 avril 2026, visant des victimes supplémentaires."
+  ],
+  "appel": false,
+  "faits": "Selon Le Progrès, un parent d'élève de Lucenay est en détention provisoire depuis janvier 2025 pour des viols sur mineurs de moins de 15 ans ; il a été à nouveau mis en examen en avril 2026. Selon la procureure, l'homme a ciblé des garçons scolarisés dans la même école, de la maternelle à l'école élémentaire, notamment lors de soirées pyjamas organisées à son domicile.",
+  "deroule": [
+    {
+      "date": "2024-12",
+      "date_nature": "approximative",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Progrès, l'homme a été arrêté puis placé en garde à vue en décembre 2024.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-01-27",
+      "date_nature": "evenement",
+      "type": "enquete",
+      "acteur": "parquet de Villefranche-sur-Saône",
+      "texte": "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, une information judiciaire a été ouverte le 27 janvier 2025 pour viols et agressions sexuelles sur mineurs de moins de 15 ans et corruption de mineurs.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/un-pere-de-famille-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-34-enfants-ages-de-2-a-9-ans-dans-le-rhone-30-04-2026-D4KKMNA3VZEURMLFBP7Q7HKAAI.php",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "BFMTV",
+          "url": "https://www.bfmtv.com/lyon/rhone-un-parent-d-eleve-en-detention-provisoire-pour-des-faits-de-viols-et-agressions-sexuelles-a-lucenay_AN-202503130373.html",
+          "publie_le": "2025-03-13",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-01-31",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "juge d'instruction",
+      "texte": "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, le parent d'élève a été présenté à un juge d'instruction le 31 janvier 2025 et mis en examen, entre autres pour viols et agressions sexuelles sur mineurs de moins de 15 ans.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/un-pere-de-famille-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-34-enfants-ages-de-2-a-9-ans-dans-le-rhone-30-04-2026-D4KKMNA3VZEURMLFBP7Q7HKAAI.php",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Progrès",
+          "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+          "publie_le": "2026-04-30",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+          "publie_le": "2026-04-30",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-01-31",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": "parquet de Villefranche-sur-Saône",
+      "texte": "Selon le parquet de Villefranche-sur-Saône, un parent d'élève de l'école Robert Doisneau de Lucenay (Rhône) a été placé en détention provisoire le 31 janvier dernier pour des faits de viols et d'agressions sexuelles sur mineurs.",
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/lyon/rhone-un-parent-d-eleve-en-detention-provisoire-pour-des-faits-de-viols-et-agressions-sexuelles-a-lucenay_AN-202503130373.html",
+        "publie_le": "2025-03-13",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/03/13/un-parent-d-eleve-suspecte-de-viols-et-d-agressions-sexuelles-sur-plusieurs-enfants",
+          "publie_le": "2025-03-13",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "mesure_etablissement",
+      "acteur": "école primaire de Lucenay",
+      "texte": "Selon le parquet de Villefranche-sur-Saône, l'école primaire de Lucenay a accueilli une cellule de soutien et d'écoute déployée en mars 2025.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-03",
+      "date_nature": "approximative",
+      "type": "mesure_collectivite",
+      "acteur": "Unité d'accueil pédiatrique des enfants en danger (UAPED)",
+      "texte": "Selon Le Progrès, dès mars 2025, les élèves ont pu bénéficier d'une prise en charge pluridisciplinaire grâce à l'UAPED, structure rattachée aux Hôpitaux Nord-Ouest de Villefranche-sur-Saône.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-04-10",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "juge d'instruction",
+      "texte": "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, une mise en examen supplétive a été réalisée le 10 avril 2026, après un réquisitoire supplétif du 4 février 2026. Selon Le Progrès, elle vise des victimes supplémentaires.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/un-pere-de-famille-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-34-enfants-ages-de-2-a-9-ans-dans-le-rhone-30-04-2026-D4KKMNA3VZEURMLFBP7Q7HKAAI.php",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Progrès",
+          "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+          "publie_le": "2026-04-30",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Le Dauphiné Libéré, des plaintes avaient fini par être déposées après que certains enfants ont commencé à évoquer les agissements du mis en cause auprès de leurs parents.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Progrès",
+          "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+          "publie_le": "2026-04-30",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "juge d'instruction",
+      "texte": "Selon Le Progrès, l'association d'aide aux victimes Tandem a été saisie par le juge d'instruction pour accompagner les familles des victimes par ses psychologues et ses juristes et les orienter vers l'Uaped.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etat",
+      "acteur": "parquet de Villefranche-sur-Saône",
+      "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : le parquet de Villefranche-sur-Saône indique qu'une réunion d'information rassemblant les familles, la procureure et la juge d'instruction aura lieu dans les prochaines semaines.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+          "publie_le": "2026-04-30",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "communication_parquet",
+      "acteur": "parquet de Villefranche-sur-Saône",
+      "texte": "Selon Le Progrès, les familles des victimes supplémentaires découvertes, qu'elles résident à Lucenay ou hors du Rhône, ont toutes été informées par le parquet de Villefranche-sur-Saône.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Dauphiné Libéré",
+          "url": "https://www.ledauphine.com/faits-divers-justice/2025/03/13/un-parent-d-eleve-suspecte-de-viols-et-d-agressions-sexuelles-sur-plusieurs-enfants",
+          "publie_le": "2025-03-13",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 5 articles lus (Le Progrès, Le Dauphiné Libéré ×2, BFMTV, Le Parisien)."
+  ],
+  "synthese": {
+    "decision": "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, le parent d'élève de Lucenay a été mis en examen le 31 janvier 2025 pour viols et agressions sexuelles sur mineurs de moins de 15 ans, entre autres chefs, et placé en détention provisoire ; une mise en examen supplétive a été réalisée le 10 avril 2026, visant des victimes supplémentaires."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Le Progrès) : la procureure précise que cette mise en examen supplétive d'avril s'ajoute à celle de janvier 2025 et concerne des victimes supplémentaires.",
+      "acteur": "Laetitia Francart, procureure",
+      "qualite": "propos rapportés par Le Progrès",
+      "date": "2026-04-30",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la portée de la nouvelle mise en examen",
+      "citations": [
+        {
+          "texte": "vise des victimes supplémentaires",
+          "pour": "la portée de la nouvelle mise en examen"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Progrès. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Le Progrès) : Tous les enfants n'ont « pas été victimes des mêmes faits », précise le parquet.",
+      "acteur": "Parquet de Villefranche-sur-Saône",
+      "qualite": "propos rapportés par Le Progrès",
+      "date": "2026-04-30",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "les faits subis par les enfants",
+      "citations": [
+        {
+          "texte": "pas été victimes des mêmes faits",
+          "pour": "les faits subis par les enfants"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Progrès. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Le Progrès) : Le parquet de Villefranche-sur-Saône indique qu'une réunion d'information aura lieu « dans les prochaines semaines », rassemblant les familles, la procureure et la juge d'instruction.",
+      "acteur": "Parquet de Villefranche-sur-Saône",
+      "qualite": "propos rapportés par Le Progrès",
+      "date": "2026-04-30",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la réunion d'information à venir",
+      "citations": [
+        {
+          "texte": "dans les prochaines semaines",
+          "pour": "la réunion d'information à venir"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Progrès. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Progrès",
+        "url": "https://www.leprogres.fr/faits-divers-justice/2026/04/30/127-videos-et-197-photos-34-mineurs-victimes-du-parent-predateur-de-lucenay",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Laetitia Francart, procureure de la République de Villefranche-sur-Saône",
+      "qualite": "propos rapportés par Le Dauphiné Libéré",
+      "date": "2026-04-30",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la nature des infractions subies par les mineurs",
+      "citations": [
+        {
+          "texte": "Tous les mineurs ne sont pas victimes des mêmes infractions",
+          "pour": "la nature des infractions subies par les mineurs"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2026/04/29/un-homme-ecroue-pour-viols-sur-mineurs-aurait-fait-34-victimes-de-3-a-9-ans",
+        "publie_le": "2026-04-30",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen, puis mise en examen supplétive",
+      "meta": "31 janvier 2025 · 10 avril 2026 · Juge d'instruction",
+      "cat": "blue",
+      "texte": "Selon Le Parisien, qui cite la procureure de Villefranche-sur-Saône, le parent d'élève de Lucenay a été mis en examen le 31 janvier 2025 pour viols et agressions sexuelles sur mineurs de moins de 15 ans, entre autres chefs, et placé en détention provisoire ; une mise en examen supplétive a été réalisée le 10 avril 2026, visant des victimes supplémentaires."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon le parquet de Villefranche-sur-Saône, l'école primaire de Lucenay a accueilli une cellule de soutien et d'écoute déployée en mars 2025.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Le Progrès, dès mars 2025, les élèves ont pu bénéficier d'une prise en charge pluridisciplinaire grâce à l'UAPED, structure rattachée aux Hôpitaux Nord-Ouest de Villefranche-sur-Saône."
+      ]
+    }
+  }
+}

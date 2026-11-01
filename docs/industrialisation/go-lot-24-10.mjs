@@ -12,7 +12,7 @@
 //   node --env-file=.env.local docs/industrialisation/go-lot-24-10.mjs [ID …]           # plan (aucune écriture)
 //   node --env-file=.env.local docs/industrialisation/go-lot-24-10.mjs [ID …] --ecrire
 // =====================================================================
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { connecter } from '../../scripts/lib/neon.mjs';
 import { dossierGeneree, dossierFiche, hashDossier, payloadFiche } from '../../scripts/lib/fiche-page.mjs';
@@ -26,9 +26,9 @@ const LOT = autorisees._lot ?? 'publication';
 // Date du GO (défaut : 24/10/2026, lot historique) ; `_cartes` : changements de CARTE couverts par le même GO (id → état) ; `_dates_sources` : dates de parution lues sur la page (id → [{url, date}]).
 const DATE = autorisees._date ?? '24/10/2026';
 const CARTES = autorisees._cartes ?? {}, DATES_SOURCES = autorisees._dates_sources ?? {};
-delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources; delete autorisees._cartes_seules;
+delete autorisees._note; delete autorisees._lot; delete autorisees._date; delete autorisees._cartes; delete autorisees._dates_sources; delete autorisees._cartes_seules; delete autorisees._hub_avant;
 const demandes = A.filter((a) => !a.startsWith('--'));
-const ids = (demandes.length ? demandes : Object.keys(autorisees)).filter((id) => id !== 'FR-2026-0115'); // Tarnos : approuvée par clic Telegram (af7a64e7)
+const ids = (demandes.length ? demandes : Object.keys(autorisees)).filter((id) => id !== 'FR-2026-0115' || autorisees['FR-2026-0115']); // Tarnos : approuvée par clic Telegram (af7a64e7) ; un manifeste qui la porte explicitement (nouvelle empreinte) la couvre
 const ID8 = createHash('sha256').update(LOT === 'publication' ? 'GO-lot-publication-2026-10-24' : `GO-lot-${LOT}`).digest('hex').slice(0, 8);
 const PAR = LOT === 'publication' ? `Adrien (GO de lot du ${DATE}, saisi par l’agent — pas un clic Telegram)` : LOT.startsWith('lot-') ? `Adrien (GO de lot du ${DATE} « ${LOT} », saisi par l’agent — pas un clic Telegram)` : `Adrien (GO de correction du ${DATE} « ${LOT} », saisi par l’agent — pas un clic Telegram)`;
 const cases = new Map(JSON.parse(readFileSync(new URL('../../data/cases.json', import.meta.url), 'utf8')).cases.map((c) => [c.case_id, c]));
@@ -39,7 +39,11 @@ for (const id of ids) {
   // Affaire dont le dossier VIT DÉJÀ dans un Hub approuvé : la fiche individuelle en reprend la rédaction (aucune génération) ; l'approbation porte l'empreinte de CE dossier,
   // celle que la page lit (lib/fiche.ts dossierDe) et que project-evenements compare. Sinon : dossier produit par le générateur.
   const dansHub = dossierFiche(id);
-  const g = dansHub?.hub ? dansHub : dossierGeneree(id);
+  let g = dansHub?.hub ? dansHub : dossierGeneree(id);
+  // Dossier de Hub corrigé : la version finale est suivie dans docs/industrialisation/dossiers-finaux ; elle est écrite dans le Hub par appliquer-hubs-01-11.mjs (étape distincte, après GO).
+  // L'approbation porte l'empreinte de cette version finale, que la page lira une fois appliquée.
+  const finale = new URL(`./dossiers-finaux/${id}.json`, import.meta.url);
+  if (dansHub?.hub && hashDossier(dansHub.d) !== autorisees[id] && existsSync(finale)) { const f = JSON.parse(readFileSync(finale, 'utf8')); if (hashDossier(f) === autorisees[id]) g = { ...dansHub, d: f }; }
   const h = g ? hashDossier(g.d) : null;
   if (h !== autorisees[id]) { console.log(`· ${id} : REFUS — empreinte du dossier local ${h} ≠ autorisée ${autorisees[id]}`); continue; }
   const [k] = await sql`select publication_status::text ps from cases where case_id = ${id}`;

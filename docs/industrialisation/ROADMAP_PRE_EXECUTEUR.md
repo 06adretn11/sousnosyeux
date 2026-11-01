@@ -50,6 +50,14 @@ mentions légales du site en production s’engagent à les retirer. Voir `CORPU
 - le `statut_libelle` du dossier (option de présentation existante) permet d’écrire « classement sans suite rapporté — aucune décision consultée » sans modifier la carte (FR-2026-0024) ; le compte rendu du Conseil de Paris n’a pas été trouvé par son identifiant (186284) : le PDF des débats de mai 2026 du Bulletin municipal officiel a été lu à la place ;
 - `fusionnerPasses` garde la pertinence la plus réservée : un article que le modèle juge « ambigu » à une passe sur deux est écarté (cas Orange/JDD pour Belzunce, article qui ne nomme pas l’école) — comportement voulu.
 
+**Correction groupée après relecture indépendante (1er novembre 2026)** — 58 affaires (32 publiées, 28 candidates, POC-04 et POC-10 comptées une fois) :
+- le gabarit de la page n’affiche pas `faits`, ni `etat_actuel` quand des blocs `situation` ou une `synthese` existent, ni `statut_affiche`, ni `statut_libelle` quand des blocs `situation` existent : un défaut qui ne vit que dans ces champs n’est pas lu par le public (corrigé quand même s’il est réutilisable) ; la page rend aussi les compléments de Neon (`suivre_neon`) ;
+- **corrigé** : l’aperçu de revue disait « aucun fait » / « aucune mesure » pour les dossiers de Hub (le champ `faits` n’existe pas, la suspension n’était pas typée mesure) ; il rend désormais ce que la page affiche (blocs `situation`, synthèse) et n’affirme plus d’absence ; une réaction sans citation (paraphrase seule) est acceptée ;
+- **corrigé** : « Aucune décision rendue » affirmait l’absence de toute décision alors que des décisions de détention, de contrôle judiciaire ou de classement étaient décrites (17 pages publiées) ; le libellé dit « Jugement sur le fond non documenté » (compositeur, test ajouté, données des dossiers corrigés) ;
+- un dossier qui vit dans un Hub pilote est servi tel que le fichier du Hub (aucune barrière d’approbation sur ces quatre Hubs) : le corriger, c’est modifier le Hub ; `promouvoir-fiche.mjs` refuse (à raison) d’écraser un dossier de Hub, `appliquer-hubs-01-11.mjs` est le seul chemin, limité aux lignes autorisées et vérifié contre l’empreinte publique attendue ;
+- `go-lot-24-10.mjs` : le manifeste peut porter une version finale de dossier de Hub (suivie dans `dossiers-finaux/`), Tarnos n’est plus exclue d’office quand le manifeste la porte, `_hub_avant` est ignoré par le plan ;
+- les URL de certaines sources portent un décompte ou un âge dans leur adresse (Le Parisien, Lucenay ; Le Parisien, Voltaire) : seul le nom du média est affiché ; l’adresse reste le lien.
+
 ## 1. Décision directrice
 
 Le système distant ne doit pas être le prochain chantier. Le prochain chantier est de rendre **la production manuelle déterministe, vérifiable et maintenable**.

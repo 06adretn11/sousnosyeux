@@ -1,0 +1,142 @@
+{
+  "etat_actuel": [
+    "Le tribunal correctionnel de Privas a condamné l'enseignant du lycée privé Saint-Denis d'Annonay à 24 mois de prison avec sursis et à une interdiction d'exercer une activité le mettant en lien avec des mineurs, pour avoir téléchargé des images pédopornographiques ; selon Ici, ces faits ont eu lieu en dehors de l'établissement scolaire. Les sources lues ne rapportent pas de faits commis sur des élèves du lycée.",
+    "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+  ],
+  "appel": false,
+  "faits": "Selon Ici, l'enseignant, qui enseignait auprès d'élèves en BTS, a été condamné pour avoir téléchargé des images pédopornographiques sur son ordinateur, en dehors de l'établissement scolaire. Selon Le Dauphiné Libéré, ce sont les méthodes de surveillance mises en place aux États-Unis, dont les résultats sont livrés aux parquets français, qui ont permis de révéler ses activités.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "tribunal correctionnel de Privas",
+      "texte": "Selon Le Dauphiné Libéré, l'enseignant était à la barre du tribunal correctionnel de Privas, mardi 1er juillet.",
+      "source": {
+        "media": "Le Dauphiné Libéré",
+        "url": "https://www.ledauphine.com/faits-divers-justice/2025/07/01/debusque-par-les-americains-ce-professeur-avait-31-000-fichiers-pedopornographiques-sur-son-ordinateur-24-mois-de-prison-avec-sursis",
+        "publie_le": "2025-07-01",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2025-07-01",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Privas",
+      "texte": "Le tribunal correctionnel de Privas a condamné l'enseignant du lycée privé Saint-Denis d'Annonay à 24 mois de prison avec sursis et à une interdiction d'exercer une activité le mettant en lien avec des mineurs, pour avoir téléchargé des images pédopornographiques (selon Ici, en dehors de l'établissement scolaire).",
+      "source": {
+        "media": "Ici",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+        "publie_le": "2025-07-02",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Ici, un dispositif d'écoute et d'accompagnement a été mis en place pour les élèves, familles et personnels qui en ressentiraient le besoin.",
+      "source": {
+        "media": "Ici",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+        "publie_le": "2025-07-02",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etat",
+      "acteur": "Éducation nationale",
+      "texte": "Selon Ici, l'Éducation nationale a suspendu l'enseignant du lycée privé Saint-Denis d'Annonay.",
+      "source": {
+        "media": "Ici",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+        "publie_le": "2025-07-02",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Périmètre : les faits documentés ne correspondent pas à des agressions sexuelles rapportées sur des élèves de l’établissement ; la condamnation porte sur le téléchargement d’images pédopornographiques, hors de l’établissement.",
+    "Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.",
+    "Le dossier ne repose que sur 2 articles lus (Le Dauphiné Libéré, Ici)."
+  ],
+  "synthese": {
+    "decision": "Le tribunal correctionnel de Privas a condamné l'enseignant du lycée privé Saint-Denis d'Annonay à 24 mois de prison avec sursis et à une interdiction d'exercer une activité le mettant en lien avec des mineurs, pour avoir téléchargé des images pédopornographiques ; selon Ici, ces faits ont eu lieu en dehors de l'établissement scolaire. Les sources lues ne rapportent pas de faits commis sur des élèves du lycée.",
+    "ouvert": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (Ici) : Au lendemain de cette condamnation, l’Académie de Grenoble et la direction diocésaine ont rédigé conjointement un communiqué de presse, affirmant \"condamner avec la plus grande fermeté\" les faits révélés.",
+      "acteur": "Académie de Grenoble et direction diocésaine",
+      "qualite": "propos rapportés par Ici",
+      "date": "2025-07-02",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "réaction à la condamnation",
+      "citations": [
+        {
+          "texte": "condamner avec la plus grande fermeté",
+          "pour": "réaction à la condamnation"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Ici. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Ici",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+        "publie_le": "2025-07-02",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Académie de Grenoble et direction diocésaine",
+      "qualite": "propos rapportés par Ici",
+      "date": "2025-07-02",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "réaction à la condamnation et engagement pour la protection des élèves",
+      "citations": [
+        {
+          "texte": "La direction diocésaine, dont dépend l'établissement, prend acte de cette décision rendue par le tribunal correctionnel de Privas. L’académie de Grenoble et le diocèse rappellent leur engagement absolu en faveur de la protection de tous les élèves.",
+          "pour": "réaction à la condamnation et engagement pour la protection des élèves"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Ici. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Ici",
+        "url": "https://www.ici.fr/infos/faits-divers-justice/un-professeur-de-lycee-d-annonay-suspendu-apres-avoir-ete-condamne-pour-telechargement-d-images-pedopornographiques-9422019",
+        "publie_le": "2025-07-02",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "1 juillet 2025 · Tribunal correctionnel de Privas",
+      "cat": "red",
+      "texte": "Le tribunal correctionnel de Privas a condamné l'enseignant du lycée privé Saint-Denis d'Annonay à 24 mois de prison avec sursis et à une interdiction d'exercer une activité le mettant en lien avec des mineurs, pour avoir téléchargé des images pédopornographiques ; selon Ici, ces faits ont eu lieu en dehors de l'établissement scolaire. Les sources lues ne rapportent pas de faits commis sur des élèves du lycée."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Appel et caractère définitif non documentés",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Ici, un dispositif d'écoute et d'accompagnement a été mis en place pour les élèves, familles et personnels qui en ressentiraient le besoin.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon Ici, l'Éducation nationale a suspendu l'enseignant du lycée privé Saint-Denis d'Annonay."
+      ]
+    }
+  },
+  "statut_libelle": "Condamnation (appel non documenté)"
+}

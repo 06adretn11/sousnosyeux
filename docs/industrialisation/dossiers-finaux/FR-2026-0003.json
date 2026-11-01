@@ -1,0 +1,106 @@
+{
+  "etat_actuel": [
+    "Selon Le Monde, le tribunal correctionnel de Paris a condamné l’homme mis en cause à trois ans de prison avec sursis probatoire, avec obligation de soins psychologiques, interdiction de se rendre à l’école et dans la rue des Grands-Champs, et interdiction pendant dix ans d’exercer une activité impliquant des contacts habituels avec des mineurs.",
+    "Appel et caractère définitif non documentés : selon Le Monde, un délai de dix jours pour faire appel était rapporté au jour du jugement ; son exercice reste inconnu et aucun appel n’est rapporté dans les sources lues."
+  ],
+  "appel": false,
+  "faits": "Selon Le Monde, les faits se sont déroulés à l'école maternelle des Grands-Champs, près de la place de la Nation, dans le 20e arrondissement de Paris. Selon Le Monde, plusieurs parents s'étaient inquiétés d'avoir vu, ou d'avoir entendu leurs enfants rapporter avoir vu un homme lié à l’école dans l'établissement à plusieurs reprises, avec des comportements ou propos sexualisés envers leurs enfants.",
+  "deroule": [
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon CNEWS, dans une école maternelle du XXe arrondissement, plusieurs enfants auraient été agressés par un homme lié à l’école.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/faits-divers/2026-03-20/violences-sexuelles-dans-le-periscolaire-paris-trois-hommes-dont-deux",
+        "publie_le": "2026-03-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
+          "publie_le": "2026-03-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-01",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "tribunal correctionnel de Paris",
+      "texte": "Selon Le Monde, le tribunal correctionnel de Paris a ordonné le 1er septembre 2026 que l’audience se tienne à huis clos, contre la volonté des familles des victimes et conformément à la demande du mis en cause.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/10/16/agressions-sexuelles-d-enfants-a-paris-trois-ans-de-prison-avec-sursis-pour-le-compagnon-d-une-institutrice_6795558_3224.html",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-10-16",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Paris",
+      "texte": "Selon Le Monde, le tribunal correctionnel de Paris a condamné l’homme mis en cause à trois ans de prison avec sursis probatoire, avec obligation de soins psychologiques, interdiction de se rendre à l’école et dans la rue des Grands-Champs, et interdiction pendant dix ans d’exercer une activité impliquant des contacts habituels avec des mineurs.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/10/16/agressions-sexuelles-d-enfants-a-paris-trois-ans-de-prison-avec-sursis-pour-le-compagnon-d-une-institutrice_6795558_3224.html",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/paris-75/paris-75020/paris-le-compagnon-dune-institutrice-condamne-a-trois-ans-de-prison-avec-sursis-pour-des-attouchements-sur-deux-enfants-16-10-2026-M4QK4THCFFAUNMLWVBC44EQ2TI.php",
+          "publie_le": "2026-10-16",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": null,
+      "texte": "Selon Le Monde, au jour du jugement, un délai de dix jours pour faire appel de la décision était rapporté.",
+      "source": {
+        "media": "Le Monde",
+        "url": "https://www.lemonde.fr/societe/article/2026/10/16/agressions-sexuelles-d-enfants-a-paris-trois-ans-de-prison-avec-sursis-pour-le-compagnon-d-une-institutrice_6795558_3224.html",
+        "publie_le": "2026-10-16",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Appel et caractère définitif : selon Le Monde, un délai de dix jours pour faire appel était rapporté au jour du jugement ; son exercice reste inconnu et aucun appel n’est rapporté dans les sources lues.",
+    "Le dossier repose sur 4 articles lus (Le Monde, Le Parisien ×2, CNEWS)."
+  ],
+  "synthese": {
+    "decision": "Selon Le Monde, le tribunal correctionnel de Paris a condamné l’homme mis en cause à trois ans de prison avec sursis probatoire, avec obligation de soins psychologiques, interdiction de se rendre à l’école et dans la rue des Grands-Champs, et interdiction pendant dix ans d’exercer une activité impliquant des contacts habituels avec des mineurs.",
+    "ouvert": "Appel et caractère définitif non documentés : selon Le Monde, un délai de dix jours pour faire appel était rapporté au jour du jugement ; son exercice reste inconnu et aucun appel n’est rapporté dans les sources lues."
+  },
+  "reactions": [],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "16 octobre 2026 · Tribunal correctionnel de Paris",
+      "cat": "red",
+      "texte": "Selon Le Monde, le tribunal correctionnel de Paris a condamné l’homme mis en cause à trois ans de prison avec sursis probatoire, avec obligation de soins psychologiques, interdiction de se rendre à l’école et dans la rue des Grands-Champs, et interdiction pendant dix ans d’exercer une activité impliquant des contacts habituels avec des mineurs."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Aucun appel rapporté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "Appel et caractère définitif non documentés : selon Le Monde, un délai de dix jours pour faire appel était rapporté au jour du jugement ; son exercice reste inconnu et aucun appel n’est rapporté dans les sources lues."
+      ]
+    }
+  }
+}

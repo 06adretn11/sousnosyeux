@@ -1,0 +1,683 @@
+{
+  "etat_actuel": [
+    "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité."
+  ],
+  "appel": false,
+  "faits": "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité. Selon Nice-Matin, le mis en cause a reconnu l'agression sexuelle d'une stagiaire du centre de loisirs, mais conteste toute agression de jeunes enfants.",
+  "deroule": [
+    {
+      "date": "2026-02-06",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": "Éducation nationale",
+      "texte": "Selon TF1 Info, un signalement d'un médecin et de l'Éducation nationale a été effectué.",
+      "source": {
+        "media": "TF1 Info",
+        "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+        "publie_le": "2026-02-12",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Nice-Matin",
+          "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+          "publie_le": "2026-10-03",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-02-06",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": "parquet",
+      "texte": "Selon TF1 Info, l'enquête a été ouverte le vendredi 6 février.",
+      "source": {
+        "media": "TF1 Info",
+        "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+        "publie_le": "2026-02-12",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "publie_le": "2026-10-07",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "mairie",
+      "texte": "Selon 20 Minutes, une cellule d'écoute et de soutien psychologique a été mise en place en lien avec les équipes de l'hôpital pour enfants Lenval, pour soutenir les parents et les enfants du centre de loisirs.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+        "publie_le": "2026-02-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "parquet",
+      "texte": "Le parquet a requis le placement en détention du suspect dans le cadre d'une information judiciaire pour viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+        "publie_le": "2026-02-11",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "mairie de Nice",
+      "texte": "Selon TF1 Info, une enquête administrative a été lancée.",
+      "source": {
+        "media": "TF1 Info",
+        "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+        "publie_le": "2026-02-12",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-02-13",
+      "date_nature": "evenement",
+      "type": "enquete",
+      "acteur": "parquet de Nice",
+      "texte": "Le parquet a ouvert une information judiciaire le 13 février 2026 pour viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité, pour des faits commis à Nice entre le 1er septembre 2025 et le 4 février 2026.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+        "publie_le": "2026-10-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "publie_le": "2026-10-08",
+          "acces": "libre"
+        },
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+          "publie_le": "2026-10-02",
+          "acces": "libre"
+        },
+        {
+          "media": "Nice-Matin",
+          "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+          "publie_le": "2026-10-03",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "publie_le": "2026-10-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-03-04",
+      "date_nature": "evenement",
+      "type": "plainte",
+      "acteur": "parents des fillettes",
+      "texte": "Selon Nice-Matin, les parents des fillettes concernées avaient tous déposé plainte, et une quatrième famille avait saisi la justice le 4 mars.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+        "publie_le": "2026-10-03",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "publie_le": "2026-10-08",
+          "acces": "libre"
+        },
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+          "publie_le": "2026-10-02",
+          "acces": "libre"
+        },
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, des enfants auraient été victimes de viols et d'agressions sexuelles au centre de loisirs Terra Amata de Nice.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+        "publie_le": "2026-10-02",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "mairie de Nice",
+      "texte": "La mairie de Nice a licencié l'animateur mis en cause dans le volet judiciaire de l'affaire, après avis du conseil de discipline.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+        "publie_le": "2026-10-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "publie_le": "2026-10-08",
+          "acces": "libre"
+        },
+        {
+          "media": "Nice-Matin",
+          "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+          "publie_le": "2026-10-05",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "publie_le": "2026-10-07",
+          "acces": "libre"
+        },
+        {
+          "media": "Nice-Matin",
+          "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+          "publie_le": "2026-10-03",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mise_en_examen",
+      "acteur": null,
+      "texte": "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+        "publie_le": "2026-10-03",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "publie_le": "2026-10-08",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon Nice-Matin, l'animateur mis en cause est en détention provisoire depuis bientôt huit mois et attend d'être entendu par le juge instructeur.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+        "publie_le": "2026-10-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+          "publie_le": "2026-10-08",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "publie_le": "2026-10-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon Nice-Matin, d'autres plaintes ont suivi au fil des mois, jusqu'à atteindre la dizaine.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+        "publie_le": "2026-10-05",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "contexte",
+      "acteur": "Ville de Nice",
+      "texte": "Selon le procureur de la République de Nice, la Ville de Nice est également constituée partie civile.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+        "publie_le": "2026-10-05",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+          "publie_le": "2026-10-07",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon 20 Minutes, trois plaintes avaient été déposées contre un animateur qui travaillait au sein du centre de loisirs de l'école maternelle Terra Amata.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+        "publie_le": "2026-10-07",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+          "publie_le": "2026-10-02",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, un animateur travaillant dans le centre de loisirs qui accueille hors temps scolaire des élèves de l'école maternelle Terra Amata a été placé en garde à vue.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+        "publie_le": "2026-10-08",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_collectivite",
+      "acteur": "Ville de Nice",
+      "texte": "Selon France 3 Provence-Alpes-Côte d’Azur, la ville de Nice a sanctionné plusieurs agents d’encadrement et de direction de l’enfance et du centre de loisirs (suspensions de deux et trois mois, mise à la retraite anticipée, blâme, rappel à l’ordre).",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/nice-douze-enfants-dun-centre-de-loisirs-concernes-par-lenquete-sur-lanimateur-soupconne-de-viols-et-dagressions-sexuelles-08-10-2026-GQOMWDG5IZBWPKXWXYSJWRR66M.php",
+        "publie_le": "2026-10-08",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+          "publie_le": "2026-10-02",
+          "acces": "libre"
+        },
+        {
+          "media": "TF1 Info",
+          "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+          "publie_le": "2026-02-12",
+          "acces": "libre"
+        },
+        {
+          "media": "20 Minutes",
+          "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+          "publie_le": "2026-02-11",
+          "acces": "libre"
+        },
+        {
+          "media": "Nice-Matin",
+          "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+          "publie_le": "2026-10-03",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 8 articles lus (Le Parisien, 20 Minutes, France 3 Régions, Nice-Matin, TF1 Info)."
+  ],
+  "synthese": {
+    "decision": "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité."
+  },
+  "reactions": [
+    {
+      "acteur": "parquet de Nice",
+      "qualite": "propos rapportés par 20 Minutes",
+      "date": "2026-10-07",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "détention du mis en cause",
+      "citations": [
+        {
+          "texte": "Le mis en cause est toujours détenu",
+          "pour": "détention du mis en cause"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-nice/4252074-20261007-nice-douze-victimes-concernees-accusations-agressions-sexuelles-viols-centre-loisirs",
+        "publie_le": "2026-10-07",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "la mairie de Nice",
+      "qualite": "propos rapportés par France 3 Régions",
+      "date": "2026-10-02",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "déroulement de la procédure disciplinaire",
+      "citations": [
+        {
+          "texte": "le conseil de discipline, réuni en présence d’un magistrat expérimenté, a procédé à un examen approfondi de la situation et de l’ensemble des éléments du dossier",
+          "pour": "déroulement de la procédure disciplinaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+        "publie_le": "2026-10-02",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "la mairie de Nice",
+      "qualite": "propos rapportés par France 3 Régions",
+      "date": "2026-10-02",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "suivi par le maire des préconisations du conseil de discipline",
+      "citations": [
+        {
+          "texte": "Au regard de cet avis, rendu dans le cadre d’une procédure contradictoire et après appréciation circonstanciée des faits, le maire a décidé de suivre les préconisations formulées par le conseil de discipline",
+          "pour": "suivi par le maire des préconisations du conseil de discipline"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+        "publie_le": "2026-10-02",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "la Ville de Nice",
+      "qualite": "propos rapportés par Nice-Matin",
+      "date": "2026-10-05",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "les suites judiciaires",
+      "citations": [
+        {
+          "texte": "Sur le volet judiciaire, il appartient au parquet, au regard des éléments portés à sa connaissance, d’apprécier les suites qu’il estime nécessaires et, le cas échéant, d’engager les procédures qui relèvent de sa compétence",
+          "pour": "les suites judiciaires"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Nice-Matin. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/douze-victimes-sont-aujourd-hui-concernees-l-affaire-de-viols-et-agressions-sexuelles-dans-un-centre-de-loisirs-a-nice-prend-de-l-ampleur-10735367",
+        "publie_le": "2026-10-05",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Julien Darras, avocat de la défense",
+      "qualite": "propos rapportés par Nice-Matin",
+      "date": "2026-10-03",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "position de son client",
+      "citations": [
+        {
+          "texte": "Il ne comprend pas comment autant d’enfants peuvent l’accuser de faits aussi graves alors qu’il a toujours été gentil avec eux, et qu’il a toujours exercé son métier de façon irréprochable",
+          "pour": "position de son client"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Nice-Matin. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+        "publie_le": "2026-10-03",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Nice-Matin) : À ce jour, souligne son conseil, « il n’a pas encore été entendu par le juge d’instruction » .",
+      "acteur": "Julien Darras, avocat de la défense",
+      "qualite": "propos rapportés par Nice-Matin",
+      "date": "2026-10-03",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "état de la procédure",
+      "citations": [
+        {
+          "texte": "il n’a pas encore été entendu par le juge d’instruction",
+          "pour": "état de la procédure"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Nice-Matin. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+        "publie_le": "2026-10-03",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Contexte dans l’article (Nice-Matin) : Il les aurait assurées que « sa main ne tremblerait pas ».",
+      "acteur": "Éric Ciotti, maire de Nice",
+      "qualite": "propos rapportés par Nice-Matin",
+      "date": "2026-10-03",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "assurance donnée aux familles de plaignants",
+      "citations": [
+        {
+          "texte": "sa main ne tremblerait pas",
+          "pour": "assurance donnée aux familles de plaignants"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par Nice-Matin. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Nice-Matin",
+        "url": "https://www.nicematin.com/societe/justice/soupcons-de-viols-et-d-agressions-sexuelles-sur-de-jeunes-enfants-a-nice-une-dizaine-de-plaintes-vise-desormais-l-animateur-de-centre-de-loisirs-incarcere-10732175",
+        "publie_le": "2026-10-03",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "cat": "blue",
+      "texte": "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et agressions sexuelles sur mineur de moins de 15 ans, agression sexuelle sur mineur de plus de 15 ans par personne ayant autorité et harcèlement sexuel par personne ayant autorité."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon 20 Minutes, une cellule d'écoute et de soutien psychologique a été mise en place en lien avec les équipes de l'hôpital pour enfants Lenval, pour soutenir les parents et les enfants du centre de loisirs.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon TF1 Info, une enquête administrative a été lancée."
+      ]
+    }
+  }
+}
