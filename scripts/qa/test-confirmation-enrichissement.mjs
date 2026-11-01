@@ -42,6 +42,11 @@ t('« Publié et vérifié » nomme chaque page actualisée avec son URL (fiche 
   assert.match(m, /Publié et vérifié/); assert.ok(m.includes('fiche FR-2026-0042') && m.includes('Hub paris-11e'));
   assert.ok(m.includes('https://sousnosyeux.org/affaires/fr-2026-0042/') && m.includes('https://sousnosyeux.org/territoires/paris-11e/')); assert.ok(!MAUVAIS.test(m));
 });
+t('lot important (60 cartes, 58 fiches, 4 Hubs) : le message reste sous la limite de 4096 caractères de l’API Telegram, avec décompte et Hubs', () => {
+  const fiches = Array.from({ length: 58 }, (_, i) => `FR-2026-${String(i + 1).padStart(4, '0')}`);
+  const m = texteVerifie({ ids: fiches.slice(0, 60), fiches, hubs: ['paris-11e', 'landes'], site: 'https://sousnosyeux.org' });
+  assert.ok(m.length < 4096 && /58 fiche\(s\)/.test(m) && m.includes('https://sousnosyeux.org/territoires/landes/') && /Publié et vérifié/.test(m));
+});
 t('seul verifier-site (après lecture du site servi) annonce « publié et vérifié » ; le message passe par texteVerifie', () => {
   const v = src('scripts/verifier-site.mjs'); assert.ok(v.includes('texteVerifie({ ids, fiches, hubs, site: SITE, infos })'));
 });
