@@ -41,7 +41,10 @@ export function texteVerifie({ ids = [], fiches = [], hubs = [], site, infos = [
   const tout = [...ids, ...fiches.map((f) => `fiche ${f}`), ...hubs.map((h) => `Hub ${h}`)].join(', ');
   // `infos` : informations validées réellement affichées sur les Hubs vérifiés (ce qui a changé, avec sa portée) — jamais présentées comme propres à une affaire.
   const quoi = infos.length ? `\nInformations validées affichées :\n${infos.map((i) => `• ${esc(i.libelle)}${i.portee === 'territoire' ? ` (portée : ${esc(i.territoire || 'territoire')} — contexte, non propre à une affaire)` : ''}`).join('\n')}` : '';
-  return `🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${site}).${quoi}${pages.length ? `\nPages actualisées :\n${pages.join('\n')}` : ''}`;
+  const complet = `🌐 <b>Publié et vérifié sur le site</b> — ${tout}\nLe site public affiche l’état validé (${site}).${quoi}${pages.length ? `\nPages actualisées :\n${pages.join('\n')}` : ''}`;
+  if (complet.length <= 3800) return complet;
+  // Lot important : l'API Telegram refuse un message de plus de 4096 caractères (la confirmation serait perdue) → décompte, Hubs nommés, pages des fiches sous /affaires/{identifiant}/.
+  return `🌐 <b>Publié et vérifié sur le site</b> — ${ids.length} carte(s), ${fiches.length} fiche(s), ${hubs.length} Hub(s)\nLe site public affiche l’état validé (${site}).${hubs.length ? `\nHubs actualisés :\n${hubs.map((h) => `${site}/territoires/${h}/`).join('\n')}` : ''}${fiches.length ? `\nFiches : ${site}/affaires/{identifiant}/ (${fiches.length} pages lues sur le site servi).` : ''}`;
 }
 
 /** @returns {Promise<boolean>} true si le message est parti */
