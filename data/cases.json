@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-01"
+    "generated_at": "2026-11-02"
   },
   "cases": [
     {
@@ -2423,7 +2423,7 @@
         {
           "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/un-enseignant-de-maternelle-condamne-en-seine-saint-denis-pour-agressions-sexuelles-sur-trois-fillettes-feb57662-2c3a-11f1-9163-025005abf8da",
           "media": "Ouest-France",
-          "publication_date": null,
+          "publication_date": "2026-03-30",
           "source_type": "presse",
           "is_primary": true
         },
@@ -2735,7 +2735,7 @@
         {
           "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/cinq-proces-deja-programmes-dans-l-affaire-du-periscolaire-a-paris-3355093.html",
           "media": "France 3",
-          "publication_date": null,
+          "publication_date": "2026-05-22",
           "source_type": "presse",
           "is_primary": true
         },
