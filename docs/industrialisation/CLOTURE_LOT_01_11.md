@@ -59,6 +59,7 @@ Options, sans choix fait ici : (a) retirer les deux fiches, conformément aux me
 - Transitions ajustées seulement : les fiches sont présentées comme « le contenu le plus abouti du site » ; les Hubs comme « la partie la moins avancée : quatre pages pilotes, encore en construction, couverture et profondeur inégales ».
 - Exemples publics et textes utiles conservés (trois fiches : Collège Jules-Ferry, Centre de loisirs de Cenon, École Titon ; quatre Hubs ; questions et lien e-mail).
 - Aucun nouvel outil ni refonte.
+- **Vérifié sur la page servie** (https://sousnosyeux.org/revue-parents/, après la fusion de la [PR 87](https://github.com/06adretn11/sousnosyeux/pull/87), main `b252804`) : ordre des titres Carte → Fiches → Territoires ; les trois ancres existent et mènent à la bonne section ; les neuf liens internes (méthodologie, carte, trois fiches, quatre Hubs) répondent 200 ; page toujours `noindex`. Sur ordinateur (1024 px) et sur mobile (375 px) : aucun débordement horizontal, l'ancre « les fiches » atterrit sous l'en-tête fixe. Après la fusion, relecture du site servi : 56/56 fiches du lot toujours conformes, 61 cartes affichées, PARIS-001/008/010 et FR-2026-0007 absents (404), dates de parution de POC-02 et POC-09 présentes sur leurs pages.
 
 ## 5. Défauts récurrents et prévention
 
