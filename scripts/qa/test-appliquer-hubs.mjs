@@ -70,11 +70,10 @@ if (existsSync(MAN)) {
   const man = JSON.parse(readFileSync(MAN, 'utf8')); const avant = man._hub_avant ?? {};
   const ids = Object.keys(man).filter((k) => !k.startsWith('_'));
   const hubsReels = Object.fromEntries(readdirSync(new URL('../../data/hub-matiere/', import.meta.url)).filter((f) => f.endsWith('.json')).map((f) => [f, JSON.parse(readFileSync(new URL(`../../data/hub-matiere/${f}`, import.meta.url), 'utf8'))]));
-  t(`lot réel : ${ids.length} lignes — dossier final = empreinte du manifeste = empreinte écrite dans l’aperçu`, () => {
+  t(`lot réel : ${ids.length} lignes — dossier final suivi = empreinte du manifeste (les aperçus peuvent être remplacés par une mise à jour proposée après le GO : ils ne sont pas contrôlés ici)`, () => {
     for (const id of ids) {
       const f = JSON.parse(readFileSync(new URL(`../../docs/industrialisation/dossiers-finaux/${id}.json`, import.meta.url), 'utf8'));
       assert.equal(hashDossier(f), man[id], `${id} : empreinte du dossier final`);
-      assert.ok(readFileSync(new URL(`../../docs/industrialisation/fiches-generees/${id}.md`, import.meta.url), 'utf8').includes('`' + man[id] + '`'), `${id} : l’aperçu porte l’empreinte du manifeste`);
     }
   });
   t('lot réel : toute ligne dont le dossier vit dans un Hub a une empreinte « avant » ; le Hub est encore la version publique attendue (ou déjà la version finale appliquée) — aucun Hub modifié avant le GO', () => {

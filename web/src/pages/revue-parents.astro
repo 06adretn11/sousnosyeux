@@ -50,26 +50,35 @@ const mailto = `mailto:contact@sousnosyeux.org?subject=${encodeURIComponent('Mon
     <p>Pour le détail : la <a href="/methodologie">méthodologie</a>.</p>
 
     <h2>Trois façons de découvrir le site</h2>
+    <p class="mini nav">Sur cette page : <a href="#carte">la carte</a> · <a href="#fiches">les fiches</a> · <a href="#territoires">les territoires</a></p>
 
-    <h3>1. La carte — voir les affaires documentées</h3>
+    <h3 id="carte">1. La carte — voir les affaires documentées</h3>
     <p>Une vue d’ensemble des affaires publiées, avec leur localisation et leur situation judiciaire connue.</p>
     <p><a class="btn" href="/">Ouvrir la carte →</a></p>
 
-    <h3>2. Les territoires — comprendre le contexte local</h3>
-    <p>Des pages qui regroupent les affaires d’un territoire et documentent les réactions publiques, les décisions et les initiatives connues.</p>
+    <h3 id="fiches">2. Les fiches — suivre une affaire dans le temps</h3>
+    <p>
+      Aujourd’hui, ce sont les fiches individuelles qui constituent le contenu le plus abouti du site : le déroulement de l’affaire,
+      les étapes judiciaires, les prises de parole publiques, les sources et les inconnues. Presque chaque affaire de la carte en a une,
+      avec un lien « Fiche → » depuis la liste de la carte.
+    </p>
+    <ul>
+      <li><a href="/affaires/fr-2026-0042/">Collège Jules-Ferry</a></li>
+      <li><a href="/affaires/fr-2026-0114/">Centre de loisirs de Cenon</a></li>
+      <li><a href="/affaires/poc-09/">École Titon</a></li>
+    </ul>
+
+    <h3 id="territoires">3. Les territoires — comprendre le contexte local</h3>
+    <p>
+      Des pages qui regroupent les affaires d’un territoire et documentent les réactions publiques, les décisions et les initiatives connues.
+      C’est la partie la moins avancée : quatre pages pilotes seulement, encore en construction, dont la couverture et la profondeur
+      restent inégales d’un territoire à l’autre.
+    </p>
     <ul>
       <li><a href="/territoires/paris-11e/">Paris 11e</a></li>
       <li><a href="/territoires/bordeaux-gironde/">Bordeaux / Gironde</a></li>
       <li><a href="/territoires/hautes-alpes/">Hautes-Alpes</a></li>
       <li><a href="/territoires/landes/">Landes</a></li>
-    </ul>
-
-    <h3>3. Les fiches — suivre une affaire dans le temps</h3>
-    <p>Le déroulement de chaque affaire, les étapes judiciaires, les prises de parole publiques, les sources et les inconnues.</p>
-    <ul>
-      <li><a href="/affaires/fr-2026-0042/">Collège Jules-Ferry</a></li>
-      <li><a href="/affaires/fr-2026-0114/">Centre de loisirs de Cenon</a></li>
-      <li><a href="/affaires/poc-09/">École Titon</a></li>
     </ul>
 
     <h2>Vos retours</h2>
@@ -88,6 +97,7 @@ const mailto = `mailto:contact@sousnosyeux.org?subject=${encodeURIComponent('Mon
     .btn { display: inline-block; padding: 0.5rem 0.9rem; background: var(--blue); color: #fff !important; border-radius: 4px; font-weight: 700; text-decoration: none; }
     .mini { font-size: 0.8rem; color: var(--muted); margin-left: 6px; }
     .fin { margin: 2rem 0 0; }
-    .prose h3 { margin: 1.4rem 0 0.3rem; }
+    .prose h3 { margin: 1.4rem 0 0.3rem; scroll-margin-top: 4.5rem; }
+    .nav { margin: 0 0 0.5rem; }
   </style>
 </Layout>
