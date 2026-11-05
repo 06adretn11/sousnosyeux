@@ -10,6 +10,7 @@
     "check:projection": "node scripts/qa/check-projection.mjs"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.0"
+    "@neondatabase/serverless": "^1.0.0",
+    "pdfjs-dist": "6.5.438"
   }
 }

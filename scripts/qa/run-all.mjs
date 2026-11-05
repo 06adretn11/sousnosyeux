@@ -39,6 +39,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Sources suivies — publications d’organismes (attribution, rattachement par le texte, mémoire, échecs visibles)',
+    script: 'scripts/qa/test-sources-suivies.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Wording « procès » — audience annoncée ≠ procès tenu',
     script: 'scripts/qa/test-wording-proces.mjs',
     bloquant: true,
