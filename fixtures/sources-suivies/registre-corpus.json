@@ -1,0 +1,32 @@
+{
+ "_meta": {
+  "role": "REGISTRE D'ESSAI — corpus minimal A–H du kit du 05/11/2026, lu tel quel (documents réels, réseau réel). Jamais utilisé en production : le registre de production est data/associations-watchlist.json.",
+  "pourquoi": "Le PV de Tarnos (C) n'est signalé par aucun index suivi : il est déclaré ici comme document, avec son émetteur réel (la Ville)."
+ },
+ "organismes": [
+  { "id": "enfant-bleu", "nom": "L'Enfant Bleu – Enfance Maltraitée", "alias": ["L'Enfant Bleu"], "role": "organisme", "portee": "nationale",
+    "suivi": { "domaines": ["enfantbleu.org"], "pages": [
+      { "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/", "type": "document", "emetteur": "L'Enfant Bleu", "corpus": "A" },
+      { "url": "https://enfantbleu.org/wp-content/uploads/2026/05/CP-Enfant-Bleu_CPC-Periscolaire-Paris-11-2.pdf", "type": "document", "emetteur": "L'Enfant Bleu", "corpus": "B" } ] } },
+  { "id": "ville-tarnos", "nom": "Ville de Tarnos (procès-verbal du conseil municipal)", "role": "emetteur_institutionnel", "portee": "communale:Tarnos",
+    "suivi": { "domaines": ["ville-tarnos.fr"], "pages": [
+      { "url": "https://www.ville-tarnos.fr/wp-content/uploads/2026/07/Proces-Verbal-09-07-2026-1.pdf", "type": "document", "emetteur": "Ville de Tarnos", "corpus": "C" } ] } },
+  { "id": "colosse", "nom": "Colosse aux pieds d'argile", "alias": ["Colosse aux pieds d'argile", "Colosses aux pieds d'argile", "Colosse aux pieds"], "role": "organisme", "portee": "nationale",
+    "suivi": { "domaines": ["colosse.fr"], "pages": [
+      { "url": "https://colosse.fr/questionnaire-sur-les-violences-sexuelles-donner-la-parole-aux-enfants-ne-suffit-pas/", "type": "document", "emetteur": "Colosse aux pieds d'argile", "corpus": "D" } ] } },
+  { "id": "adavem-jp40", "nom": "ADAVEM JP40 (Association d'aide aux victimes et de médiation — Landes)", "alias": ["ADAVEM", "Association d'aide aux victimes et de médiation"], "role": "organisme", "portee": "departementale:40",
+    "suivi": { "domaines": ["adavem40.fr"], "pages": [] } },
+  { "id": "ose-paris", "nom": "OSE — cellule d'écoute parisienne", "alias": ["OSE"], "role": "organisme", "portee": "Paris (cellule)",
+    "suivi": { "domaines": ["ose-france.org"], "pages": [
+      { "url": "https://www.ose-france.org/violences-dans-le-periscolaire-les-professionnels-de-lose-entendus-par-deux-commissions/", "type": "document", "emetteur": "OSE", "corpus": "E" } ] } },
+  { "id": "victaid", "nom": "Vict'Aid — service de l'Institut Don Bosco", "alias": ["Vict'Aid"], "role": "organisme", "portee": "Gironde",
+    "suivi": { "domaines": ["institut-don-bosco.fr"], "filtre": { "inclure": ["vict.?aid"] }, "pages": [
+      { "url": "https://www.institut-don-bosco.fr/victaid-idb-mobilises-pour-les-sinistres-du-porge/", "type": "document", "emetteur": "Institut Don Bosco (Vict'Aid)", "corpus": "F" } ] } },
+  { "id": "innocence-en-danger", "nom": "Innocence en Danger", "alias": ["Innocence en Danger"], "role": "organisme", "portee": "nationale",
+    "suivi": { "domaines": ["innocenceendanger.org"], "pages": [
+      { "url": "https://www.innocenceendanger.org/dossier-periscolaire", "type": "document", "emetteur": "Innocence en Danger", "archive": true, "corpus": "G" } ] } },
+  { "id": "metooecole", "nom": "Collectif MeTooEcole", "alias": ["MeTooEcole"], "role": "organisme", "portee": "nationale",
+    "suivi": { "domaines": ["metooecole.org"], "pages": [
+      { "url": "https://www.metooecole.org/plainte-collective/", "type": "service", "emetteur": "Collectif MeTooEcole", "sans_date_publiee": true, "corpus": "H" } ] } }
+ ]
+}

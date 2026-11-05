@@ -1,0 +1,590 @@
+{
+ "_meta": {
+  "role": "Registre UNIQUE des organismes dont SNY suit les publications PUBLIQUES. Lu par scripts/maintenance-cycle.mjs --sources-suivies (scripts/lib/sources-suivies.mjs). Aucun contact privé, aucun échange, aucun témoignage : uniquement des pages publiques.",
+  "regles": [
+   "Un organisme référencé n'est pas un partenaire.",
+   "Une publication d'organisme documente ce que cet organisme déclare ; elle n'établit ni les faits dénoncés ni une étape judiciaire.",
+   "Le siège d'un organisme ne donne aucune portée territoriale : seul le texte du document rattache à une affaire.",
+   "Un replis (fiche de réseau, page municipale) garde son propre émetteur et son ancienneté.",
+   "Un échec de lecture n'est jamais « aucune actualité »."
+  ],
+  "historique": "Entrées du 09/06/2026 conservées (L'Enfant Bleu, Innocence en Danger, CDP-Enfance, CVM, Une Vie) ; périmètre étendu le 05/11/2026 (kit d'exécution veille associative).",
+  "controle_documentaire": "2026-11-05",
+  "cadences": "index : à chaque cycle quotidien de sny-cycle ; pages de service : relues au plus une fois tous les 7 jours (mémoire source_resolutions)."
+ },
+ "organismes": [
+  {
+   "id": "enfant-bleu",
+   "nom": "L'Enfant Bleu – Enfance Maltraitée",
+   "alias": [
+    "L'Enfant Bleu"
+   ],
+   "description": "Association de protection de l'enfance — soutien aux victimes de maltraitance et d'abus sexuels sur mineurs. Politique de constitution de partie civile dans les procès de violences faites aux enfants.",
+   "url_site": "https://www.enfantbleu.org",
+   "url_actualites": "https://www.enfantbleu.org/actualites",
+   "contact_email": null,
+   "verifie_le": "2026-06-09",
+   "implication_verifiee": true,
+   "implication_detail": "Constituée partie civile dans le procès de l'animateur de l'école maternelle Alphonse-Baudin (Paris 11e), audience du 26 mai 2026. Citation verbatim : «Constituée partie civile, l'association L'Enfant Bleu – Enfance Maltraitée dénonce des défaillances majeures dans la protection des mineurs.»",
+   "implication_source": "ActuMag, 18 mai 2026",
+   "note": "Partie civile confirmée dans le dossier Alphonse-Baudin. url_actualites historique remplacée par les deux index ci-dessous (contrôle du 05/11/2026).",
+   "role": "organisme",
+   "portee": "nationale",
+   "suivi": {
+    "domaines": [
+     "enfantbleu.org"
+    ],
+    "pages": [
+     {
+      "url": "https://enfantbleu.org/category/actualite/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "L'Enfant Bleu",
+      "rss": "https://enfantbleu.org/category/actualite/feed/"
+     },
+     {
+      "url": "https://enfantbleu.org/association/presse/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "L'Enfant Bleu",
+      "externes": true,
+      "note": "communiqués propres + articles de presse référencés (émetteur = le média) : à distinguer"
+     }
+    ]
+   }
+  },
+  {
+   "id": "colosse",
+   "nom": "Colosse aux pieds d'argile",
+   "alias": [
+    "Colosse aux pieds d'argile",
+    "Colosses aux pieds d'argile",
+    "Colosse aux pieds"
+   ],
+   "role": "organisme",
+   "portee": "nationale",
+   "note": "Siège dans les Landes : ne donne aucune portée landaise à une position nationale.",
+   "suivi": {
+    "domaines": [
+     "colosse.fr"
+    ],
+    "filtre": {
+     "exclure": [
+      "recrut",
+      "emploi",
+      "collecte",
+      "\\bdons?\\b",
+      "gala",
+      "course",
+      "trail",
+      "challenge",
+      "soiree",
+      "tombola",
+      "mecenat"
+     ]
+    },
+    "pages": [
+     {
+      "url": "https://colosse.fr/actualites/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "Colosse aux pieds d'argile",
+      "repli_index": "https://colosse.fr/"
+     },
+     {
+      "url": "https://colosse.fr/contact/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Colosse aux pieds d'argile"
+     }
+    ]
+   }
+  },
+  {
+   "id": "adavem-jp40",
+   "nom": "ADAVEM JP40 (Association d'aide aux victimes et de médiation — Landes)",
+   "alias": [
+    "ADAVEM",
+    "Association d'aide aux victimes et de médiation"
+   ],
+   "role": "organisme",
+   "portee": "departementale:40",
+   "note": "Site propre illisible le 05/11/2026 (le domaine ne se résout plus depuis notre lecteur ; erreurs 502 relevées par le kit) ; lecture du contact réussie le 02/11. Aucun fil propre confirmé.",
+   "suivi": {
+    "domaines": [
+     "adavem40.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://adavem40.fr/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "ADAVEM JP40"
+     },
+     {
+      "url": "https://adavem40.fr/adavem40",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "ADAVEM JP40"
+     },
+     {
+      "url": "https://adavem40.fr/contact",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "ADAVEM JP40"
+     },
+     {
+      "url": "https://www.france-victimes.fr/index.php/component/association/?id=67&view=fiche",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "France Victimes (fiche du réseau)",
+      "note": "mise à jour affichée : 01/07/2024 — identité et contact de secours, jamais une preuve d'activité récente"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ose-paris",
+   "nom": "OSE — cellule d'écoute parisienne (violences en milieu scolaire)",
+   "alias": [
+    "OSE"
+   ],
+   "role": "organisme",
+   "portee": "Paris (cellule) ; l'OSE a d'autres pôles, filtrés",
+   "suivi": {
+    "domaines": [
+     "ose-france.org"
+    ],
+    "filtre": {
+     "inclure": [
+      "scolaire",
+      "periscolaire",
+      "cellule",
+      "violences",
+      "ecole"
+     ]
+    },
+    "pages": [
+     {
+      "url": "https://www.ose-france.org/nos-actualites/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "OSE"
+     },
+     {
+      "url": "https://www.ose-france.org/violences-sexuelles-en-milieu-scolaire-lose-met-en-place-une-cellule-decoute-pour-les-familles/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "OSE"
+     },
+     {
+      "url": "https://www.paris.fr/pages/violences-sexuelles-en-milieu-scolaire-a-qui-s-adresser-33352",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "Ville de Paris",
+      "note": "page commune OSE / PAV : lue une seule fois, émise par la Ville"
+     }
+    ]
+   }
+  },
+  {
+   "id": "innocence-en-danger",
+   "nom": "Innocence en Danger",
+   "alias": [
+    "Innocence en Danger"
+   ],
+   "description": "Association de protection des mineurs contre les violences, notamment sexuelles. Suit publiquement les procès de violences sur mineurs.",
+   "url_site": "https://www.innocenceendanger.org",
+   "url_actualites": "https://www.innocenceendanger.org/category/actualites",
+   "contact_email": null,
+   "verifie_le": "2026-06-09",
+   "implication_verifiee": true,
+   "implication_detail": "A publié un communiqué public intitulé «Procès animateur école Alphonse Baudin» avant l'audience du 26 mai 2026 sur son site officiel. Présente l'affaire et rappelle les faits reprochés.",
+   "implication_source": "Site officiel Innocence en Danger, 22 mai 2026",
+   "note": "Implication publique directe confirmée. Le dossier périscolaire se présente comme un état d'archives au printemps 2026 : fraîcheur à qualifier élément par élément.",
+   "role": "organisme",
+   "portee": "nationale",
+   "suivi": {
+    "domaines": [
+     "innocenceendanger.org"
+    ],
+    "pages": [
+     {
+      "url": "https://www.innocenceendanger.org/innocence-en-danger-france",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Innocence en Danger"
+     },
+     {
+      "url": "https://www.innocenceendanger.org/dossier-periscolaire",
+      "type": "document",
+      "cadence": "quotidienne",
+      "emetteur": "Innocence en Danger",
+      "archive": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "fcpe-paris",
+   "nom": "FCPE Paris",
+   "alias": [
+    "FCPE Paris",
+    "FCPE 75"
+   ],
+   "role": "organisme",
+   "portee": "Paris",
+   "note": "Hors première vague de contacts ; publications publiques pertinentes suivies.",
+   "suivi": {
+    "domaines": [
+     "fcpe75.org"
+    ],
+    "pages": [
+     {
+      "url": "https://www.fcpe75.org/rubrique/agir-contre-les-violences/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "FCPE Paris"
+     },
+     {
+      "url": "https://www.fcpe75.org/rubrique/communiques-de-presse-2/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "FCPE Paris"
+     }
+    ]
+   }
+  },
+  {
+   "id": "fcpe-33",
+   "nom": "FCPE de la Gironde",
+   "alias": [
+    "FCPE de la Gironde",
+    "FCPE 33"
+   ],
+   "role": "organisme",
+   "portee": "departementale:33 (l'index général mêle publications nationales et girondines)",
+   "suivi": {
+    "domaines": [
+     "33.fcpe.asso.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://33.fcpe.asso.fr/conseils-aux-parents/communiques-de-la-fcpe-33",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "FCPE de la Gironde"
+     },
+     {
+      "url": "https://33.fcpe.asso.fr/actualites",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "FCPE (index départemental, publications nationales et girondines mêlées)"
+     },
+     {
+      "url": "https://33.fcpe.asso.fr/qui-sommes-nous",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "FCPE de la Gironde"
+     }
+    ]
+   }
+  },
+  {
+   "id": "pav75",
+   "nom": "Paris Aide aux Victimes",
+   "alias": [
+    "Paris Aide aux Victimes"
+   ],
+   "role": "organisme",
+   "portee": "Paris",
+   "note": "Les replis documentent le service, pas les prises de position propres de PAV : leurs textes ne lui sont jamais attribués.",
+   "suivi": {
+    "domaines": [
+     "pav75.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://www.pav75.fr/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Paris Aide aux Victimes"
+     },
+     {
+      "url": "https://www.france-victimes.fr/index.php/component/association/?id=17&view=fiche",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "France Victimes (fiche du réseau)",
+      "note": "mise à jour affichée : 07/04/2026"
+     },
+     {
+      "url": "https://www.paris.fr/pages/violences-sexuelles-en-milieu-scolaire-a-qui-s-adresser-33352",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "Ville de Paris",
+      "note": "page commune OSE / PAV : lue une seule fois, émise par la Ville"
+     }
+    ]
+   }
+  },
+  {
+   "id": "victaid",
+   "nom": "Vict'Aid — service de l'Institut Don Bosco",
+   "alias": [
+    "Vict'Aid"
+   ],
+   "role": "organisme",
+   "portee": "Gironde",
+   "note": "Service de l'Institut Don Bosco, pas une association autonome. Une action après un incendie ne devient pas une affaire SNY.",
+   "suivi": {
+    "domaines": [
+     "institut-don-bosco.fr"
+    ],
+    "filtre": {
+     "inclure": [
+      "vict.?aid"
+     ]
+    },
+    "pages": [
+     {
+      "url": "https://www.institut-don-bosco.fr/actualites/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "Institut Don Bosco (Vict'Aid)",
+      "rss": "https://www.institut-don-bosco.fr/feed/"
+     },
+     {
+      "url": "https://www.institut-don-bosco.fr/etablissement/victaid/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Institut Don Bosco (Vict'Aid)"
+     },
+     {
+      "url": "https://www.france-victimes.fr/index.php/component/association/?id=57&view=fiche",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "France Victimes (fiche du réseau)",
+      "note": "permanences de 2018 : jamais présentées comme actuelles"
+     }
+    ]
+   }
+  },
+  {
+   "id": "mediavic05",
+   "nom": "Médiavic 05",
+   "alias": [
+    "Médiavic"
+   ],
+   "role": "organisme",
+   "portee": "departementale:05",
+   "note": "Aucun fil daté confirmé ; le flux /feed/ du site ne rend que des billets de démonstration (non retenu). Adresses électroniques divergentes entre pages : à vérifier, jamais écraser.",
+   "suivi": {
+    "domaines": [
+     "mediavic05.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://mediavic05.fr/nos_activites",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Médiavic 05"
+     },
+     {
+      "url": "https://mediavic05.fr/nos-missions",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Médiavic 05"
+     },
+     {
+      "url": "https://mediavic05.fr/contact",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Médiavic 05"
+     },
+     {
+      "url": "https://www.france-victimes.fr/index.php/component/association/?id=23&view=fiche",
+      "type": "service",
+      "repli": true,
+      "cadence": "hebdomadaire",
+      "emetteur": "France Victimes (fiche du réseau)",
+      "note": "mise à jour affichée : 02/04/2026"
+     }
+    ]
+   }
+  },
+  {
+   "id": "metooecole",
+   "nom": "Collectif MeTooEcole",
+   "alias": [
+    "MeTooEcole"
+   ],
+   "role": "organisme",
+   "portee": "nationale",
+   "note": "Pas de fil daté identifié. Plainte collective : seule l'introduction publique est lue (aucun formulaire, champ ou réponse). La déclaration d'une démarche ne confirme pas son stade judiciaire. Conditions de reproduction et de liens du site à vérifier avant toute projection publique.",
+   "suivi": {
+    "domaines": [
+     "metooecole.org"
+    ],
+    "pages": [
+     {
+      "url": "https://www.metooecole.org/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Collectif MeTooEcole"
+     },
+     {
+      "url": "https://www.metooecole.org/plainte-collective/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "Collectif MeTooEcole",
+      "sans_date_publiee": true
+     }
+    ]
+   }
+  },
+  {
+   "id": "mouvenfants",
+   "nom": "Mouv'Enfants",
+   "alias": [
+    "Mouv'Enfants"
+   ],
+   "role": "reserve_source_documentaire",
+   "portee": "nationale",
+   "note": "Réserve : source documentaire, ni appui indépendant ni partenaire. Ancien site (sans www) et nouveau site (www) de contenus différents : jamais fusionnés ; relation de migration conservée. Les résultats revendiqués restent attribués.",
+   "suivi": {
+    "domaines": [
+     "mouvenfants.fr"
+    ],
+    "migration": {
+     "ancien": "https://mouvenfants.fr/actualites",
+     "nouveau": "https://www.mouvenfants.fr/",
+     "relation": "le nouveau site est lié depuis l'ancien ; aucune équivalence de contenu démontrée"
+    },
+    "pages": [
+     {
+      "url": "https://mouvenfants.fr/actualites",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "Mouv'Enfants (ancien site)",
+      "rss": "https://mouvenfants.fr/feed/"
+     },
+     {
+      "url": "https://www.mouvenfants.fr/",
+      "type": "service",
+      "cadence": "quotidienne",
+      "emetteur": "Mouv'Enfants (nouveau site)",
+      "note": "site d'une seule page (sections internes, documents PDF hébergés chez un tiers) : aucun index de publications ; le texte de la page est comparé à chaque cycle"
+     }
+    ]
+   }
+  },
+  {
+   "id": "francas33",
+   "nom": "Les Francas de la Gironde",
+   "alias": [
+    "Francas de la Gironde"
+   ],
+   "role": "reserve_acteur_concerne",
+   "portee": "Gironde",
+   "note": "Réserve : dans le contexte de Cenon, acteur concerné et source de sa propre position — pas un appui indépendant aux victimes. Une ancienne page de structure ne prouve pas un mandat de gestion actuel. Portail familles jamais consulté.",
+   "suivi": {
+    "domaines": [
+     "francas33.fr"
+    ],
+    "filtre": {
+     "exclure": [
+      "portail",
+      "famille[s]?-connect",
+      "inscription"
+     ]
+    },
+    "pages": [
+     {
+      "url": "https://www.francas33.fr/",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "Les Francas de la Gironde"
+     }
+    ]
+   }
+  },
+  {
+   "id": "sos-periscolaire",
+   "nom": "SOS Périscolaire",
+   "alias": [
+    "SOS Périscolaire"
+   ],
+   "role": "reserve_source_documentaire",
+   "portee": "inconnue",
+   "note": "Source propre identifiée ; zéro ligne lisible par le lecteur public existant (page application JavaScript). Aucun contact, flux ou contenu ne doit être déduit du titre.",
+   "suivi": {
+    "domaines": [
+     "sosperiscolaire.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://www.sosperiscolaire.fr/",
+      "type": "service",
+      "cadence": "hebdomadaire",
+      "emetteur": "SOS Périscolaire"
+     }
+    ]
+   }
+  },
+  {
+   "id": "couples-et-familles-tarnos",
+   "nom": "« Couples et Familles » (mention du PV municipal de Tarnos du 9 juillet 2026)",
+   "role": "identite_a_confirmer",
+   "portee": "inconnue",
+   "note": "Le PV (page imprimée 2) indique que la réunion des parents du 15/07 « sera régulé[e] par l'association Couples et Familles ». Deux entités homonymes plausibles, aucune confirmée par une source primaire : Couples et Familles des Landes (Dax) et Couples et Familles du Pays Basque (activités signalées avec le centre de loisirs de Tarnos). Aucune URL attribuée ; aucune assimilation.",
+   "source_mention": "https://www.ville-tarnos.fr/wp-content/uploads/2026/07/Proces-Verbal-09-07-2026-1.pdf",
+   "suivi": {
+    "pages": []
+   }
+  },
+  {
+   "id": "cdp-enfance",
+   "nom": "CDP-Enfance",
+   "description": "À préciser",
+   "url_site": null,
+   "url_actualites": null,
+   "contact_email": null,
+   "verifie_le": null,
+   "note": "URL non identifiée — à renseigner après recherche manuelle (entrée historique du 09/06/2026, hors périmètre du kit du 05/11/2026, conservée).",
+   "suivi": {
+    "pages": []
+   }
+  },
+  {
+   "id": "cvm",
+   "nom": "CVM",
+   "description": "À préciser",
+   "url_site": null,
+   "url_actualites": null,
+   "contact_email": null,
+   "verifie_le": null,
+   "note": "URL non identifiée — à renseigner après recherche manuelle (entrée historique du 09/06/2026, hors périmètre du kit du 05/11/2026, conservée).",
+   "suivi": {
+    "pages": []
+   }
+  },
+  {
+   "id": "une-vie",
+   "nom": "Une Vie",
+   "description": "À préciser",
+   "url_site": null,
+   "url_actualites": null,
+   "contact_email": null,
+   "verifie_le": null,
+   "note": "URL non identifiée — à renseigner après recherche manuelle (entrée historique du 09/06/2026, hors périmètre du kit du 05/11/2026, conservée).",
+   "suivi": {
+    "pages": []
+   }
+  }
+ ]
+}

@@ -71,6 +71,12 @@ const ETAT_DU_RAPPORT = A.includes('--etat-du-rapport');
 const val = (flag) => (A.includes(flag) ? A[A.indexOf(flag) + 1] : null);
 const ONLY = val('--case');
 const RAPPORT = val('--rapport');
+// Publications publiques des organismes suivis (data/associations-watchlist.json). Désactivé par défaut : activé par sny-cycle après GO.
+//   --memoire-sources <fichier.json>  mémoire ISOLÉE des essais (jamais la production) · --sources-fixtures <dossier>  documents réels figés
+//   --apercu <fichier.json>           prévisualisation des documents, destinations et messages · --maintenant <ISO>  horloge des essais
+const SOURCES_SUIVIES = A.includes('--sources-suivies');
+const MEMOIRE_SOURCES = val('--memoire-sources');
+const SOURCES_FIXTURES = val('--sources-fixtures');
 // `rules` = déterministe local. Toute autre valeur = modèle OpenRouter.
 // Mesuré sur `docs/industrialisation/gold-set-v1.json` : rules 4/12,
 // gpt-5-nano 9/12. Le défaut reste `rules` tant que la décision n'est pas
@@ -665,6 +671,146 @@ async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, act
     requires_human_review: out.REQUIRES_HUMAN_REVIEW,
     review_reasons: out.review_reasons, rationale: out.RATIONALE,
     suffisante, acte_etabli: acteEtabli,
+  };
+}
+
+// =====================================================================
+// SOURCES SUIVIES (publications publiques d'organismes) — `--sources-suivies`, désactivé par défaut.
+// Registre : data/associations-watchlist.json. Lecture, mémoire et classement : lib/sources-suivies.mjs (aucun modèle).
+//   AFFAIRE               → proposition « déclaration d'organisme » (attribuée, sans état judiciaire, information sans bouton)
+//                           + le titre rejoint la veille de l'affaire : un indice judiciaire n'y est établi que par une preuve de presse
+//   RATTACHEMENT_SUSPENDU → consigné, aucun lien forcé
+//   RESSOURCE / POSITION_GENERALE / SIGNAL_AFFAIRE_POSSIBLE / HORS_PERIMETRE → mémoire documentaire (aucune notification)
+// =====================================================================
+// Une panne de cette étape n'emporte JAMAIS la Maintenance des affaires : elle est dite (sans adresse : journaux CI publics) et le cycle continue.
+if (SOURCES_SUIVIES) {
+  try { await etapeSourcesSuivies(); }
+  catch (e) { F.sources_suivies = { erreur: String(e?.message || e).slice(0, 120) }; console.error(`  ! sources suivies : étape interrompue (${e?.name || 'erreur'}) — maintenance des affaires poursuivie`); }
+}
+
+async function etapeSourcesSuivies() {
+  const S = await import('./lib/sources-suivies.mjs');
+  const { readdirSync } = await import('node:fs');
+  const t1 = Date.now();
+  const registre = S.chargerRegistre(resolve(ROOT, val('--registre') || 'data/associations-watchlist.json'));
+  const memoire = MEMOIRE_SOURCES ? S.memoireFichier(resolve(ROOT, MEMOIRE_SOURCES)) : await S.memoireNeon(sql, { dry: DRY });
+  const maintenant = val('--maintenant') || new Date().toISOString();
+  const lire = SOURCES_FIXTURES ? fixturesLecteur(SOURCES_FIXTURES, S) : S.lireDocument;
+  const lireRss = SOURCES_FIXTURES ? async () => ({ ok: false, motif: 'FIXTURES', items: [] }) : S.lireFlux;
+  const { pages, docs, requetes } = await S.parcourirSources({ registre, memoire, fiches, lire, lireRss, maintenant,
+    // Dépôt public ⇒ journaux CI publics : en CI, aucune adresse ni motif par document, seulement les compteurs de fin d'étape.
+    maxParIndex: Number(val('--max-par-index') || 20), journal: (m) => { if (!process.env.CI) process.stderr.write(m + '\n'); } });
+  const dirHubs = resolve(ROOT, 'data/hub-matiere');
+  const faitsConnus = S.chargerFaitsConnus(readdirSync(dirHubs).filter((f) => f.endsWith('.json')).map((f) => resolve(dirHubs, f)));
+  const alias = S.aliasOrganismes(registre.organismes);
+  const X = { version: S.SOURCES_SUIVIES_VERSION, memoire: memoire.type, urls_lues: requetes, pages: pages.length, documents: docs.length,
+    propositions_nouvelles: 0, propositions_deja_presentes: 0, preuves_complementaires: 0, rattrapages: 0, injectes_veille: 0, par_destination: {}, par_issue: {} };
+  const lignes = [];
+  const parCase = new Map(fiches.map((f) => [f.case_id, f]));
+  const jour = maintenant.slice(0, 10);
+
+  const vusUrl = new Set();
+  for (const d of [...pages, ...docs]) {
+    if (vusUrl.has(d.url)) continue; vusUrl.add(d.url);
+    X.par_issue[d.issue] = (X.par_issue[d.issue] || 0) + 1;
+    if (d.destination && d.destination !== 'INDEX') X.par_destination[d.destination] = (X.par_destination[d.destination] || 0) + 1;
+    const k = S.cleDocument(d.url);
+    const ligne = { url: d.url, organismes: d.organismes || [d.organisme?.id], type: d.type || 'document', issue: d.issue, incident: d.issue === 'ECHEC' ? d.motif : null,
+      dernier_succes: d.dernier_succes || null, nature: d.nature || null, emetteur: d.emetteur || null, origine_presse: d.origine_presse || null,
+      destination: d.destination || null, motif: d.issue === 'ECHEC' ? null : d.motif || null, case_ids: d.case_ids || [], suspendus: d.suspendus || [],
+      publie_le: d.publie_le || null, extraction: d.extraction || d.doc?.extraction || null, caracteres: d.doc?.corps?.length || d.caracteres || null,
+      empreinte: d.empreinte || null, empreinte_precedente: d.empreinte_precedente || null, contacts: d.contacts, rss: d.rss, liens: d.liens,
+      titre: d.doc?.titre || d.titre_index || null, indices_disperses: d.indices_disperses || null, propositions: [] };
+    if (['ECHEC', 'NON_DUE', 'CONNU_RECENT'].includes(d.issue)) { lignes.push(ligne); continue; }
+    if (d.issue === 'INCHANGE') { memoire.toucher(k, maintenant); lignes.push(ligne); continue; }
+    // NOUVEAU / MODIFIE : examen. La mémoire n'est notée qu'APRÈS l'examen (une écriture ratée laisse le document à réexaminer).
+    // Rattachement suspendu (≤ 3 candidates) : AUCUNE proposition ; on dit seulement, pour l'arbitrage, si le document porterait un fait déjà publié.
+    if (d.destination === 'RATTACHEMENT_SUSPENDU' && d.suspendus.length <= 3) {
+      ligne.si_rattache = d.suspendus.map((id) => {
+        const ps = S.passages(S.zonePertinente(d.doc, d.organisme), parCase.get(id), { alias });
+        const comp = ps.length ? S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias }) : null;
+        return { case_id: id, passages: ps, complement: comp ? { type: comp.type, organismes: comp.organismes, media: comp.ref.media, publie_le: comp.ref.publie_le, url: comp.ref.url, texte: comp.ref.texte.slice(0, 300) } : null };
+      });
+    }
+    if (d.destination === 'AFFAIRE') {
+      for (const id of d.case_ids) {
+        const fiche = parCase.get(id);
+        const ps = S.passages(d.zone || d.doc.corps, fiche, { alias });
+        if (!ps.length) { ligne.propositions.push({ case_id: id, issue: 'SANS_PASSAGE_NOMMANT_L_AFFAIRE' }); continue; }
+        const comp = S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias });
+        const ancien = !!d.publie_le && (Date.parse(jour) - Date.parse(d.publie_le)) / 864e5 > 30;
+        const portee = d.organisme?.portee || null;
+        const presse = d.nature === 'ARTICLE_PRESSE_REFERENCE';
+        const emetteur = presse ? d.origine_presse : (d.emetteur || d.organisme?.nom);
+        const limite = [
+          presse ? `Article de presse (${d.origine_presse}) référencé par ${d.organisme?.nom}${d.publie_le ? `, publié le ${d.publie_le}` : ''}.`
+            : `Publication de ${emetteur}${d.publie_le ? ` du ${d.publie_le}` : ' (date de publication non indiquée)'} : elle documente ce que son auteur déclare ; elle n'établit ni les faits dénoncés ni une étape judiciaire.`,
+          d.nature === 'REPRISE_PRESSE' ? `Reprise d'un article de ${d.origine_presse} : une seule origine, aucune corroboration indépendante.` : null,
+          comp ? `${comp.type === 'DEJA_SOURCE' ? 'Source déjà rattachée' : 'Preuve complémentaire'} d'un fait déjà rapporté${comp.ref.media ? ` (${comp.ref.media}${comp.ref.publie_le ? `, ${comp.ref.publie_le}` : ''})` : ''} : pas un nouvel événement.` : null,
+          !comp && ancien ? `Rattrapage documentaire : publication du ${d.publie_le}, découverte par SNY le ${jour} ; à confronter aux sources plus récentes.` : null,
+          d.issue === 'MODIFIE' ? 'Document déjà connu dont le texte a changé : réexamen.' : null,
+        ].filter(Boolean).join(' ');
+        const article = { article_id: 'ART-' + fingerprint(d.url).slice(0, 10), media: emetteur, publication_date: d.publie_le || null, url: d.url, body: d.doc.corps, content_fingerprint: d.empreinte };
+        const fait = { event_type: 'declaration_organisme', nature: d.nature, emetteur, organisme: d.organisme?.id, origine_presse: d.origine_presse || null, portee,
+          evidence: ps.map((p) => p.texte), emplacements: ps.map((p) => p.emplacement), publication_date: d.publie_le || null, event_date: null,
+          complement_de: comp ? { type: comp.type, media: comp.ref.media, url: comp.ref.url, publie_le: comp.ref.publie_le } : null };
+        const declaration = { emetteur, organisme: d.organisme?.id, nature: d.nature, origine_presse: d.origine_presse || null, portee, publie_le: d.publie_le || null,
+          decouvert_le: jour, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien };
+        const prop = {
+          case_id: id, article_id: article.article_id, content_fingerprint: d.empreinte, version: S.SOURCES_SUIVIES_VERSION,
+          CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, statut_propose: null, PROPOSED_CHANGE: 'NO_CHANGE', EVENT_DATE: null,
+          SOURCE_DATE: d.publie_le || null, transition: null, finalite: null, surveillance: [], inconnues: d.publie_le ? [] : ['date de publication non indiquée par la source'],
+          RATIONALE: `SOURCE_SUIVIE ${d.nature} — ${emetteur} · ${ps.map((p) => p.emplacement).join(', ')}`, REQUIRES_HUMAN_REVIEW: true, review_reasons: [],
+          rattachement: 'OK', note_limite: limite, declaration, engine: 'sources-suivies', analysis_action: 'ENRICHMENT', facts: [fait],
+        };
+        let r = { deja_presente: false };
+        if (!DRY) { await assurerArticle(sql, article); r = await enregistrerProposition(sql, prop); }
+        if (r.deja_presente) X.propositions_deja_presentes++; else X.propositions_nouvelles++;
+        if (comp) X.preuves_complementaires++; else if (ancien) X.rattrapages++;
+        ligne.propositions.push({ case_id: id, issue: r.deja_presente ? 'DEJA_PRESENTE' : (DRY ? 'A_ECRIRE (dry-run)' : 'ECRITE'), passages: ps, complement: fait.complement_de, rattrapage: declaration.rattrapage,
+          apercu_telegram: S.apercuInformation({ etablissement: fiche.etablissement, commune: fiche.commune, media: emetteur, publication_date: d.publie_le, url: d.url,
+            avant: fiche.statut_judiciaire, citation: ps[0].texte, limite, emetteur }) });
+        // Un titre qui ÉNONCE un acte judiciaire rejoint la veille de l'affaire (chaîne par claim) : l'acte n'y devient une proposition
+        // d'état que prouvé par une source de presse (recherche Bing, gardes habituelles). Sans acte : aucun claim, aucun coût de modèle.
+        const titre = d.doc.titre || d.titre_index;
+        if (titre && actes(titre).length) {
+          let res = rapport.results.find((x) => x.case_id === id);
+          if (!res) rapport.results.push(res = { case_id: id, query: 'source suivie', new_articles: [] });
+          res.new_articles = [...(res.new_articles || []), { title: titre, published: d.publie_le || null, source_domain: d.url, url: d.url, media: emetteur, via: 'source_suivie' }];
+          X.injectes_veille++;
+        }
+      }
+    }
+    memoire.noterSucces({ doc_key: k, case_ids: d.case_ids || [], titre: String(d.doc?.titre || d.titre_index || '').slice(0, 300), publisher_domain: (() => { try { return new URL(d.url).hostname; } catch { return null; } })(),
+      raw_url: d.url, publisher_url: d.doc?.url_finale || d.url, resolution_method: `${S.METHODE}/${d.destination || 'INDEX'}`, content_fingerprint: d.empreinte, maintenant });
+    lignes.push(ligne);
+  }
+  // Révision documentaire des ressources : contacts divergents entre pages d'un même organisme (signalés, jamais écrasés).
+  X.divergences_contact = S.divergencesContact(pages);
+  X.memoire_ecriture = await memoire.ecrire();
+  X.duree_ms = Date.now() - t1;
+  F.sources_suivies = X;
+  detail.push({ sources_suivies: lignes });
+  if (val('--apercu')) writeFileSync(resolve(ROOT, val('--apercu')), JSON.stringify({ genere_le: new Date().toISOString(), dry_run: DRY, memoire: memoire.type, maintenant, compteurs: X, documents: lignes }, null, 1));
+  console.log(`\n  Sources suivies : ${X.urls_lues} requêtes · ${lignes.length} documents/pages · ${X.propositions_nouvelles} proposition(s) nouvelle(s)${DRY ? ' (non écrites : dry-run)' : ''}`
+    + ` · ${X.preuves_complementaires} preuve(s) complémentaire(s) · issues ${JSON.stringify(X.par_issue)}`);
+}
+
+/** Lecteur des essais : documents RÉELS figés (fixtures) — `--sources-fixtures <dossier>` ; une URL absente rend un échec réseau. */
+function fixturesLecteur(dossier, S) {
+  const idx = JSON.parse(readFileSync(resolve(ROOT, dossier, 'index.json'), 'utf8'));
+  return async (url, { index = null } = {}) => {
+    const e = idx[url];
+    if (!e) return { ok: false, url, motif: 'RESEAU:FIXTURE_ABSENTE' };
+    if (e.echec) return { ok: false, url, statut_http: e.statut_http || null, motif: e.echec };
+    if (e.texte) {
+      const corps = readFileSync(resolve(ROOT, dossier, e.texte), 'utf8');
+      return { ok: corps.length >= 200, url, url_finale: url, nature_fichier: 'pdf', titre: e.titre || corps.split('\n').find((l) => l.length > 8 && !/^\[p\./.test(l)) || '',
+        corps, publie_le: e.publie_le || null, date_entete: S.dateEntete(corps.replace(/^\[p\. \d+\]\n/gm, '')), liens: [], extraction: 'pdf' };
+    }
+    const html = readFileSync(resolve(ROOT, dossier, e.html), 'utf8');
+    const fetchImpl = async () => new Response(html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+    return S.lireDocument(url, { fetchImpl, index });
   };
 }
 

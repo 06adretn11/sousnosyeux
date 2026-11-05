@@ -23,6 +23,7 @@ import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonVala
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr } from './lib/evenement-institutionnel.mjs';
 import { pagesSiValide } from './lib/destinations.mjs';
+import { apercuInformation } from './lib/sources-suivies.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -57,7 +58,7 @@ async function charger(cle) {
   const r = await sql`
     select p.proposal_id, p.case_id, p.statut_avant::text avant, p.statut_propose::text apres,
            p.event_date::text ed, c.statut_judiciaire::text courant,
-           p.analysis_action, p.facts, p.decision::text decision, p.payload->>'rattachement' rat, p.payload->>'note_limite' limite,
+           p.analysis_action, p.facts, p.decision::text decision, p.payload->>'rattachement' rat, p.payload->>'note_limite' limite, p.payload->'declaration' decl,
            c.etablissement, c.commune, a.media, a.publication_date, a.publication_date::text pd, a.url
       from state_proposals p
       join cases c using (case_id)
@@ -111,6 +112,9 @@ async function envoyer(text, reply_markup) {
 async function info(cle) {
   const p = await charger(cle);
   const q = citation(p);
+  // Publication d'un organisme suivi (maintenance-cycle --sources-suivies) : information sans bouton, texte commun avec l'aperçu des essais.
+  if (p.decl) return envoyer(apercuInformation({ etablissement: p.etablissement, commune: p.commune, media: p.media, publication_date: p.publication_date, url: p.url,
+    avant: p.avant, citation: q, limite: p.limite, emetteur: p.decl.emetteur }));
   const corps = p.analysis_action === 'STATE_CHANGE'
     ? `Évolution évoquée, mais la source ne l’établit pas assez : aucun changement proposé (état : ${esc(p.avant)}).`
     : `Nouvel article traité.\nAucun changement de la fiche (état : ${esc(p.avant)}).`;
@@ -450,7 +454,7 @@ async function clicEtat(cb, d, cle) {
 async function notifier(max = 10) {
   const rows = await sql`
     select left(p.proposal_id::text, 8) k, p.proposal_id::text pid, p.analysis_action aa,
-           p.statut_propose::text ap, p.facts
+           p.statut_propose::text ap, p.facts, (p.payload ? 'declaration') decl
       from state_proposals p
      where p.decision is null
        and not exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text)
@@ -462,7 +466,8 @@ async function notifier(max = 10) {
     if (!utile) { bruit++; continue; } // déchet technique : jamais envoyé, réexaminé au prochain cycle sans coût
     let mid;
     try {
-      mid = r.aa === 'STATE_CHANGE' && r.ap ? await decision(r.k)
+      mid = r.decl ? await info(r.k) // publication d'organisme suivi : information, jamais une décision
+        : r.aa === 'STATE_CHANGE' && r.ap ? await decision(r.k)
         : r.aa === 'ENRICHMENT' ? await decisionInstitutionnelle(r.k) // décision si une mesure d'institution est établie, sinon information
         : await info(r.k);
     } catch (e) {
