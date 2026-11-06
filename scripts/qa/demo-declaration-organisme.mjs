@@ -74,7 +74,7 @@ try {
   assert.ok(h1.includes(AVANT_T.apres) && !h1.includes(AVANT_T.avant), 'Hub : inconnue transversale ajustée');
   assert.ok(!h1.includes(AVANT_D.avant), 'Hub : la phrase obsolète du dossier a disparu aussi');
   assert.ok(f1.includes(AUTRE_INCONNUE) && h1.includes(AUTRE_INCONNUE), 'les autres inconnues restent');
-  assert.ok(f1.includes('non confirmée indépendamment') && f1.includes('ne précise pas la procédure visée'), 'limites d’attribution conservées dans le rendu');
+  assert.ok(f1.includes('Cette déclaration n’est pas confirmée par une autre source consultée.') && f1.includes('ni la procédure visée') && !/ouverte par/.test(f1), 'limites d’attribution conservées dans le rendu');
   rapport.accepte = { fiche: true, hub: true, inconnues_ajustees: FAIT.ajustements_inconnues, extrait_fiche: f1.slice(Math.max(0, f1.indexOf(LIBELLE) - 160), f1.indexOf(LIBELLE) + LIBELLE.length + 120), extrait_hub: h1.slice(Math.max(0, h1.indexOf(LIBELLE) - 160), h1.indexOf(LIBELLE) + LIBELLE.length + 120) };
 
   // Scénario 2 : HOLD sur l'affaire → matière vide → aucune page ne change.

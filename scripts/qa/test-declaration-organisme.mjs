@@ -52,7 +52,7 @@ await t('UN fait décidable : acteur = l\'organisme, libellé FERMÉ « Selon L\
   assert.equal(faits.length, 1); const f = faits[0];
   assert.equal(f.mesure, 'declaration_partie_civile'); assert.equal(f.acteur, "L'Enfant Bleu"); assert.equal(f.portee, 'établissement');
   assert.equal(f.event_date, null); assert.equal(f.event_period, null); assert.equal(f.publication_date, PUB_A);
-  assert.equal(f.libelle_public, 'Selon L’Enfant Bleu, l’association s’est constituée partie civile dans l’affaire de École maternelle Alphonse-Baudin (Paris 11e), ouverte par la suspension d’un animateur en avril 2025 ; la publication ne précise pas la procédure visée. Déclaration de l’association, non confirmée indépendamment.');
+  assert.equal(f.libelle_public, 'Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.');
   assert.ok(A.corps.includes(f.evidence[0]), 'citation littérale');
 });
 await t('issue favorable préservée : le libellé ne dit ni jugement, ni appel, ni stade, ni culpabilité ; aucun nom ni nombre d\'enfants', () => {
@@ -62,9 +62,9 @@ await t('issue favorable préservée : le libellé ne dit ni jugement, ni appel,
 await t('la phrase sur la Ville de Paris (Convention citoyenne) n\'est pas un fait de POC-05 : aucun fait structuré pour elle', () => {
   assert.equal(faits.length, 1); assert.ok(!faits.some((f) => /Convention citoyenne/.test(JSON.stringify(f))));
 });
-await t('PORTÉE EXPLICITE : le libellé nomme le contexte attesté (école + suspension d’un animateur en avril 2025), ne dit pas « dans cette affaire » seul, n’associe pas la démarche au jugement', () => {
+await t('PORTÉE EXPLICITE : le libellé nomme le contexte attesté (école + suspension d’un animateur en avril 2025), ne dit pas « dans cette affaire » seul, n’associe pas la démarche au jugement ni ne suggère l’ouverture d’une procédure', () => {
   const l = faits[0].libelle_public;
-  assert.match(l, /dans l’affaire de École maternelle Alphonse-Baudin \(Paris 11e\), ouverte par la suspension d’un animateur en avril 2025/); assert.match(l, /ne précise pas la procédure visée/);
+  assert.match(l, /revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin \(Paris 11e\)/); assert.match(l, /sans préciser la date de cette démarche ni la procédure visée/); assert.doesNotMatch(l, /ouverte|ouverture|ouvert/);
   assert.equal(faits[0].contexte_atteste.mois, '2025-04'); assert.ok(contexte.dates.get('POC-05')[0].startsWith('2025-04'), 'origine de la chronologie de POC-05 = avril 2025');
 });
 await t('ancrage de la portée : mois absent, mois d’une ÉTAPE ultérieure, ou chronologie plus étroite que la source → aucun fait (reste une information)', () => {
@@ -82,8 +82,8 @@ await t('INCONNUE ajustée, portion STRICTE : deux phrases exactes du Hub Paris 
   const dossier = lire('data/hub-matiere/paris-11e.json'); const d = aj.find((a) => a.cible === 'dossier'), tr = aj.find((a) => a.cible === 'transversale');
   assert.ok(dossier.dossiers['POC-05'].inconnues.includes(d.avant) && dossier.inconnues_transversales.includes(tr.avant), 'texte AVANT exact présent dans le fichier');
   assert.equal(d.avant, "Une constitution de partie civile d'associations est évoquée ailleurs ; elle n'est pas confirmée par les articles relus.");
-  assert.equal(d.apres, 'Une constitution de partie civile est déclarée par L’Enfant Bleu dans une publication du 21 juillet 2026 (déclaration non confirmée indépendamment ; procédure concernée non précisée) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.');
-  assert.match(tr.apres, /^Une constitution de partie civile de l’association L['’]Enfant Bleu est évoquée dans d’autres sources ; le communiqué \(PDF\) n’a pas pu être relu : seule la déclaration de l’association du 21 juillet 2026 est reprise \(attribuée, sans confirmation indépendante\)\.$/);
+  assert.equal(d.apres, 'Une constitution de partie civile est déclarée par L’Enfant Bleu dans une publication du 21 juillet 2026 (déclaration non confirmée par une autre source consultée ; date de la démarche et procédure non précisées) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.');
+  assert.match(tr.apres, /^Une constitution de partie civile de l’association L['’]Enfant Bleu est évoquée dans d’autres sources ; le communiqué \(PDF\) n’a pas pu être relu : seule la déclaration de l’association du 21 juillet 2026 est reprise \(attribuée, non confirmée par une autre source consultée\)\.$/);
   assert.ok(![d.avant, tr.avant].some((x) => x === 'Les motifs ne sont connus que par la presse : le jugement n’est pas public.'));
   assert.ok(dossier.dossiers['POC-05'].inconnues.filter((x) => x !== d.avant).length === 4, 'les 4 autres inconnues du dossier restent');
 });
@@ -122,7 +122,7 @@ await t('règle GÉNÉRALE (aucune exception d\'organisme, d\'URL ou d\'affaire)
   const p2 = passages(c.zone, f2[0], { alias });
   const ctxT = { dates: new Map([['T-9', ['2026-03-12', '2026-06-01']]]), dossiers: new Map(), transversales: new Map() };
   const f = faitsDeclares({ passages: p2, organisme: org('colosse'), emetteur: "Colosse aux pieds d'argile", nature: 'PUBLICATION_PROPRE', publie_le: '2026-10-01', fiche: f2[0], contexte: ctxT });
-  assert.equal(f.length, 1); assert.match(f[0].libelle_public, /^Selon Colosse aux pieds d’argile, l’association s’est constituée partie civile dans l’affaire de École maternelle des Tilleuls \(Ville-Test\), datée de mars 2026/);
+  assert.equal(f.length, 1); assert.match(f[0].libelle_public, /^Dans sa publication du 1er octobre 2026, Colosse aux pieds d’argile revient sur une affaire datée de mars 2026 à l’école maternelle des Tilleuls \(Ville-Test\)\./);
   assert.equal(f[0].ajustements_inconnues, undefined, 'aucun dossier : aucune inconnue à ajuster');
 });
 await t('routage d\'un document d\'un AUTRE organisme du corpus (Colosse, 31/08 — position nationale) : aucun fait, aucun traitement par URL', () => {
@@ -149,7 +149,7 @@ const limite = "Publication de L'Enfant Bleu du 2026-07-21 : elle documente ce q
 const message = messageEnrichissement({ etablissement: 'École maternelle Alphonse-Baudin', commune: 'Paris 11e', courant: 'relaxe / non-lieu / classement', media: "L'Enfant Bleu", publication_date: PUB_A, url: A.url }, neufs, false, pages)
   + complementDecision({ decl, limite, publication_date: PUB_A, proposal_id: 'f1daa077-0de6-4c9b-a1b8-b23a68a891e8', information_envoyee_le: '2026-11-06T10:01:58Z' });
 await t('message de décision : contenu exact, passage probant, émetteur, date de publication ≠ date de la démarche, rattachement, limites, pages concernées, 3 actions', () => {
-  for (const s of ['ENRICHISSEMENT PROPOSÉ', 'état judiciaire inchangé (relaxe / non-lieu / classement)', 'Selon L’Enfant Bleu, l’association s’est constituée partie civile dans l’affaire de École maternelle Alphonse-Baudin (Paris 11e), ouverte par la suspension d’un animateur en avril 2025', 'école Alphonse Baudin', 'Inconnue(s) ajustée(s) si VALIDATE', 'Avant :', 'Après :', 'pour d’autres associations', 'L&#39;Enfant Bleu'.replace('&#39;', "'"),
+  for (const s of ['ENRICHISSEMENT PROPOSÉ', 'état judiciaire inchangé (relaxe / non-lieu / classement)', 'Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e).', 'Cette déclaration n’est pas confirmée par une autre source consultée.', 'école Alphonse Baudin', 'Inconnue(s) ajustée(s) si VALIDATE', 'Avant :', 'Après :', 'pour d’autres associations', 'L&#39;Enfant Bleu'.replace('&#39;', "'"),
     '21/07/2026', 'date non établie', 'Rattachement', 'ne précise ni la procédure ni son étape', 'Pages concernées si VALIDATE', 'fiche POC-05', 'Hub', 'Familles, avocats, syndicats, associations',
     'Suite de l’information du', 'VALIDATE', 'REVIEW', 'REJECT'])
     assert.ok(message.includes(s), `absent : ${s}`);

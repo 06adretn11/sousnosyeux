@@ -381,19 +381,22 @@ const MOIS_ECRITS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juil
 const MOIS_NOMS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const deMois = (m) => (/^[aeiouhéû]/i.test(m) ? `d’${m}` : `de ${m}`);
 const enMois = (m) => `en ${m}`;
+/** « à l’école maternelle X », « au centre de loisirs Y », « à la crèche Z » : le lieu tel que la fiche le nomme, sans exception par établissement. */
+const lieuDe = (etab) => { const e = String(etab || '').trim(); const mot = aplatir(e).split(' ')[0]; const bas = e.charAt(0).toLowerCase() + e.slice(1);
+  return /^(ecole|aire|accueil|ensemble)$/.test(mot) ? `à l’${bas}` : /^(creche|halte|garderie|maison|micro)$/.test(mot) ? `à la ${bas}` : /^(centre|college|lycee|jardin|institut|foyer|service)$/.test(mot) ? `au ${bas}` : `à ${e}`; };
 const dateLongue = (iso) => { const d = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return d ? `${Number(d[3]) === 1 ? '1er' : Number(d[3])} ${MOIS_NOMS[Number(d[2]) - 1]} ${d[1]}` : null; };
 
 const DECLARATIONS = [{
   mesure: 'declaration_partie_civile',
   motif: /\b(?:s'est|se sont|se|nous nous sommes)\s+constitue\w*\s+partie civile\b|\bconstitue\w*\s+partie civile\b/,
-  libelle: ({ nom, etab, commune, contexte }) => `Selon ${nom}, l’association s’est constituée partie civile dans l’affaire de ${etab} (${commune}), ${contexte} ; la publication ne précise pas la procédure visée. Déclaration de l’association, non confirmée indépendamment.`,
+  libelle: ({ nom, etab, commune, contexte, publie }) => `Dans sa publication${publie ? ` du ${publie}` : ''}, ${nom} revient sur ${contexte} ${lieuDe(etab)} (${commune}). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.`,
   // Inconnues du dossier rendues obsolètes (portion STRICTE) : remplacées seulement si le texte actuel est EXACTEMENT celui attendu ; le reste reste intact.
   inconnues: [
     { cible: 'dossier', re: /^Une constitution de partie civile d['’]associations est évoquée ailleurs ; elle n['’]est pas confirmée par les articles relus\.$/,
-      apres: ({ nom, publie }) => `Une constitution de partie civile est déclarée par ${nom} dans une publication du ${publie} (déclaration non confirmée indépendamment ; procédure concernée non précisée) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.` },
+      apres: ({ nom, publie }) => `Une constitution de partie civile est déclarée par ${nom} dans une publication du ${publie} (déclaration non confirmée par une autre source consultée ; date de la démarche et procédure non précisées) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.` },
     { cible: 'transversale', re: /^Une constitution de partie civile de l['’]association (.+?) est évoquée dans d['’]autres sources ; le communiqué \(PDF\) n['’]a pas pu être relu : elle n['’]est donc pas reprise\.$/,
       qui: true,
-      apres: ({ publie, capture }) => `Une constitution de partie civile de l’association ${capture} est évoquée dans d’autres sources ; le communiqué (PDF) n’a pas pu être relu : seule la déclaration de l’association du ${publie} est reprise (attribuée, sans confirmation indépendante).` },
+      apres: ({ publie, capture }) => `Une constitution de partie civile de l’association ${capture} est évoquée dans d’autres sources ; le communiqué (PDF) n’a pas pu être relu : seule la déclaration de l’association du ${publie} est reprise (attribuée, non confirmée par une autre source consultée).` },
   ],
 }];
 
@@ -441,7 +444,7 @@ export function faitsDeclares({ passages: ps, organisme, emetteur, nature, publi
     const idx = MOIS_ECRITS.indexOf(m[1]); const ym = `${m[2]}-${String(idx + 1).padStart(2, '0')}`;
     if (!connues[0].startsWith(ym)) continue;
     const mois = MOIS_NOMS[idx];
-    const ctx = n.includes("suspension d'un animateur") ? `ouverte par la suspension d’un animateur ${enMois(mois)} ${m[2]}` : `datée ${deMois(mois)} ${m[2]}`;
+    const ctx = n.includes("suspension d'un animateur") ? `la suspension d’un animateur ${enMois(mois)} ${m[2]}` : `une affaire datée ${deMois(mois)} ${m[2]}`;
     const nomPublic = nom.replace(/'/g, '’');
     const publie = dateLongue(publie_le);
     // inconnues devenues obsolètes : portion stricte, texte exact seulement
@@ -461,7 +464,7 @@ export function faitsDeclares({ passages: ps, organisme, emetteur, nature, publi
     out.push({ event_type: 'mobilisation', nature: 'mobilisation', mesure: D.mesure, realisation: 'réalisée', portee: 'établissement', acteur: nom, acteur_nomme: nom,
       event_date: null, event_period: null, publication_date: publie_le || null, emetteur, organisme: organisme.id, evidence: [p.texte], emplacements: [p.emplacement],
       contexte_atteste: { mois: ym, ancrage: 'origine de la chronologie de l’affaire' },
-      libelle_public: D.libelle({ nom: nomPublic, etab: fiche.etablissement, commune: fiche.commune, contexte: ctx }),
+      libelle_public: D.libelle({ nom: nomPublic, etab: fiche.etablissement, commune: fiche.commune, contexte: ctx, publie }),
       ...(ajustements.length ? { ajustements_inconnues: ajustements } : {}) });
   }
   return out;
