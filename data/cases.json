@@ -3,11 +3,11 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 62,
+    "total_cases": 63,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-02"
+    "generated_at": "2026-11-06"
   },
   "cases": [
     {
@@ -2311,6 +2311,37 @@
           "url": "https://www.franceinfo.fr/faits-divers/dans-le-vaucluse-un-enseignant-interpelle-et-mis-en-examen-pour-viols-et-agressions-sexuelles-sur-au-moins-sept-personnes-dont-cinq-mineurs_8090678.html",
           "media": "franceinfo",
           "publication_date": "2026-07-02",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0143",
+      "etablissement": "Centre de loisirs Théophile Gautier",
+      "commune": "Courbevoie",
+      "departement": "Hauts-de-Seine",
+      "type_structure": "autre",
+      "role_mis_en_cause": "autre",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "non précisé",
+      "lat": 48.897974,
+      "lng": 2.257057,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.ouest-france.fr/ile-de-france/courbevoie-92400/dans-les-hauts-de-seine-une-mairie-suspend-un-animateur-periscolaire-suspecte-dagressions-sexuelles-sur-des-enfants-fe963826-d84a-11f1-9911-9179baff22e2",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-04",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://actu.fr/ile-de-france/courbevoie_92026/info-actu-paris-suspecte-d-agressions-sexuelles-sur-des-enfants-un-agent-periscolaire-de-courbevoie-suspendu_65007456.html",
+          "media": "actu",
+          "publication_date": "2026-11-03",
           "source_type": "presse",
           "is_primary": false
         }
