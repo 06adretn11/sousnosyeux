@@ -703,6 +703,7 @@ async function etapeSourcesSuivies() {
   const dirHubs = resolve(ROOT, 'data/hub-matiere');
   const faitsConnus = S.chargerFaitsConnus(readdirSync(dirHubs).filter((f) => f.endsWith('.json')).map((f) => resolve(dirHubs, f)));
   const alias = S.aliasOrganismes(registre.organismes);
+  const contexteHub = S.chargerContexteHub(readdirSync(dirHubs).filter((f) => f.endsWith('.json')).map((f) => resolve(dirHubs, f)), resolve(ROOT, 'data/evenements.json'));
   const X = { version: S.SOURCES_SUIVIES_VERSION, memoire: memoire.type, urls_lues: requetes, pages: pages.length, documents: docs.length,
     propositions_nouvelles: 0, propositions_deja_presentes: 0, preuves_complementaires: 0, rattrapages: 0, injectes_veille: 0, par_destination: {}, par_issue: {} };
   const lignes = [];
@@ -757,11 +758,12 @@ async function etapeSourcesSuivies() {
           complement_de: comp ? { type: comp.type, media: comp.ref.media, url: comp.ref.url, publie_le: comp.ref.publie_le } : null };
         // Information DÉCIDABLE : fait structuré du circuit « enrichissement » existant (libellé public fermé, attribué, sans date de démarche inventée).
         // Une preuve complémentaire d'un fait déjà rapporté n'est pas une information nouvelle : elle reste une information sans bouton.
-        const declares = comp ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le });
+        const declares = comp ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le, fiche, contexte: contexteHub });
         const facts = declares.length ? declares : [fait];
         const declaration = { emetteur, organisme: d.organisme?.id, nature: d.nature, origine_presse: d.origine_presse || null, portee, publie_le: d.publie_le || null,
           decouvert_le: jour, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien,
           decidable: declares.length > 0,
+          ...(declares[0]?.ajustements_inconnues ? { ajustements: declares[0].ajustements_inconnues } : {}),
           rattachement_motif: declares.length ? `${d.motif} — rattachement par le texte (établissement, commune et rôle) ; la publication ne précise ni la procédure ni son étape.` : undefined };
         const prop = {
           case_id: id, article_id: article.article_id, content_fingerprint: d.empreinte, version: S.SOURCES_SUIVIES_VERSION,
