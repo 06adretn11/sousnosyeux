@@ -152,7 +152,7 @@ await t('rejeu idempotent', () => assert.deepEqual(extraireReactions(`Parents et
 await t('Telegram : une information déjà consignée/validée ou déjà soumise, ou une source seule, ne produit AUCUN message ; une portée territoire a ses boutons', () => {
   const s = src('scripts/telegram-v0.mjs');
   assert.ok(s.includes('aucune information nouvelle à décider (source seule) : aucun message') && s.includes('même information déjà soumise à décision') && s.includes("q.decision = 'ACCEPT'"));
-  assert.ok(s.includes('messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)), boutonsEtat(cle)'));
+  assert.ok(s.includes('messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)) + complement, boutonsEtat(cle)'));   // + complement : attribution et suite d'une publication d'organisme (vide sinon)
 });
 await t('proposition actionnable : elle NOMME les pages qu’un VALIDATE mettrait à jour (Hub + bloc + adresse, fiche approuvée), calculées comme à la projection ; aucune page → dit', async () => {
   const { pagesSiValide } = await import('../lib/destinations.mjs');

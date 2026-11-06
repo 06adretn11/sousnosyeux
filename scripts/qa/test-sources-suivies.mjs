@@ -142,6 +142,53 @@ await t('preuve complémentaire : un passage qui cite un organisme déjà rappor
   assert.equal(c.type, 'PREUVE_COMPLEMENTAIRE'); assert.equal(c.ref.media, 'Média');
 });
 
+console.log('\n  ÉCHÉANCE DES DOCUMENTS CONNUS');
+await t('document connu : relu au plus 1×/semaine ; sa réapparition dans un index ne repousse JAMAIS l’échéance ; une correction à URL constante est réexaminée à l’échéance', async () => {
+  const { parcourirSources } = await import('../lib/sources-suivies.mjs');
+  const registre = { organismes: [{ id: 'o', nom: 'Organisme Test', suivi: { pages: [] } }], pages: [{ url: 'https://o.example/index/', type: 'index', cadence: 'quotidienne', emetteur: 'O', organismes: ['o'] }] };
+  const DOC = 'https://o.example/un-document-de-test-assez-long/';
+  let version = 'texte initial du document de test sur le recueil de la parole des enfants et la protection de l’enfance dans les écoles et accueils de loisirs.';
+  const lire = async (url) => (url.endsWith('/index/')
+    ? { ok: true, url, url_finale: url, titre: 'Index', corps: 'Index des publications de l’organisme de test, sans autre contenu que la liste des documents publiés ci-dessous pour les essais.', liens: [{ url: DOC, titre: 'Un document' }], extraction: 'paragraphes' }
+    : { ok: true, url, url_finale: url, titre: 'Un document', corps: 'Un document\n\n' + version, publie_le: '2026-10-01', liens: [], extraction: 'paragraphes' });
+  const dir = mkdtempSync(join(tmpdir(), 'sny-ech-')); const m = memoireFichier(join(dir, 'm.json'));
+  const cycle = async (iso) => {
+    const r = await parcourirSources({ registre, memoire: m, fiches: FICHES, lire, lireRss: async () => ({ ok: false, items: [] }), maintenant: iso });
+    for (const d of r.docs) {
+      if (d.issue === 'NOUVEAU' || d.issue === 'MODIFIE') m.noterSucces({ doc_key: cleDocument(d.url), resolution_method: 'SOURCE_SUIVIE/' + d.destination, content_fingerprint: d.empreinte, case_ids: [], maintenant: iso });
+      else if (d.issue === 'INCHANGE') m.toucher(cleDocument(d.url), iso);
+    }
+    return { docs: r.docs.filter((d) => d.url === DOC), requetes: r.requetes };
+  };
+  try {
+    const j0 = await cycle('2026-11-01T10:00:00Z'); assert.equal(j0.docs[0].issue, 'NOUVEAU');
+    const echeance = Date.parse(m.get(cleDocument(DOC)).checked_at) + 7 * 864e5;
+    for (const j of ['2026-11-02T10:00:00Z', '2026-11-04T10:00:00Z', '2026-11-07T10:00:00Z']) {      // l’index relie le document tous les jours
+      const r = await cycle(j); assert.equal(r.docs[0].issue, 'CONNU_RECENT', j); assert.equal(Date.parse(m.get(cleDocument(DOC)).checked_at) + 7 * 864e5, echeance, 'échéance inchangée');
+    }
+    version = version.replace('recueil de la parole', 'recueil des témoignages');   // correction substantielle, MÊME URL
+    const r8 = await cycle('2026-11-08T10:00:00Z'); assert.equal(r8.docs[0].issue, 'MODIFIE', 'réexaminé à l’échéance');
+    assert.equal((await cycle('2026-11-09T10:00:00Z')).docs[0].issue, 'CONNU_RECENT', 'nouvelle échéance = +7 j');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+await t('un document rattaché à une affaire est relu à chaque cycle (continuité de sa proposition) ; un échec conserve le dernier état réussi', async () => {
+  const { parcourirSources } = await import('../lib/sources-suivies.mjs');
+  const DOC = 'https://o.example/rattache-a-une-affaire/';
+  const registre = { organismes: [{ id: 'o', nom: 'O', suivi: { pages: [] } }], pages: [{ url: 'https://o.example/index/', type: 'index', cadence: 'quotidienne', emetteur: 'O', organismes: ['o'] }] };
+  let echec = false;
+  const lire = async (url) => (url.endsWith('/index/') ? { ok: true, url, url_finale: url, titre: 'I', corps: 'Index de test des publications de l’organisme, sans autre contenu que la liste des documents publiés ci-dessous.', liens: [{ url: DOC, titre: 'D' }] }
+    : echec ? { ok: false, url, motif: 'HTTP 502' } : { ok: true, url, url_finale: url, titre: 'D', corps: 'D\n\nUn texte de test suffisamment long pour être lu, sans rapport avec une affaire connue de la base de test.', liens: [] });
+  const dir = mkdtempSync(join(tmpdir(), 'sny-ech2-')); const m = memoireFichier(join(dir, 'm.json'));
+  m.noterSucces({ doc_key: cleDocument(DOC), resolution_method: 'SOURCE_SUIVIE/AFFAIRE', content_fingerprint: 'x', case_ids: ['T-11A'], maintenant: '2026-11-01T10:00:00Z' });
+  try {
+    const r = await parcourirSources({ registre, memoire: m, fiches: FICHES, lire, lireRss: async () => ({ ok: false, items: [] }), maintenant: '2026-11-02T10:00:00Z' });
+    assert.notEqual(r.docs.find((d) => d.url === DOC).issue, 'CONNU_RECENT', 'rattaché : relu le lendemain');
+    echec = true;
+    const r2 = await parcourirSources({ registre, memoire: m, fiches: FICHES, lire, lireRss: async () => ({ ok: false, items: [] }), maintenant: '2026-11-03T10:00:00Z' });
+    assert.equal(r2.docs.find((d) => d.url === DOC).issue, 'ECHEC'); assert.equal(m.get(cleDocument(DOC)).content_fingerprint, 'x', 'dernier état réussi conservé');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 console.log('\n  SORTIES');
 await t('message Telegram : information SANS bouton, attribuée, « aucun changement de la fiche », limite affichée', () => {
   const m = apercuInformation({ etablissement: 'École T', commune: 'Paris 11e', media: 'Association Test', publication_date: '2026-07-21', url: 'https://asso.example/a',

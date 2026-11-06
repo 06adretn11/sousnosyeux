@@ -28,7 +28,7 @@ import { filtrer, detecterTerritoire, aplatir, parserRSS } from './capteurs.mjs'
 import { resoudre } from './resolver.mjs';
 import { jetonsEtab } from './routage-veille.mjs';
 
-export const SOURCES_SUIVIES_VERSION = 'sources-suivies-0.1.0';
+export const SOURCES_SUIVIES_VERSION = 'sources-suivies-0.2.0';
 // Même agent que lirePage (preuve-claim.mjs) : un seul lecteur public, identifiable, sans déguisement.
 export const UA = 'Mozilla/5.0 (compatible; sousnosyeux-watch/1.0)';
 const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
@@ -300,6 +300,8 @@ export function classer({ doc, page, organisme, fiches }) {
   const r = resoudre({ candidate: { title: titre }, index: fiches, corps });
   const ok = (r.detail || []).filter((d) => d.rattachement === 'OK').map((d) => d.case_id);
   const douteux = (r.detail || []).filter((d) => d.rattachement === 'DOUTEUX').map((d) => d.case_id);
+  // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
+  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
@@ -359,6 +361,37 @@ export function passages(corps, fiche, { max = 3, alias = [] } = {}) {
     }
   }
   return [...etab, ...orga, ...(etab.length ? [] : communaux)].slice(0, max);
+}
+
+/**
+ * DÉCLARATIONS d'un organisme sur SA PROPRE action dans une affaire — vocabulaire FERMÉ, libellé public fermé (jamais la phrase de la source).
+ * Une publication d'organisme ne devient une information décidable (fait structuré du circuit « enrichissement » existant) que si :
+ *   1. le document est rattaché à l'affaire par son TEXTE (classer → AFFAIRE) ;
+ *   2. la phrase probante a pour SUJET l'organisme suivi lui-même (un de ses alias) ;
+ *   3. l'acte écrit appartient à ce vocabulaire.
+ * Sinon la publication reste une information sans bouton. Étendre le vocabulaire = ajouter une ligne ici (et un test).
+ * Le libellé ne dit ni la date de la démarche (jamais déduite), ni l'étape de la procédure, ni l'issue : il se contente de ce que l'organisme déclare.
+ */
+const DECLARATIONS = [
+  ['declaration_partie_civile', /\b(?:s'est|se sont|se|nous nous sommes)\s+constitue\w*\s+partie civile\b|\bconstitue\w*\s+partie civile\b/,
+    (nom) => `Selon ${nom}, l’association s’est constituée partie civile dans cette affaire ; la procédure concernée n’est pas précisée. Déclaration de l’association, non vérifiée par ailleurs.`],
+];
+
+/** Faits structurés (contrat des « +reactions » : nature, mesure, libellé public, réalisation, portée, acteur, citation) pour les passages d'UNE affaire. */
+export function faitsDeclares({ passages: ps, organisme, emetteur, nature, publie_le }) {
+  if (!['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nature)) return [];     // reprise, article de presse référencé, replis : l'émetteur n'est pas l'organisme
+  const alias = aliasOrganismes([organisme || {}]);
+  const nom = (organisme?.alias || [])[0] || organisme?.nom;
+  if (!alias.length || !nom) return [];
+  const out = [];
+  for (const [mesure, motif, libelle] of DECLARATIONS) {
+    const p = ps.find((x) => { const n = aplatir(x.texte); return alias.some((a) => n.includes(a)) && motif.test(n); });
+    if (!p || out.some((f) => f.mesure === mesure)) continue;
+    out.push({ event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation: 'réalisée', portee: 'établissement', acteur: nom, acteur_nomme: nom,
+      event_date: null, event_period: null, publication_date: publie_le || null, emetteur, organisme: organisme.id, evidence: [p.texte], emplacements: [p.emplacement],
+      libelle_public: libelle(nom.replace(/'/g, '’')) });
+  }
+  return out;
 }
 
 /** Contacts publics d'une page de service (adresses électroniques génériques seulement ; une adresse nominative est masquée). */
@@ -583,7 +616,9 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
   for (const d of [...docs.values()].slice(0, maxDocs)) {
     const k = cleDocument(d.url);
     const memo = memoire.get(k);
-    if (memo && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
+    // Un document rattaché à une affaire est relu à chaque cycle (rares, bornés) : sa proposition doit rester décidable et à jour sans réimport ; les autres : au plus 1×/semaine.
+    const rattache = (memo?.resolution_method || '').endsWith('/AFFAIRE');
+    if (memo && !rattache && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
     requetes++;
     const doc = await lire(d.url, {});
     if (!doc.ok) {
@@ -602,6 +637,36 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
 }
 
 // ---------------------------------------------------------------------
+// 9 bis. CONTINUITÉ ET SOLLICITATION (fonctions pures, testées hors base)
+// ---------------------------------------------------------------------
+/**
+ * Que faire d'un document rattaché dont une proposition du même moteur existe peut-être déjà (même affaire, même article, même empreinte) ?
+ *   CREER        aucune proposition : on la crée ;
+ *   REPRENDRE    elle existe, sans décision, et n'était qu'une information alors qu'elle est maintenant décidable : MÊME proposal_id, faits complétés ;
+ *   DEJA_PRESENTE sinon (décidée, déjà décidable, ou rien de décidable) : aucun doublon, aucune écriture.
+ */
+export function actionContinuite({ existante, decidable }) {
+  if (!existante) return 'CREER';
+  const dejaDecidable = (existante.facts || []).some((f) => f?.libelle_public);
+  return !existante.decision && decidable && !dejaDecidable ? 'REPRENDRE' : 'DEJA_PRESENTE';
+}
+
+/**
+ * Une proposition sans décision doit-elle être soumise à l'éditeur dans ce cycle ?
+ * `envois` : lignes « kind:avecMessage » de telegram_envois pour la proposition (et son marqueur « #suite »).
+ *   · aucun envoi : oui (comportement historique) ;
+ *   · moteur « sources-suivies », fait décidable, information déjà envoyée AVEC message, jamais de demande de décision, pas de marqueur d'écart : oui, UNE fois
+ *     (la demande est la SUITE de l'information : même proposition) ;
+ *   · sinon non.
+ */
+export function aSolliciter({ decision = null, engine = null, decidable = false, envois = [] }) {
+  if (decision) return false;
+  if (!envois.length) return true;
+  if (engine !== 'sources-suivies' || !decidable) return false;
+  return !envois.some((e) => e.startsWith('decision:') || e.endsWith(':false'));
+}
+
+// ---------------------------------------------------------------------
 // 10. MESSAGE D'INFORMATION (format Telegram existant : « MAINTENANCE », sans bouton)
 // ---------------------------------------------------------------------
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
@@ -611,6 +676,22 @@ const couper = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
  * Message INFORMATION d'une publication d'organisme rattachée à une affaire : même en-tête que telegram-v0 `info()`, aucun bouton,
  * aucune décision demandée. Utilisé par telegram-v0 (envoi) ET par l'aperçu des essais : un seul texte.
  */
+/**
+ * Ce que le message de DÉCISION d'une publication d'organisme ajoute au message d'enrichissement existant : attribution, limites, rattachement,
+ * et — si une information avait déjà été envoyée pour CETTE proposition — le lien de continuité. Une seule définition (telegram-v0 et l'aperçu des essais).
+ */
+export function complementDecision({ decl, limite, publication_date, proposal_id, information_envoyee_le = null }) {
+  const l = [
+    '', '<b>Attribution et limites</b>',
+    `Déclaration de ${esc(decl.emetteur)} (${decl.nature === 'COMMUNIQUE' ? 'communiqué' : 'publication propre'}), publiée le ${jourFr(publication_date)} ; la date de la démarche n’est pas précisée par la source.`,
+    limite ? esc(couper(limite, 600)) : '',
+    decl.rattachement_motif ? `<b>Rattachement</b> : ${esc(couper(decl.rattachement_motif, 400))}` : '',
+    information_envoyee_le ? '' : null,
+    information_envoyee_le ? `↩️ <b>Suite de l’information du ${jourFr(information_envoyee_le)}</b> (proposition ${esc(String(proposal_id).slice(0, 8))}) : elle est désormais soumise à décision ; aucun nouvel apport.` : null,
+  ].filter((x) => x !== null).filter((x, i, a) => !(x === '' && a[i - 1] === ''));
+  return '\n' + l.join('\n');
+}
+
 export function apercuInformation({ etablissement, commune, media, publication_date, url, avant, citation, limite, emetteur }) {
   const entete = `<b>${esc(etablissement)}</b> — ${esc(commune)}\n${esc(media || 'source inconnue')} · ${jourFr(publication_date)}`
     + (/^https?:\/\//.test(url || '') ? `\n<a href="${esc(url).replace(/"/g, '&quot;')}">Ouvrir la publication</a>` : '');
