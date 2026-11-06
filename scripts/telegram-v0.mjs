@@ -22,9 +22,9 @@ import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
 import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
-import { detecterInstitutionnel, planReactions, moisFr } from './lib/evenement-institutionnel.mjs';
+import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { pagesSiValide } from './lib/destinations.mjs';
-import { apercuInformation } from './lib/sources-suivies.mjs';
+import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -205,7 +205,14 @@ async function decisionReactions(cle, p, faits) {
   const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
   const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
   if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
-  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)), boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+  const complement = await complementDeclaration(p);
+  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)) + complement, boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+}
+/** Publication d'organisme suivi : ce que la proposition ne dit pas d'elle-même (attribution, rattachement, dates) + le lien de continuité avec l'information déjà envoyée. */
+async function complementDeclaration(p) {
+  if (!p.decl) return '';
+  const [prec] = await sql`select sent_at from telegram_envois where kind = 'info' and cle = ${p.proposal_id} and message_id is not null`;
+  return complementDecision({ decl: p.decl, limite: p.limite, publication_date: p.pd, proposal_id: p.proposal_id, information_envoyee_le: prec?.sent_at ?? null });
 }
 // Pages publiques concernées SI la proposition est validée : même calcul que project-evenements (destinationsDe), sur l'artefact public du dépôt.
 // Fichiers illisibles → null : le message garde sa formulation générique (rien n'est deviné).
@@ -225,7 +232,7 @@ function pagesSiValidee(case_id, neufs) {
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
   if (p.decision) throw new Error(`déjà décidée (${p.decision}) — rien envoyé`);
-  const structures = Array.isArray(p.facts) ? p.facts.filter((f) => f?.mesure && f.libelle_public && f.evidence?.length) : [];
+  const structures = faitsStructures(p.facts);
   if (p.rat === 'OK' && structures.length) return decisionReactions(cle, p, structures);
   const inst = p.rat === 'OK' ? detecterInstitutionnel(citationsDe(p)) : null;
   // Aucun fait nouveau à décider (nouvelle source, rappel, rejeu) : AUCUN message — jamais un clic ni une information inutile.
@@ -459,19 +466,24 @@ async function clicEtat(cb, d, cle) {
 async function notifier(max = 10) {
   const rows = await sql`
     select left(p.proposal_id::text, 8) k, p.proposal_id::text pid, p.analysis_action aa,
-           p.statut_propose::text ap, p.facts, (p.payload ? 'declaration') decl
+           p.statut_propose::text ap, p.facts, (p.payload ? 'declaration') decl, p.engine,
+           coalesce((select array_agg(t.kind || ':' || (t.message_id is not null)::text) from telegram_envois t
+                      where t.cle in (p.proposal_id::text, p.proposal_id::text || '#suite')), '{}') envois,
+           coalesce(p.payload->'declaration'->>'decidable' = 'true', false) decidable
       from state_proposals p
      where p.decision is null
-       and not exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text)
      order by p.created_at desc`;
   let envoyes = 0, ecartes = 0, bruit = 0;
-  for (const r of rows) {
+  for (const r0 of rows) {
+    // Sans décision et sans aucun envoi : comme toujours. SUITE d'une information d'organisme suivi devenue décidable : une seule demande (lib/sources-suivies : aSolliciter).
+    if (!aSolliciter({ decision: null, engine: r0.engine, decidable: r0.decidable, envois: r0.envois })) continue;
+    const r = r0;
     if (envoyes >= max) break;
     const utile = r.aa !== 'NO_CHANGE' && Array.isArray(r.facts) && r.facts.some((f) => f?.evidence?.length);
     if (!utile) { bruit++; continue; } // déchet technique : jamais envoyé, réexaminé au prochain cycle sans coût
     let mid;
     try {
-      mid = r.decl ? await info(r.k) // publication d'organisme suivi : information, jamais une décision
+      mid = r.decl && !(Array.isArray(r.facts) && r.facts.some((f) => f?.libelle_public)) ? await info(r.k) // publication d'organisme sans fait décidable : information
         : r.aa === 'STATE_CHANGE' && r.ap ? await decision(r.k)
         : r.aa === 'ENRICHMENT' ? await decisionInstitutionnelle(r.k) // décision si une mesure d'institution est établie, sinon information
         : await info(r.k);
@@ -479,6 +491,8 @@ async function notifier(max = 10) {
       // périmée / ambiguë : on le note pour ne plus la reconsidérer, sans message
       console.log(`écartée ${r.k} : ${e.message}`);
       await sql`insert into telegram_envois (kind, cle) values ('info', ${r.pid}) on conflict do nothing`;
+      // Une information déjà envoyée (ligne « info » avec message) ne reçoit pas de nouveau marqueur : la suite écartée est notée à part, une fois.
+      if (r.decl) await sql`insert into telegram_envois (kind, cle) values ('info', ${r.pid + '#suite'}) on conflict do nothing`;
       ecartes++;
       continue;
     }

@@ -124,7 +124,7 @@ if (process.argv.includes('--generique')) {
   const holds = new Set(JSON.parse(readFileSync(new URL('../data/publication-holds.json', import.meta.url), 'utf8')).holds.map((h) => h.case_id));
   const { classer } = await import('./lib/appliquer-contrat.mjs');
   const { evenementDejaValide } = await import('./lib/routage-veille.mjs');
-  const { detecterInstitutionnel } = await import('./lib/evenement-institutionnel.mjs');
+  const { detecterInstitutionnel, faitsStructures } = await import('./lib/evenement-institutionnel.mjs');
   const { schemaBoucle } = await import('./lib/telegram-clics.mjs');
   const { prevenir, prevenirUneFois, phrasePublication, phraseEnrichissement, esc } = await import('./lib/prevenir.mjs');
   const S = await schemaBoucle(sql);
@@ -180,7 +180,7 @@ if (process.argv.includes('--generique')) {
     if (!REPLAY && p.aa === 'ENRICHMENT') {
       // Faits structurés (proposition « +reactions ») : un événement par mesure de PORTÉE « établissement » ; une mesure « territoire »
       // (politique de collectivité visant plusieurs structures) n'est jamais écrite comme événement de cette affaire.
-      const structures = Array.isArray(p.facts) ? p.facts.filter((x) => x?.mesure && x.libelle_public && x.evidence?.length) : [];
+      const structures = faitsStructures(p.facts);
       const insts = p.rat !== 'OK' ? []
         : structures.length ? structures.filter((x) => x.portee !== 'territoire').map((x) => ({ ...x, ed: x.event_date || null }))
         : [detecterInstitutionnel((Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || []))].filter(Boolean).map((x) => ({ ...x, ed: p.ed }));

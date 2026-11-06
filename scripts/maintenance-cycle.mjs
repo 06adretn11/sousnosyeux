@@ -709,6 +709,7 @@ async function etapeSourcesSuivies() {
   const dirHubs = resolve(ROOT, 'data/hub-matiere');
   const faitsConnus = S.chargerFaitsConnus(readdirSync(dirHubs).filter((f) => f.endsWith('.json')).map((f) => resolve(dirHubs, f)));
   const alias = S.aliasOrganismes(registre.organismes);
+  const contexteHub = S.chargerContexteHub(readdirSync(dirHubs).filter((f) => f.endsWith('.json')).map((f) => resolve(dirHubs, f)), resolve(ROOT, 'data/evenements.json'));
   const X = { version: S.SOURCES_SUIVIES_VERSION, memoire: memoire.type, urls_lues: requetes, pages: pages.length, documents: docs.length,
     propositions_nouvelles: 0, propositions_deja_presentes: 0, preuves_complementaires: 0, rattrapages: 0, injectes_veille: 0, par_destination: {}, par_issue: {} };
   const lignes = [];
@@ -728,7 +729,8 @@ async function etapeSourcesSuivies() {
       empreinte: d.empreinte || null, empreinte_precedente: d.empreinte_precedente || null, contacts: d.contacts, rss: d.rss, liens: d.liens,
       titre: d.doc?.titre || d.titre_index || null, indices_disperses: d.indices_disperses || null, propositions: [] };
     if (['ECHEC', 'NON_DUE', 'CONNU_RECENT'].includes(d.issue)) { lignes.push(ligne); continue; }
-    if (d.issue === 'INCHANGE') { memoire.toucher(k, maintenant); lignes.push(ligne); continue; }
+    // Inchangé : rien à examiner, sauf un document rattaché à une affaire — sa proposition doit rester décidable (continuité, jamais de doublon).
+    if (d.issue === 'INCHANGE' && d.destination !== 'AFFAIRE') { memoire.toucher(k, maintenant); lignes.push(ligne); continue; }
     // NOUVEAU / MODIFIE : examen. La mémoire n'est notée qu'APRÈS l'examen (une écriture ratée laisse le document à réexaminer).
     // Rattachement suspendu (≤ 3 candidates) : AUCUNE proposition ; on dit seulement, pour l'arbitrage, si le document porterait un fait déjà publié.
     if (d.destination === 'RATTACHEMENT_SUSPENDU' && d.suspendus.length <= 3) {
@@ -760,26 +762,50 @@ async function etapeSourcesSuivies() {
         const fait = { event_type: 'declaration_organisme', nature: d.nature, emetteur, organisme: d.organisme?.id, origine_presse: d.origine_presse || null, portee,
           evidence: ps.map((p) => p.texte), emplacements: ps.map((p) => p.emplacement), publication_date: d.publie_le || null, event_date: null,
           complement_de: comp ? { type: comp.type, media: comp.ref.media, url: comp.ref.url, publie_le: comp.ref.publie_le } : null };
+        // Information DÉCIDABLE : fait structuré du circuit « enrichissement » existant (libellé public fermé, attribué, sans date de démarche inventée).
+        // Une preuve complémentaire d'un fait déjà rapporté n'est pas une information nouvelle : elle reste une information sans bouton.
+        const declares = comp ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le, fiche, contexte: contexteHub });
+        const facts = declares.length ? declares : [fait];
         const declaration = { emetteur, organisme: d.organisme?.id, nature: d.nature, origine_presse: d.origine_presse || null, portee, publie_le: d.publie_le || null,
-          decouvert_le: jour, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien };
+          decouvert_le: jour, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien,
+          decidable: declares.length > 0,
+          ...(declares[0]?.ajustements_inconnues ? { ajustements: declares[0].ajustements_inconnues } : {}),
+          rattachement_motif: declares.length ? `${d.motif} — rattachement par le texte (établissement, commune et rôle) ; la publication ne précise ni la procédure ni son étape.` : undefined };
         const prop = {
           case_id: id, article_id: article.article_id, content_fingerprint: d.empreinte, version: S.SOURCES_SUIVIES_VERSION,
           CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, statut_propose: null, PROPOSED_CHANGE: 'NO_CHANGE', EVENT_DATE: null,
           SOURCE_DATE: d.publie_le || null, transition: null, finalite: null, surveillance: [], inconnues: d.publie_le ? [] : ['date de publication non indiquée par la source'],
           RATIONALE: `SOURCE_SUIVIE ${d.nature} — ${emetteur} · ${ps.map((p) => p.emplacement).join(', ')}`, REQUIRES_HUMAN_REVIEW: true, review_reasons: [],
-          rattachement: 'OK', note_limite: limite, declaration, engine: 'sources-suivies', analysis_action: 'ENRICHMENT', facts: [fait],
+          rattachement: 'OK', note_limite: limite, declaration, engine: 'sources-suivies', analysis_action: 'ENRICHMENT', facts,
         };
-        let r = { deja_presente: false };
-        if (!DRY) { await assurerArticle(sql, article); r = await enregistrerProposition(sql, prop); }
-        if (r.deja_presente) X.propositions_deja_presentes++; else X.propositions_nouvelles++;
-        if (comp) X.preuves_complementaires++; else if (ancien) X.rattrapages++;
-        ligne.propositions.push({ case_id: id, issue: r.deja_presente ? 'DEJA_PRESENTE' : (DRY ? 'A_ECRIRE (dry-run)' : 'ECRITE'), passages: ps, complement: fait.complement_de, rattrapage: declaration.rattrapage,
+        // CONTINUITÉ : la proposition existante de ce document (même affaire, même article, même empreinte, même moteur) garde son identité ;
+        // tant qu'elle n'a reçu AUCUNE décision et n'était qu'une information, elle devient décidable sur place (mêmes proposal_id et historique).
+        const [exist] = await sql`select proposal_id::text pid, decision::text dec, facts from state_proposals
+                                   where case_id = ${id} and article_id = ${article.article_id} and engine = 'sources-suivies' and content_fingerprint = ${d.empreinte}
+                                   order by created_at limit 1`;
+        let r = { deja_presente: false }, reprise = false;
+        const suite = S.actionContinuite({ existante: exist ? { decision: exist.dec, facts: exist.facts } : null, decidable: declares.length > 0 });
+        if (exist) {
+          r = { deja_presente: true, proposal_id: exist.pid };
+          if (suite === 'REPRENDRE') {
+            reprise = true;
+            if (!DRY) await sql`update state_proposals
+                                   set facts = ${JSON.stringify(facts)}::jsonb,
+                                       payload = payload || ${JSON.stringify({ facts, declaration: { ...declaration, issue: 'NOUVEAU' }, rattachement: 'OK', note_limite: limite, suite_de_information: true })}::jsonb
+                                 where proposal_id = ${exist.pid}::uuid and decision is null`;
+          }
+        } else if (!DRY) { await assurerArticle(sql, article); r = await enregistrerProposition(sql, prop); }
+        if (reprise) X.propositions_reprises = (X.propositions_reprises || 0) + 1;
+        else if (r.deja_presente) X.propositions_deja_presentes++;
+        else if (d.issue !== 'INCHANGE') X.propositions_nouvelles++;
+        if (d.issue !== 'INCHANGE') { if (comp) X.preuves_complementaires++; else if (ancien) X.rattrapages++; }
+        ligne.propositions.push({ case_id: id, decidable: declares.length > 0, faits_proposes: declares.map((f) => ({ mesure: f.mesure, libelle_public: f.libelle_public, acteur: f.acteur, evidence: f.evidence, emplacements: f.emplacements })), issue: reprise ? 'REPRISE_SUR_PLACE (decidable)' : r.deja_presente ? 'DEJA_PRESENTE' : (DRY ? 'A_ECRIRE (dry-run)' : 'ECRITE'), passages: ps, complement: fait.complement_de, rattrapage: declaration.rattrapage,
           apercu_telegram: S.apercuInformation({ etablissement: fiche.etablissement, commune: fiche.commune, media: emetteur, publication_date: d.publie_le, url: d.url,
             avant: fiche.statut_judiciaire, citation: ps[0].texte, limite, emetteur }) });
         // Un titre qui ÉNONCE un acte judiciaire rejoint la veille de l'affaire (chaîne par claim) : l'acte n'y devient une proposition
         // d'état que prouvé par une source de presse (recherche Bing, gardes habituelles). Sans acte : aucun claim, aucun coût de modèle.
         const titre = d.doc.titre || d.titre_index;
-        if (titre && actes(titre).length) {
+        if (titre && actes(titre).length && d.issue !== 'INCHANGE') {
           let res = rapport.results.find((x) => x.case_id === id);
           if (!res) rapport.results.push(res = { case_id: id, query: 'source suivie', new_articles: [] });
           res.new_articles = [...(res.new_articles || []), { title: titre, published: d.publie_le || null, source_domain: d.url, url: d.url, media: emetteur, via: 'source_suivie' }];

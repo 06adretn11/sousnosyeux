@@ -18,6 +18,8 @@
 
 export const TYPES_JUDICIAIRES = Object.freeze(['plainte', 'enquête', 'garde_à_vue', 'mise_en_examen', 'audience', 'délibéré', 'décision', 'voie_de_recours', 'mesure_procédurale']);
 export const TYPES_INSTITUTIONNELS = Object.freeze(['suspension', 'réponse_institutionnelle', 'mobilisation']);
+/** Faits STRUCTURÉS décidables d'une proposition « enrichissement » : mesure, libellé public fermé, citation. Une seule définition, lue par la demande de décision ET par l'application. */
+export const faitsStructures = (facts) => (Array.isArray(facts) ? facts.filter((x) => x?.mesure && x.libelle_public && x.evidence?.length) : []);
 export const categorieEvenement = (t) => (TYPES_INSTITUTIONNELS.includes(t) ? 'institutionnel' : TYPES_JUDICIAIRES.includes(t) ? 'judiciaire' : 'autre');
 
 // ⚠ Tous les motifs sont écrits SANS accents et appliqués sur un texte normalisé (`norm`) : en JavaScript `\b` ne reconnaît pas

@@ -95,7 +95,7 @@ export function construireMatiere(faits, ctx) {
     if (!d.fiche && !d.hubs.length) { if (!d.bloques.length) conservees.push(id_); continue; }
     matiere.push({
       id: f.id, nature: f.nature, libelle: f.libelle, realisation: f.realisation, portee: f.portee, acteur: f.acteur, territoire: f.territoire ?? null,
-      date: f.date ?? null, periode: f.periode ?? null, source: f.source, ...(f.portee === 'territoire' ? {} : { etablissement: ctx.cases.get(f.case_id)?.etablissement ?? null }), case_id: terr && ctx.holds.has(f.case_id) ? null : f.case_id, event_id: f.event_id ?? null, destinations: { fiche: d.fiche, hubs: d.hubs },
+      date: f.date ?? null, periode: f.periode ?? null, source: f.source, ...(f.ajustements?.length ? { ajustements: f.ajustements } : {}), ...(f.portee === 'territoire' ? {} : { etablissement: ctx.cases.get(f.case_id)?.etablissement ?? null }), case_id: terr && ctx.holds.has(f.case_id) ? null : f.case_id, event_id: f.event_id ?? null, destinations: { fiche: d.fiche, hubs: d.hubs },
     });
   }
   matiere.sort((a, b) => a.id.localeCompare(b.id));

@@ -61,7 +61,32 @@ export const carteReaction = (m: any) => ({
   paraphrase: m.libelle, source: m.source ? { ...m.source, acces: 'libre' } : null,
 });
 
+/**
+ * Inconnues rendues obsolètes par une information VALIDÉE (data/evenements.json → matiere[].ajustements, projetées depuis Neon après ACCEPT).
+ * Remplacement EXACT d'une phrase par sa version ajustée : si la phrase actuelle n'est plus celle attendue (dossier réécrit depuis), RIEN ne change.
+ * Les autres inconnues, l'état affiché, le déroulé et le reste du dossier ne sont jamais touchés. Sans information validée : aucun effet.
+ */
+function ajusterInconnues(m: any, id: string): any {
+  const aj = MATIERE.filter((x) => x.ajustements?.length).flatMap((x) => x.ajustements
+    .filter((a: any) => a.hub === id && (a.cible === 'transversale' ? (x.destinations?.hubs ?? []).some((h: any) => h.hub === id)
+      : (x.destinations?.fiche === a.case_id || (x.destinations?.hubs ?? []).some((h: any) => h.hub === id))))
+    .map((a: any) => a));
+  if (!aj.length || !m) return m;
+  const remplacer = (liste: string[] | undefined, a: any) => { const i = (liste ?? []).indexOf(a.avant); if (i < 0) return liste; const c = [...(liste as string[])]; c[i] = a.apres; return c; };
+  let out = m;
+  for (const a of aj) {
+    if (a.cible === 'transversale') out = { ...out, inconnues_transversales: remplacer(out.inconnues_transversales, a) };
+    else if (out.dossiers?.[a.case_id]) out = { ...out, dossiers: { ...out.dossiers, [a.case_id]: { ...out.dossiers[a.case_id], inconnues: remplacer(out.dossiers[a.case_id].inconnues, a) } } };
+  }
+  return out;
+}
+
+/** Matière d'un Hub pour l'affichage : la version approuvée (sinon publique), puis les inconnues ajustées par une information validée. */
 export function chargerHub(id: string): { matiere: any; prive: any | null } {
+  const r = chargerHubBrut(id);
+  return { ...r, matiere: ajusterInconnues(r.matiere, id) };
+}
+function chargerHubBrut(id: string): { matiere: any; prive: any | null } {
   const m = A[id] ?? P[id];
   if (!m) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
   const ajouts = matiereHub(id);
