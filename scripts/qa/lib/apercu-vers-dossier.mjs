@@ -8,7 +8,8 @@ const iso = (s) => { const m = /^(?:(\d{1,2})(?:er)? )?([a-zéûà]+) (\d{4})$/.
 const section = (md, titre) => { const m = new RegExp(`^## ${titre}[^\\n]*\\n([\\s\\S]*?)(?=^## |^<details|\\Z)`, 'm').exec(md); return m ? m[1].trim() : ''; };
 const lien = /\[([^\]]+)\]\(([^)]+)\)/g;
 
-export function apercuVersDossier(md) {
+export function apercuVersDossier(md0) {
+  const md = String(md0).replace(/\r\n/g, '\n');   // checkout Windows (autocrlf) ou Linux : même lecture
   const empreinte = /Empreinte du dossier[^`]*`([0-9a-f]{16})`/.exec(md)?.[1] ?? null;
   const qualification = /Qualification : [^A-Z]*([A-Z_É’ ]+?)\*\*/.exec(md)?.[1]?.trim() ?? null;
   // sources : tableau « utilisées » + inventaire
