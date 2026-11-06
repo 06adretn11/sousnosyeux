@@ -66,6 +66,9 @@ for (const g of groupes.slice(0, LIMITE)) {
   const gen = exec('generer-fiche.mjs', [g.case_id, '--sources-extra', extra, '--docs']);
   rmSync(dir, { recursive: true, force: true });
   const cand = gen.ok ? dossierGeneree(g.case_id) : null;
+  // La relecture n'apporte RIEN d'éditorial (la version approuvée fusionnée est identique) : ni proposition, ni message — un changement de disponibilité technique (source payante,
+  // illisible, absente de la sélection) n'est pas une décision à demander à l'éditeur.
+  if (cand?.generation?.acquis?.inchange) { console.log(`  · ${g.case_id} : la relecture n’apporte rien d’éditorial (version approuvée inchangée) — rien à proposer`); await note(g, 'sans_apport', {}); continue; }
   if (!cand?.proposable) {
     const q = cand?.generation?.qualification ?? (gen.ok ? 'ABSENTE' : 'ERREUR DE GÉNÉRATION');
     console.log(`  ⚠ ${g.case_id} : candidate non proposable (${q}) — version publique conservée`);

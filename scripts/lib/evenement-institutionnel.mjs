@@ -48,7 +48,9 @@ const MESURES = [
 ];
 
 const ANNONCE = /\b(annonc\w+|va|vont|sera|seront|serait|prevu\w*|prevoit|prevoient|projette\w*|compte|comptent|s'engage\w*|promet\w*|propos\w+|presente\w*\s+(?:un|une|des)\s+(?:plan|serie|mesures?)|presentera|decide\s+de|lancera|mettra|souhait\w+|envisag\w+|il y aura|veut|veulent)\b/;
-const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\bont\s+(?:manifeste|defile)\w*/;
+const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\b(?:a|ont)\s+(?:manifeste|defile|rassemble|mobilise)\w*/;
+// Un début de mobilisation RAPPORTÉ au passé (« a marqué le début de la mobilisation », « a déclenché ») est un fait accompli ; sans ces marques, le doute reste « annoncée ».
+const MOBILISATION_ACCOMPLIE = /\b(?:a|ont)\s+(?:marque|declenche|suscite|provoque|lance)\w*[^.]{0,60}\bmobilis|\bdebut\s+de\s+la\s+mobilis/;
 /** Texte comparable : sans accents, minuscules, apostrophes unifiées. */
 import { dejaConnu } from './nouveaute.mjs';
 import { estPisteDeNavigation } from './corps-article.mjs';
@@ -175,7 +177,11 @@ export function planReactions(faits, memoire = []) {
 // institutionnel dans la phrase n'est jamais une mobilisation. Le libellé public ne reprend ni parole ni citation de parent.
 const COLLECTIF = /\b(parents?(?: d'eleves)?|enseignants?|professeurs?|personnels?|collectifs?|associations?|riverains|habitants|syndicats?)\b/g;
 const MOBILISATIONS = [
-  ['rassemblement', /\b(?:se\s+sont\s+(?:reuni|rassembl|mobilis)\w*|rassembl\w+|manifest(?!ement)\w+|sit-in|veillee|marche blanche|cercle de silence|mobilis\w+)\b/, { annoncee: 'ont annoncé un rassemblement', realisee: 'ont tenu un rassemblement' }],
+  // Un RASSEMBLEMENT est un fait précis (des personnes réunies ou manifestant) : le mot « mobilisation » seul n'en est pas un (cas Paris Match 27/05/2026 : « le début de la mobilisation des parents
+  // d'élèves » ne dit pas qu'un rassemblement a été tenu ni annoncé).
+  ['rassemblement', /\b(?:se\s+sont\s+(?:reuni|rassembl)\w*|rassembl\w+|manifest(?!ement)\w+|sit-in|veillee|marche blanche|cercle de silence)\b/, { annoncee: 'ont annoncé un rassemblement', realisee: 'ont tenu un rassemblement' }],
+  // Mobilisation sans forme précise : ni rassemblement, ni pétition, ni lettre (voir `generique` plus bas). Libellé aussi large que la source, pas davantage.
+  ['mobilisation', /\bmobilis\w+/, { annoncee: 'ont annoncé une mobilisation', realisee: 'se sont mobilisés' }],
   ['petition', /\bpetitions?\b/, { annoncee: 'ont annoncé une pétition', realisee: 'ont lancé une pétition' }],
   ['lettre_ouverte', /\blettres? ouvertes?\b|\bcourrier\s+(?:au|a la|adresse)\b/, { annoncee: 'ont annoncé l’envoi d’une lettre', realisee: 'ont adressé une lettre aux autorités' }],
 ];
@@ -186,7 +192,9 @@ const acteursCollectifs = (n) => {
 const GN_ACTEURS = (a) => (a.includes('parents') && a.includes('enseignants') ? 'des parents et des enseignants' : a.includes('parents') ? 'des parents' : a.includes('enseignants') ? 'des enseignants et personnels' : 'un collectif ou une association');
 export function libelleMobilisation(mesure, realisation, acteurs) {
   const t = MOBILISATIONS.find(([m]) => m === mesure)?.[2];
-  return t ? `Selon la presse, ${GN_ACTEURS(acteurs || [])} ${realisation === 'réalisée' ? t.realisee : t.annoncee}.` : null;
+  const gn = GN_ACTEURS(acteurs || []);
+  const verbe = (v) => (gn.startsWith('un ') ? v.replace(/^ont /, 'a ').replace(/^se sont /, 's’est ') : v);   // « un collectif ou une association a tenu… » (singulier)
+  return t ? `Selon la presse, ${gn} ${verbe(realisation === 'réalisée' ? t.realisee : t.annoncee)}.` : null;
 }
 // « la Ville de Paris », « la mairie de Villeurbanne » : acteur NOMMÉ et territoire de la mesure, tels qu'écrits.
 const ACTEUR_NOMME = /\b(?:la\s+)?([Vv]ille|[Mm]airie|[Mm]unicipalité|[Cc]ommune|[Pp]réfecture|[Rr]ectorat)\s+(?:de|d['’])\s*([A-ZÀ-Ý][\p{L}'’-]*(?:\s+[A-ZÀ-Ý][\p{L}'’-]*){0,2})/u;
@@ -201,7 +209,7 @@ const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"
 
 /** Territoire NOMMÉ par la phrase (« rassemblés à Paris ») — jamais la commune de l'affaire dont on est parti. */
 // (`\b` ne voit pas les lettres accentuées : « à » s'ancre par lookbehind.)
-const territoireDe = (phrase) => /(?<![\p{L}])(?:à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de)\s+(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/u.exec(phrase)?.[1] ?? null;
+const territoireDe = (phrase) => /(?<![\p{L}])(?:à\s+travers|à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de|(?:le\s+)?(?:tribunal|palais de justice|préfecture|rectorat)\s+(?:judiciaire\s+|correctionnel\s+)?(?:de|d['’]))(?:\s+|(?<=['’]))(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/u.exec(phrase)?.[1] ?? null;
 
 /**
  * Réactions et mesures d'institutions rapportées par un ARTICLE ENTIER (et non seulement par la citation qui porte l'événement
@@ -213,7 +221,7 @@ const territoireDe = (phrase) => /(?<![\p{L}])(?:à|au|aux|en|dans|(?:la\s+)?(?:
  * @returns {Array<{event_type:string, mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement'|'territoire', acteur:string,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '', lieAffaire = false, commune = '' } = {}) {
+export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '', lieAffaire = false, commune = '', soeursMemeEtablissement = false } = {}) {
   const jetons = jetonsEtab(etablissement);
   // `titre` : titre de la page. Il repère l'article mais ne l'étaye pas : un fait dont TOUTES les citations sont ce titre n'est pas retenu.
   const estTitre = (e) => !!titre && norm(e) === norm(titre);
@@ -233,21 +241,29 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
     if (!acteurs.length) continue;
     for (const [mesure, motif] of MOBILISATIONS) {
       if (!motif.test(n)) continue;
+      // « mobilisation » générique : seulement si la phrase ne décrit pas une forme précise (rassemblement, pétition, lettre) — sinon c'est cette forme qui est rapportée.
+      if (mesure === 'mobilisation' && MOBILISATIONS.some(([m, re]) => m !== 'mobilisation' && re.test(n))) continue;
       // Un titre (« … parents et enseignants rassemblés à l'école ») et la phrase du corps rapportent le MÊME rassemblement : « réalisé » dès
       // qu'une phrase l'établit (participe passé ou verbe d'accomplissement) sans marque d'annonce ; sinon « annoncé » (doute = annoncé).
-      const passe = ACCOMPLI.test(n) || /\b(?:rassembl|reuni|mobilis)\w*s\b/.test(n);
+      const passe = ACCOMPLI.test(n) || /\b(?:rassembl|reuni|mobilis)\w*s\b/.test(n) || (mesure === 'mobilisation' && MOBILISATION_ACCOMPLIE.test(n));
       const realisation = passe && !ANNONCE.test(n) ? 'réalisée' : 'annoncée';
       const nomme = !!jetons.length && jetons.some((t) => n.includes(t));
       const multi = jetonsAutres.some((t) => n.includes(t));
+      // Lien à l'AFFAIRE : la phrase se rapporte explicitement à la PROCÉDURE de l'affaire (« en soutien aux familles de cette procédure »), dans un article rattaché à l'affaire et qui ne
+      // parle pas d'autres établissements du territoire. « Cette affaire » seule (l'origine d'un mouvement) ne suffit pas : la mobilisation n'est alors pas propre à l'établissement.
+      // Plusieurs affaires au même établissement (ex. deux procédures distinctes à Aqueduc) : « cette procédure » ne désigne plus une affaire — aucun lien automatique.
+      const lieeProcedure = lieAffaire && !multi && !soeursMemeEtablissement && /\b(?:cette|ce)\s+(?:procedure|proces|audience)\b/.test(n);
+      const origine = !lieeProcedure && /\bcette\s+affaire\b/.test(n);
       const d = dateEcrite(phrase, anneeRef);
       // UN fait par (type, jour) : deux rassemblements de jours différents ne fusionnent pas ; une phrase sans date rejoint le fait déjà vu.
       const cle = [...parMesure.keys()].find((k) => k.startsWith(`mob:${mesure}|`) && (!d.date || !parMesure.get(k).event_date || parMesure.get(k).event_date === d.date)) ?? `mob:${mesure}|${d.date ?? d.periode ?? parMesure.size}`;
       const f = parMesure.get(cle);
-      if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: nomme && !multi ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], territoire: territoireDe(phrase), _nomme: nomme && !multi });
+      if (!f) parMesure.set(cle, { event_type: 'mobilisation', nature: 'mobilisation', mesure, realisation, portee: (nomme && !multi) || lieeProcedure ? 'établissement' : 'territoire', acteur: acteurs.join(', '), acteurs, event_date: d.date, event_period: d.periode, evidence: [phrase], territoire: territoireDe(phrase), _nomme: nomme && !multi, ...(lieeProcedure ? { lien: 'procédure' } : origine ? { lien: 'origine' } : {}) });
       else {
         f.event_date ||= d.date; f.event_period ||= d.periode; f.territoire ||= territoireDe(phrase);
         for (const a of acteurs) if (!f.acteurs.includes(a)) f.acteurs.push(a);
         if (realisation === 'réalisée') f.realisation = 'réalisée';
+        if (lieeProcedure && f.portee !== 'établissement') { f.portee = 'établissement'; f.lien = 'procédure'; f.evidence.unshift(phrase); }
         if (nomme && !multi && !f._nomme) { f._nomme = true; f.portee = 'établissement'; f.evidence.unshift(phrase); }
         else if (f.evidence.length < 2) f.evidence.push(phrase);
         f.evidence = f.evidence.slice(0, 2);
@@ -304,7 +320,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       }
     }
   }
-  return [...parMesure.values()].filter((f) => !f.evidence.every(estTitre)).map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && (f.portee !== 'territoire' || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
+  return [...parMesure.values()].filter((f) => !f.evidence.every(estTitre)).map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && ((f.portee !== 'territoire' && f.lien !== 'procédure') || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
 }
 
 /**

@@ -38,7 +38,10 @@ function trois(articles, n = 3) {
  */
 export function messageEnrichissement(p, neufs, territorial, pages = null) {
   const f1 = neufs[0];
-  const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : 'date non établie');
+  const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : `date non établie (la phrase n’en donne pas ; article du ${jj(p.publication_date)})`);
+  // Pourquoi ce fait est (ou n'est pas) rattaché à l'affaire : dit en clair, jamais sous-entendu.
+  const lienTexte = (f) => (f.lien === 'procédure' ? 'la phrase se rapporte à « cette procédure » (celle de l’affaire) : fait lié à l’affaire'
+    : f.lien === 'origine' ? 'la phrase relie l’ORIGINE du mouvement à cette affaire ; elle ne dit pas qu’il est propre à cet établissement' : null);
   // Le territoire est celui que NOMME la source probante ; à défaut il n'est pas établi — jamais la commune de l'affaire d'où l'on est parti.
   const lienArticle = /^https?:\/\//.test(p.url || '') ? `\n${esc(p.url)}` : '';
   // Un fait de TERRITOIRE se présente par sa portée : l'affaire par laquelle il a été découvert n'est qu'une provenance, il n'est pas « un enrichissement de cette affaire ».
@@ -63,7 +66,8 @@ export function messageEnrichissement(p, neufs, territorial, pages = null) {
     '<b>Source</b>',
     `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,
     '',
-    `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
+    `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : f1.lien === 'procédure' ? `affaire — fait lié à la procédure de cette affaire${f1.territoire ? ` · lieu : ${esc(f1.territoire)}` : ''}` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
+    ...(lienTexte(f1) ? [`<b>Lien avec l’affaire</b> : ${esc(lienTexte(f1))}`] : []),
     ...(Array.isArray(pages)
       ? ['<b>Pages concernées si VALIDATE</b>', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
       : [`<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`]),
@@ -128,40 +132,60 @@ export function messageFiche(p) {
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
 
-/** MISE À JOUR d'une fiche DÉJÀ publiée : seulement ce qui change depuis la dernière version approuvée (pas « + page », pas « Fiche → »). */
+/**
+ * MISE À JOUR d'une fiche DÉJÀ publiée : seulement ce qui change depuis la dernière version approuvée (pas « + page », pas « Fiche → »).
+ * Ordre = ordre d'importance, pour que la troncature ne cache jamais l'essentiel : (1) ce qui est retiré ou à trancher, (2) ce qui est ajouté,
+ * (3) ce qui est reformulé / regroupé / conservé sans relecture, (4) l'effet concret de l'approbation, (5) l'aperçu de CETTE version.
+ * Un retrait n'apparaît que s'il est réel et motivé ; une source devenue secondaire n'est jamais annoncée comme supprimée.
+ */
 function messageFicheMiseAJour(p) {
   const x = p.page, m = x.mise_a_jour;
   const quand = (e) => (e.date ? e.date : e.publie_le ? `date non écrite · paru le ${e.publie_le}` : 'date non établie');
   const plus = (l, n) => (l.length > n ? [`   (+ ${l.length - n} autre(s) : voir l’aperçu complet)`] : []);
-  // Telegram refuse un message de plus de 4096 caractères : on réduit le détail (jamais le sens) jusqu'à tenir, l'aperçu complet portant le reste.
-  const construire = ({ na, nr, ca, cr, att }) => [
+  const retirees = m.retirees || [], aTrancher = (x.generation?.attention || []).filter((a) => a.niveau === 'majeur');
+  const nonRelues = m.non_relues || [], refs = m.references_ajoutees || [], seco = m.devenues_secondaires || [];
+  const effet = m.effet || {};
+  // Telegram refuse un message de plus de 4096 caractères : on réduit le détail des AJOUTS et des mentions secondaires, jamais les retraits ni les points à trancher.
+  const construire = ({ na, ca, att, ct }) => [
     `🔄 <b>MISE À JOUR DE FICHE À APPROUVER</b> · ${esc(x.case_id)}`,
     '',
     `<b>${esc(p.etablissement)}</b> · ${esc(p.commune)}`,
     `La page existe déjà : la version publique actuelle (empreinte <code>${esc(m.precedent_hash)}</code>) reste EN LIGNE tant que vous n’approuvez pas celle-ci (<code>${esc(x.hash)}</code>).`,
-    ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT · qualification ${esc(x.generation.qualification)}`] : []),
+    ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT à partir de la version approuvée · qualification ${esc(x.generation.qualification)}`] : []),
     '',
-    '<b>Ce qui change depuis la version publique</b>',
-    ...(m.ajoutees || []).slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
-    ...plus(m.ajoutees || [], na),
-    ...(m.sources_nouvelles || []).slice(0, 2).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
-    ...(m.retirees || []).slice(0, nr).map((e) => `➖ Retirée : ${esc(cut(e.texte, cr))}`),
-    ...plus(m.retirees || [], nr),
+    '<b>Retiré ou à trancher</b>',
+    ...(retirees.length ? retirees.slice(0, 4).map((e) => `➖ Retirée : ${esc(cut(e.texte, 130))}\n   Motif : ${esc(e.motif || 'AUCUN MOTIF ÉTABLI — à refuser')}`) : ['Aucune étape, source ni position de la version approuvée n’est retirée.']),
     ...(m.sources_retirees || []).slice(0, 2).map((s) => `➖ Source retirée : ${esc(s.media || '')} → ${esc(s.url)}`),
-    m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) (même source, même date)` : '',
-    !(m.ajoutees || []).length && !(m.retirees || []).length ? '(aucune étape ajoutée ni retirée)' : '',
+    ...aTrancher.slice(0, att).map((a) => `⚠ À trancher : ${esc(cut(a.texte, ct))}`),
+    '',
+    '<b>Ajouté</b>',
+    ...(m.ajoutees || []).slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
+    ...((m.ajoutees || []).length ? plus(m.ajoutees, na) : ['Aucune étape nouvelle.']),
+    ...(m.reactions_ajoutees ? [`💬 ${m.reactions_ajoutees} position(s) attribuée(s) ajoutée(s)`] : []),
+    ...(m.sources_nouvelles || []).slice(0, 2).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
+    ...(refs.length ? [`🔗 ${refs.length} référence(s) ajoutée(s) à des étapes existantes : ${refs.slice(0, 3).map((r) => esc(r.media || '')).join(', ')}`] : []),
+    '',
+    '<b>Conservé · reformulé</b>',
+    m.conservees ? `🔒 ${m.conservees} étape(s) approuvée(s) non reproduite(s) par la relecture : conservée(s) telles quelles` : '',
+    nonRelues.length ? `🔒 Sources conservées, non relues à ce passage (aucune relecture n’est prétendue) : ${nonRelues.slice(0, 3).map((s) => `${esc(s.media || '')} (${esc(s.motif || 'non relue')})`).join(', ')}` : '',
+    seco.length ? `🔁 Devenue référence secondaire (non retirée) : ${seco.slice(0, 3).map((s) => esc(s.media || '')).join(', ')}` : '',
+    m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) ou regroupée(s), même fait, sans perte de fond` : '',
+    m.etat_change ? '⚖️ Le bloc de situation judiciaire change (voir l’aperçu).' : '',
     '<b>Inconnues</b> : ' + (x.inconnues || []).slice(0, 2).map((i) => esc(cut(i, 110))).join(' · '),
-    ...(att && x.generation?.attention?.length ? ['', '<b>⚠ Points d’attention</b>', ...x.generation.attention.slice(0, att).map((a) => `• ${esc(cut(a.texte, 140))}`)] : []),
     '',
-    x.preview_url ? `👁 Aperçu complet de cette version : ${esc(x.preview_url)}` : '👁 Aperçu : captures de la page jointes à ce message',
+    '<b>Effet de l’approbation</b>',
+    ...(effet.pages || [`page /affaires/${esc(String(x.case_id).toLowerCase())}/ : version remplacée`]).map((l) => `• ${esc(l)}`),
+    ...(effet.precision ? [esc(effet.precision)] : []),
     '',
-    '✅ APPROUVER = GO éditorial de CETTE VERSION de la page (puis projection, QA, déploiement, vérification du site servi). L’affaire et la carte ne changent pas.',
+    x.preview_url ? `👁 Aperçu complet de CETTE version (empreinte ${esc(x.hash)}) : ${esc(x.preview_url)}` : '👁 Aperçu : captures de la page jointes à ce message',
+    '',
+    '✅ APPROUVER = GO éditorial de CETTE VERSION (empreinte ci-dessus, et aucune autre). L’affaire et la carte ne changent pas.',
     '🟡 REVIEW : rien publié, la version actuelle reste en ligne · ⛔ REJECT : cette mise à jour est écartée, la version actuelle reste en ligne.',
-  ].join('\n').replace(/\n{3,}/g, '\n\n');
+  ].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n').replace(/\n{3,}/g, '\n\n');
   let msg = '';
-  for (const niveau of [{ na: 4, nr: 3, ca: 220, cr: 130, att: 3 }, { na: 3, nr: 2, ca: 160, cr: 100, att: 2 }, { na: 2, nr: 2, ca: 120, cr: 80, att: 1 }, { na: 2, nr: 1, ca: 90, cr: 60, att: 0 }]) {
+  for (const niveau of [{ na: 4, ca: 220, att: 4, ct: 200 }, { na: 3, ca: 160, att: 3, ct: 160 }, { na: 2, ca: 120, att: 3, ct: 130 }, { na: 1, ca: 90, att: 3, ct: 110 }, { na: 0, ca: 60, att: 3, ct: 90 }]) {
     msg = construire(niveau);
-    if (msg.length <= 3700) break;
+    if (msg.length <= 3900) break;
   }
   return msg;
 }

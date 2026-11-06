@@ -4,10 +4,13 @@
 // sinon « Date non établie » + la date de parution, jamais confondues.
 import { libelleDate, TYPE_LABELS } from '../lib/hub-matiere';
 import { dateLongue } from '../lib/etat-wording';
+import { libre } from '../lib/territoires';
 
 interface Props { items: any[] }
 const { items } = Astro.props;
 const pub = (s: any) => (s?.publie_le ? dateLongue(s.publie_le) : null);
+// Références COMPLÉMENTAIRES d'une étape : une même étape peut avoir plusieurs sources ; la principale n'efface pas les autres (une source devenue secondaire reste consultable).
+const aussi = (e: any) => (e.sources_complementaires ?? []).filter((s: any) => s?.url && libre(s.media) && s.url !== e.source?.url);
 ---
 
 <ol class="chrono">
@@ -27,6 +30,9 @@ const pub = (s: any) => (s?.publie_le ? dateLongue(s.publie_le) : null);
             {e.source?.acces === 'paywall' && <span class="limite"> · article réservé aux abonnés</span>}
             {sansDate && pub(e.source) && <span class="limite"> · Date de l’événement non établie</span>}
           </p>
+          {aussi(e).length > 0 && (
+            <p class="src aussi">Aussi : {aussi(e).map((s: any, k: number) => (<>{k > 0 ? ' · ' : ''}<a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{pub(s) ? `, ${pub(s)}` : ''} ↗</a></>))}</p>
+          )}
         </div>
       </li>
     );
