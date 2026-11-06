@@ -1,0 +1,113 @@
+{
+  "etat_actuel": [
+    "Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves.",
+    "Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.",
+    "L'ouverture d'une enquête ne vaut pas culpabilité."
+  ],
+  "statut_affiche": "enquête",
+  "deroule": [
+    {
+      "date": "2026-03",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Le Figaro, un premier signalement a eu lieu fin mars ; l’article ne précise pas lequel des deux agents il concerne.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+        "publie_le": "2026-07-01",
+        "acces": "partiel"
+      }
+    },
+    {
+      "date": "2026-06-19",
+      "date_nature": "evenement",
+      "type": "signalement",
+      "acteur": null,
+      "texte": "Selon Le Figaro, un second signalement a eu lieu le 19 juin. Selon franceinfo (d’après ICI Gironde), l’agent territorial spécialisé des écoles maternelles a été écarté par son employeur, la mairie, après un second signalement.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+        "publie_le": "2026-07-01",
+        "acces": "partiel"
+      },
+      "sources_complementaires": [
+        {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
+          "publie_le": "2026-07-01",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "mesure_etablissement",
+      "acteur": null,
+      "texte": "Selon Le Figaro, les deux agents, employés à l’école maternelle Frida-Kahlo dans le quartier Belcier, ont été suspendus le jour de leur signalement ; selon franceinfo, ils ont été écartés et ne sont plus en contact avec les enfants.",
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+        "publie_le": "2026-07-01",
+        "acces": "partiel"
+      },
+      "sources_complementaires": [
+        {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/pedocriminalite/cinq-plaintes-deposees-apres-des-soupcons-de-viols-et-d-agressions-sexuelles-dans-une-ecole-maternelle-de-bordeaux_8087945.html",
+          "publie_le": "2026-07-01",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "garde_a_vue",
+      "acteur": "Police, parquet de Bordeaux",
+      "texte": "Placés en garde à vue, les deux agents sont entendus pour la première fois après des perquisitions à leur domicile. La date n’est pas établie : « mardi 30 juin » selon France 3, « mercredi » selon Le Figaro (article publié le mercredi 1er juillet). Les gardes à vue sont levées « afin de permettre l'exploitation du matériel informatique saisi », précise le parquet, qui indique que l'office anti-cybercriminalité de Bordeaux l'exploite « en toute première priorité ».",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+          "publie_le": "2026-07-01",
+          "acces": "partiel"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "Parents d’élèves",
+      "texte": "Selon le parquet de Bordeaux, cité par France 3 et Le Figaro, plusieurs plaintes de parents d’élèves ont été recueillies par les enquêteurs.",
+      "source": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+          "publie_le": "2026-07-01",
+          "acces": "partiel"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun développement postérieur au 3 juillet 2026 n'a été trouvé (mise en examen, classement, nouvelle mesure) : recherches du 10 octobre dans la presse accessible. Cela ne prouve pas qu'il n'y en a pas.",
+    "Les dates des signalements reposent sur Le Figaro (fin mars ; 19 juin), seul article lu à les donner ; l’ordre dans lequel les deux agents ont été visés n’est pas précisé par cet article.",
+    "Le contenu de l'analyse du matériel informatique n'est pas connu."
+  ],
+  "faits": "Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d’agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d’élèves de l’école maternelle Frida-Kahlo ; elle vise un agent territorial spécialisé des écoles maternelles et un animateur périscolaire, suspendus."
+}

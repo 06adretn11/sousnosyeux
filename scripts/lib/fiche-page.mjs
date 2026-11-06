@@ -9,6 +9,7 @@
 // =====================================================================
 import { readFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { comparerEtapes, comparerReactions, refsEtape } from './fiche-acquis.mjs';
 
 const DATA = new URL('../../data/', import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(new URL(f, DATA), 'utf8'));
@@ -45,29 +46,37 @@ export function empreintesApprouvees(revues, id) {
 export const urlsDe = (d) => {
   const vus = new Map();
   const ajoute = (s) => { if (s?.url && !MEDIAS_PAYANTS.includes(s.media) && !vus.has(s.url)) vus.set(s.url, { url: s.url, media: s.media, d: s.publie_le ?? null }); };
-  for (const e of d.deroule || []) ajoute(e.source);
+  // Les références COMPLÉMENTAIRES d'une étape sont des sources de la fiche au même titre que la principale : une source devenue secondaire n'est pas une source retirée.
+  for (const e of d.deroule || []) { ajoute(e.source); for (const s of e.sources_complementaires || []) ajoute(s); }
   for (const r of [...(d.reactions || []), ...(d.paroles || [])]) ajoute(r.source);
   return [...vus.values()];
 };
 
 /**
- * Ce que change une VERSION CANDIDATE par rapport à la dernière version publique (sans moteur de diff : comparaison d'ensembles).
- * Une étape est identifiée par (source, type, date) : même clé mais texte reformulé = « reformulée » (non substantielle) ; clé absente d'un
- * côté = ajoutée / retirée. Rien n'est perdu en silence : les retraits sont listés au même titre que les ajouts.
+ * Ce que change une VERSION CANDIDATE par rapport à la dernière version publique. Une étape est un FAIT (comparerEtapes : même type de fait, dates
+ * compatibles, texte proche ou acte procédural du même jour — jamais « même source, même date » seul), pas un triplet (source, type, date) :
+ *   · même fait, formulation ou source principale différente  → « reformulée » (jamais un ajout ET un retrait) ; une source devenue secondaire est « conservée » ;
+ *   · contenu déjà porté par une étape existante               → une RÉFÉRENCE de plus, pas un fait nouveau ;
+ *   · fait absent de l'autre côté                              → ajouté / retiré (les retraits sont listés au même titre que les ajouts) ;
+ *   · deux étapes ressemblant à plusieurs : AMBIGU, ni ajout ni retrait.
  */
 export function changementsFiche(precedent, nouveau) {
-  const cle = (e) => `${e.source?.url ?? ''}|${e.type ?? ''}|${e.date ?? ''}`;
-  const compte = (l) => l.reduce((m, e) => m.set(cle(e), (m.get(cle(e)) || 0) + 1), new Map());
-  const cp = compte(precedent?.deroule || []), cn = compte(nouveau?.deroule || []);
+  const A = precedent?.deroule || [], C = nouveau?.deroule || [];
+  const cmp = comparerEtapes(A, C);
   const vue = (e) => ({ texte: e.texte, media: e.source?.media ?? null, url: e.source?.url ?? null, date: e.date ?? null, publie_le: e.source?.publie_le ?? null });
-  const reste = (l, autre) => { const c = new Map(autre); return l.filter((e) => { const n = c.get(cle(e)) || 0; if (n > 0) { c.set(cle(e), n - 1); return false; } return true; }); };
-  const ajoutees = reste(nouveau?.deroule || [], cp).map(vue), retirees = reste(precedent?.deroule || [], cn).map(vue);
-  const reformulees = (nouveau?.deroule || []).filter((e) => (precedent?.deroule || []).some((p) => cle(p) === cle(e) && p.texte !== e.texte)).length;
+  const ajoutees = cmp.ajoutees.map((j) => vue(C[j])), retirees = cmp.retirees.map((i) => vue(A[i]));
+  const reformulees = cmp.paires.filter((p) => A[p.i].texte !== C[p.j].texte).length;
+  const devenues_secondaires = cmp.paires.filter((p) => A[p.i].source?.url !== C[p.j].source?.url && refsEtape(C[p.j]).some((r) => r.url === A[p.i].source?.url)).map((p) => ({ media: A[p.i].source?.media ?? null, url: A[p.i].source?.url }));
   const up = new Set(urlsDe(precedent || {}).map((s) => s.url)), un = new Set(urlsDe(nouveau || {}).map((s) => s.url));
   const sources_nouvelles = urlsDe(nouveau || {}).filter((s) => !up.has(s.url)), sources_retirees = urlsDe(precedent || {}).filter((s) => !un.has(s.url));
-  return { ajoutees, retirees, reformulees, sources_nouvelles, sources_retirees,
+  const rx = comparerReactions(precedent?.reactions || [], nouveau?.reactions || []);
+  const etat_change = JSON.stringify(precedent?.situation ?? null) !== JSON.stringify(nouveau?.situation ?? null) || JSON.stringify(precedent?.etat_actuel ?? null) !== JSON.stringify(nouveau?.etat_actuel ?? null);
+  return { ajoutees, retirees, reformulees, devenues_secondaires, sources_nouvelles, sources_retirees,
+    ambigus: cmp.ambigus.map((x) => ({ avant: vue(A[x.i]), apres: vue(C[x.j]) })),
+    reactions_ajoutees: rx.ajoutees.length, reactions_retirees: rx.retirees.length, etat_change,
     inconnues_changees: JSON.stringify(precedent?.inconnues || []) !== JSON.stringify(nouveau?.inconnues || []),
-    substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length) };
+    // Seule une MATIÈRE nouvelle ou perdue justifie une décision : un changement de disponibilité technique (source relue ou non, reformulation équivalente) n'en est pas un.
+    substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length || rx.ajoutees.length || rx.retirees.length || etat_change || cmp.ambigus.length) };
 }
 
 /**
@@ -105,10 +114,23 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
       inconnues: (d.inconnues || []).slice(0, 4), nb_evenements_neon: nbEvenements,
       // Sans base d’aperçu accessible depuis Telegram (jamais localhost), pas d’URL : l’aperçu est joint au message sous forme de captures.
       // Fiche générée : pas de page d'aperçu (le dossier n'est pas encore dans data/hub-matiere) ; la lecture se fait sur le rendu Markdown du dépôt, qui porte la même empreinte.
-      preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : generation ? `${REVUE_GENEREE_BASE}/${c.case_id}.md` : null,
+      // Le lien porte l'EMPREINTE dans son nom (`versions/<ID>-<empreinte>.md`) : il désigne la version exacte soumise, même quand une version suivante remplace `<ID>.md` sur main.
+      preview_url: previewBase ? `${previewBase}/brouillons/revue/${c.case_id.toLowerCase()}/` : generation ? `${REVUE_GENEREE_BASE}/versions/${c.case_id}-${hashDossier(d)}.md` : null,
       diff_public: diff, verifie_le: dossier.verifie_le,
       // Mise à jour d'une page déjà publiée : ce qui change réellement depuis la dernière version publique (jamais tout l'historique comme nouveau).
-      ...(ch ? { mise_a_jour: { precedent_hash: hashDossier(precedent.d), ajoutees: ch.ajoutees.slice(0, 6), retirees: ch.retirees.slice(0, 6), reformulees: ch.reformulees, sources_nouvelles: ch.sources_nouvelles.slice(0, 4), sources_retirees: ch.sources_retirees.slice(0, 4) } } : {}),
+      // Les retraits portent leur MOTIF (ceux que la fusion avec la version approuvée a écartés pour une cause établie) ; un retrait sans motif est dit tel quel.
+      ...(ch ? { mise_a_jour: {
+        precedent_hash: hashDossier(precedent.d), ajoutees: ch.ajoutees.slice(0, 6),
+        // Retraits = ce que la comparaison des deux versions ne retrouve pas + les retraits MOTIVÉS de la fusion (étape ou position écartée par une garde : elle n'est plus dans la version, donc invisible au diff).
+        retirees: [...ch.retirees.map((e) => ({ ...e, motif: generation?.acquis?.retirees?.find((r) => String(r.texte).slice(0, 120) === String(e.texte).slice(0, 120))?.motif ?? null })),
+          ...(generation?.acquis?.retirees || []).filter((r) => !ch.retirees.some((e) => String(e.texte).slice(0, 120) === String(r.texte).slice(0, 120))).map((r) => ({ texte: r.texte, media: r.media ?? null, url: null, date: null, publie_le: null, motif: r.motif }))].slice(0, 6),
+        reformulees: ch.reformulees, devenues_secondaires: ch.devenues_secondaires.slice(0, 4), sources_nouvelles: ch.sources_nouvelles.slice(0, 4), sources_retirees: ch.sources_retirees.slice(0, 4),
+        reactions_ajoutees: ch.reactions_ajoutees, reactions_retirees: ch.reactions_retirees, etat_change: ch.etat_change,
+        references_ajoutees: (generation?.acquis?.references_ajoutees || []).slice(0, 6), conservees: generation?.acquis?.conservees?.length ?? 0, non_relues: (generation?.acquis?.non_relues || []).slice(0, 6),
+        // Effet CONCRET d'une approbation : la fiche d'un Hub n'est pas promue automatiquement (le Hub se modifie par `appliquer-hubs`, empreinte exacte) ; une fiche isolée l'est (promouvoir-fiche).
+        effet: precedent.hub
+          ? { pages: [`Hub « ${hubTitre ?? precedent.hub} » : le dossier de cette affaire y est rédigé`], precision: 'Approuver enregistre votre GO mais ne modifie AUCUNE page automatiquement : un dossier de Hub ne s’applique que par la procédure dédiée (appliquer-hubs).' }
+          : { pages: [`page /affaires/${c.case_id.toLowerCase()}/ : la version approuvée est remplacée par celle-ci`, 'carte, Hubs, autres fiches : inchangés'], precision: 'Après votre GO : projection, QA, déploiement, puis vérification du site servi.' } } } : {}),
       // Dossier candidat (public par nature : c'est ce qui sera publié, sans extraits) : permet la promotion après le clic sans la copie locale du générateur.
       ...(generation ? { dossier: d } : {}),
       // Présent seulement pour une fiche PRODUITE par le circuit de génération : l'humain approuve en sachant qu'elle est automatique.
@@ -147,6 +169,7 @@ export function resumeGeneration(g) {
     qualification: g.qualification, contrat: g.contrat, modele: g.modele,
     sources_lues: g.sources.filter((s) => s.acces === 'libre' && s.pertinence === 'CETTE_AFFAIRE').length, sources_total: g.sources.length,
     elements_ecartes: g.ecartes.length,
+    ...(g.acquis ? { acquis: { conservees: g.acquis.conservees.length, references_ajoutees: g.acquis.references_ajoutees.length, retirees: g.acquis.retirees.length, non_relues: g.acquis.non_relues.length, inchange: g.acquis.inchange } } : {}),
     attention: g.attention.filter((a) => a.niveau !== 'mineur').concat(g.attention.filter((a) => a.niveau === 'mineur')).slice(0, 6).map((a) => ({ niveau: a.niveau, texte: a.texte.slice(0, 240) })),
   };
 }

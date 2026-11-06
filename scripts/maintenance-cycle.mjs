@@ -418,7 +418,10 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
   // Article atteint par un lien associé et qui ne nomme pas l'établissement (un reportage sur un rassemblement à l'échelle d'une ville) : il ne peut
   // porter que des faits de TERRITOIRE dont la source nomme elle-même le territoire — jamais un fait de l'établissement, jamais un territoire déduit de la fiche.
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune }) // le corps commence par le titre de la page
+  // Deux affaires au MÊME établissement (même commune) : un fait ne se rattache pas à « la procédure » de l'une plutôt que de l'autre.
+  const cleEtab = (e) => String(e || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\b(?:ecole|maternelle|elementaire|primaire|college|lycee)\b/g, '').replace(/\s+/g, ' ').trim();
+  const soeursMemeEtablissement = fiches.some((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune && cleEtab(f.etablissement) && cleEtab(f.etablissement) === cleEtab(fiche.etablissement));
+  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
     .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   F.reactions_nouvelles += r.length;
   return r;
@@ -430,7 +433,10 @@ async function ecrireReactions(base, reactions) {
   const r2 = await enregistrerProposition(sql, {
     // `.q2` : qualification des réponses corrigée (lien à l'affaire ≠ étendue, mobilisation sur preuve directe, libellés non élargis). Les lignes « +reactions » d'avant
     // (REVIEW compris) sont conservées telles quelles ; seules les propositions corrigées naissent sous cette version, une fois (clé d'idempotence inchangée).
-    ...base, version: `${base.version || PRIMITIVE_VERSION}.q2+reactions`,
+    // `.q3` (06/11/2026) : « mobilisation » n'est plus un « rassemblement » (libellé = preuve : « des parents se sont mobilisés »), « a manifesté » est un fait accompli, le territoire nommé par
+    // « devant le tribunal de Paris » / « à travers Paris » est lu, et un fait rapporté à « cette procédure » est lié à l'affaire. Les lignes `.q2` (REVIEW compris) restent telles quelles ;
+    // celles encore sans décision sont remplacées par scripts/reprendre-sans-perte.mjs (jamais approuvées à la place de leur version corrigée).
+    ...base, version: `${base.version || PRIMITIVE_VERSION}.q3+reactions`,
     engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
     PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
     _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],

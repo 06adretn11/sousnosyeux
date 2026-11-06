@@ -89,6 +89,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Une relecture enrichit les acquis, elle ne les remplace pas — fusion avec la version approuvée, diff sans faux retrait, message de mise à jour, empreinte et clic, faits territoriaux (6 cas réels rejoués)',
+    script: 'scripts/qa/test-acquis.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Information validée → pages existantes — destinations calculées (fiche approuvée, Hub publié), portée jamais devinée, rien d’exposé hors pages publiques',
     script: 'scripts/qa/test-destinations.mjs',
     bloquant: true,

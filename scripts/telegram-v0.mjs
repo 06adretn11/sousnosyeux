@@ -18,6 +18,7 @@
 import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
 import { hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
+import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
 import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
@@ -280,6 +281,10 @@ async function nouvelle(cle) {
   if (r[0].payload?.page) {
     const [cc] = await sql`select publication_status::text ps from cases where case_id = ${r[0].payload.page.case_id}`;
     if (cc?.ps !== 'publiée') throw new Error('proposition de fiche périmée (l’affaire n’est pas publique) — rien envoyé');
+    // Mise à jour d'une fiche déjà publiée : jamais proposée si la version publique n'est plus celle sur laquelle elle a été construite (elle écraserait une version plus récente sans la contenir).
+    const base = r[0].payload.page.mise_a_jour?.precedent_hash;
+    const courant = dossierFiche(r[0].payload.page.case_id);
+    if (base && (!courant || hashDossier(courant.d) !== base)) throw new Error('proposition de mise à jour périmée (la version publique a changé depuis sa génération) — rien envoyé');
     if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de fiche non envoyée');
   } else
   // Proposition de PUBLICATION : jamais envoyée pour une affaire qui n'est plus candidate (déjà publiée, retirée) ; l'enregistrement du choix exige `action`.

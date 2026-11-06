@@ -297,7 +297,7 @@ t('messages : réponse liée à l’affaire = enrichissement de sa fiche avec so
 t('retraitement sans doublon : les propositions erronées gardent leur ligne et leur décision ; les corrigées naissent sous une version distincte (idempotente), compatible avec les filtres « +reactions »', () => {
   const src = (f) => readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8');
   const mc = src('scripts/maintenance-cycle.mjs');
-  assert.ok(mc.includes('.q2+reactions`') && mc.includes("primitive_version not like '%+reactions'"));
+  assert.ok(mc.includes('.q3+reactions`') && mc.includes("primitive_version not like '%+reactions'"));
   assert.ok(mc.includes('lieAffaire: !viaPiste') && mc.includes('commune: fiche.commune'));
   assert.ok(src('scripts/lib/persist-etat-affaire.mjs').includes('on conflict (case_id, article_id, content_fingerprint, primitive_version)'));
 });

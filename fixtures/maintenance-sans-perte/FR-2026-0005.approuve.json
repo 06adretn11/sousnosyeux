@@ -1,0 +1,254 @@
+{
+  "etat_actuel": [
+    "Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026."
+  ],
+  "appel": false,
+  "faits": "Selon franceinfo, l’enquête judiciaire concerne un service périscolaire qui accueille des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e). Selon CNEWS, neuf agents du périscolaire de l’école Saint-Dominique ont été suspendus à titre conservatoire.",
+  "deroule": [
+    {
+      "date": "2026-01",
+      "date_nature": "approximative",
+      "type": "mesure_collectivite",
+      "acteur": "Ville de Paris",
+      "texte": "Selon CNEWS, la Ville de Paris a suspendu à titre conservatoire, depuis fin janvier, neuf animateurs employés à l'école maternelle Saint-Dominique (7e arrondissement), pour suspicions de violences physiques et sexuelles.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+        "publie_le": "2026-02-16",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Parisien",
+          "url": "https://www.leparisien.fr/faits-divers/dramatique-il-ny-a-pas-dautre-mot-a-paris-les-parents-de-lecole-saint-dominique-entre-stupeur-et-soulagement-20-05-2026-6WQUW6PFLZH73P3LS4LZV4JVXY.php",
+          "publie_le": "2026-05-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "signalement",
+      "acteur": "Ville de Paris",
+      "texte": "Selon la Ville de Paris, différents signalements réalisés par les parents de l'école ont été pris en compte dans les jours suivant les suspensions.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+        "publie_le": "2026-02-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "plainte",
+      "acteur": "parents d'élèves de trois écoles du 7e arrondissement",
+      "texte": "Selon CNEWS, des parents d’élèves de trois écoles du 7e arrondissement (Saint-Dominique, Rapp et La Rochefoucauld) ont porté plainte collectivement auprès du parquet de Paris.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+        "publie_le": "2026-02-16",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-05-20",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": null,
+      "texte": "Selon Le Parisien, seize personnes « en lien avec le périscolaire des écoles Saint-Dominique-Rapp-La Rochefoucauld » ont été placées en garde à vue le mercredi 20 mai 2026.",
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/dramatique-il-ny-a-pas-dautre-mot-a-paris-les-parents-de-lecole-saint-dominique-entre-stupeur-et-soulagement-20-05-2026-6WQUW6PFLZH73P3LS4LZV4JVXY.php",
+        "publie_le": "2026-05-20",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+          "publie_le": "2026-05-20",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-05-21",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "parquet de Paris",
+      "texte": "Selon franceinfo, qui cite le parquet de Paris, treize des seize personnes placées en garde à vue ont été relâchées le jeudi 21 mai 2026, aucune charge suffisante pour caractériser une infraction pénale ne pouvant être retenue contre elles ; les trois autres ont été présentées à des juges d’instruction le vendredi 22 mai.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-05-22",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "parquet de Paris",
+      "texte": "Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon franceinfo, une animatrice du même service périscolaire a par ailleurs été placée sous le statut de témoin assisté.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": "parquet de Paris",
+      "texte": "Le parquet de Paris a indiqué que les investigations se poursuivent sous la direction de deux juges d'instruction.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "Le Journal du Dimanche",
+          "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+          "publie_le": "2026-05-20",
+          "acces": "libre"
+        }
+      ]
+    }
+  ],
+  "inconnues": [
+    "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+    "Le dossier ne repose que sur 4 articles lus (CNEWS, franceinfo, Le Parisien, Le Journal du Dimanche)."
+  ],
+  "synthese": {
+    "decision": "Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026."
+  },
+  "reactions": [
+    {
+      "acteur": "avocat des parents d'élèves",
+      "qualite": "propos rapportés par CNEWS",
+      "date": "2026-02-16",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "obligation de sécurité de l'administration",
+      "citations": [
+        {
+          "texte": "Si certains parents ont agi collectivement, c'est pour rappeler à l'administration son obligation de garantir que les enfants confiés à l'école, au périscolaire et aux centres aérés y soient en parfaite sécurité",
+          "pour": "obligation de sécurité de l'administration"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par CNEWS. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+        "publie_le": "2026-02-16",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Raphaelle Varaut, avocate de l'un des deux animateurs",
+      "qualite": "propos rapportés par franceinfo",
+      "date": "2026-05-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "contestation des faits reprochés à son client",
+      "citations": [
+        {
+          "texte": "Mon client conteste tous les faits qui lui sont reprochés",
+          "pour": "contestation des faits reprochés à son client"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par franceinfo. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Sophie Guinamant et Gianni De Georgi, avocats de l'autre animateur",
+      "qualite": "propos rapportés par franceinfo",
+      "date": "2026-05-22",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "appel à la prudence et confiance dans l'institution judiciaire",
+      "citations": [
+        {
+          "texte": "On ne peut qu'appeler à la prudence. L'histoire judiciaire a plusieurs fois démontré que l'emballement médiatique dans ce type de dossiers peut conduire à des erreurs majeures.",
+          "pour": "appel à la prudence et confiance dans l'institution judiciaire"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par franceinfo. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Selon Le Journal du Dimanche, le parquet de Paris a indiqué que les gardes à vue du 20 mai s’inscrivaient dans le cadre de différentes enquêtes préliminaires et portaient sur des faits de natures et de gravités différentes.",
+      "acteur": "parquet de Paris",
+      "qualite": "propos rapportés par Le Journal du Dimanche",
+      "date": "2026-05-20",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "cadre des gardes à vue et nature des faits visés",
+      "citations": [],
+      "etabli": "Établi : propos rapportés par Le Journal du Dimanche. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+        "publie_le": "2026-05-20",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "mise en examen",
+  "situation": {
+    "decision": {
+      "label": "Situation judiciaire",
+      "titre": "Mise en examen",
+      "meta": "22 mai 2026 · Parquet de Paris",
+      "cat": "blue",
+      "texte": "Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026."
+    },
+    "suite": {
+      "label": "Suite",
+      "titre": "Jugement sur le fond non documenté",
+      "meta": "dans les sources consultées",
+      "cat": "blue",
+      "lignes": [
+        "La personne mise en cause est présumée innocente.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon CNEWS, la Ville de Paris a suspendu à titre conservatoire, depuis fin janvier, neuf animateurs employés à l'école maternelle Saint-Dominique (7e arrondissement), pour suspicions de violences physiques et sexuelles."
+      ]
+    }
+  }
+}

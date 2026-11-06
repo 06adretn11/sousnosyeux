@@ -45,12 +45,25 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   for (const r of [...(d.reactions || []), ...(d.paroles || [])]) citees.add(r.source?.url);
   const USAGE = { CETTE_AFFAIRE: 'rattachement établi — utilisée', AUTRE_AFFAIRE: 'autre affaire — NON utilisée', AFFAIRE_SOEUR: 'affaire proche — NON utilisée', AMBIGU: 'rattachement non établi — NON utilisée', HORS_SUJET: 'hors sujet (même nom ou même lieu, autre sujet) — NON utilisée' };
   const usage = (s) => (s.pertinence === 'CETTE_AFFAIRE' && !citees.has(s.url) ? 'rattachement établi, mais aucune étape ni réaction n’en provient — NON utilisée'
+    : citees.has(s.url) && s.pertinence !== 'CETTE_AFFAIRE' ? `conservée de la version approuvée (non relue ou non reprise à ce passage${s.acces !== 'libre' ? ` : ${s.acces}${s.motif ? ` — ${s.motif}` : ''}` : ''}) — l’acquis n’est pas effacé`
     : s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : (s.acces !== 'libre' ? 'non lue (inaccessible) — NON utilisée' : '—')));
   const ligneSource = (s) => `| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${usage(s)} |`;
   const utilisees = g.sources.filter((s) => citees.has(s.url));
   const inventaire = g.sources.filter((s) => !citees.has(s.url));
   L.push('## Sources utilisées', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|', ...utilisees.map(ligneSource), '');
   if (inventaire.length) L.push('## Inventaire des autres sources (écartées, non lues ou sans apport)', '', '| Source | Accès | Origine | Rattachement à l’affaire |', '|---|---|---|---|', ...inventaire.map(ligneSource), '');
+  if (g.acquis) {
+    const q = g.acquis;
+    L.push('## Version approuvée et relecture : ce qui est conservé, ajouté ou écarté', '',
+      `Version approuvée de départ : \`${q.precedent_hash}\`. ${q.inchange ? 'La relecture n’apporte rien d’éditorial : la version approuvée est inchangée.' : 'La candidate = version approuvée + apports de la relecture.'}`, '',
+      `- Étapes approuvées conservées alors que la relecture ne les reproduit pas : ${q.conservees.length}${q.conservees.length ? ` (${q.conservees.filter((x) => x.raison === 'NON_RELUE').length} dont aucune source n’a été relue à ce passage)` : ''}`,
+      `- Références ajoutées à des étapes existantes : ${q.references_ajoutees.length} · sources devenues références secondaires (jamais retirées) : ${q.devenues_secondaires.length}`,
+      `- Étapes enrichies par une formulation plus complète : ${q.enrichies.length} · dates divergentes non tranchées : ${q.divergences.length} · ambiguïtés conservées : ${q.ambigues.length}`,
+      `- Retraits motivés : ${q.retirees.length}${q.retirees.map((x) => `\n  - ${String(x.texte).slice(0, 120)} — ${x.motif}`).join('')}`,
+      `- Positions attribuées conservées : ${q.reactions_conservees} · ajoutées : ${q.reactions_ajoutees}`);
+    if (q.non_relues?.length) L.push('- Sources citées par la version fusionnée mais non relues à ce passage (conservées, aucune relecture n’est prétendue) :', ...q.non_relues.map((s) => `  - ${s.media} (${s.motif || 'non relue'})`));
+    L.push('');
+  }
   L.push('## Inconnues et limites documentaires', '', ...(d.inconnues?.length ? d.inconnues.map((x) => `- ${x}`) : ['*Aucune.*']), '');
   L.push('## Points nécessitant une attention particulière', '', ...(g.attention.length ? g.attention.map((a) => `- **${a.niveau}** · ${a.code} — ${a.texte}`) : ['*Aucun.*']), '');
   L.push('## Mesures de génération', '', `- Sources : ${g.sources.filter((s) => s.acces === 'libre').length} lue(s) sur ${g.sources.length} · pertinentes : ${g.stats.sources_pertinentes}`, `- Éléments écartés par les gardes : ${g.ecartes.length} · éléments d'une autre affaire ou de portée territoriale, classés à part : ${(g.hors_perimetre || []).length}`, `- LLM : ${g.cout.appels} appel(s) (${g.cout.cache} depuis le cache), ${g.cout.input_tokens} tokens en entrée, ${g.cout.output_tokens} en sortie, ${g.cout.cout_usd == null ? 'coût non rapporté' : `${g.cout.cout_usd.toFixed(4)} USD`}`, '');

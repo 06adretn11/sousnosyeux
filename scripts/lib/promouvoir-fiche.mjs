@@ -29,6 +29,8 @@ export function decider({ id, generee, revues, isoles, hubs = [], cases, holds }
     const h0 = hashDossier(present);
     if (h0 === hash) return { ok: false, motif: 'DEJA_PROMUE', hash };
     if (!approuvees.includes(h0)) return { ok: false, motif: 'DOSSIER_DEJA_PRESENT_PAS_D_ECRASEMENT', hash };
+    // Une MISE À JOUR n'est promue que sur la version dont elle est partie : sinon un ancien bouton (ou une proposition obsolète) remplacerait une version plus récente sans la contenir.
+    if (generee.precedent_hash && generee.precedent_hash !== h0) return { ok: false, motif: 'BASE_PERIMEE', hash };
     return { ok: true, hash, dossier: generee.d, remplace: h0 };
   }
   return { ok: true, hash, dossier: generee.d };

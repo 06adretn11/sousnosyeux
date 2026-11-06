@@ -1,0 +1,59 @@
+# SNY — reprise ponctuelle de l'encours après la correction « une relecture enrichit les acquis, elle ne les remplace pas » (06/11/2026).
+# Déclenchement MANUEL uniquement (workflow_dispatch) : plan par défaut (aucune écriture), puis --ecrire. Aucune publication : les propositions corrigées partent sur Telegram
+# et attendent la décision de l'éditeur ; les anciennes propositions sans décision reçoivent une décision MACHINE « SUPERSEDED » (jamais ACCEPT à la place de l'éditeur).
+# Même groupe de concurrence que sny-maj-fiches (jamais deux générations en parallèle). contents: write — uniquement docs/industrialisation/fiches-generees (aperçus de candidates).
+# À SUPPRIMER (ou laisser inerte) une fois la reprise faite : il n'a aucun déclencheur automatique.
+name: sny-reprise
+
+on:
+  workflow_dispatch:
+    inputs:
+      ecrire:
+        description: 'Appliquer la reprise (sinon : plan, lecture seule)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sny-maj-fiches
+  cancel-in-progress: false
+
+jobs:
+  reprise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Plan (lecture seule : compteurs et identifiants techniques seulement)
+        if: ${{ !inputs.ecrire }}
+        run: node scripts/reprendre-sans-perte.mjs
+      - name: Reprise (régénération avec la version approuvée, requalification des faits territoriaux)
+        if: ${{ inputs.ecrire }}
+        run: node scripts/reprendre-sans-perte.mjs --ecrire
+      - name: Déposer les aperçus sur main (docs seulement ; AVANT l'envoi des propositions)
+        if: ${{ inputs.ecrire }}
+        run: |
+          git config user.name "sny-bot"
+          git config user.email "sny-bot@users.noreply.github.com"
+          git add docs/industrialisation/fiches-generees
+          if ! git diff --cached --quiet; then
+            git commit -m "docs: aperçus des mises à jour de fiches corrigées (reprise sans perte), aucune publication"
+            git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
+          fi
+      - name: Envoyer les propositions corrigées (une seule fois chacune)
+        if: ${{ inputs.ecrire }}
+        run: |
+          node scripts/telegram-v0.mjs notifier-nouvelles 6
+          node scripts/telegram-v0.mjs notifier 6
