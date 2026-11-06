@@ -44,6 +44,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Déclarations d’organismes — information décidable (fait structuré, libellé fermé, attribution), continuité d’une proposition, application et projection (jamais sans ACCEPT, jamais sous HOLD)',
+    script: 'scripts/qa/test-declaration-organisme.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Wording « procès » — audience annoncée ≠ procès tenu',
     script: 'scripts/qa/test-wording-proces.mjs',
     bloquant: true,

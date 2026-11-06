@@ -28,7 +28,7 @@ import { filtrer, detecterTerritoire, aplatir, parserRSS } from './capteurs.mjs'
 import { resoudre } from './resolver.mjs';
 import { jetonsEtab } from './routage-veille.mjs';
 
-export const SOURCES_SUIVIES_VERSION = 'sources-suivies-0.1.0';
+export const SOURCES_SUIVIES_VERSION = 'sources-suivies-0.2.0';
 // Même agent que lirePage (preuve-claim.mjs) : un seul lecteur public, identifiable, sans déguisement.
 export const UA = 'Mozilla/5.0 (compatible; sousnosyeux-watch/1.0)';
 const sha = (s) => createHash('sha256').update(String(s)).digest('hex');
@@ -300,6 +300,8 @@ export function classer({ doc, page, organisme, fiches }) {
   const r = resoudre({ candidate: { title: titre }, index: fiches, corps });
   const ok = (r.detail || []).filter((d) => d.rattachement === 'OK').map((d) => d.case_id);
   const douteux = (r.detail || []).filter((d) => d.rattachement === 'DOUTEUX').map((d) => d.case_id);
+  // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
+  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
@@ -359,6 +361,113 @@ export function passages(corps, fiche, { max = 3, alias = [] } = {}) {
     }
   }
   return [...etab, ...orga, ...(etab.length ? [] : communaux)].slice(0, max);
+}
+
+/**
+ * DÉCLARATIONS d'un organisme sur SA PROPRE action dans une affaire — vocabulaire FERMÉ, libellé public fermé (jamais la phrase de la source).
+ * PORTÉE ACTUELLE : une seule famille reconnue, « s'est constitué(e) partie civile ». Ce n'est PAS un traitement général des publications d'organismes :
+ * toute autre publication rattachée reste une information SANS bouton (message Telegram « MAINTENANCE »), et reste consultable en mémoire
+ * (`source_resolutions`, `SOURCE_SUIVIE/<destination>`, titre et adresse). Étendre le vocabulaire = ajouter une ligne ici (et un test).
+ * Une publication ne devient une information décidable (fait structuré du circuit « enrichissement » existant) que si :
+ *   1. le document est rattaché à l'affaire par son TEXTE (classer → AFFAIRE, un seul rattachement plein) ;
+ *   2. la phrase probante a pour SUJET l'organisme suivi lui-même (un de ses alias) ;
+ *   3. l'acte écrit appartient à ce vocabulaire ;
+ *   4. le CONTEXTE d'affaire attesté par la phrase (un mois et une année) est celui de l'ORIGINE de la chronologie de l'affaire dans SNY
+ *      (son événement le plus ancien) : on relie la déclaration à ce contexte, jamais à une procédure ou à une étape (une affaire dont la
+ *      chronologie ne permet pas ce lien — fiche plus étroite que la source, mois absent ou postérieur — reste une simple information).
+ * Le libellé nomme ce contexte ; il ne dit ni la date de la démarche (jamais déduite), ni la procédure visée, ni l'issue.
+ */
+const MOIS_ECRITS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+const MOIS_NOMS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+const deMois = (m) => (/^[aeiouhéû]/i.test(m) ? `d’${m}` : `de ${m}`);
+const enMois = (m) => `en ${m}`;
+/** « à l’école maternelle X », « au centre de loisirs Y », « à la crèche Z » : le lieu tel que la fiche le nomme, sans exception par établissement. */
+const lieuDe = (etab) => { const e = String(etab || '').trim(); const mot = aplatir(e).split(' ')[0]; const bas = e.charAt(0).toLowerCase() + e.slice(1);
+  return /^(ecole|aire|accueil|ensemble)$/.test(mot) ? `à l’${bas}` : /^(creche|halte|garderie|maison|micro)$/.test(mot) ? `à la ${bas}` : /^(centre|college|lycee|jardin|institut|foyer|service)$/.test(mot) ? `au ${bas}` : `à ${e}`; };
+const dateLongue = (iso) => { const d = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ''); return d ? `${Number(d[3]) === 1 ? '1er' : Number(d[3])} ${MOIS_NOMS[Number(d[2]) - 1]} ${d[1]}` : null; };
+
+const DECLARATIONS = [{
+  mesure: 'declaration_partie_civile',
+  motif: /\b(?:s'est|se sont|se|nous nous sommes)\s+constitue\w*\s+partie civile\b|\bconstitue\w*\s+partie civile\b/,
+  libelle: ({ nom, etab, commune, contexte, publie }) => `Dans sa publication${publie ? ` du ${publie}` : ''}, ${nom} revient sur ${contexte} ${lieuDe(etab)} (${commune}). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.`,
+  // Inconnues du dossier rendues obsolètes (portion STRICTE) : remplacées seulement si le texte actuel est EXACTEMENT celui attendu ; le reste reste intact.
+  inconnues: [
+    { cible: 'dossier', re: /^Une constitution de partie civile d['’]associations est évoquée ailleurs ; elle n['’]est pas confirmée par les articles relus\.$/,
+      apres: ({ nom, publie }) => `Une constitution de partie civile est déclarée par ${nom} dans une publication du ${publie} (déclaration non confirmée par une autre source consultée ; date de la démarche et procédure non précisées) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.` },
+    { cible: 'transversale', re: /^Une constitution de partie civile de l['’]association (.+?) est évoquée dans d['’]autres sources ; le communiqué \(PDF\) n['’]a pas pu être relu : elle n['’]est donc pas reprise\.$/,
+      qui: true,
+      apres: ({ publie, capture }) => `Une constitution de partie civile de l’association ${capture} est évoquée dans d’autres sources ; le communiqué (PDF) n’a pas pu être relu : seule la déclaration de l’association du ${publie} est reprise (attribuée, non confirmée par une autre source consultée).` },
+  ],
+}];
+
+/**
+ * Contexte éditorial des affaires, en LECTURE SEULE : chronologie (dossiers des Hubs + événements validés) et inconnues (dossier, transversales).
+ * @param {string[]} fichiersHub  chemins de data/hub-matiere/*.json (le nom du fichier est l'identifiant du Hub)
+ * @param {string|null} cheminEvenements  data/evenements.json
+ */
+export function chargerContexteHub(fichiersHub, cheminEvenements = null) {
+  const dates = new Map(), dossiers = new Map(), transversales = new Map();
+  const ajouter = (id, d) => { if (d && /^\d{4}-\d{2}/.test(d)) dates.set(id, [...new Set([...(dates.get(id) || []), String(d).slice(0, 10)])].sort()); };
+  for (const f of fichiersHub) {
+    let j; try { j = JSON.parse(readFileSync(f, 'utf8')); } catch { continue; }
+    const hub = f.replace(/\\/g, '/').split('/').pop().replace(/\.json$/, '');
+    transversales.set(hub, j.inconnues_transversales || []);
+    for (const [id, d] of Object.entries(j.dossiers || {})) {
+      dossiers.set(id, { hub, inconnues: d.inconnues || [] });
+      for (const e of d.deroule || []) ajouter(id, e.date);
+    }
+  }
+  if (cheminEvenements && existsSync(cheminEvenements)) {
+    try { for (const [id, evs] of Object.entries(JSON.parse(readFileSync(cheminEvenements, 'utf8')).affaires || {})) for (const e of evs) ajouter(id, e.date); } catch { /* fichier illisible : chronologie des dossiers seule */ }
+  }
+  return { dates, dossiers, transversales };
+}
+
+/**
+ * Faits structurés (contrat des « +reactions » : nature, mesure, libellé public, réalisation, portée, acteur, citation) pour les passages d'UNE affaire.
+ * `fiche` : { case_id, etablissement, commune } · `contexte` : chargerContexteHub(...). Sans contexte ou sans ancrage attesté : aucun fait (fail closed).
+ */
+export function faitsDeclares({ passages: ps, organisme, emetteur, nature, publie_le, fiche, contexte }) {
+  if (!['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nature)) return [];     // reprise, article de presse référencé, replis : l'émetteur n'est pas l'organisme
+  const alias = aliasOrganismes([organisme || {}]);
+  const nom = (organisme?.alias || [])[0] || organisme?.nom;
+  if (!alias.length || !nom || !fiche || !contexte) return [];
+  const out = [];
+  for (const D of DECLARATIONS) {
+    const p = ps.find((x) => { const n = aplatir(x.texte); return alias.some((a) => n.includes(a)) && D.motif.test(n); });
+    if (!p || out.some((f) => f.mesure === D.mesure)) continue;
+    // 4. contexte attesté = ORIGINE de la chronologie de l'affaire (jamais une étape ultérieure, jamais l'absence de date)
+    const n = aplatir(p.texte);
+    const m = new RegExp(`\\b(${MOIS_ECRITS.join('|')})\\s+(\\d{4})\\b`).exec(n);
+    const connues = contexte.dates.get(fiche.case_id) || [];
+    if (!m || !connues.length) continue;
+    const idx = MOIS_ECRITS.indexOf(m[1]); const ym = `${m[2]}-${String(idx + 1).padStart(2, '0')}`;
+    if (!connues[0].startsWith(ym)) continue;
+    const mois = MOIS_NOMS[idx];
+    const ctx = n.includes("suspension d'un animateur") ? `la suspension d’un animateur ${enMois(mois)} ${m[2]}` : `une affaire datée ${deMois(mois)} ${m[2]}`;
+    const nomPublic = nom.replace(/'/g, '’');
+    const publie = dateLongue(publie_le);
+    // inconnues devenues obsolètes : portion stricte, texte exact seulement
+    const dossier = contexte.dossiers.get(fiche.case_id);
+    const ajustements = [];
+    if (publie && dossier) {
+      for (const I of D.inconnues) {
+        const source = I.cible === 'dossier' ? dossier.inconnues : (contexte.transversales.get(dossier.hub) || []);
+        for (const avant of source) {
+          const mm = I.re.exec(avant);
+          if (!mm) continue;
+          if (I.qui && !alias.some((a) => aplatir(mm[1]).includes(a) || a.includes(aplatir(mm[1])))) continue;   // la mention doit viser CET organisme
+          ajustements.push({ cible: I.cible, hub: dossier.hub, ...(I.cible === 'dossier' ? { case_id: fiche.case_id } : {}), avant, apres: I.apres({ nom: nomPublic, publie, capture: mm[1] }) });
+        }
+      }
+    }
+    out.push({ event_type: 'mobilisation', nature: 'mobilisation', mesure: D.mesure, realisation: 'réalisée', portee: 'établissement', acteur: nom, acteur_nomme: nom,
+      event_date: null, event_period: null, publication_date: publie_le || null, emetteur, organisme: organisme.id, evidence: [p.texte], emplacements: [p.emplacement],
+      contexte_atteste: { mois: ym, ancrage: 'origine de la chronologie de l’affaire' },
+      libelle_public: D.libelle({ nom: nomPublic, etab: fiche.etablissement, commune: fiche.commune, contexte: ctx, publie }),
+      ...(ajustements.length ? { ajustements_inconnues: ajustements } : {}) });
+  }
+  return out;
 }
 
 /** Contacts publics d'une page de service (adresses électroniques génériques seulement ; une adresse nominative est masquée). */
@@ -583,7 +692,9 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
   for (const d of [...docs.values()].slice(0, maxDocs)) {
     const k = cleDocument(d.url);
     const memo = memoire.get(k);
-    if (memo && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
+    // Un document rattaché à une affaire est relu à chaque cycle (rares, bornés) : sa proposition doit rester décidable et à jour sans réimport ; les autres : au plus 1×/semaine.
+    const rattache = (memo?.resolution_method || '').endsWith('/AFFAIRE');
+    if (memo && !rattache && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
     requetes++;
     const doc = await lire(d.url, {});
     if (!doc.ok) {
@@ -602,6 +713,36 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
 }
 
 // ---------------------------------------------------------------------
+// 9 bis. CONTINUITÉ ET SOLLICITATION (fonctions pures, testées hors base)
+// ---------------------------------------------------------------------
+/**
+ * Que faire d'un document rattaché dont une proposition du même moteur existe peut-être déjà (même affaire, même article, même empreinte) ?
+ *   CREER        aucune proposition : on la crée ;
+ *   REPRENDRE    elle existe, sans décision, et n'était qu'une information alors qu'elle est maintenant décidable : MÊME proposal_id, faits complétés ;
+ *   DEJA_PRESENTE sinon (décidée, déjà décidable, ou rien de décidable) : aucun doublon, aucune écriture.
+ */
+export function actionContinuite({ existante, decidable }) {
+  if (!existante) return 'CREER';
+  const dejaDecidable = (existante.facts || []).some((f) => f?.libelle_public);
+  return !existante.decision && decidable && !dejaDecidable ? 'REPRENDRE' : 'DEJA_PRESENTE';
+}
+
+/**
+ * Une proposition sans décision doit-elle être soumise à l'éditeur dans ce cycle ?
+ * `envois` : lignes « kind:avecMessage » de telegram_envois pour la proposition (et son marqueur « #suite »).
+ *   · aucun envoi : oui (comportement historique) ;
+ *   · moteur « sources-suivies », fait décidable, information déjà envoyée AVEC message, jamais de demande de décision, pas de marqueur d'écart : oui, UNE fois
+ *     (la demande est la SUITE de l'information : même proposition) ;
+ *   · sinon non.
+ */
+export function aSolliciter({ decision = null, engine = null, decidable = false, envois = [] }) {
+  if (decision) return false;
+  if (!envois.length) return true;
+  if (engine !== 'sources-suivies' || !decidable) return false;
+  return !envois.some((e) => e.startsWith('decision:') || e.endsWith(':false'));
+}
+
+// ---------------------------------------------------------------------
 // 10. MESSAGE D'INFORMATION (format Telegram existant : « MAINTENANCE », sans bouton)
 // ---------------------------------------------------------------------
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
@@ -611,9 +752,27 @@ const couper = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
  * Message INFORMATION d'une publication d'organisme rattachée à une affaire : même en-tête que telegram-v0 `info()`, aucun bouton,
  * aucune décision demandée. Utilisé par telegram-v0 (envoi) ET par l'aperçu des essais : un seul texte.
  */
+/**
+ * Ce que le message de DÉCISION d'une publication d'organisme ajoute au message d'enrichissement existant : attribution, limites, rattachement,
+ * et — si une information avait déjà été envoyée pour CETTE proposition — le lien de continuité. Une seule définition (telegram-v0 et l'aperçu des essais).
+ */
+export function complementDecision({ decl, limite, publication_date, proposal_id, information_envoyee_le = null }) {
+  const l = [
+    '', '<b>Attribution et limites</b>',
+    `Déclaration de ${esc(decl.emetteur)} (${decl.nature === 'COMMUNIQUE' ? 'communiqué' : 'publication propre'}), publiée le ${jourFr(publication_date)} ; la date de la démarche n’est pas précisée par la source.`,
+    limite ? esc(couper(limite, 600)) : '',
+    decl.rattachement_motif ? `<b>Rattachement</b> : ${esc(couper(decl.rattachement_motif, 400))}` : '',
+    ...(decl.ajustements?.length ? ['', '<b>Inconnue(s) ajustée(s) si VALIDATE</b> (portion devenue obsolète seulement ; les autres inconnues restent)',
+      ...decl.ajustements.flatMap((a) => [`• Avant : « ${esc(couper(a.avant, 260))} »`, `  Après : « ${esc(couper(a.apres, 420))} »`])] : []),
+    information_envoyee_le ? '' : null,
+    information_envoyee_le ? `↩️ <b>Suite de l’information du ${jourFr(information_envoyee_le)}</b> (proposition ${esc(String(proposal_id).slice(0, 8))}) : elle est désormais soumise à décision ; aucun nouvel apport.` : null,
+  ].filter((x) => x !== null).filter((x, i, a) => !(x === '' && a[i - 1] === ''));
+  return '\n' + l.join('\n');
+}
+
 export function apercuInformation({ etablissement, commune, media, publication_date, url, avant, citation, limite, emetteur }) {
   const entete = `<b>${esc(etablissement)}</b> — ${esc(commune)}\n${esc(media || 'source inconnue')} · ${jourFr(publication_date)}`
     + (/^https?:\/\//.test(url || '') ? `\n<a href="${esc(url).replace(/"/g, '&quot;')}">Ouvrir la publication</a>` : '');
-  return `🔄 <b>MAINTENANCE</b> · 📣 ${entete}\n\nPublication de ${esc(emetteur || media)} rattachée à cette affaire.\nAucun changement de la fiche (état : ${esc(avant)}).`
+  return `🔄 <b>MAINTENANCE</b> · 📣 ${entete}\n\nPublication de ${esc(emetteur || media)} rattachée à cette affaire.\nAucun changement de la fiche (état : ${esc(avant)}).\nAucune décision demandée : seule la déclaration de constitution de partie civile est intégrable aujourd’hui ; cette publication reste consultable en mémoire (adresse ci-dessus).`
     + (citation ? `\n\n« ${esc(couper(String(citation).replace(/\s+/g, ' '), 220))} »` : '') + (limite ? `\n\nLimite : ${esc(limite)}` : '');
 }
