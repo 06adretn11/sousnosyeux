@@ -233,6 +233,19 @@
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
           "publie_le": "2026-07-08"
         }
+      },
+      {
+        "event_id": "273e440e-6aa9-4214-b672-bcb037b7564f",
+        "date": null,
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "L'Enfant Bleu",
+          "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+          "publie_le": "2026-07-21"
+        }
       }
     ],
     "POC-08": [
@@ -453,6 +466,49 @@
     }
   },
   "matiere": [
+    {
+      "id": "0eca8e5246d4",
+      "nature": "mobilisation",
+      "libelle": "Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.",
+      "realisation": "réalisée",
+      "portee": "établissement",
+      "acteur": "L'Enfant Bleu",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "L'Enfant Bleu",
+        "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+        "publie_le": "2026-07-21"
+      },
+      "ajustements": [
+        {
+          "hub": "paris-11e",
+          "apres": "Une constitution de partie civile est déclarée par L’Enfant Bleu dans une publication du 21 juillet 2026 (déclaration non confirmée par une autre source consultée ; date de la démarche et procédure non précisées) ; pour d’autres associations, elle est évoquée ailleurs et n’est pas confirmée par les articles relus.",
+          "avant": "Une constitution de partie civile d'associations est évoquée ailleurs ; elle n'est pas confirmée par les articles relus.",
+          "cible": "dossier",
+          "case_id": "POC-05"
+        },
+        {
+          "hub": "paris-11e",
+          "apres": "Une constitution de partie civile de l’association L'Enfant Bleu est évoquée dans d’autres sources ; le communiqué (PDF) n’a pas pu être relu : seule la déclaration de l’association du 21 juillet 2026 est reprise (attribuée, non confirmée par une autre source consultée).",
+          "avant": "Une constitution de partie civile de l'association L'Enfant Bleu est évoquée dans d'autres sources ; le communiqué (PDF) n'a pas pu être relu : elle n'est donc pas reprise.",
+          "cible": "transversale"
+        }
+      ],
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": "273e440e-6aa9-4214-b672-bcb037b7564f",
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
     {
       "id": "18ef6a395255",
       "nature": "mobilisation",
