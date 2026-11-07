@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-06"
+    "generated_at": "2026-11-07"
   },
   "cases": [
     {
@@ -2593,6 +2593,13 @@
           "is_primary": true
         },
         {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+          "media": "franceinfo",
+          "publication_date": "2026-07-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
           "media": "franceinfo",
           "publication_date": "2025-11-14",
@@ -2615,13 +2622,6 @@
         },
         {
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
-          "media": "franceinfo",
-          "publication_date": "2026-07-09",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
           "media": "franceinfo",
           "publication_date": "2026-07-09",
           "source_type": "presse",
