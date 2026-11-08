@@ -1,0 +1,93 @@
+{
+  "etat_actuel": [
+    "Selon ICI (12 mai 2026), l'animateur a été mis en examen le 30 avril pour des « gestes de nature sexuelle » et placé en détention provisoire.",
+    "Une mise en examen n'est pas une condamnation : l'information judiciaire se poursuit."
+  ],
+  "statut_affiche": "mise en examen",
+  "deroule": [
+    {
+      "date": "2025-11",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": "Mère d'une élève",
+      "texte": "Une première plainte est déposée par la mère d'une élève : c'est l'alerte initiale, selon ICI.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "mesure_etablissement",
+      "acteur": "Employeur",
+      "texte": "Selon ICI, l'animateur est suspendu par son employeur dès qu'il a été identifié.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-01",
+      "date_nature": "approximative",
+      "type": "signalement",
+      "acteur": "Parquet de Paris",
+      "texte": "Selon ICI, le parquet reçoit en janvier 2026 un signalement supplémentaire visant le même animateur, identifié d'après le parquet grâce aux déclarations d'employés ; six employés de l'école sont entendus par la brigade de protection des mineurs.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-04-28",
+      "date_nature": "evenement",
+      "type": "garde_a_vue",
+      "acteur": "Police judiciaire",
+      "texte": "L'animateur est interpellé.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-04-30",
+      "date_nature": "evenement",
+      "type": "mise_en_examen",
+      "acteur": "Justice",
+      "texte": "Mise en examen et placement en détention provisoire. La presse l'apprend le 12 mai.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "inconnue",
+      "type": "contexte",
+      "acteur": "Autre membre de l'équipe d'animation",
+      "texte": "Contexte distinct : selon ICI, dans la même école, un autre membre de l'équipe d'animation est lui aussi suspendu, après une plainte pour des faits à caractère sexuel visant un enfant. Cette procédure n'est pas rattachée aux étapes ci-dessus : les sources lues n'en précisent pas le lien.",
+      "source": {
+        "media": "ICI (France Bleu)",
+        "url": "https://www.ici.fr/ile-de-france/paris-75/paris/violences-sexuelles-dans-le-periscolaire-a-paris-un-animateur-d-une-ecole-maternelle-mis-en-examen-et-ecroue-3298366",
+        "publie_le": "2026-05-12",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Aucune suite postérieure à mai 2026 n'a été trouvée (clôture d'instruction, remise en liberté, recours).",
+    "Le lien procédural entre la procédure visant l'animateur mis en examen et celle visant un autre membre de l'équipe d'animation n'est pas précisé : la seconde n'est pas rattachée à la première.",
+    "La date de la décision de mise en examen est donnée par un seul article (ICI)."
+  ],
+  "faits": "Selon ICI (12 mai 2026), une plainte déposée en novembre 2025 vise un animateur de l'école maternelle Servan, suspendu par son employeur ; un signalement supplémentaire le visant a été reçu en janvier 2026. Interpellé le 28 avril 2026, il a été mis en examen le 30 avril pour des « gestes de nature sexuelle » et placé en détention provisoire. Ces faits sont allégués ; une mise en examen n'est pas une condamnation."
+}

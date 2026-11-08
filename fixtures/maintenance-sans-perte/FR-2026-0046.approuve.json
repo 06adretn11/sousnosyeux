@@ -1,0 +1,269 @@
+{
+  "etat_actuel": [
+    "Selon France 3 Régions, le tribunal correctionnel de Nantes a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme, à un suivi socio-judiciaire de trois ans, à l’interdiction définitive d’exercer une activité en contact avec des mineurs et à une inéligibilité de cinq ans pour douze agressions sexuelles.",
+    "Un appel est rapporté (La Nouvelle République) : la décision n’est pas définitive. L’animateur a été remis en liberté et placé sous contrôle judiciaire le 23 avril 2026, dans l’attente de son procès en appel ; cette remise en liberté ne vaut pas jugement d’appel. Audience d’appel annoncée les 16, 17 et 18 novembre 2026 devant la cour d’appel de Rennes (ICI, selon l’avocat de la défense)."
+  ],
+  "appel": true,
+  "faits": "Selon France 3 Régions, l'animateur périscolaire a été condamné pour douze agressions sexuelles sur des enfants de l'école maternelle du Chêne-Creux à Rezé. Selon France 3 Régions, d'autres enfants ont relaté des faits similaires à leurs parents et des symptômes post-traumatiques ont été diagnostiqués chez certains d'entre eux.",
+  "deroule": [
+    {
+      "date": "2019-03",
+      "date_nature": "approximative",
+      "type": "plainte",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, l'enquête a débuté après une plainte déposée par la mère d'une élève de l'école maternelle du Chêne-Creux à Rezé en mars 2019.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2019-03-14",
+      "date_nature": "evenement",
+      "type": "fait_rapporte",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, l'animateur a été interpellé le 14 mars 2019.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": "2026-01-22",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "tribunal correctionnel de Nantes",
+      "texte": "Selon France 3 Régions, le tribunal correctionnel de Nantes a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme, à un suivi socio-judiciaire de trois ans, à l’interdiction définitive d’exercer une activité en contact avec des mineurs et à une inéligibilité de cinq ans pour douze agressions sexuelles.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Nouvelle Republique",
+          "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+          "publie_le": "2026-04-24",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-21",
+      "date_nature": "evenement",
+      "type": "audience",
+      "acteur": "avocat général",
+      "texte": "Selon France 3 Régions, lors de l'audience du 21 avril 2026, l'avocat général a requis la remise en liberté de l'animateur en attendant son nouveau procès.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Nouvelle Republique",
+          "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+          "publie_le": "2026-04-24",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "enquete",
+      "acteur": null,
+      "texte": "Selon France 3 Régions, une enquête a été ouverte après cette plainte.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "mesure_etablissement",
+      "acteur": "école du Chêne-Creux",
+      "texte": "Selon France 3 Régions, la supérieure hiérarchique de l'animateur à l'école du Chêne-Creux avait demandé en début d'année scolaire de ne jamais le laisser seul avec les enfants.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "La Nouvelle Republique",
+          "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+          "publie_le": "2026-04-24",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": "2026-04-23",
+      "date_nature": "evenement",
+      "type": "decision",
+      "acteur": "cour d'appel de Rennes",
+      "texte": "Selon La Nouvelle République, l'ancien animateur périscolaire a été libéré et placé sous contrôle judiciaire le jeudi 23 avril 2026, en attendant son procès en appel.",
+      "source": {
+        "media": "La Nouvelle Republique",
+        "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+        "publie_le": "2026-04-24",
+        "acces": "libre"
+      },
+      "sources_complementaires": [
+        {
+          "media": "France 3 Régions",
+          "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+          "publie_le": "2026-04-23",
+          "acces": "libre"
+        }
+      ]
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "audience",
+      "acteur": "cour d'appel",
+      "texte": "Selon La Nouvelle République, les dates et la durée du procès en appel devaient être décidées le 9 juin 2026 lors d’une audience relais devant la cour d’appel ; elles ont été annoncées ensuite (voir l’étape suivante).",
+      "source": {
+        "media": "La Nouvelle Republique",
+        "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+        "publie_le": "2026-04-24",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "type": "appel",
+      "acteur": null,
+      "texte": "Selon La Nouvelle Republique, l'ancien animateur périscolaire a fait appel de sa condamnation.",
+      "source": {
+        "media": "La Nouvelle Republique",
+        "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+        "publie_le": "2026-04-24",
+        "acces": "libre"
+      }
+    },
+    {
+      "date": null,
+      "date_nature": "article",
+      "acteur": "cour d'appel de Rennes",
+      "type": "audience",
+      "texte": "Selon ICI, le procès en appel est programmé les 16, 17 et 18 novembre devant la cour d'appel de Rennes, selon l'avocat de la défense (information publiée le 9 juin 2026).",
+      "source": {
+        "media": "ICI",
+        "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/reze-l-ex-animateur-periscolaire-soupconne-d-agressions-sexuelles-sera-rejuge-en-novembre-a-rennes-8058661",
+        "publie_le": "2026-06-09",
+        "acces": "libre"
+      }
+    }
+  ],
+  "inconnues": [
+    "Le dossier ne repose que sur 3 articles lus (France 3 Régions, La Nouvelle Republique, ICI)."
+  ],
+  "synthese": {
+    "decision": "Le tribunal correctionnel de Nantes a condamné l'animateur le 22 janvier 2026 à six ans de prison ferme, à un suivi socio-judiciaire de trois ans, à l'interdiction définitive d'exercer une activité en contact avec des mineurs et à une inéligibilité de cinq ans pour douze agressions sexuelles.",
+    "ouvert": "Un appel est rapporté (La Nouvelle République) : la décision n’est pas définitive. L’animateur a été remis en liberté et placé sous contrôle judiciaire le 23 avril 2026, dans l’attente de son procès en appel ; cette remise en liberté ne vaut pas jugement d’appel. Audience d’appel annoncée les 16, 17 et 18 novembre 2026 devant la cour d’appel de Rennes (ICI, selon l’avocat de la défense)."
+  },
+  "reactions": [
+    {
+      "paraphrase": "Contexte dans l’article (France 3 Régions) : Mais \"on n'est pas à l'abri d'une surprise concernant la déclaration de culpabilité en appel\", avait estimé l'avocat général lors de l'audience qui s'est tenue mardi 21 avril 2026.",
+      "acteur": "l'avocat général",
+      "qualite": "propos rapportés par France 3 Régions",
+      "date": "2026-04-23",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la déclaration de culpabilité en appel",
+      "citations": [
+        {
+          "texte": "on n'est pas à l'abri d'une surprise concernant la déclaration de culpabilité en appel",
+          "pour": "la déclaration de culpabilité en appel"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "acteur": "Me Benoît Poquet, avocat de la défense",
+      "qualite": "propos rapportés par France 3 Régions",
+      "date": "2026-04-23",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "la fragilité du dossier",
+      "citations": [
+        {
+          "texte": "Peut-être que ce dossier est un peu plus fragile qu'on a voulu nous le présenter",
+          "pour": "la fragilité du dossier"
+        }
+      ],
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    },
+    {
+      "paraphrase": "Selon France 3 Régions, l’avocat général s’est interrogé, lors de l’audience d’appel du 21 avril 2026, sur les conditions de recueil de la parole des enfants, interrogés d’abord par leurs parents plutôt que par des professionnels.",
+      "acteur": "l'avocat général",
+      "qualite": "propos rapportés par France 3 Régions",
+      "date": "2026-04-23",
+      "date_nature": "article",
+      "portee": "affaire",
+      "attribution": "POSITION_ATTRIBUEE",
+      "a_propos": "l'interrogation des enfants victimes par leurs parents",
+      "citations": [],
+      "etabli": "Établi : propos rapportés par France 3 Régions. Une prise de parole n’établit pas son contenu.",
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+        "publie_le": "2026-04-23",
+        "acces": "libre"
+      },
+      "validation": "POSITION_ATTRIBUEE"
+    }
+  ],
+  "statut_affiche": "condamnation non définitive",
+  "situation": {
+    "decision": {
+      "label": "Décision",
+      "titre": "Condamnation",
+      "meta": "Tribunal correctionnel de Nantes",
+      "cat": "red",
+      "texte": "Selon France 3 Régions, le tribunal correctionnel de Nantes a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme, à un suivi socio-judiciaire de trois ans, à l’interdiction définitive d’exercer une activité en contact avec des mineurs et à une inéligibilité de cinq ans pour douze agressions sexuelles."
+    },
+    "suite": {
+      "label": "Suite · recours",
+      "titre": "Appel formé · remise en liberté",
+      "meta": "selon La Nouvelle Republique",
+      "cat": "orange",
+      "lignes": [
+        "Décision non définitive : un appel est rapporté (La Nouvelle République).",
+        "Remise en liberté sous contrôle judiciaire le 23 avril 2026, dans l’attente du procès en appel (La Nouvelle République) ; elle ne vaut pas jugement d’appel.",
+        "Mesure institutionnelle (distincte de la décision judiciaire) : selon France 3 Régions, la supérieure hiérarchique de l'animateur à l'école du Chêne-Creux avait demandé en début d'année scolaire de ne jamais le laisser seul avec les enfants.",
+        "Audience d’appel annoncée les 16, 17 et 18 novembre 2026 devant la cour d’appel de Rennes (ICI, 9 juin 2026, selon l’avocat de la défense)."
+      ]
+    }
+  }
+}

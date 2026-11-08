@@ -11,10 +11,17 @@
 import { createHash } from 'node:crypto';
 import { quantites, nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
 
-const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+export const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 // Mots significatifs d'une phrase : radicaux de 5 lettres (« déposée » ≈ « déposé »), sans l'attribution « Selon X, » (le média n'est pas le sujet du fait).
-const jetons = (s) => new Set(plat(String(s).replace(/^(?:Mesure[^:]*:\s*)?(?:À venir : )?selon [^,]{1,60},\s*/i, '')).split(' ').filter((t) => t.length > 3).map((t) => t.slice(0, 5)));
-const jaccard = (a, b) => { const A = jetons(a), B = jetons(b); if (!A.size || !B.size) return 0; let i = 0; for (const x of A) if (B.has(x)) i++; return i / (A.size + B.size - i); };
+export const jetons = (s) => new Set(plat(String(s).replace(/^(?:Mesure[^:]*:\s*)?(?:À venir : )?selon [^,]{1,60},\s*/i, '')).split(' ').filter((t) => t.length > 3).map((t) => t.slice(0, 5)));
+export const jaccard = (a, b) => { const A = jetons(a), B = jetons(b); if (!A.size || !B.size) return 0; let i = 0; for (const x of A) if (B.has(x)) i++; return i / (A.size + B.size - i); };
+/** Qualification déterministe d'une fiche (même règle pour la composition et pour la fusion avec la version approuvée). */
+export function qualifier({ blocages = [], attention = [], etapes = 0, reactions = 0 }) {
+  if (blocages.length) return 'BLOQUE';
+  if (etapes < 2 && !reactions) return 'PAS_D_ENRICHISSEMENT';
+  if (attention.some((a) => a.niveau === 'majeur')) return 'A_REVOIR';
+  return 'READY';
+}
 /** La décision de remise en liberté (étape « decision ») qui corrige une phrase d'état parlant de détention, ou null. Pure : sert aussi à contrôler un dossier déjà généré. */
 export function liberationPosterieure(phraseEtat, deroule) {
   if (!/détention|écrou|incarcér/i.test(phraseEtat)) return null;
@@ -29,7 +36,7 @@ const recaser = (s) => s.replace(/^(Selon [^,]{1,60}, )(\S[\s\S]*)$/, (_, a, b) 
 const MOIS_FR = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso || ''); if (!m) return null; return `${m[3] ? `${Number(m[3])} ` : ''}${MOIS_FR[Number(m[2]) - 1]} ${m[1]}`; };
 
-const RANG = { plainte: 1, 'enquête': 2, 'mise en examen': 3, 'procès': 4, 'condamnation non définitive': 5, 'condamnation définitive': 5, 'relaxe / non-lieu / classement': 5 };
+export const RANG = { plainte: 1, 'enquête': 2, 'mise en examen': 3, 'procès': 4, 'condamnation non définitive': 5, 'condamnation définitive': 5, 'relaxe / non-lieu / classement': 5 };
 const SUJET_INSTITUTIONNEL = /^(selon|d['’]après|le tribunal|la cour|le parquet|la procureure|le procureur|le rectorat|la rectrice|le recteur|l['’]académie|la mairie|le maire|la ville|le conseil|l['’]établissement|l['’]inspection|le ministère|le ministre|la ministre|la direction|le juge|la juge|les juges|le département|la préfecture|le préfet|la préfète|l['’]enseignement|la justice)\b/i;
 // « le document indique que » n'est pas une attribution : on ne garde que le média. Un reproche fait à une institution (« n'a engagé aucune poursuite ») n'est jamais écrit comme un
 // fait établi : il est TOUJOURS attribué au média, même quand le sujet est une institution.
@@ -80,7 +87,11 @@ export function regressionJudiciaire(precedente, nouvelle) {
 }
 
 /** Les événements bruts, dans l'ordre où la composition les voit (ce que le regroupement du modèle indexe). */
-export const evenementsBruts = (extractions) => extractions.filter((x) => x.doc.acces === 'libre' && x.v.pertinence === 'CETTE_AFFAIRE').flatMap((x) => x.v.evenements.map((e) => ({ ...e, doc: x.doc })));
+// Une DEMANDE de parents ou d'une association (« les parents demandent des procédures claires ») n'est ni une mesure de l'établissement ni une mesure annoncée : ni décision, ni réalisation.
+// Étiquetée « mesure » par le modèle, elle recevait le préfixe « Mesure annoncée » et se dédoublait avec la même demande rapportée comme fait (cas FR-2026-0047) : elle redevient un fait rapporté attribué.
+const ACTEUR_NON_INSTITUTIONNEL = /^\s*(?:les\s+|des\s+)?(?:parents?|collectifs?|associations?|élèves|eleves)\b/i;
+export const typeCorrige = (e) => (/^mesure_/.test(e.type) && ACTEUR_NON_INSTITUTIONNEL.test(e.acteur || '') ? 'fait_rapporte' : e.type);
+export const evenementsBruts = (extractions) => extractions.filter((x) => x.doc.acces === 'libre' && x.v.pertinence === 'CETTE_AFFAIRE').flatMap((x) => x.v.evenements.map((e) => ({ ...e, type: typeCorrige(e), doc: x.doc })));
 
 export function composer({ c, extractions, aujourdhui = new Date().toISOString().slice(0, 10), holds = new Set(), fusionsModele = [] }) {
   const blocages = [], attention = [], ecartesComposition = [];
@@ -350,11 +361,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
 
   // ---- qualification ---------------------------------------------------------------------------------------------
   const etapes = deroule.length;
-  let qualification;
-  if (blocages.length) qualification = 'BLOQUE';
-  else if (etapes < 2 && !reactions.length) qualification = 'PAS_D_ENRICHISSEMENT';
-  else if (attention.some((a) => a.niveau === 'majeur')) qualification = 'A_REVOIR';
-  else qualification = 'READY';
+  const qualification = qualifier({ blocages, attention, etapes, reactions: reactions.length });
 
   const trace = [
     ...deroule.map((d, i) => ({ ref: `deroule[${i}]`, texte: d.texte, preuves: d._preuves })),

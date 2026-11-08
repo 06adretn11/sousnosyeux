@@ -48,7 +48,7 @@ const points: Record<string, string> = d.points ?? {};
 const vues = new Set<string>(); const sources: { media: string; date: string | null; url: string }[] = [];
 const ajoute = (s: any, date: string | null) => { if (!s?.url || vues.has(s.url) || !libre(s.media)) return; vues.add(s.url); sources.push({ media: s.media, date, url: s.url }); };
 for (const s of c.sources ?? []) ajoute(s, s.publication_date ?? null);
-for (const e of deroule) ajoute(e.source, e.source?.publie_le ?? null);
+for (const e of deroule) { ajoute(e.source, e.source?.publie_le ?? null); for (const s of e.sources_complementaires ?? []) ajoute(s, s?.publie_le ?? null); }
 for (const r of paroles) ajoute(r.source, r.source?.publie_le ?? null);
 const inconnues: string[] = d.inconnues ?? [];
 // Événements validés (Neon) que la rédaction du dossier ne porte pas : ils sont AJOUTÉS au déroulé, mais les blocs de situation sont rédigés → on le dit.

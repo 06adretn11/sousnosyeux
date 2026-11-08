@@ -30,9 +30,9 @@ const { sql } = connecter();
 
 const parPropositions = new Map();
 if (DEPUIS_PROPOSITIONS) {
-  const acceptees = await sql`select distinct on (payload->'page'->>'case_id') payload->'page'->>'case_id' id, payload->'page'->'dossier' dossier from new_case_proposals
+  const acceptees = await sql`select distinct on (payload->'page'->>'case_id') payload->'page'->>'case_id' id, payload->'page'->'dossier' dossier, payload->'page'->'mise_a_jour'->>'precedent_hash' precedent from new_case_proposals
     where decision = 'ACCEPT' and payload->'page' ? 'dossier' order by payload->'page'->>'case_id', decided_at desc`;
-  for (const a of acceptees) parPropositions.set(a.id, { hub: null, d: a.dossier, proposable: true });
+  for (const a of acceptees) parPropositions.set(a.id, { hub: null, d: a.dossier, proposable: true, precedent_hash: a.precedent || null });
   ids = [...parPropositions.keys()];
 }
 
