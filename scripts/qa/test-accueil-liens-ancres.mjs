@@ -20,7 +20,7 @@ t('lien vers la fiche : vrai <a href>, jamais un role=link ni un lien dans un bo
   assert.ok(/<\/button>\s*\n\s*\{fichesRevue\[c\.case_id\] && <a class="case-fiche"/.test(src), 'le lien est frère du bouton, pas son enfant');
 });
 t('ancre stable sur chaque entrée : id="affaire-<case_id>"', () => {
-  assert.ok(src.includes('id={`affaire-${c.case_id}`}'));
+  assert.ok(src.includes('id={`affaire-${c.case_id.toLowerCase()}`}'), 'forme canonique en minuscules, comme les URL de fiches');
 });
 t('arrivée sur une ancre : défilement de la liste + surlignage ; aucune ouverture de popup ni zoom', () => {
   const i = src.indexOf('function allerAUneAffaire'), j = src.indexOf("window.addEventListener('load', allerAUneAffaire");
