@@ -36,6 +36,14 @@ function trois(articles, n = 3) {
  * @param {boolean} territorial  aucune information de portée affaire / établissement
  * @param {string[]|null} pages  pages publiques mises à jour si VALIDATE (destinations calculées) ; null = non calculées
  */
+/**
+ * Étiquette de réalisation d'un fait : « (annoncée) » / « (réalisée) » pour une mesure rapportée par la presse. Pour une DÉCLARATION d'organisme
+ * (fait issu de sa propre publication), « réalisée » dirait que la démarche est établie : on dit que c'est une déclaration attribuée, non constatée ailleurs.
+ */
+export function etiquetteRealisation(f) {
+  if (f.organisme) return ` (déclaration de ${esc(f.acteur_nomme || f.acteur || 'l’organisme')} : la démarche n’est pas constatée par une source indépendante)`;
+  return f.realisation ? ` (${esc(f.realisation)})` : '';
+}
 export function messageEnrichissement(p, neufs, territorial, pages = null) {
   const f1 = neufs[0];
   const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : `date non établie (la phrase n’en donne pas ; article du ${jj(p.publication_date)})`);
@@ -56,7 +64,7 @@ export function messageEnrichissement(p, neufs, territorial, pages = null) {
     '',
     '<b>Ce qui est nouveau</b>',
     // Chaque fait avec SON passage probant : une PHRASE du corps (finit par une ponctuation) ; le titre de la page (« … - RFI ») n'est qu'un repère, jamais présenté comme preuve s'il existe mieux.
-    ...neufs.slice(0, 2).flatMap((f) => [`• ${esc(f.libelle_public)}${f.realisation ? ` (${esc(f.realisation)})` : ''}`,
+    ...neufs.slice(0, 2).flatMap((f) => [`• ${esc(f.libelle_public)}${etiquetteRealisation(f)}`,
       `  « ${esc(cut(f.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f.evidence[0], 420))} »`]),
     neufs.length > 2 ? `(+${neufs.length - 2} autre(s) information(s))` : '',
     '',

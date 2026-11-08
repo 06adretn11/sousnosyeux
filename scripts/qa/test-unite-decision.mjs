@@ -8,7 +8,8 @@
 //
 // Aucun réseau, aucun Neon, aucun modèle.
 // =====================================================================
-import { memeAffaire, fusionner, decisionJumelle, chercherJumelle } from '../lib/qualifier-signal.mjs';
+import { memeAffaire, fusionner, decisionJumelle, chercherJumelle, avertissementVoisines } from '../lib/qualifier-signal.mjs';
+import { niveauGeo } from '../lib/rapprochement-garde.mjs';
 import { extraireReactions, dateEcrite, planReactions, moisFr } from '../lib/evenement-institutionnel.mjs';
 
 let ko = 0;
@@ -115,6 +116,18 @@ test('une mesure déjà consignée n’est pas reproposée', !plan.neufs.some((x
 test('une information judiciaire déjà connue n’empêche pas les réponses nouvelles du même article', plan.neufs.length > 0);
 test('territoire et établissement séparés (jamais fusionnés en une décision)', plan.propres.every((x) => x.portee !== 'territoire') && plan.territoire.every((x) => x.portee === 'territoire') && plan.propres.length + plan.territoire.length === plan.neufs.length);
 test('tout déjà connu → plus rien à proposer', planReactions(R, new Set(R.map((x) => x.libelle_public))).neufs.length === 0);
+
+console.log('\nDiscovery — avertissement « affaire voisine » : la localisation dite est la localisation vérifiée');
+{
+  const rouen = { commune: 'Rouen', departement: 'Seine-Maritime' };
+  const geo = (signal) => (id) => niveauGeo(signal, id === 'FR-A' ? rouen : { commune: 'Saint-Aubin-lès-Elbeuf', departement: 'Seine-Maritime' });
+  const autre = avertissementVoisines(['FR-A'], geo({ commune: 'Saint-Aubin-lès-Elbeuf', departement: 'Seine-Maritime' }));
+  test('Saint-Aubin-lès-Elbeuf / Rouen (même département) : jamais « même commune »', !autre.includes('même commune') && autre.includes('AUTRE localisation') && autre.includes('communes différentes (Saint-Aubin-lès-Elbeuf / Rouen), même département') && autre.includes('aucun lien démontré') && autre.length <= 160);
+  const meme = avertissementVoisines(['FR-A'], geo({ commune: 'Rouen', departement: 'Seine-Maritime' }));
+  test('même commune confirmée par la garde : formulation d’origine conservée', meme === 'affaire voisine déjà connue (FR-A) : même commune et même rôle, établissement non nommé');
+  const mixte = avertissementVoisines(['FR-A', 'FR-B'], (id) => (id === 'FR-A' ? { niveau: 'ok', raison: null } : { niveau: 'faible', raison: 'communes différentes (X / Y), même département' }));
+  test('mélange : chaque affaire est dite pour ce qu’elle est', mixte.includes('affaire voisine déjà connue (FR-A) : même commune') && mixte.includes('AUTRE localisation (FR-B)'));
+}
 
 console.log(ko ? `\n${ko} échec(s)` : '\nOK');
 process.exit(ko ? 1 : 0);

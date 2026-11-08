@@ -9,10 +9,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import {
-  chargerRegistre, classer, passages, faitsDeclares, aliasOrganismes, actionContinuite, aSolliciter, complementDecision, natureDocument, chargerContexteHub,
+  chargerRegistre, classer, passages, faitsDeclares, aliasOrganismes, actionContinuite, aSolliciter, complementDecision, natureDocument, chargerContexteHub, jourDecouverte,
 } from '../lib/sources-suivies.mjs';
 import { faitsStructures, planReactions } from '../lib/evenement-institutionnel.mjs';
-import { messageEnrichissement } from '../lib/discovery-messages.mjs';
+import { messageEnrichissement, etiquetteRealisation } from '../lib/discovery-messages.mjs';
 import { lireMatiereValidee } from '../lib/matiere-validee.mjs';
 import { construireMatiere, pagesSiValide } from '../lib/destinations.mjs';
 
@@ -144,7 +144,7 @@ const pageCtx = () => {
 const _unused = 0;
 const faitPourPages = (o = {}) => ({ case_id: 'POC-05', nature: 'mobilisation', portee: 'établissement', territoire: null, date: null, ...o });
 const pages = pagesSiValide([faitPourPages()], pageCtx());
-const decl = { emetteur: "L'Enfant Bleu", nature: 'PUBLICATION_PROPRE', ajustements: faits[0].ajustements_inconnues, rattachement_motif: 'établissement, commune et rôle concordent pour une seule affaire — rattachement par le texte (établissement, commune et rôle) ; la publication ne précise ni la procédure ni son étape.' };
+const decl = { emetteur: "L'Enfant Bleu", nature: 'PUBLICATION_PROPRE', ajustements: faits[0].ajustements_inconnues, rattachement_motif: 'établissement, commune et rôle concordent pour une seule affaire — rattachement par le texte (établissement, commune et rôle) ; repère chronologique : ' + faits[0].repere_chronologique + ' ; la publication ne précise ni la procédure ni son étape.' };
 const limite = "Publication de L'Enfant Bleu du 2026-07-21 : elle documente ce que son auteur déclare ; elle n'établit ni les faits dénoncés ni une étape judiciaire. Rattrapage documentaire : publication du 2026-07-21, découverte par SNY le 2026-11-06 ; à confronter aux sources plus récentes.";
 const message = messageEnrichissement({ etablissement: 'École maternelle Alphonse-Baudin', commune: 'Paris 11e', courant: 'relaxe / non-lieu / classement', media: "L'Enfant Bleu", publication_date: PUB_A, url: A.url }, neufs, false, pages)
   + complementDecision({ decl, limite, publication_date: PUB_A, proposal_id: 'f1daa077-0de6-4c9b-a1b8-b23a68a891e8', information_envoyee_le: '2026-11-06T10:01:58Z' });
@@ -228,4 +228,30 @@ if (process.env.SNY_APERCU) {
     message_telegram: message, matiere_apres_ACCEPT: matiere[0],
   }, null, 1));
 }
+console.log('\n  PRÉSENTATION : réalisation attribuée, première détection conservée, repère chronologique explicite');
+await t('« réalisée » n’est jamais dit seul d’une déclaration d’organisme (message de décision) ; une mesure de presse garde son étiquette', () => {
+  assert.ok(!message.includes('(réalisée)'), 'le message de décision de la déclaration ne dit pas « réalisée »');
+  assert.ok(message.includes("déclaration de L'Enfant Bleu : la démarche n’est pas constatée par une source indépendante"));
+  assert.equal(etiquetteRealisation({ realisation: 'réalisée', acteur: 'Ville de Paris' }), ' (réalisée)');
+  assert.equal(etiquetteRealisation({ realisation: 'annoncée', acteur: 'Ville de Paris' }), ' (annoncée)');
+  assert.equal(etiquetteRealisation({ realisation: null }), '');
+  assert.ok(src('scripts/lib/discovery-messages.mjs').includes('etiquetteRealisation(f)'), 'le message d’enrichissement passe par l’étiquette attribuée');
+});
+await t('première détection : une reprise sur place ne redéfinit pas la découverte (6 novembre conservé le 7)', () => {
+  assert.equal(jourDecouverte({ existante: { decouvert_le: null, cree_le: '2026-11-06' }, jour: '2026-11-07' }), '2026-11-06');
+  assert.equal(jourDecouverte({ existante: { decouvert_le: '2026-11-07', cree_le: '2026-11-06' }, jour: '2026-11-08' }), '2026-11-06', 'la plus ancienne des dates connues');
+  assert.equal(jourDecouverte({ existante: { decouvert_le: '2026-11-05', cree_le: '2026-11-06' }, jour: '2026-11-08' }), '2026-11-05');
+  assert.equal(jourDecouverte({ existante: null, jour: '2026-11-07' }), '2026-11-07', 'première rencontre : le jour courant');
+  assert.equal(jourDecouverte({ existante: { cree_le: 'illisible' }, jour: '2026-11-07' }), '2026-11-07', 'date illisible : repli sûr');
+  const cyc = src('scripts/maintenance-cycle.mjs');
+  assert.ok(cyc.includes('const premiere = S.jourDecouverte({ existante: exist, jour });') && cyc.includes('découverte par SNY le ${premiere}') && cyc.includes('decouvert_le: premiere,'), 'libellé, déclaration et note de limite utilisent la première détection');
+  assert.ok(cyc.indexOf('const premiere = S.jourDecouverte') < cyc.indexOf('const limite = ['), 'la proposition existante est lue avant la note de limite');
+});
+await t('rattachement : le repère chronologique (mois évoqué = premier événement daté de l’affaire) est dit dans la justification', () => {
+  const r = faits[0].repere_chronologique;
+  assert.match(r, /la publication évoque la suspension d’un animateur en avril 2025/);
+  assert.match(r, /premier événement daté de la chronologie de l’affaire \(9 avril 2025\)/);
+  assert.ok(src('scripts/maintenance-cycle.mjs').includes('repère chronologique : ${declares[0].repere_chronologique}'));
+  assert.ok(message.includes('repère chronologique : la publication évoque la suspension d’un animateur en avril 2025 ; ce mois est celui du premier événement daté de la chronologie de l’affaire (9 avril 2025) ; la publication ne précise ni la procédure ni son étape.'));
+});
 console.log(`\n  ${n} vérifications — raccord éditorial des déclarations d'organismes conforme\n`);

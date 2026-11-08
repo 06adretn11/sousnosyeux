@@ -343,6 +343,23 @@ export async function chercherJumelle(sql, nouveau) {
 const GRAVITE = { MATCH: 2, POSSIBLE_MATCH: 1, NO_MATCH: 0 };
 
 /**
+ * Avertissement d'une proposition dont l'établissement n'est pas nommé et qui a des affaires connues « voisines ».
+ * « même commune » n'est dit QUE si la garde géographique le confirme ; une affaire d'une autre commune (même département) est présentée pour ce
+ * qu'elle est : une simple proximité, sans lien démontré (cas du 08/11/2026 : Saint-Aubin-lès-Elbeuf annoncée « même commune » que Rouen).
+ * @param {string[]} ids  affaires connues retenues par le résolveur
+ * @param {(id:string)=>{niveau:string, raison:string|null}} geoDe  garde géographique (rapprochement-garde.niveauGeo) pour chacune
+ */
+export function avertissementVoisines(ids, geoDe) {
+  const gs = ids.map((id) => ({ id, g: geoDe(id) }));
+  const memes = gs.filter((x) => x.g.niveau === 'ok').map((x) => x.id);
+  const autres = gs.filter((x) => x.g.niveau !== 'ok');
+  return [
+    memes.length ? `affaire voisine déjà connue (${memes.join(', ')}) : même commune et même rôle, établissement non nommé` : null,
+    autres.length ? `affaire connue d’une AUTRE localisation (${autres.map((x) => x.id).join(', ')}) : aucun lien démontré, simple proximité — ${[...new Set(autres.map((x) => x.g.raison || 'localisation non comparable'))].join(' ; ')}` : null,
+  ].filter(Boolean).join(' · ');
+}
+
+/**
  * Évalue UN signal.
  * @returns {{statut:'propose'|'ecarte'|'attente'|null, motif:string, proposition?:object, cout?:object}}
  *   statut null = incident technique (modèle, réseau) : le signal n'est pas consigné, il sera repris au prochain run.
@@ -486,7 +503,7 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
     // générale d'un scandale en cours, pas une affaire identifiable. Se taire vaut mieux que 10 « affaires voisines » à trier.
     return { statut: 'ecarte', motif: `couverture générale : établissement non identifié, ${voisinsResolver.length} affaires voisines`, cout: ext.cout };
   } else if (voisinsResolver.length) {
-    recommendation = 'REVIEW'; avertissement = `affaire voisine déjà connue (${voisinsResolver.join(', ')}) : même commune et même rôle, établissement non nommé`;
+    recommendation = 'REVIEW'; avertissement = avertissementVoisines(voisinsResolver, geoDe);
   } else if (domaines.size < 2) {
     return { statut: 'attente', motif: 'un seul média : en attente de recoupement', cout: ext.cout };
   } else if (indep < 2) {
