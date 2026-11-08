@@ -115,7 +115,9 @@ t('retraits et protections côté page : affaire gelée ou retirée depuis l’a
   assert.ok(src('web/src/lib/territoires.ts').includes('!holds.has(id)'));
   assert.ok(src('web/src/lib/hub-matiere.ts').includes('const m = A[id] ?? P[id]'));
   const p = src('scripts/project-evenements.mjs'); assert.ok(p.includes('versionApprouvee[slug]') && p.includes('CHEMIN_APPROUVE') && p.includes('dernière version approuvée maintenue'));
-  for (const w of ['sny-clics', 'sny-telegram']) assert.ok(src('.github/workflows/' + w + '.yml').includes('git add data/hub-approuve'));
+  // La publication (git add + commit + push) est faite par le script partagé scripts/publier-projection.sh, appelé par les deux workflows.
+  assert.ok(src('scripts/publier-projection.sh').includes('git add data/hub-approuve'));
+  for (const w of ['sny-clics', 'sny-telegram']) assert.ok(src('.github/workflows/' + w + '.yml').includes('sh scripts/publier-projection.sh'));
 });
 t('confirmation : le message « Publié et vérifié » donne le lien du Hub et les informations réellement affichées avec leur portée', () => {
   const m = texteVerifie({ hubs: ['testland'], site: 'https://sousnosyeux.org', infos: [{ libelle: 'Selon la presse, des parents ont tenu un rassemblement.', portee: 'territoire', territoire: 'Paris' }] });
@@ -127,7 +129,7 @@ t('parcours raccordé dans les workflows : préparer → déposer (matière + do
     const y = src(`.github/workflows/${w}.yml`);
     const i = (s) => { const k = y.indexOf(s); assert.ok(k >= 0, `${w} : ${s}`); return k; };
     assert.ok(i('appliquer-nouvelles-affaires.mjs --ecrire') < i('project-evenements.mjs'), 'le GO est appliqué avant la projection');
-    const push = y.indexOf('git push origin HEAD:main', i('scripts/qa/run-all.mjs'));   // la poussée de PUBLICATION (un dépôt d'aperçu docs peut la précéder)
+    const push = y.indexOf('sh scripts/publier-projection.sh', i('scripts/qa/run-all.mjs'));   // la poussée de PUBLICATION (un dépôt d'aperçu docs peut la suivre)
     assert.ok(i('project-evenements.mjs') < i('scripts/qa/run-all.mjs') && i('scripts/qa/run-all.mjs') < push && push > 0);
     assert.ok(i('--hubs $HUBS') > push && y.includes('steps.evenements.outputs.hubs'), 'vérification des Hubs après le push');
     assert.ok(i('preparer-hub.mjs --ecrire') < i('git add docs/industrialisation/hub-drafts data/hub-matiere') && i('git add docs/industrialisation/hub-drafts data/hub-matiere') < i('preparer-hub.mjs --annoncer'));

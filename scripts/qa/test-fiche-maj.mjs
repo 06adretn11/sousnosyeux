@@ -96,7 +96,7 @@ t('parcours raccordé : sélection → candidate → proposition → promotion �
   assert.ok(!clics.includes('proposer-mises-a-jour-fiches'), 'aucune génération longue dans le workflow des clics');
   for (const w of [clics, tel]) {
     assert.ok(w.includes('promouvoir-fiche.mjs --depuis-propositions --ecrire') && w.indexOf('promouvoir-fiche.mjs') < w.indexOf('project-evenements.mjs'), 'promotion avant projection');
-    assert.ok(w.includes('data/hub-matiere/isoles.json'), 'le dossier promu est commité');
+    assert.ok(w.includes('sh scripts/publier-projection.sh') && src('scripts/publier-projection.sh').includes('data/hub-matiere/isoles.json'), 'le dossier promu est commité (script de publication partagé)');
   }
   assert.ok(!/contents:\s*write/.test(src('.github/workflows/sny-cycle.yml')), 'sny-cycle ne reçoit aucun droit d’écriture');
   const v = src('scripts/verifier-site.mjs');

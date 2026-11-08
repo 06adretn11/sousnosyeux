@@ -154,6 +154,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Priorité des approbations de fiche — une approbation supplantée ne remplace jamais le contenu autorisé le plus récent (sélection, GO de lot, retrait/HOLD, relecture, abandon sur push refusé)',
+    script: 'scripts/qa/test-fiche-priorite.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Génération des fiches — gardes d’extraction (citation entière, date écrite, quantités, issue, nom, nombre d’enfants, appel/finalité), état contredit ou non étayé ⇒ jamais READY, proposition Telegram',
     script: 'scripts/qa/test-generer-fiche.mjs',
     bloquant: true,
