@@ -85,7 +85,8 @@ function caseYear(c: typeof allCases[0]): string {
 >
 
   <!-- ── BANDE INFO (compacte, 1 ligne) ── -->
-  <div class="info-band">
+  <div class="info-band" id="info-band">
+    <h1 class="info-h1">Affaires dans les lieux d'accueil des mineurs : la carte et les sources</h1>
     <div class="info-band-inner">
       <span class="info-count">
         <strong>{totalCount}</strong> affaires publiées
@@ -146,13 +147,18 @@ function caseYear(c: typeof allCases[0]): string {
       </div>
       <div class="sidebar-list" id="sidebar-list">
         {sortedCases.map((c) => (
-          <button
-            class="case-item"
+          <div
+            id={`affaire-${c.case_id}`}
+            class={`case-item${fichesRevue[c.case_id] ? ' has-fiche' : ''}`}
             data-id={c.case_id}
             data-cat={statutCat(c.statut_judiciaire)}
             data-lat={c.lat}
             data-lng={c.lng}
-            aria-label={`${c.etablissement}, ${c.commune}, ${statutLabel(c.statut_judiciaire, c.etat)}`}
+          >
+          <button
+            type="button"
+            class="case-select"
+            aria-label={`${c.etablissement}, ${c.commune}, ${statutLabel(c.statut_judiciaire, c.etat)} — situer sur la carte`}
           >
             <span class={`case-bar cat-${statutCat(c.statut_judiciaire)}`} aria-hidden="true"></span>
             <span class="case-content">
@@ -166,10 +172,11 @@ function caseYear(c: typeof allCases[0]): string {
                   {statutLabel(c.statut_judiciaire, c.etat)}
                 </span>
                 <span class="case-tag-type">{c.type_affaire}</span>
-                {fichesRevue[c.case_id] && <span class="case-fiche" role="link" tabindex="0" data-href={fichesRevue[c.case_id]}>Fiche →</span>}
               </span>
             </span>
           </button>
+          {fichesRevue[c.case_id] && <a class="case-fiche" href={fichesRevue[c.case_id]} aria-label={`Fiche de l'affaire : ${c.etablissement}, ${c.commune}`}>Fiche →</a>}
+          </div>
         ))}
       </div>
     </aside>
@@ -287,6 +294,17 @@ function caseYear(c: typeof allCases[0]): string {
       return `${label} : ${items}`;
     }
 
+    // ── Hauteur au-dessus de la carte : mesurée (le H1 de la bande peut passer sur plusieurs lignes selon la largeur) ──
+    const racine = document.documentElement;
+    const bandeInfo = document.getElementById('info-band');
+    const barreFiltres = document.getElementById('toolbar');
+    const mesurerAuDessus = () => {
+      if (!bandeInfo || !barreFiltres) return;
+      const entete = parseFloat(getComputedStyle(racine).getPropertyValue('--header-h')) || 60;
+      racine.style.setProperty('--above-map-h', `${Math.ceil(entete + bandeInfo.getBoundingClientRect().height + barreFiltres.getBoundingClientRect().height)}px`);
+    };
+    mesurerAuDessus();
+
     // ── Carte ──
     const map = new maplibregl.Map({
       container: 'map',
@@ -331,6 +349,10 @@ function caseYear(c: typeof allCases[0]): string {
       'green',  '#2D6A4F',
       '#8B9BAD',
     ];
+
+    if (bandeInfo && barreFiltres && 'ResizeObserver' in window) {
+      new ResizeObserver(() => { mesurerAuDessus(); map.resize(); }).observe(bandeInfo);
+    }
 
     map.on('load', () => {
       map.addSource('cases', {
@@ -489,7 +511,7 @@ function caseYear(c: typeof allCases[0]): string {
 
     // ── Sidebar : highlight ──
     function highlightSidebarCase(caseId: string) {
-      document.querySelectorAll('.case-item').forEach((el) => el.classList.remove('active'));
+      document.querySelectorAll('.case-item').forEach((el) => { el.classList.remove('active'); el.classList.remove('is-target'); });
       const el = document.querySelector<HTMLElement>(`.case-item[data-id="${caseId}"]`);
       if (el) {
         el.classList.add('active');
@@ -499,10 +521,7 @@ function caseYear(c: typeof allCases[0]): string {
 
     // ── Sidebar : clic → zoomer ET ouvrir la popup ──
     document.querySelectorAll<HTMLElement>('.case-item').forEach((el) => {
-      el.addEventListener('click', (ev) => {
-        // Build de revue : lien direct vers la fiche (la popup est peu lisible sur mobile).
-        const lien = (ev.target as HTMLElement).closest<HTMLElement>('.case-fiche');
-        if (lien) { window.location.href = lien.dataset.href!; return; }
+      el.querySelector<HTMLElement>('.case-select')!.addEventListener('click', () => {
         const caseId = el.dataset.id!;
         const c = cases.find((row) => row.case_id === caseId);
         if (!c) return;
@@ -550,6 +569,32 @@ function caseYear(c: typeof allCases[0]): string {
         if (countEl) countEl.textContent = `${visibleCount} résultat${visibleCount > 1 ? 's' : ''}`;
       });
     });
+
+    // ── Ancres stables /#affaire-<identifiant> ──
+    // Arriver sur une ancre = faire défiler la liste jusqu'à l'entrée et la surligner. Aucune popup, aucun zoom : la popup ne s'ouvre que sur une action du lecteur
+    // (clic sur l'entrée ou sur un point). Un fragment inconnu, mal encodé ou d'une affaire sans point sur la carte ne fait rien.
+    function allerAUneAffaire() {
+      document.querySelectorAll('.case-item.is-target').forEach((e) => e.classList.remove('is-target'));
+      const m = /^#affaire-(.+)$/.exec(window.location.hash);
+      if (!m) return;
+      let id: string;
+      try { id = decodeURIComponent(m[1]); } catch { return; }
+      const el = document.getElementById(`affaire-${id}`);
+      if (!el || !el.classList.contains('case-item')) return;
+      // Un filtre actif qui masquerait l'entrée est levé : sinon l'ancre ne mènerait nulle part.
+      if (el.style.display === 'none') document.querySelector<HTMLElement>('.tb-btn[data-filter="all"]')?.click();
+      el.classList.add('is-target');
+      // On fait défiler la colonne de la liste seulement (pas la page) : l'entrée est amenée au centre de la colonne.
+      const colonne = document.querySelector<HTMLElement>('.sidebar');
+      if (colonne) {
+        const haut = el.getBoundingClientRect().top - colonne.getBoundingClientRect().top + colonne.scrollTop;
+        colonne.scrollTo({ top: Math.max(0, haut - (colonne.clientHeight - el.offsetHeight) / 2) });
+      }
+    }
+    allerAUneAffaire();
+    window.addEventListener('hashchange', allerAUneAffaire);
+    // Une fois les polices et la hauteur au-dessus de la carte stabilisées, la position peut avoir bougé : on la recale une fois.
+    window.addEventListener('load', allerAUneAffaire, { once: true });
   </script>
 
   <!-- ── STYLES PAGE ── -->
@@ -559,6 +604,16 @@ function caseYear(c: typeof allCases[0]): string {
     .info-band {
       background: var(--bg-card);
       border-bottom: 3px solid var(--red);
+    }
+    .info-h1 {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0.45rem 1.25rem 0.1rem;
+      font-family: var(--display);
+      font-size: 0.95rem;
+      line-height: 1.25;
+      font-weight: 700;
+      color: var(--text);
     }
     .info-band-inner {
       max-width: 1160px;
@@ -648,8 +703,9 @@ function caseYear(c: typeof allCases[0]): string {
     }
 
     /* ── MAP LAYOUT ── */
-    /* --info-band-h = 38px contenu + 3px border = 41px ; toolbar = 48px + 1px = 49px */
-    :root { --above-map-h: calc(var(--header-h) + 41px + 49px); }
+    /* Valeur de repli (sans JavaScript) : en-tête + bande (38px + 3px de bordure + H1 sur 2 lignes ≈ 47px) + barre de filtres 49px.
+       Le script la remplace par la hauteur MESURÉE (ResizeObserver) : le H1 peut occuper 1 à 3 lignes selon la largeur. */
+    :root { --above-map-h: calc(var(--header-h) + 41px + 47px + 49px); }
 
     .map-layout {
       display: grid;
@@ -736,27 +792,49 @@ function caseYear(c: typeof allCases[0]): string {
       color: var(--muted);
     }
 
+    /* Entrée = conteneur (position de repère) + bouton « situer sur la carte » + vrai lien vers la fiche (jamais un lien dans un bouton). */
     .case-item {
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      transition: background 0.1s;
+    }
+    .case-select {
       display: flex;
       align-items: stretch;
       width: 100%;
       padding: 0.7rem 1rem;
       border: none;
-      border-bottom: 1px solid var(--border);
       background: transparent;
       cursor: pointer;
       text-align: left;
       gap: 0.65rem;
-      transition: background 0.1s;
       font-family: var(--sans);
+      color: inherit;
     }
     .case-item:hover { background: #F5F5F3; }
-    .case-fiche { padding: 2px 8px; font: 700 0.7rem var(--sans); color: #fff; background: var(--blue); border-radius: 3px; cursor: pointer; }
+    .case-fiche {
+      position: absolute;
+      right: 1rem;
+      bottom: 0.7rem;
+      padding: 2px 8px;
+      font: 700 0.7rem var(--sans);
+      color: #fff;
+      background: var(--blue);
+      border-radius: 3px;
+      text-decoration: none;
+    }
+    .case-fiche:hover { text-decoration: underline; }
+    .case-fiche:focus-visible, .case-select:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+    /* Place réservée au lien pour que les étiquettes qui passent à la ligne ne le recouvrent jamais */
+    .case-item.has-fiche .case-tags { padding-right: 4.6rem; }
     .case-item.active {
       background: var(--red-bg);
       border-left: 3px solid var(--red);
-      padding-left: calc(1rem - 2px);
     }
+    .case-item.active .case-select { padding-left: calc(1rem - 2px); }
+    /* Entrée désignée par l'ancre (/#affaire-…) : repérée sans être « sélectionnée » (la sélection, elle, ouvre la popup). */
+    .case-item.is-target { background: #FFF6E5; box-shadow: inset 4px 0 0 var(--orange); }
 
     .case-bar {
       width: 3px;

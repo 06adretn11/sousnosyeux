@@ -159,6 +159,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Accueil — H1 visible, vrais liens vers les fiches publiées, ancres stables /#affaire-<id> sans popup à l’arrivée',
+    script: 'scripts/qa/test-accueil-liens-ancres.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Génération des fiches — gardes d’extraction (citation entière, date écrite, quantités, issue, nom, nombre d’enfants, appel/finalité), état contredit ou non étayé ⇒ jamais READY, proposition Telegram',
     script: 'scripts/qa/test-generer-fiche.mjs',
     bloquant: true,
