@@ -36,7 +36,7 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: Plan (lecture seule : compteurs et identifiants techniques seulement)
+      - name: Plan (lecture seule, compteurs et identifiants techniques seulement)
         if: ${{ !inputs.ecrire }}
         run: node scripts/reprendre-sans-perte.mjs
       - name: Reprise (régénération avec la version approuvée, requalification des faits territoriaux)
