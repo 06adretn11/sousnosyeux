@@ -61,6 +61,12 @@ t('GO de lot · contenu autorisé ABSENT du dossier présent et d’aucune propo
   assert.equal(plan.length, 0);
   assert.ok(lignes.some((l) => /SUPPLANTEE/.test(l) && l.includes('bbbbbbbb')) && lignes.some((l) => /CONTENU_AUTORISE_ABSENT/.test(l)), lignes.join('\n'));
 });
+t('GO de lot · le journal dit l’état qui conditionne une restauration (retrait, HOLD, statut en base) : lecture de référence faite par la CI', () => {
+  const ligne = (revues, o) => ev(revues, [prop(B, 'bbbbbbbb', T1)], { isoles: { dossiers: { [ID]: B } }, ...o }).lignes.find((l) => /CONTENU_AUTORISE_ABSENT/.test(l));
+  assert.match(ligne([rev(B, T1), rev(A, T2)]), /retrait aucun · HOLD non · statut en base « publiée »/);
+  assert.match(ligne([rev(B, T1), rev(A, T2), retrait(T3)]), /retrait NON LEVÉ/);
+  assert.match(ligne([rev(B, T1), rev(A, T2)], { holds: new Set([ID]) }), /HOLD OUI/);
+});
 t('sélection · journalisation du refus AVANT l’exclusion : la sélection devenue vide ne l’efface pas', () => {
   const { lignes } = ev([rev(B, T1), rev(A, T2)], [prop(B, 'bbbbbbbb', T1)], { isoles: { dossiers: {} } });
   assert.ok(lignes[0].includes('SUPPLANTEE') && lignes[0].includes('bbbbbbbb'));

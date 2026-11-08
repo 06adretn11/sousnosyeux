@@ -108,7 +108,7 @@ export function evaluerPromotions({ propositions, revuesParAffaire, statuts = nu
     const choisi = [...retenus].sort((a, b) => String(b.decided_at).localeCompare(String(a.decided_at)))[0];
     if (choisi) {
       const r = decider({ id, generee: { d: choisi.dossier, proposable: true, precedent_hash: choisi.precedent ?? null, declare: choisi.declare ?? null }, revues: toutes, toutesRevues: toutes, isoles, hubs, cases, holds });
-      if (!r.ok && r.motif === 'DEJA_PROMUE') { if (ecartes.length) lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(r.hash)} — conservé, aucun ancien candidat promu`); continue; }
+      if (!r.ok && r.motif === 'DEJA_PROMUE') { if (ecartes.length) lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(r.hash)} — conservé, aucun ancien candidat promu (retrait ${derniereDecision(toutes) === 'retirer' ? 'NON LEVÉ' : 'aucun'} · HOLD ${holds.has(id) ? 'OUI' : 'non'})`); continue; }
       lignes.push(`· ${id} : ${r.ok ? `promotion PERMISE (empreinte ${r.hash}${r.remplace ? `, remplace la version approuvée ${r.remplace}` : ''})` : `refusée — ${r.motif}${r.hash ? ` (empreinte ${r.hash})` : ''}`}`);
       if (r.ok) plan.push({ id, hash: r.hash, dossier: r.dossier, ...(r.remplace ? { remplace: r.remplace } : {}) });
       continue;
@@ -116,8 +116,10 @@ export function evaluerPromotions({ propositions, revuesParAffaire, statuts = nu
     // Aucune proposition ne porte l'empreinte attendue (ou plus aucune approbation).
     if (hubs.some((m) => m?.dossiers?.[id]) || !der) continue;                 // dossier de Hub : jamais promu ici ; sans approbation : déjà dit par le chemin ordinaire
     const present = isoles?.dossiers?.[id];
-    if (present && hashDossier(present) === der.hash) { lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(der.hash)} — conservé, aucun ancien candidat promu`); continue; }
-    lignes.push(`· ${id} : refusée — CONTENU_AUTORISE_ABSENT (dernière approbation ${court(der.hash)} enregistrée le ${String(der.instant ?? 'instant inconnu').slice(0, 19)} UTC ; dossier présent ${present ? court(hashDossier(present)) : 'absent'} ; restauration depuis le dépôt requise, aucun ancien ACCEPT promu)`);
+    // État qui conditionne toute restauration (relu dans Neon à chaque passage) : retrait non levé, HOLD, statut en base. Journalisé pour que la CI SOIT la lecture de référence.
+    const etat = `retrait ${derniereDecision(toutes) === 'retirer' ? 'NON LEVÉ' : 'aucun'} · HOLD ${holds.has(id) ? 'OUI' : 'non'} · statut en base « ${statuts?.get(id) ?? 'non lu'} »`;
+    if (present && hashDossier(present) === der.hash) { lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(der.hash)} — conservé, aucun ancien candidat promu (${etat})`); continue; }
+    lignes.push(`· ${id} : refusée — CONTENU_AUTORISE_ABSENT (dernière approbation ${court(der.hash)} enregistrée le ${String(der.instant ?? 'instant inconnu').slice(0, 19)} UTC ; dossier présent ${present ? court(hashDossier(present)) : 'absent'} ; ${etat} ; restauration depuis le dépôt requise, aucun ancien ACCEPT promu)`);
   }
   return { lignes, plan };
 }
