@@ -14,6 +14,7 @@
 import { readFileSync, writeFileSync, existsSync, appendFileSync, mkdirSync } from 'node:fs';
 import { dossierFiche, hashDossier, ficheApprouvee, empreinteApprouvee } from './lib/fiche-page.mjs';
 import { connecter } from './lib/neon.mjs';
+import { fichesConcernees } from './lib/pages-concernees.mjs';
 import { lireMatiereValidee } from './lib/matiere-validee.mjs';
 import { construireMatiere } from './lib/destinations.mjs';
 import { enregistrerHub } from './lib/diagnostic-territoire.mjs';
@@ -97,7 +98,8 @@ const ancienne = new Map((ancien.matiere ?? []).map((m) => [m.id, JSON.stringify
 const changees = matiere.filter((m) => ancienne.get(m.id) !== JSON.stringify(m));                    // informations nouvelles ou modifiées
 const retirees = (ancien.matiere ?? []).filter((m) => !matiere.some((x) => x.id === m.id));
 const touchees = [...changees, ...retirees];
-const concernees = Object.keys(fiches).filter((id) => !ancien.fiches_approuvees?.[id] || JSON.stringify(ancien.affaires?.[id] ?? []) !== JSON.stringify(parAffaire[id] ?? []) || touchees.some((m) => m.destinations.fiche === id));
+// Une fiche dont l'EMPREINTE de dossier approuvée change (mise à jour, restauration) est concernée même si l'affaire était déjà publiée et que ses événements n'ont pas bougé.
+const concernees = fichesConcernees({ ancien, fiches, parAffaire, touchees });
 // + les Hubs nouvellement approuvés (ou dont l'empreinte approuvée a changé) ou retirés : leur page est à vérifier sur le site servi, puis confirmée.
 const hubsChanges = Object.keys(hubsApprouvesCourants).filter((s) => JSON.stringify(hubsApprouvesCourants[s]) !== JSON.stringify(ancien.hubs_approuves?.[s]));
 const hubsConcernes = [...new Set([...touchees.flatMap((m) => m.destinations.hubs.map((h) => h.hub)), ...hubsChanges])];

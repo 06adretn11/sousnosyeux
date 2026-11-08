@@ -86,7 +86,7 @@ export function chargerHub(id: string): { matiere: any; prive: any | null } {
   const r = chargerHubBrut(id);
   return { ...r, matiere: ajusterInconnues(r.matiere, id) };
 }
-function chargerHubBrut(id: string): { matiere: any; prive: any | null } {
+export function chargerHubBrut(id: string): { matiere: any; prive: any | null } {
   const m = A[id] ?? P[id];
   if (!m) throw new Error(`[hub-matiere] data/hub-matiere/${id}.json introuvable`);
   const ajouts = matiereHub(id);

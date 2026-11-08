@@ -17,7 +17,7 @@ import { dateLongue } from '../lib/etat-wording';
 
 interface Props { id: string; verifieLe: string }
 const { id, verifieLe } = Astro.props;
-const { c, hub, d, deroule, matiere } = ficheDe(id);
+const { c, hub, d, deroule, matiere, empreinte } = ficheDe(id);
 
 const statut = d.statut_affiche ?? statutCourant(c);
 const cat = statutCat(statut);
@@ -58,7 +58,7 @@ const nouveaux = d.suivre_neon ? evenementsDe(id).filter((e: any) => !portes.has
 const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 'paroles' : null, deroule.length ? 'deroule' : null, 'sources'].filter(Boolean).join(' ');
 ---
 
-<article class={`fiche ${cat}`} data-fiche={id} data-blocs={blocs} data-evenements={evenementsDe(id).length} data-matiere={matiere}>
+<article class={`fiche ${cat}`} data-fiche={id} data-blocs={blocs} data-evenements={evenementsDe(id).length} data-matiere={matiere} data-dossier={empreinte}>
   <nav class="fil" aria-label="Fil d’Ariane">
     <a href="/">Carte</a>
     {hub && <><span aria-hidden="true">›</span> <a href={hub.url}>{hub.titre}</a></>}
