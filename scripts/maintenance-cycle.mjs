@@ -741,6 +741,13 @@ async function etapeSourcesSuivies() {
         if (!ps.length) { ligne.propositions.push({ case_id: id, issue: 'SANS_PASSAGE_NOMMANT_L_AFFAIRE' }); continue; }
         const comp = S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias });
         const ancien = !!d.publie_le && (Date.parse(jour) - Date.parse(d.publie_le)) / 864e5 > 30;
+        const article0 = 'ART-' + fingerprint(d.url).slice(0, 10);
+        // Proposition existante de ce document (même affaire, même article, même empreinte, même moteur) : lue AVANT le libellé, pour que la
+        // première détection (et non le jour de la reprise) soit celle que le message affiche.
+        const [exist] = await sql`select proposal_id::text pid, decision::text dec, facts, payload->'declaration'->>'decouvert_le' decouvert_le, created_at::date::text cree_le from state_proposals
+                                   where case_id = ${id} and article_id = ${article0} and engine = 'sources-suivies' and content_fingerprint = ${d.empreinte}
+                                   order by created_at limit 1`;
+        const premiere = S.jourDecouverte({ existante: exist, jour });
         const portee = d.organisme?.portee || null;
         const presse = d.nature === 'ARTICLE_PRESSE_REFERENCE';
         const emetteur = presse ? d.origine_presse : (d.emetteur || d.organisme?.nom);
@@ -749,7 +756,7 @@ async function etapeSourcesSuivies() {
             : `Publication de ${emetteur}${d.publie_le ? ` du ${d.publie_le}` : ' (date de publication non indiquée)'} : elle documente ce que son auteur déclare ; elle n'établit ni les faits dénoncés ni une étape judiciaire.`,
           d.nature === 'REPRISE_PRESSE' ? `Reprise d'un article de ${d.origine_presse} : une seule origine, aucune corroboration indépendante.` : null,
           comp ? `${comp.type === 'DEJA_SOURCE' ? 'Source déjà rattachée' : 'Preuve complémentaire'} d'un fait déjà rapporté${comp.ref.media ? ` (${comp.ref.media}${comp.ref.publie_le ? `, ${comp.ref.publie_le}` : ''})` : ''} : pas un nouvel événement.` : null,
-          !comp && ancien ? `Rattrapage documentaire : publication du ${d.publie_le}, découverte par SNY le ${jour} ; à confronter aux sources plus récentes.` : null,
+          !comp && ancien ? `Rattrapage documentaire : publication du ${d.publie_le}, découverte par SNY le ${premiere} ; à confronter aux sources plus récentes.` : null,
           d.issue === 'MODIFIE' ? 'Document déjà connu dont le texte a changé : réexamen.' : null,
         ].filter(Boolean).join(' ');
         const article = { article_id: 'ART-' + fingerprint(d.url).slice(0, 10), media: emetteur, publication_date: d.publie_le || null, url: d.url, body: d.doc.corps, content_fingerprint: d.empreinte };
@@ -761,10 +768,10 @@ async function etapeSourcesSuivies() {
         const declares = comp ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le, fiche, contexte: contexteHub });
         const facts = declares.length ? declares : [fait];
         const declaration = { emetteur, organisme: d.organisme?.id, nature: d.nature, origine_presse: d.origine_presse || null, portee, publie_le: d.publie_le || null,
-          decouvert_le: jour, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien,
+          decouvert_le: premiere, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien,
           decidable: declares.length > 0,
           ...(declares[0]?.ajustements_inconnues ? { ajustements: declares[0].ajustements_inconnues } : {}),
-          rattachement_motif: declares.length ? `${d.motif} — rattachement par le texte (établissement, commune et rôle) ; la publication ne précise ni la procédure ni son étape.` : undefined };
+          rattachement_motif: declares.length ? `${d.motif} — rattachement par le texte (établissement, commune et rôle) ; repère chronologique : ${declares[0].repere_chronologique} ; la publication ne précise ni la procédure ni son étape.` : undefined };
         const prop = {
           case_id: id, article_id: article.article_id, content_fingerprint: d.empreinte, version: S.SOURCES_SUIVIES_VERSION,
           CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, statut_propose: null, PROPOSED_CHANGE: 'NO_CHANGE', EVENT_DATE: null,
@@ -774,9 +781,6 @@ async function etapeSourcesSuivies() {
         };
         // CONTINUITÉ : la proposition existante de ce document (même affaire, même article, même empreinte, même moteur) garde son identité ;
         // tant qu'elle n'a reçu AUCUNE décision et n'était qu'une information, elle devient décidable sur place (mêmes proposal_id et historique).
-        const [exist] = await sql`select proposal_id::text pid, decision::text dec, facts from state_proposals
-                                   where case_id = ${id} and article_id = ${article.article_id} and engine = 'sources-suivies' and content_fingerprint = ${d.empreinte}
-                                   order by created_at limit 1`;
         let r = { deja_presente: false }, reprise = false;
         const suite = S.actionContinuite({ existante: exist ? { decision: exist.dec, facts: exist.facts } : null, decidable: declares.length > 0 });
         if (exist) {

@@ -464,6 +464,7 @@ export function faitsDeclares({ passages: ps, organisme, emetteur, nature, publi
     out.push({ event_type: 'mobilisation', nature: 'mobilisation', mesure: D.mesure, realisation: 'réalisée', portee: 'établissement', acteur: nom, acteur_nomme: nom,
       event_date: null, event_period: null, publication_date: publie_le || null, emetteur, organisme: organisme.id, evidence: [p.texte], emplacements: [p.emplacement],
       contexte_atteste: { mois: ym, ancrage: 'origine de la chronologie de l’affaire' },
+      repere_chronologique: `la publication évoque ${ctx} ; ce mois est celui du premier événement daté de la chronologie de l’affaire (${dateLongue(connues[0])})`,
       libelle_public: D.libelle({ nom: nomPublic, etab: fiche.etablissement, commune: fiche.commune, contexte: ctx, publie }),
       ...(ajustements.length ? { ajustements_inconnues: ajustements } : {}) });
   }
@@ -753,6 +754,15 @@ const couper = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
  * aucune décision demandée. Utilisé par telegram-v0 (envoi) ET par l'aperçu des essais : un seul texte.
  */
 /**
+ * Jour de PREMIÈRE détection d'un document par SNY : celui de la proposition existante (la plus ancienne des deux dates connues), sinon le jour courant.
+ * Une reprise sur place d'une information déjà envoyée ne redéfinit jamais la découverte.
+ */
+export function jourDecouverte({ existante = null, jour }) {
+  const connus = [existante?.decouvert_le, existante?.cree_le].map((d) => String(d || '').slice(0, 10)).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort();
+  return connus[0] || jour;
+}
+
+/**
  * Ce que le message de DÉCISION d'une publication d'organisme ajoute au message d'enrichissement existant : attribution, limites, rattachement,
  * et — si une information avait déjà été envoyée pour CETTE proposition — le lien de continuité. Une seule définition (telegram-v0 et l'aperçu des essais).
  */
@@ -761,7 +771,7 @@ export function complementDecision({ decl, limite, publication_date, proposal_id
     '', '<b>Attribution et limites</b>',
     `Déclaration de ${esc(decl.emetteur)} (${decl.nature === 'COMMUNIQUE' ? 'communiqué' : 'publication propre'}), publiée le ${jourFr(publication_date)} ; la date de la démarche n’est pas précisée par la source.`,
     limite ? esc(couper(limite, 600)) : '',
-    decl.rattachement_motif ? `<b>Rattachement</b> : ${esc(couper(decl.rattachement_motif, 400))}` : '',
+    decl.rattachement_motif ? `<b>Rattachement</b> : ${esc(couper(decl.rattachement_motif, 560))}` : '',
     ...(decl.ajustements?.length ? ['', '<b>Inconnue(s) ajustée(s) si VALIDATE</b> (portion devenue obsolète seulement ; les autres inconnues restent)',
       ...decl.ajustements.flatMap((a) => [`• Avant : « ${esc(couper(a.avant, 260))} »`, `  Après : « ${esc(couper(a.apres, 420))} »`])] : []),
     information_envoyee_le ? '' : null,
