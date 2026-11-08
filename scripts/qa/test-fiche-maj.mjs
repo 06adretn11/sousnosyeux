@@ -100,8 +100,144 @@ t('parcours raccordé : sélection → candidate → proposition → promotion �
   }
   assert.ok(!/contents:\s*write/.test(src('.github/workflows/sny-cycle.yml')), 'sny-cycle ne reçoit aucun droit d’écriture');
   const v = src('scripts/verifier-site.mjs');
-  assert.ok(v.includes('absente(s) de la page servie'), 'la confirmation exige le contenu approuvé, pas seulement les attributs data-*');
+  assert.ok(v.includes('ecartsFichePure') && src('scripts/lib/ecarts-site.mjs').includes('absente(s) de la page servie'), 'la confirmation exige le contenu approuvé, pas seulement les attributs data-*');
   assert.ok(src('scripts/proposer-fiche.mjs').includes('changementsFiche') && src('scripts/promouvoir-fiche.mjs').includes('--depuis-propositions'));
+});
+
+// ── Vérification du site servi (lot C) ────────────────────────────────────────────────────────────────────────────────────────────────────────
+// Données DÉJÀ approuvées du dépôt (aucune fausse affaire, aucun faux clic) ; le site « servi » est un petit serveur local qui rend ce que le dépôt annonce.
+import { spawn } from 'node:child_process';
+import http from 'node:http';
+import { analyserArguments, ecartsFiche } from '../lib/ecarts-site.mjs';
+import { fichesConcernees } from '../lib/pages-concernees.mjs';
+import { verifierFichesCourantes } from '../lib/verifier-fiches.mjs';
+import { dossierFiche } from '../lib/fiche-page.mjs';
+
+const lireData = (f) => JSON.parse(readFileSync(new URL(`../../data/${f}`, import.meta.url), 'utf8'));
+const CASES = lireData('cases.json').cases, EVT = lireData('evenements.json');
+const [IDA, IDB] = ['FR-2026-0115', 'FR-2026-0116'];                           // deux fiches approuvées réelles
+assert.ok(EVT.fiches_approuvees[IDA] && EVT.fiches_approuvees[IDB], 'deux fiches approuvées de référence présentes dans le dépôt');
+const ta = async (nom, f) => { await f(); n++; console.log(`  ✓ ${nom}`); };
+
+t('arguments : le PREMIER identifiant positionnel est traité (défaut du 06/11 : indice 0 exclu sans option)', () => {
+  assert.deepEqual(analyserArguments(['FR-2026-0143']).ids, ['FR-2026-0143']);
+  assert.deepEqual(analyserArguments(['FR-2026-0143', 'POC-09']).ids, ['FR-2026-0143', 'POC-09']);
+  assert.deepEqual(analyserArguments([]).ids, []);
+  const m = analyserArguments(['--fiches', 'POC-09,FR-2026-0042', '--hubs', 'landes,paris-11e']);
+  assert.deepEqual([m.ids, m.fiches, m.hubs], [[], ['POC-09', 'FR-2026-0042'], ['landes', 'paris-11e']], 'les valeurs des options ne sont pas des identifiants');
+  const x = analyserArguments(['FR-2026-0001', '--fiches', 'POC-09', 'FR-2026-0002', '--sans-telegram']);
+  assert.deepEqual([x.ids, x.fiches, x.telegram], [['FR-2026-0001', 'FR-2026-0002'], ['POC-09'], false], 'identifiants avant et après une option : tous traités');
+  assert.deepEqual(analyserArguments(['--hubs', 'landes', 'FR-2026-0003']).ids, ['FR-2026-0003']);
+});
+
+const page = (id, { dossier = dossierFiche(id).d, evt = EVT, sansEmpreinte = false } = {}) => {
+  const n = (evt.affaires?.[id] || []).length, mat = (evt.matiere || []).filter((x) => x.destinations?.fiche === id);
+  return `<article data-fiche="${id}" data-evenements="${n}" data-matiere="${mat.length}"${sansEmpreinte ? '' : ` data-dossier="${hashDossier(dossier)}"`}>`
+    + (dossier.deroule || []).map((e) => `<p>${e.texte}</p>`).join('') + mat.map((x) => `<p>${x.libelle}</p>`).join('') + '</article>';
+};
+const ancienDossier = (id) => { const d = JSON.parse(JSON.stringify(dossierFiche(id).d)); d.deroule[0].texte = `Version précédente — ${d.deroule[0].texte}`; return d; };
+
+t('fiche servie : la version autorisée est confirmée ; une version précédente encore servie, ou sans empreinte, ne l’est jamais', () => {
+  const dossier = dossierFiche(IDA).d;
+  assert.deepEqual(ecartsFiche(page(IDA), IDA, { evenements: EVT, dossier }), [], 'version autorisée servie ⇒ conforme');
+  const ancien = ecartsFiche(page(IDA, { dossier: ancienDossier(IDA) }), IDA, { evenements: EVT, dossier });
+  assert.ok(ancien.some((e) => /dossier servi .* dossier autorisé/.test(e)), 'empreinte différente ⇒ non vérifiée');
+  assert.ok(ecartsFiche(page(IDA, { sansEmpreinte: true }), IDA, { evenements: EVT, dossier }).some((e) => /sans empreinte de dossier/.test(e)), 'page antérieure à l’empreinte ⇒ non vérifiée');
+  assert.ok(ecartsFiche(page(IDA), IDB, { evenements: EVT, dossier: dossierFiche(IDB).d }).length > 0, 'la page d’une autre affaire n’est pas confirmée');
+  // Champ du dossier absent du déroulé (hors des 50 premiers caractères d’étape) : couvert par l’empreinte, pas seulement par le texte des étapes.
+  const d2 = JSON.parse(JSON.stringify(dossier)); d2.inconnues = [...(d2.inconnues || []), 'Une inconnue modifiée.'];
+  assert.ok(ecartsFiche(page(IDA), IDA, { evenements: EVT, dossier: d2 }).some((e) => /dossier servi/.test(e)), 'un champ public modifié hors déroulé est détecté par l’empreinte');
+});
+
+t('projection : une empreinte de fiche approuvée DIFFÉRENTE transmet la fiche au contrôle du servi, même déjà publiée et sans événement modifié', () => {
+  const fiches = { A: { hash: 'bbbbbbbbbbbbbbbb' }, B: { hash: 'cccccccccccccccc' } };
+  const ancien = { fiches_approuvees: { A: { hash: 'aaaaaaaaaaaaaaaa' }, B: { hash: 'cccccccccccccccc' } }, affaires: {} };
+  assert.deepEqual(fichesConcernees({ ancien, fiches, parAffaire: {}, touchees: [] }), ['A'], 'A : empreinte changée ⇒ concernée ; B inchangée ⇒ non');
+  assert.deepEqual(fichesConcernees({ ancien: { fiches_approuvees: {}, affaires: {} }, fiches, parAffaire: {}, touchees: [] }), ['A', 'B'], 'nouvellement approuvées');
+  assert.deepEqual(fichesConcernees({ ancien: { fiches_approuvees: { ...fiches }, affaires: {} }, fiches, parAffaire: {}, touchees: [] }), [], 'rien de changé ⇒ aucune');
+});
+
+await ta('scénario complet : mise à jour projetée → ancien contenu servi (200) → passage SANS changement qui reprend → seule la nouvelle version est vérifiée', async () => {
+  const dossierNouveau = dossierFiche(IDA).d, dossierAncien = ancienDossier(IDA);
+  let servi = page(IDA, { dossier: dossierAncien });                                   // le build n'a pas encore déployé la nouvelle version
+  const lirePage = async () => ({ ok: true, status: 200, html: servi });
+  const ctx = { ids: [IDA], evenements: EVT, dossierDe: () => dossierNouveau, lirePage };
+  // 1. la projection transmet la fiche ; 2. le site répond 200 avec l'ancien contenu : non vérifiée
+  assert.deepEqual(fichesConcernees({ ancien: { fiches_approuvees: { [IDA]: { hash: hashDossier(dossierAncien) } } }, fiches: { [IDA]: { hash: hashDossier(dossierNouveau) } }, parAffaire: {}, touchees: [] }), [IDA]);
+  const r1 = await verifierFichesCourantes(ctx);
+  assert.deepEqual([r1.conformes, r1.enAttente.map((x) => x.id)], [[], [IDA]], 'ancien contenu servi ⇒ non vérifiée');
+  // 3. un passage ultérieur n'a plus rien à projeter (liste vide) mais reprend la vérification : toujours non vérifiée tant que l'ancien est servi
+  const r2 = await verifierFichesCourantes(ctx);
+  assert.deepEqual(r2.enAttente.map((x) => x.id), [IDA]);
+  // 4. le contenu attendu est désormais servi : seule cette version devient vérifiée
+  servi = page(IDA, { dossier: dossierNouveau });
+  const r3 = await verifierFichesCourantes(ctx);
+  assert.deepEqual([r3.conformes, r3.enAttente], [[IDA], []]);
+  // L'attendu supplanté : la version intermédiaire servie n'est jamais déclarée publiée ; c'est le NOUVEL attendu qui est contrôlé.
+  const r4 = await verifierFichesCourantes({ ...ctx, dossierDe: () => dossierAncien });
+  assert.deepEqual(r4.enAttente.map((x) => x.id), [IDA], 'une autre version attendue ⇒ la page servie (nouvelle) ne confirme pas l’ancienne attente');
+  // Site injoignable / HTTP 404 : jamais « vérifié ».
+  assert.equal((await verifierFichesCourantes({ ...ctx, lirePage: async () => { throw new Error('réseau'); } })).conformes.length, 0);
+  assert.equal((await verifierFichesCourantes({ ...ctx, lirePage: async () => ({ ok: false, status: 404 }) })).conformes.length, 0);
+  // Reprise sans écriture : relancée sur une version déjà conforme, la vérification est sans état (aucune écriture, résultat identique).
+  assert.deepEqual(await verifierFichesCourantes(ctx), r3);
+});
+
+// CLI réelle (chemin de traitement des arguments inclus) contre un « site » local fait des données approuvées du dépôt.
+const siteLocal = async (rendu) => {
+  const requetes = [];
+  const serveur = http.createServer((req, res) => {
+    requetes.push(req.url.split('?')[0]);
+    const u = req.url.split('?')[0];
+    const m = /^\/affaires\/([^/]+)\/$/.exec(u);
+    if (u === '/') { res.setHeader('content-type', 'text/html'); res.end(rendu.accueil()); }
+    else if (m) { res.setHeader('content-type', 'text/html'); res.end(rendu.fiche(m[1].toUpperCase())); }
+    else if (/^\/territoires\/([a-z0-9-]+)\/$/.test(u)) { res.setHeader('content-type', 'text/html'); res.end(rendu.hub(/^\/territoires\/([a-z0-9-]+)\//.exec(u)[1])); }
+    else { res.statusCode = 404; res.end(''); }
+  });
+  await new Promise((ok) => serveur.listen(0, '127.0.0.1', ok));
+  return { url: `http://127.0.0.1:${serveur.address().port}`, requetes, fermer: () => new Promise((ok) => serveur.close(ok)) };
+};
+const accueil = (modif = {}) => () => `<script type="application/json" id="cases-data">${JSON.stringify(CASES.map((c) => ({ case_id: c.case_id, statut_judiciaire: modif[c.case_id] ?? c.statut_judiciaire, source_url: c.sources?.[0]?.url ?? '', etat: c.etat ?? null })))}</script>`;
+const hubPage = (h) => { const it = (EVT.matiere || []).filter((x) => (x.destinations?.hubs || []).some((g) => g.hub === h)); return `<main data-matiere="${it.length}">${it.map((x) => `<p>${x.libelle}</p>`).join('')}</main>`; };
+const lancer = (args, url) => new Promise((ok) => {
+  const p = spawn(process.execPath, ['scripts/verifier-site.mjs', ...args, '--sans-telegram'], { cwd: new URL('../../', import.meta.url), env: { ...process.env, SNY_SITE_URL: url, SNY_VERIF_ESSAIS: '1' } });
+  let out = '', err = ''; p.stdout.on('data', (d) => (out += d)); p.stderr.on('data', (d) => (err += d)); p.on('close', (code) => ok({ code, out, err }));
+});
+
+await ta('CLI : aucun identifiant ⇒ sortie 2 « rien à vérifier », rien n’est demandé au site, aucune preuve de publication', async () => {
+  const s = await siteLocal({ accueil: accueil(), fiche: (id) => page(id), hub: hubPage });
+  const r = await lancer([], s.url); await s.fermer();
+  assert.equal(r.code, 2); assert.ok(r.err.includes('rien à vérifier')); assert.ok(!/site conforme|vérification de/.test(r.out)); assert.equal(s.requetes.length, 0);
+});
+await ta('CLI : un seul identifiant est EFFECTIVEMENT vérifié (la cause du run du 06/11) ; plusieurs : tous, le premier compris', async () => {
+  const s = await siteLocal({ accueil: accueil(), fiche: (id) => page(id), hub: hubPage });
+  const un = await lancer([IDB], s.url);
+  assert.equal(un.code, 0, un.err); assert.ok(un.out.includes(`vérification de : ${IDB}`) && un.out.includes('site conforme')); assert.ok(s.requetes.includes('/'));
+  const deux = await lancer([IDA, IDB], s.url);
+  assert.equal(deux.code, 0, deux.err); assert.ok(deux.out.includes(`vérification de : ${IDA}, ${IDB}`));
+  await s.fermer();
+  // Le PREMIER identifiant est réellement comparé : un écart sur lui seul fait échouer la vérification (jamais un faux « conforme »).
+  const t2 = await siteLocal({ accueil: accueil({ [IDA]: 'plainte (écart de test)' }), fiche: (id) => page(id), hub: hubPage });
+  const ecart = await lancer([IDA, IDB], t2.url); await t2.fermer();
+  assert.equal(ecart.code, 1); assert.ok(ecart.err.includes(IDA) && !ecart.err.includes(`${IDB} :`), 'l’écart porte sur le premier identifiant, pas sur le second');
+});
+await ta('CLI : options --fiches / --hubs combinées avec des identifiants ; une fiche servie à l’ancienne version échoue', async () => {
+  const s = await siteLocal({ accueil: accueil(), fiche: (id) => page(id), hub: hubPage });
+  const r = await lancer([IDA, '--fiches', IDB, '--hubs', 'landes'], s.url);
+  assert.equal(r.code, 0, r.err); assert.ok(r.out.includes(`vérification de : ${IDA}, fiche ${IDB}, Hub landes`));
+  assert.ok(s.requetes.includes('/') && s.requetes.includes(`/affaires/${IDB.toLowerCase()}/`) && s.requetes.includes('/territoires/landes/'), 'les trois familles sont réellement demandées');
+  await s.fermer();
+  const t3 = await siteLocal({ accueil: accueil(), fiche: (id) => page(id, { dossier: ancienDossier(id) }), hub: hubPage });
+  const ancien = await lancer(['--fiches', `${IDA},${IDB}`], t3.url); await t3.fermer();
+  assert.equal(ancien.code, 1); assert.ok(/dossier servi/.test(ancien.err), 'l’ancienne version servie n’est pas confirmée');
+});
+t('raccord : le passage planifié revérifie les fiches approuvées courantes (liste de modifications vide incluse) et la projection utilise la condition d’empreinte', () => {
+  const r = src('scripts/reconcilier-publication.mjs');
+  assert.ok(r.includes('verifierFichesCourantes') && r.includes('FICHE_PENDING_DEPLOYMENT') && r.includes('fiches_approuvees'), 'le contrôle du servi porte aussi sur les fiches approuvées');
+  assert.ok(src('scripts/project-evenements.mjs').includes('fichesConcernees({'), 'la projection transmet les fiches dont l’empreinte change');
+  for (const w of ['sny-clics', 'sny-telegram']) assert.ok(/reconcilier-publication\.mjs --site/.test(src(`.github/workflows/${w}.yml`)), `${w} : contrôle du site servi à chaque passage`);
+  assert.ok(src('web/src/components/FicheUnique.astro').includes('data-dossier={empreinte}'), 'la page expose l’empreinte du dossier servi');
 });
 
 console.log(`\n${n} contrôles : OK`);

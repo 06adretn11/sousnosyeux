@@ -12,7 +12,8 @@
 import casesDoc from '../../../data/cases.json';
 import evenementsDoc from '../../../data/evenements.json';
 import holdsDoc from '../../../data/publication-holds.json';
-import { chargerHub, carteReaction } from './hub-matiere';
+import { chargerHub, chargerHubBrut, carteReaction } from './hub-matiere';
+import { hashDossier } from '../../../scripts/lib/fiche-page.mjs';
 
 export const HUBS: Record<string, { titre: string; url: string }> = {
   'paris-11e': { titre: 'Paris 11e', url: '/territoires/paris-11e' },
@@ -43,6 +44,12 @@ export function dossierDe(id: string): { hub: string | null; d: any | null } {
   }
   try { const d = chargerHub(ISOLES).matiere.dossiers?.[id]; if (d) return { hub: null, d }; } catch { /* pas de fichier */ }
   return { hub: null, d: null };
+}
+
+/** Dossier tel qu'ÉCRIT dans data/hub-matiere (avant l'ajustement d'affichage des inconnues par une information validée) : c'est lui que porte l'empreinte approuvée. */
+export function dossierBrutDe(id: string): any | null {
+  for (const h of Object.keys(HUBS)) { const d = chargerHubBrut(h).matiere.dossiers?.[id]; if (d) return d; }
+  try { return chargerHubBrut(ISOLES).matiere.dossiers?.[id] ?? null; } catch { return null; }
 }
 
 /** Déroulé commun (fiche + Hub) : entrées du dossier, dates/types alignés sur Neon, événements validés manquants ajoutés. */
@@ -78,5 +85,9 @@ export function ficheDe(id: string) {
   const { items, divergences } = derouleCommun(id, d);
   const cartes = matiereFiche(id).map(carteReaction);
   const dossier = { ...(d ?? {}), reactions: [...(d?.reactions ?? []), ...cartes] };
-  return { c, hub: hub ? { id: hub, ...HUBS[hub] } : null, d: dossier, deroule: items, divergences, matiere: cartes.length };
+  // Empreinte du dossier FICHIER (neuf champs, calcul de l'approbation : hashDossier de scripts/lib/fiche-page.mjs) — ni le dossier fusionné avec les cartes de réaction,
+  // ni le dossier dont une information validée a ajusté l'AFFICHAGE des inconnues. Exposée dans la page (`data-dossier`) pour que la vérification du site servi
+  // compare la version réellement servie à la version autorisée.
+  const brut = dossierBrutDe(id);
+  return { c, hub: hub ? { id: hub, ...HUBS[hub] } : null, d: dossier, deroule: items, divergences, matiere: cartes.length, empreinte: brut ? hashDossier(brut) : null };
 }

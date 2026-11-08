@@ -36,6 +36,8 @@ import { etatPublication, categorieDiagnostic, goPublication, REVUE_VALIDATION }
 import { geocoderCommune } from './lib/geocoder-commune.mjs';
 import { localisationDe } from './lib/proposition-publication.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
+import { dossierFiche } from './lib/fiche-page.mjs';
+import { verifierFichesCourantes } from './lib/verifier-fiches.mjs';
 
 const A = process.argv.slice(2);
 const ID = /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/;
@@ -108,6 +110,21 @@ if (SITE_CTRL) {
   }
   for (const id of enAttenteSite) etats.set(id, { etat: 'PENDING_DEPLOYMENT', raisons: ['dans l’artefact mais absent ou différent sur le site servi'] });
   for (const id of siteVerifie) if (etats.get(id)?.etat === 'IN_ARTEFACT') etats.set(id, { etat: 'PUBLISHED_VERIFIED', raisons: [] });
+}
+
+// --- 3c. FICHES approuvées courantes, contre la version AUTORISÉE actuelle (rejoué à chaque passage, même sans rien à projeter) ---------------------
+// Une mise à jour ou une restauration dont le déploiement tarde reste revérifiée ici jusqu'à confirmation ; aucun message Telegram, aucun journal.
+let fichesEnAttente = [];
+if (SITE_CTRL) {
+  const evenements = lire('data/evenements.json');
+  const idsFiches = Object.keys(evenements.fiches_approuvees || {});
+  const { conformes, enAttente } = await verifierFichesCourantes({
+    ids: idsFiches, evenements, dossierDe: (id) => dossierFiche(id)?.d,
+    lirePage: async (id) => { const r = await fetch(`${SITE}/affaires/${id.toLowerCase()}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } }); return { ok: r.ok, status: r.status, html: r.ok ? await r.text() : '' }; },
+  });
+  fichesEnAttente = enAttente.map((x) => x.id);
+  for (const x of enAttente) console.log(`· fiche ${x.id.padEnd(13)} FICHE_PENDING_DEPLOYMENT  ${x.ecarts.slice(0, 2).join(' ; ')}`);
+  console.log(`fiches servies : ${conformes.length}/${idsFiches.length} conformes à la version autorisée`);
 }
 
 // --- 3b. ENTONNOIR (diagnostic, lecture seule) ----------------------------------------------------------------------------------
@@ -203,5 +220,6 @@ if (refusees.length) process.exitCode = 1;
 
 const pending = SITE_CTRL ? enAttenteSite : [];
 if (pending.length) { console.error(`PENDING_DEPLOYMENT : ${pending.length} affaire(s) dans l’artefact non conforme(s) sur le site servi`); process.exitCode = 1; }
-if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `change=${ajoutees.length > 0}\nids=${ajoutees.join(',')}\npending=${pending.join(',')}\n`);
+if (fichesEnAttente.length) { console.error(`FICHE_PENDING_DEPLOYMENT : ${fichesEnAttente.length} fiche(s) dont la version servie n’est pas la version autorisée`); process.exitCode = 1; }
+if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `change=${ajoutees.length > 0}\nids=${ajoutees.join(',')}\npending=${pending.join(',')}\nfiches_pending=${fichesEnAttente.join(',')}\n`);
 console.log(`réconciliation : ${ajoutees.length} affaire(s) ajoutée(s) à l’artefact${ECRIRE ? '' : ' (plan : aucune écriture)'}`);
