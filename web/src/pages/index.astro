@@ -148,6 +148,7 @@ function caseYear(c: typeof allCases[0]): string {
       <div class="sidebar-list" id="sidebar-list">
         {sortedCases.map((c) => (
           <div
+            id={`affaire-${c.case_id}`}
             class={`case-item${fichesRevue[c.case_id] ? ' has-fiche' : ''}`}
             data-id={c.case_id}
             data-cat={statutCat(c.statut_judiciaire)}
@@ -510,7 +511,7 @@ function caseYear(c: typeof allCases[0]): string {
 
     // ── Sidebar : highlight ──
     function highlightSidebarCase(caseId: string) {
-      document.querySelectorAll('.case-item').forEach((el) => el.classList.remove('active'));
+      document.querySelectorAll('.case-item').forEach((el) => { el.classList.remove('active'); el.classList.remove('is-target'); });
       const el = document.querySelector<HTMLElement>(`.case-item[data-id="${caseId}"]`);
       if (el) {
         el.classList.add('active');
@@ -568,6 +569,32 @@ function caseYear(c: typeof allCases[0]): string {
         if (countEl) countEl.textContent = `${visibleCount} résultat${visibleCount > 1 ? 's' : ''}`;
       });
     });
+
+    // ── Ancres stables /#affaire-<identifiant> ──
+    // Arriver sur une ancre = faire défiler la liste jusqu'à l'entrée et la surligner. Aucune popup, aucun zoom : la popup ne s'ouvre que sur une action du lecteur
+    // (clic sur l'entrée ou sur un point). Un fragment inconnu, mal encodé ou d'une affaire sans point sur la carte ne fait rien.
+    function allerAUneAffaire() {
+      document.querySelectorAll('.case-item.is-target').forEach((e) => e.classList.remove('is-target'));
+      const m = /^#affaire-(.+)$/.exec(window.location.hash);
+      if (!m) return;
+      let id: string;
+      try { id = decodeURIComponent(m[1]); } catch { return; }
+      const el = document.getElementById(`affaire-${id}`);
+      if (!el || !el.classList.contains('case-item')) return;
+      // Un filtre actif qui masquerait l'entrée est levé : sinon l'ancre ne mènerait nulle part.
+      if (el.style.display === 'none') document.querySelector<HTMLElement>('.tb-btn[data-filter="all"]')?.click();
+      el.classList.add('is-target');
+      // On fait défiler la colonne de la liste seulement (pas la page) : l'entrée est amenée au centre de la colonne.
+      const colonne = document.querySelector<HTMLElement>('.sidebar');
+      if (colonne) {
+        const haut = el.getBoundingClientRect().top - colonne.getBoundingClientRect().top + colonne.scrollTop;
+        colonne.scrollTo({ top: Math.max(0, haut - (colonne.clientHeight - el.offsetHeight) / 2) });
+      }
+    }
+    allerAUneAffaire();
+    window.addEventListener('hashchange', allerAUneAffaire);
+    // Une fois les polices et la hauteur au-dessus de la carte stabilisées, la position peut avoir bougé : on la recale une fois.
+    window.addEventListener('load', allerAUneAffaire, { once: true });
   </script>
 
   <!-- ── STYLES PAGE ── -->
@@ -806,6 +833,8 @@ function caseYear(c: typeof allCases[0]): string {
       border-left: 3px solid var(--red);
     }
     .case-item.active .case-select { padding-left: calc(1rem - 2px); }
+    /* Entrée désignée par l'ancre (/#affaire-…) : repérée sans être « sélectionnée » (la sélection, elle, ouvre la popup). */
+    .case-item.is-target { background: #FFF6E5; box-shadow: inset 4px 0 0 var(--orange); }
 
     .case-bar {
       width: 3px;
