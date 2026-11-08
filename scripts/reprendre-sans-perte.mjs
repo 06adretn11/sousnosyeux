@@ -149,4 +149,19 @@ for (const p of enAttente) {
   await superseder('state_proposals', p.pid, 'REJECT', `SUPERSEDED — remplacée par la version corrigée ${ins[0]?.pid?.slice(0, 8) ?? '(déjà existante)'} : le libellé ne correspondait pas à la preuve`);
 }
 console.log(`faits territoriaux : ${enAttente.length} proposition(s) en attente d'une version antérieure · ${modifiees} à corriger${ECRIRE ? ' (corrigées et remplacées)' : ''} · ${aQualifier} à qualifier (preuve insuffisante) · ${inchangees} inchangée(s)`);
+
+// =====================================================================  Inventaire réel après coup (lecture seule, comptes seulement : le dépôt est public, jamais de titre ni d'URL)
+// Par affaire : combien de propositions de mise à jour, combien sans décision, combien déjà envoyées sur Telegram, quelle est la dernière décision.
+{
+  const inv = await sql`
+    select p.payload->'page'->>'case_id' case_id, count(*)::int total,
+           count(*) filter (where p.decision is null)::int sans_decision,
+           count(*) filter (where p.decision is null and exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text))::int envoyees,
+           count(*) filter (where p.decision is null and not exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text))::int a_envoyer,
+           count(*) filter (where p.decision::text = 'REJECT' and p.decided_by like 'reprise sans perte%')::int remplacees_par_la_reprise,
+           (array_agg(p.decision::text order by p.created_at desc))[1] derniere_decision
+      from new_case_proposals p where p.payload->'page' ? 'mise_a_jour' group by 1 order by 1`;
+  console.log('— inventaire des mises à jour de fiches (par affaire) —');
+  for (const r of inv) console.log(`  ${r.case_id} : ${r.total} proposition(s) · ${r.sans_decision} sans décision (${r.envoyees} envoyée(s) sur Telegram, ${r.a_envoyer} à envoyer) · ${r.remplacees_par_la_reprise} remplacée(s) par la reprise · dernière : ${r.derniere_decision ?? 'sans décision'}`);
+}
 if (!ECRIRE) console.log('PLAN seulement : rien n’a été écrit. Relancer avec --ecrire pour appliquer.');
