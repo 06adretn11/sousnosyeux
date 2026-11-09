@@ -17,6 +17,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
 import { classer } from './lib/appliquer-contrat.mjs';
 import { niveauGeo } from './lib/rapprochement-garde.mjs';
+import { estDecisionMachine } from './lib/decision-machine.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel } from './lib/evenement-institutionnel.mjs';
 
@@ -77,7 +78,7 @@ for (const p of sp) {
 
 // --- Discovery (new_case_proposals) ----------------------------------------
 const nc = await sql`
-  select left(n.proposal_id::text, 8) k, n.recommendation, n.attach_case_id, n.decision::text decision, n.payload, n.created_case_id, n.applied_at, t.sent_at envoye
+  select left(n.proposal_id::text, 8) k, n.recommendation, n.attach_case_id, n.decision::text decision, n.decided_by, n.payload, n.created_case_id, n.applied_at, t.sent_at envoye
     from new_case_proposals n
     join telegram_envois t on t.kind = 'decision' and t.cle = n.proposal_id::text
    where t.sent_at >= ${depuis}::date or n.decision is null
@@ -89,6 +90,8 @@ for (const n of nc) {
   const action = n.decision === 'ACCEPT' ? (actions.get(n.k) ?? (n.recommendation === 'ATTACH_EXISTING' ? 'ATTACH' : 'CREATE')) : null;
   const l = { cle: n.k, type: 'discovery', affaire: n.created_case_id || n.attach_case_id || `${p.commune}`, objet: p.hub ? 'Hub territorial (brouillon)' : p.attach ? 'rapprochement / création' : 'nouvelle affaire', choix: n.decision ? `${n.decision}${action ? ' · ' + action : ''}` : '—' };
   if (!n.decision) { l.etat = 'EN ATTENTE'; l.detail = 'demande envoyée, aucun clic enregistré'; }
+  // Décision MACHINE (proposition remplacée, doublon consolidé) : une invalidation technique, jamais présentée comme le refus de l'éditeur.
+  else if (estDecisionMachine(n.decided_by)) { l.etat = 'REMPLACÉE'; l.choix = `décision MACHINE (${n.decision})`; l.detail = 'invalidation technique, pas un choix de l’éditeur : bouton inerte, signaux et sources réutilisables'; }
   else if (n.decision === 'REVIEW_REQUIRED') { l.etat = 'HOLD'; l.detail = 'mis de côté : ni création ni rattachement, intervention humaine ultérieure'; }
   else if (n.applied_at) { l.etat = 'APPLIQUÉE'; l.detail = n.created_case_id ? `fiche ${n.created_case_id} créée${action === 'CREATE_PENDING' ? ' EN ATTENTE DE PREUVES (non publiable)' : ''}` : action === 'ATTACH' ? 'sources rattachées' : 'décision consignée (aucune écriture de fiche)'; }
   else if (action === 'ATTACH') {

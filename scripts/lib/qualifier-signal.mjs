@@ -21,6 +21,7 @@ import { comprendre } from './comprendre-source.mjs';
 import { niveauGeo, sourceCoherente, forceRapprochement, comparerSignaux, comparerEtablissements, rapprochementEtaye, jetonsEtablissement, estNommeEtab } from './rapprochement-garde.mjs';
 import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
 import { stadeEtabli, stadeCite } from './stade-judiciaire.mjs';
+import { MACHINE_RE, DECIDEUR_MACHINE } from './decision-machine.mjs';
 import { evaluerPublication } from './publication-gates.mjs';
 import { geocoderCommune } from './geocoder-commune.mjs';
 import { localisationDe } from './proposition-publication.mjs';
@@ -138,9 +139,13 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
   // l'humain tranche. Le repli est signalé dans l'ambiguïté.
   const REPLI = { type_structure: 'autre', role_mis_en_cause: 'autre', type_affaire: 'à qualifier', statut_judiciaire: 'à qualifier', statut_des_faits: 'allégué', enfants_concernes_public: 'non précisé' };
   const replis = [];
+  // DIAGNOSTIC : la forme ORIGINALE de chaque champ catégoriel est conservée (jamais écrasée sans trace) — « liste » = valeur retrouvée dans une liste,
+  // `repli` = champ ramené au neutre avec sa raison (absent · vide · invalide · ambigu). C'est ce qui permettra de distinguer, plus tard, un défaut de TYPE
+  // d'une valeur réellement invalide (les sorties brutes du modèle ne sont pas conservées).
+  const diag = { liste: [], repli: {} };
   for (const [k, vals] of Object.entries(ENUMS)) {
-    const v = valeurEnum(rep[k], vals);
-    if (v) rep[k] = v; else { rep[k] = REPLI[k]; replis.push(k); }
+    const a = analyseEnum(rep[k], vals);
+    if (a.valeur) { if (a.forme !== 'chaine') diag.liste.push(k); rep[k] = a.valeur; } else { rep[k] = REPLI[k]; replis.push(k); diag.repli[k] = a.etat; }
   }
   // Le repli est dit EN PREMIER : l'ambiguïté est tronquée à l'affichage, jamais ce qui reste à qualifier à la main.
   if (replis.length) rep.ambiguite = [`champ(s) à qualifier à la main : ${replis.join(', ')}`, rep.ambiguite].filter(Boolean).join(' · ');
@@ -183,17 +188,35 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
       statut_judiciaire: rep.statut_judiciaire, statut_des_faits: rep.statut_des_faits, enfants_concernes_public: rep.enfants_concernes_public,
       resume: resume.slice(0, 600), dernier_evenement: dernier, ambiguite: rep.ambiguite ? String(rep.ambiguite).slice(0, 220) : null,
       personnes: Number.isInteger(personnes) && personnes >= 1 && personnes <= 30 ? personnes : null, periode_faits: periode,
+      ...(diag.liste.length || replis.length ? { diag_enum: diag } : {}),
     },
   };
 }
 
-/** Valeur d'énumération : chaîne, ou liste d'UNE valeur (le modèle recopie parfois le schéma), comparée sans accent ni casse. undefined sinon. */
-export function valeurEnum(v, vals) {
-  const x = Array.isArray(v) ? (new Set(v.map(String)).size === 1 ? v[0] : undefined) : v;
-  if (typeof x !== 'string') return undefined;
-  const n = aplatir(x).trim();
-  return vals.find((e) => aplatir(e) === n);
+/**
+ * Valeur d'énumération d'un champ catégoriel du modèle. Aucun choix arbitraire :
+ *   chaîne reconnue                                  → ok (forme « chaine »)
+ *   liste d'UNE valeur reconnue, ou de valeurs reconnues ÉQUIVALENTES (sans accent ni casse) → ok (forme « liste »)
+ *   liste vide · absent · valeur étrangère           → pas de valeur (« vide » · « absent » · « invalide »)
+ *   plusieurs catégories reconnues incompatibles, ou reconnue mêlée à une valeur étrangère   → pas de valeur (« ambigu »)
+ * @returns {{valeur:string|undefined, forme:string, etat:'ok'|'absent'|'vide'|'invalide'|'ambigu'}}
+ */
+export function analyseEnum(v, vals) {
+  const reconnue = (x) => (typeof x === 'string' ? vals.find((e) => aplatir(e) === aplatir(x).trim()) : undefined);
+  if (v === undefined || v === null) return { valeur: undefined, forme: 'absent', etat: 'absent' };
+  if (Array.isArray(v)) {
+    if (!v.length) return { valeur: undefined, forme: 'liste', etat: 'vide' };
+    const reco = v.map(reconnue);
+    if (reco.every((x) => x === undefined)) return { valeur: undefined, forme: 'liste', etat: 'invalide' };
+    const distinctes = new Set(reco);
+    if (distinctes.size === 1 && !distinctes.has(undefined)) return { valeur: reco[0], forme: 'liste', etat: 'ok' };
+    return { valeur: undefined, forme: 'liste', etat: 'ambigu' };
+  }
+  const r = reconnue(v);
+  return r ? { valeur: r, forme: 'chaine', etat: 'ok' } : { valeur: undefined, forme: typeof v, etat: 'invalide' };
 }
+/** Compatibilité : la valeur seule. */
+export const valeurEnum = (v, vals) => analyseEnum(v, vals).valeur;
 
 const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 /** « AAAA-MM » ou « AAAA » : retenu seulement si l'année (et le mois) figurent dans les articles. null sinon (jamais deviné). */
@@ -400,6 +423,8 @@ export function fusionner(base, ajout) {
  * @returns {{action:'fusion'|'remplacer'|'ecarte'|'rattacher'|'attente', motif:string, case_id?:string}}
  */
 export function decisionJumelle(row, casConnus, nouveau = null) {
+  // Une décision MACHINE (proposition remplacée, doublon consolidé) n'est pas le refus de l'éditeur : elle ne rend le signal ni « rejeté » ni « déjà décidé ».
+  if (row.decision && MACHINE_RE.test(row.decided_by || '')) return { action: 'attente', motif: 'même affaire qu’une proposition remplacée par une décision machine : aucune décision humaine ne s’y oppose' };
   if (row.envoye && !row.decision && !row.applied_at && nouveau) {
     const m = changementMateriel(row.payload, nouveau);
     return m.materiel
@@ -413,10 +438,8 @@ export function decisionJumelle(row, casConnus, nouveau = null) {
   return { action: 'attente', motif: 'même affaire qu’une proposition validée dont la fiche n’existe pas encore' };
 }
 
-/** Décideur MACHINE (jamais l'éditeur) : une proposition ainsi décidée a été REMPLACÉE, elle n'est ni un refus ni une validation humaine. */
-export const MACHINE_RE = /non humain/i;
-/** Signature de la décision machine qui REMPLACE une proposition (bouton rendu inerte « déjà décidée », sans approuver ni rejeter à la place de l'éditeur). */
-export const DECIDEUR_MACHINE = 'consolidation Discovery 09/11/2026 (agent, non humain)';
+// Décideur MACHINE (lib/decision-machine.mjs) : une proposition ainsi décidée a été REMPLACÉE, elle n'est ni un refus ni une validation humaine.
+export { MACHINE_RE, DECIDEUR_MACHINE };
 
 /**
  * Proposition jumelle d'un nouveau signal parmi les propositions de découverte récentes.
@@ -529,6 +552,32 @@ export function fuserAnalyses(a, b) {
   return { c, evidence, lues };
 }
 
+// --- analyse conservée d'un dossier en attente ---------------------------------------------------------------------------------
+// Un dossier « en attente de recoupement » n'a, en base, qu'un titre et des URL : un article nouveau qui décrit la même affaire ne pouvait le rejoindre que
+// si les deux étaient requalifiés dans le MÊME passage (huit histoires au plus : les anciens étaient évincés). L'analyse VÉRIFIÉE (champs, preuves
+// littérales, adresses des pages) est donc conservée à côté du signal (discovery_etat, clé `analyse:<signal>`) ; les pages sont relues (gratuit) seulement
+// quand un rapprochement est trouvé, et chaque citation conservée doit y figurer encore.
+/** Forme conservable d'une analyse : jamais de texte d'article, seulement ce que le code a vérifié. */
+export function serialiserEntree(e) {
+  return {
+    v: 1, cles: [...new Set(e.cles)], signal: { cle: e.signal.cle, titre: e.signal.titre, media: e.signal.media, published: e.signal.published },
+    cmp: e.cmp, c: e.c, evidence: e.evidence, pages: e.lues.map((p) => ({ url: p.url, media: p.media, published: p.published })),
+  };
+}
+/** Entrée de la mémoire du passage depuis une analyse conservée (pages non relues : `lues = null`, relues au besoin par `hydrater`). */
+export const entreeDepuisStock = (s) => ({ stockee: true, pages: s.pages, cmp: s.cmp, c: s.c, evidence: s.evidence, lues: null, cles: s.cles, signal: s.signal, statut: 'attente' });
+/** Relit les pages d'une analyse conservée ; ne garde que les preuves dont la page est relue ET contient encore la citation. null si rien n'est exploitable. */
+export async function hydrater(entree, cache) {
+  const lues = [];
+  for (const p of entree.pages || []) {
+    const r = await lirePage(p.url, cache);
+    if (r.ok) lues.push({ url: p.url, media: p.media, published: p.published, corps: r.corps });
+  }
+  const evidence = entree.evidence.filter((e) => lues.some((p) => canonique(p.url) === canonique(e.url) && citationPresente(e.quote, p.corps)));
+  if (!lues.length || !evidence.length) return null;
+  return { ...entree, lues: lues.filter((p) => evidence.some((e) => canonique(e.url) === canonique(p.url))), evidence, stockee: false };
+}
+
 /**
  * Mesure institutionnelle des preuves réunies. « réalisée » n'est jamais rétrogradée en « annoncée » parce qu'un autre article est moins
  * précis, quel que soit l'ordre d'arrivée des articles (cas du 08/11/2026 : « mairie a suspendu » / « actuellement suspendu »).
@@ -557,6 +606,8 @@ export async function evaluer(o) {
   const r = await evaluerInterne(o, etat);
   if (o.contexte && etat.entree) { etat.entree.statut = r.statut; o.contexte.analyses.push(etat.entree); }
   if (etat.regroupes.length) r.regroupes = etat.regroupes;
+  // Dossier qui reste en attente : son analyse vérifiée est rendue au runner, qui la conserve (un article nouveau pourra le rejoindre plus tard).
+  if (r.statut === 'attente' && etat.entree) r.analyse = serialiserEntree(etat.entree);
   return r;
 }
 
@@ -579,11 +630,14 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
   etat.cles = [signal.cle].filter(Boolean);
   if (contexte) {
     const m = chercherDansMemoire(contexte.analyses, formeComparable({ c, evidence, lues }), { dry: !!contexte.dry });
-    if (m?.entree) {
+    // Analyse conservée d'un ancien dossier en attente : ses pages sont relues (citations revérifiées) AVANT toute fusion ; illisible → pas de fusion, consigné.
+    const entree = m?.entree?.stockee ? await hydrater(m.entree, cache) : m?.entree;
+    if (m?.entree && !entree) ambiguMemoire = 'un ancien dossier en attente semble décrire la même affaire, mais ses pages ne sont plus relisibles : non fusionné';
+    else if (entree) {
       contexte.analyses = contexte.analyses.filter((x) => x !== m.entree);
-      etat.regroupes = m.entree.cles;
-      ({ c, evidence, lues } = fuserAnalyses(m.entree, { c, evidence, lues }));
-      etat.cles = [...m.entree.cles, ...etat.cles];
+      etat.regroupes = [...new Set(entree.cles)].filter((k) => k !== signal.cle);
+      ({ c, evidence, lues } = fuserAnalyses(entree, { c, evidence, lues }));
+      etat.cles = [...new Set([...entree.cles, ...etat.cles])];
     } else if (m?.ambigu) ambiguMemoire = `identité possible avec ${m.ambigu} autres signaux du passage : non fusionnés, à arbitrer`;
   }
   if (ambiguMemoire) c = { ...c, ambiguite: [c.ambiguite, ambiguMemoire].filter(Boolean).join(' · ').slice(0, 260) };
@@ -668,6 +722,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     unknowns: c.ambiguite ? [c.ambiguite] : [],
     independantes: indep, medias: domaines.size, personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
     ...(etat.regroupes.length ? { regroupes: etat.cles.length } : {}),
+    ...(c.diag_enum ? { diag_extraction: c.diag_enum } : {}),   // forme originale des champs catégoriels (liste récupérée / repli et sa raison)
   };
   // Réaction ou mesure d'une institution rapportée par la presse : conservée comme fait STRUCTURÉ, distinct de l'état judiciaire
   // (jamais de transition). Libellé public tiré d'une table fermée ; la citation reste en mémoire privée.

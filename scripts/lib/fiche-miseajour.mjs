@@ -6,6 +6,7 @@
 // la promotion et la vérification du site sont ceux qui existent déjà.
 // =====================================================================
 import { urlsDe, MEDIAS_PAYANTS } from './fiche-page.mjs';
+import { estDecisionMachine } from './decision-machine.mjs';
 
 /** Types d'événement de la PROCÉDURE judiciaire (une suspension, une mobilisation, une réaction publique ou une réponse d'institution n'en sont pas). */
 export const TYPES_JUDICIAIRES = new Set(['plainte', 'enquête', 'garde_à_vue', 'mise_en_examen', 'audience', 'délibéré', 'décision', 'voie_de_recours', 'mesure_procédurale']);
@@ -22,7 +23,9 @@ export function selectionnerMisesAJour({ lignes, publie, approuvee, holds, deja 
   for (const l of lignes) {
     const ecarte = (motif) => ecartees.push({ k: l.k, case_id: l.case_id, motif });
     if (deja.has(l.k)) { ecarte('DEJA_TRAITEE'); continue; }
-    if (l.decision === 'REJECT') { ecarte('REFUSEE_PAR_L_EDITEUR'); continue; }
+    // Une décision MACHINE (proposition remplacée, doublon consolidé) n'est pas le refus de l'éditeur : l'article reste écarté (la proposition qui la remplace
+    // porte ses faits) mais le motif ne le présente jamais comme un désaccord éditorial.
+    if (l.decision === 'REJECT') { ecarte(estDecisionMachine(l.decideur) ? 'INVALIDEE_PAR_DECISION_MACHINE' : 'REFUSEE_PAR_L_EDITEUR'); continue; }
     if (l.rat !== 'OK') { ecarte('RATTACHEMENT_INSUFFISANT'); continue; }
     if (holds.has(l.case_id)) { ecarte('HOLD'); continue; }
     const pub = publie.get(l.case_id);

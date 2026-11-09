@@ -17,9 +17,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
-  ENUMS, verifier, valeurEnum, periodeAttestee, evaluer, memeAffaire, chercherJumelle, chercherDansMemoire, decisionJumelle, changementMateriel, cleVersion,
-  fusionner, formeComparable, MACHINE_RE, DECIDEUR_MACHINE,
+  ENUMS, verifier, valeurEnum, analyseEnum, periodeAttestee, evaluer, memeAffaire, chercherJumelle, chercherDansMemoire, decisionJumelle, changementMateriel, cleVersion,
+  fusionner, formeComparable, MACHINE_RE, DECIDEUR_MACHINE, entreeDepuisStock,
 } from '../lib/qualifier-signal.mjs';
+import { composerFile } from '../lib/discovery-file.mjs';
+import { estDecisionMachine } from '../lib/decision-machine.mjs';
+import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
 import { comparerSignaux, comparerEtablissements, rapprochementEtaye, niveauGeo } from '../lib/rapprochement-garde.mjs';
 import { messageDecision, boutons } from '../lib/discovery-messages.mjs';
 import { boutonValable } from '../lib/telegram-clics.mjs';
@@ -370,6 +373,164 @@ await t('fusion d’un signal dans une proposition ouverte : sources de tous, di
 await t('géographie : Saint-Exemple / Testville (même département) est « faible », jamais « ok » ; deux départements sans rapport = « bloquant »', () => {
   assert.equal(niveauGeo({ commune: 'Saint-Exemple-lès-Testbeuf', departement: 'Seine-Test' }, { commune: 'Testville', departement: 'Seine-Test' }).niveau, 'faible');
   assert.equal(niveauGeo({ commune: 'Saint-Exemple-lès-Testbeuf', departement: 'Seine-Test' }, { commune: 'Autreville', departement: 'Nord-Test' }).niveau, 'bloquant');
+});
+
+// =====================================================================  FINITION (09/11/2026, 2e mandat) : file, dossiers anciens, normaliseur, décision machine
+console.log('\n  FILE D’UN PASSAGE — chaque dossier en attente a son tour (sélection EXÉCUTÉE par le runner : lib/discovery-file.mjs)');
+const jour = 864e5, T0 = Date.parse('2026-11-09T06:00:00Z');
+const attenteSynth = (n) => Array.from({ length: n }, (_, i) => ({ cle: i.toString(16).padStart(20, '0'), titre: [0, 1, 2, 3, 4, 5].map((j) => `mot${i}x${j}`).join(' '), /* mots tous distincts : une histoire par dossier (pas de grappe) */ first_seen: new Date(T0 - (30 - i) * 60e3 - 5 * jour).toISOString(), last_checked: null, urls: [] }));
+await t('45 dossiers en attente, plafond 8 : en six passages, TOUS sont examinés ; aucun n’est examiné deux fois avant que tous l’aient été une fois', () => {
+  const etat = new Map(attenteSynth(45).map((r) => [r.cle, r]));
+  const vus = new Map();
+  for (let p = 0; p < 6; p++) {
+    const f = composerFile({ candidatsNeufs: [], attente: [...etat.values()], maintenant: T0 + p * jour });
+    const choisis = f.grappes.slice(0, 8).flatMap((g) => g.membres);
+    for (const m of choisis) { vus.set(m.cle, (vus.get(m.cle) || 0) + 1); etat.get(m.cle).last_checked = new Date(T0 + p * jour).toISOString(); }
+    if (p < 5) assert.ok(choisis.every((m) => (vus.get(m.cle) || 0) === 1), `passage ${p + 1} : aucun dossier déjà examiné ne repasse avant les autres`);
+  }
+  assert.equal(vus.size, 45);
+});
+await t('ancien ordre (première apparition) : les huit mêmes occupaient chaque passage — la propriété échoue, c’est ce que le test garde', () => {
+  const rows = attenteSynth(45);
+  const ancien = (r) => rows.slice().sort((a, b) => Date.parse(a.first_seen) - Date.parse(b.first_seen)).slice(0, 8).map((x) => x.cle);
+  assert.deepEqual(ancien(1), ancien(2));
+});
+await t('les signaux jamais vus passent d’abord ; un dossier en échec technique dont l’examen est consigné cède sa place ; expiration à 21 jours inchangée', () => {
+  const att = attenteSynth(12);
+  const neufs = [{ cle: 'f'.repeat(20), titre: 'Une histoire toute nouvelle sur un fait divers inconnu', urls: [] }];
+  const f = composerFile({ candidatsNeufs: neufs, attente: att, maintenant: T0 });
+  assert.equal(f.grappes[0].rep.cle, 'f'.repeat(20));
+  const apres = att.map((r, i) => (i === 0 ? { ...r, last_checked: new Date(T0).toISOString() } : r));     // l'échec du premier a consigné son examen
+  assert.notEqual(composerFile({ candidatsNeufs: [], attente: apres, maintenant: T0 }).grappes[0].rep.cle, att[0].cle);
+  const vieux = [{ ...att[0], first_seen: new Date(T0 - 22 * jour).toISOString() }, att[1]];
+  assert.deepEqual(composerFile({ candidatsNeufs: [], attente: vieux, maintenant: T0 }).expires.map((r) => r.cle), [att[0].cle]);
+});
+await t('le runner consigne l’examen d’un échec technique et utilise composerFile (pas une copie du tri)', () => {
+  const r = src('scripts/discovery-quotidien.mjs');
+  assert.ok(r.includes('composerFile({ candidatsNeufs, attente })'));
+  assert.ok(r.includes("update discovery_signaux set last_checked = now() where cle = any(${g.membres.map((m) => m.cle)}) and statut = 'attente'"));
+  assert.ok(r.includes('const MAX = Number(arg(\'--max\', 8))'), 'plafond inchangé');
+});
+
+console.log('\n  DOSSIER ANCIEN — un article nouveau rejoint un dossier en attente, même loin dans la file, sans nouvel appel modèle');
+const cacheAvec = (...ks) => { const m = cacheHistorique(); for (const k of ks) m.set(F.signaux[k].url, { ok: true, corps: F.pages[k], url: F.signaux[k].url }); return m; };
+// Passage 1 : A seul → « en attente » ; son analyse vérifiée est rendue au runner pour conservation.
+const p1 = await evaluer({ sql: faux(), index: F.index, signal: sig('A'), modele: 'fixture', cache: cacheAvec('A'), contexte: { analyses: [], dry: false }, pagesFn, comprendreFn, geocoder });
+const stockA = JSON.parse(JSON.stringify(p1.analyse));      // ce que le runner écrit dans discovery_etat (JSON)
+await t('l’analyse conservée ne contient AUCUN texte d’article : champs vérifiés, citations littérales, adresses des pages', () => {
+  assert.equal(p1.statut, 'attente'); assert.equal(stockA.v, 1);
+  assert.ok(!JSON.stringify(stockA).includes('Toujours selon nos informations, une enquête a été ouverte, pilotée depuis le commissariat de Testville, et plusieurs familles ont déjà été entendues.\n'));
+  assert.deepEqual(stockA.pages.map((p) => p.url), [F.signaux.A.url]); assert.ok(stockA.evidence.length >= 3); assert.ok(!('corps' in stockA.pages[0]));
+});
+await t('passage plus tard : B (même affaire) rejoint A SANS que A soit requalifié (un seul appel modèle) ; sources et preuves de A conservées', async () => {
+  let appels = 0;
+  const compte = async (o) => { appels++; return comprendreFn(o); };
+  const contexte = { analyses: [entreeDepuisStock(stockA)], dry: false };
+  const r = await evaluer({ sql: faux(), index: F.index, signal: sig('B'), modele: 'fixture', cache: cacheAvec('A'), contexte, pagesFn, comprendreFn: compte, geocoder });
+  assert.equal(appels, 1, 'seul le signal nouveau est extrait');
+  assert.deepEqual(r.regroupes, [cle('A')]);                          // le runner applique la même issue au signal ancien
+  assert.equal(r.statut, 'attente');                                  // un seul éditeur : la doctrine ne change pas
+  const e = contexte.analyses.at(-1);
+  assert.deepEqual([...e.cles].sort(), [cle('A'), cle('B')].sort()); assert.equal(e.lues.length, 2); assert.ok(e.evidence.length >= 7);
+  assert.equal(contexte.analyses.filter((x) => x.stockee).length, 0, 'l’analyse conservée est consommée, pas dupliquée');
+  assert.equal(r.analyse.cles[0], cle('A'), 'la conservation réécrit la clé du dossier ancien (une seule entrée)');
+});
+await t('le dossier ancien devenu recoupé par un second éditeur produit UNE proposition (nouvelle preuve, dossier consolidé) ; l’ancienne analyse conservée est effacée', async () => {
+  const contexte = { analyses: [entreeDepuisStock(stockA)], dry: false };
+  const r = await evaluer({ sql: faux(), index: F.index, signal: sig('C'), modele: 'fixture', cache: cacheAvec('A', 'C'), contexte, pagesFn, comprendreFn, geocoder });
+  assert.equal(r.statut, 'propose'); assert.equal(r.proposition.recommendation, 'NEW_CASE_CANDIDATE');
+  assert.equal(r.proposition.payload.articles.length, 2); assert.deepEqual(r.regroupes, [cle('A')]); assert.equal(r.analyse, undefined);
+  const r2 = src('scripts/discovery-quotidien.mjs');
+  assert.ok(r2.includes("else await oublier([...new Set([s.cle, ...g.membres.map((m) => m.cle), ...(r.regroupes || [])])])"));
+});
+await t('pages de l’ancien dossier illisibles ou citation disparue : AUCUNE fusion sur du texte non revérifié, la raison est consignée', async () => {
+  for (const cache of [(() => { const m = cacheHistorique(); m.set(F.signaux.A.url, { ok: false, motif: 'HTTP 404', octets: 0 }); return m; })(),
+    (() => { const m = cacheHistorique(); m.set(F.signaux.A.url, { ok: true, corps: 'Page remaniée : plus rien de ce qui était cité.', url: F.signaux.A.url }); return m; })()]) {
+    const contexte = { analyses: [entreeDepuisStock(stockA)], dry: false };
+    const r = await evaluer({ sql: faux(), index: F.index, signal: sig('B'), modele: 'fixture', cache, contexte, pagesFn, comprendreFn, geocoder });
+    assert.equal(r.regroupes, undefined);
+    assert.ok(contexte.analyses.some((x) => x.stockee), 'le dossier ancien reste conservé');
+    assert.match(r.analyse.c.ambiguite, /non fusionné/);
+  }
+});
+await t('le runner amorce la mémoire avec les seules analyses de dossiers ENCORE en attente, et conserve ou efface selon l’issue', () => {
+  const r = src('scripts/discovery-quotidien.mjs');
+  assert.ok(r.includes("s.cle = substr(e.cle, 9) and s.statut = 'attente'") && r.includes('entreeDepuisStock') && r.includes("on conflict (cle) do update set valeur = excluded.valeur"));
+});
+
+console.log('\n  NORMALISEUR — formes valides, ambiguës, invalides ; les preuves ne sont jamais contournées');
+await t('chaîne reconnue, liste d’une valeur, valeurs répétées ÉQUIVALENTES (casse, accents) → compatibles et déterministes', () => {
+  const V = ENUMS.statut_judiciaire;
+  assert.deepEqual(analyseEnum('enquête', V), { valeur: 'enquête', forme: 'chaine', etat: 'ok' });
+  assert.equal(analyseEnum(['enquête'], V).valeur, 'enquête');
+  assert.deepEqual(analyseEnum(['enquête', 'Enquete', ' enquête '], V), { valeur: 'enquête', forme: 'liste', etat: 'ok' });
+});
+await t('liste vide, valeur étrangère, absent, catégories incompatibles, valeur reconnue mêlée à une étrangère → AUCUN choix arbitraire (jamais le premier élément)', () => {
+  const V = ENUMS.statut_judiciaire;
+  assert.deepEqual([analyseEnum([], V).etat, analyseEnum(['inconnu'], V).etat, analyseEnum(undefined, V).etat, analyseEnum(null, V).etat], ['vide', 'invalide', 'absent', 'absent']);
+  assert.equal(analyseEnum(['plainte', 'enquête'], V).valeur, undefined); assert.equal(analyseEnum(['plainte', 'enquête'], V).etat, 'ambigu');
+  assert.equal(analyseEnum(['enquête', 'n’importe quoi'], V).etat, 'ambigu');
+  assert.equal(analyseEnum({ valeur: 'enquête' }, V).etat, 'invalide'); assert.equal(analyseEnum(3, V).etat, 'invalide');
+});
+await t('un champ ambigu n’en neutralise pas d’autres ; la forme originale et la raison du repli sont conservées pour le diagnostic', () => {
+  const v = verifier({ ...repA(), type_affaire: ['viol', 'agression sexuelle'], role_mis_en_cause: [], statut_judiciaire: ['enquête', 'Enquête'] }, [pageA]);
+  assert.equal(v.ok, true);
+  assert.equal(v.c.type_affaire, 'à qualifier'); assert.equal(v.c.role_mis_en_cause, 'autre');                                  // repli NEUTRE, pas le premier élément
+  assert.equal(v.c.statut_judiciaire, 'enquête'); assert.equal(v.c.statut_des_faits, 'allégué'); assert.equal(v.c.enfants_concernes_public, 'plusieurs enfants');   // les autres champs valides restent
+  assert.deepEqual(v.c.diag_enum.repli, { type_affaire: 'ambigu', role_mis_en_cause: 'vide' });
+  assert.ok(v.c.diag_enum.liste.includes('statut_judiciaire'));
+});
+await t('une liste valide ne contourne PAS les preuves : citations inventées → rejet ; stade annoncé en liste mais non établi → ramené', () => {
+  assert.equal(verifier({ ...repA(), statut_judiciaire: ['procès'], preuves: repA().preuves.slice(0, 3) }, [pageA]).c.statut_judiciaire, 'enquête');          // procès annoncé : les citations n'établissent que l'enquête
+  assert.equal(verifier({ ...repA(), statut_judiciaire: ['enquête'], preuves: repA().preuves.slice(0, 1) }, [pageA]).c.statut_judiciaire, 'à qualifier');   // une enquête sans autorité nommée n'est pas établie
+  const v = verifier({ ...repA(), preuves: [{ url: pageA.url, citation: 'Citation inventée qui ne figure nulle part dans la page lue par le modèle.' }] }, [pageA]);
+  assert.equal(v.ok, false);
+});
+await t('le diagnostic atteint la proposition : forme originale des champs (liste récupérée / repli et sa raison)', async () => {
+  const { sorties } = await lancer('AC');
+  assert.equal(sorties[1].proposition.payload.diag_extraction.liste.length, 6);     // proposition réunie A + C : la forme d'origine de A (six listes) est conservée dans le payload
+  const e = await (async () => { const ctx = { analyses: [], dry: false }; await evaluer({ sql: faux(), index: [], signal: sig('A'), modele: 'f', cache: cacheHistorique(), contexte: ctx, pagesFn, comprendreFn, geocoder }); return ctx.analyses[0]; })();
+  assert.equal(e.c.diag_enum.liste.length, 6);                          // les six champs de la réponse A étaient des listes
+});
+
+console.log('\n  DÉCISION MACHINE ≠ REFUS HUMAIN — jusque dans les traitements réellement concernés');
+await t('marqueur : les trois signatures d’agent existantes sont machine ; les décisions de personnes ne le sont jamais', () => {
+  for (const m of ['consolidation Discovery 09/11/2026 (agent, non humain)', 'reprise sans perte 06/11/2026 (agent, non humain)', 'système (doublon, consolidation autorisée par Adrien)', 'consolidation lot #1 (agent, non humain)']) assert.equal(estDecisionMachine(m), true, m);
+  for (const h of ['Adrien (Telegram)', 'Adrien Etienne', 'Adrien (lot de validation #1, 25/09/2026)', '', null]) assert.equal(estDecisionMachine(h), false, String(h));
+});
+await t('A/B/C après remplacement : une preuve nouvelle produit une NOUVELLE proposition, non bloquée par l’ancien REJECT machine (A et B restent éligibles)', async () => {
+  const anciens = ['A', 'B'].map((k, i) => ligne({ pid: `00000000-0000-4000-8000-00000000000${i + 1}`, dedup_key: `cle|ancienne#remplacee-0000000${i + 1}`, payload: i ? cB : cA, decision: 'REJECT', applied_at: 'x', decided_by: DECIDEUR_MACHINE, envoye: true }));
+  const { sorties } = await lancer('ABC', { etat: { propositions: anciens } });
+  assert.equal(sorties[2].statut, 'propose'); assert.equal(sorties[2].proposition.recommendation, 'NEW_CASE_CANDIDATE');
+  assert.equal(sorties[2].proposition.payload.articles.length, 3);
+  assert.notEqual(sorties[2].statut, 'ecarte');
+});
+await t('contre-épreuve : le MÊME REJECT signé par Adrien reste une décision humaine — le signal est écarté, jamais rejoué', async () => {
+  const humain = ligne({ payload: cA, decision: 'REJECT', applied_at: 'x', decided_by: 'Adrien (Telegram)' });
+  const j = await chercherJumelle(async () => [humain], cB);
+  assert.equal(decisionJumelle(j.row, new Set()).action, 'ecarte');
+  assert.equal(decisionJumelle({ ...humain, decided_by: DECIDEUR_MACHINE }, new Set()).action, 'attente');   // défense en profondeur : jamais « rejetée »
+});
+await t('sélection des mises à jour de fiche : un REJECT machine est « invalidé par une décision machine », jamais « refusé par l’éditeur »', () => {
+  const ligneMaj = (o) => ({ k: 'k1', case_id: 'FR-2026-9100', url: 'https://x.example/a', media: 'X', pd: '2026-11-01', rat: 'OK', decision: 'REJECT', facts: [], ...o });
+  const motif = (l) => selectionnerMisesAJour({ lignes: [l], publie: new Map(), approuvee: () => true, holds: new Set(), deja: new Set() }).ecartees[0].motif;
+  assert.equal(motif(ligneMaj({ decideur: 'Adrien (Telegram)' })), 'REFUSEE_PAR_L_EDITEUR');
+  assert.equal(motif(ligneMaj({ decideur: 'reprise sans perte 06/11/2026 (agent, non humain)' })), 'INVALIDEE_PAR_DECISION_MACHINE');
+  assert.equal(motif(ligneMaj({})), 'REFUSEE_PAR_L_EDITEUR');
+});
+await t('rapport des décisions : une décision machine n’est pas listée comme un choix de l’éditeur ; l’historique reste lisible', () => {
+  const e = src('scripts/etat-decisions.mjs');
+  assert.ok(e.includes('estDecisionMachine(n.decided_by)') && e.includes("l.etat = 'REMPLACÉE'") && e.includes('n.decided_by'));
+  assert.ok(src('scripts/telegram-v0.mjs').includes('decision is null'), 'le clic n’écrit que sur une proposition sans décision (ancien bouton : déjà décidée)');
+});
+
+console.log('\n  TENTATIVES D’EXTRACTION — aucune nouvelle, le plafond réel est celui de la reprise (3), succès toujours conditionné aux preuves');
+await t('evaluer / comprendre ne réessaient pas ; la seule boucle est celle de la reprise (≤ 3 passes, seulement pour les signaux ÉCARTÉS ; les extractions valides ne sont pas rejouées)', () => {
+  assert.ok(!/retry|réessa|attempt/i.test(src('scripts/lib/comprendre-source.mjs').replace(/réessayé au prochain run/g, '')), 'comprendre : un seul appel');
+  const q = src('scripts/lib/qualifier-signal.mjs');
+  assert.equal((q.match(/await comprendreFn\(/g) || []).length, 1, 'evaluer : une extraction par signal et par passage');
+  const rp = src('scripts/reprendre-rapprochement.mjs');
+  assert.ok(rp.includes('essai <= 3') && rp.includes("!['attente', 'propose'].includes(s.statut)"));
 });
 
 console.log(`\n  ${n} contrôles : OK\n`);
