@@ -148,7 +148,7 @@ function caseYear(c: typeof allCases[0]): string {
       <div class="sidebar-list" id="sidebar-list">
         {sortedCases.map((c) => (
           <div
-            id={`affaire-${c.case_id}`}
+            id={`affaire-${c.case_id.toLowerCase()}`}
             class={`case-item${fichesRevue[c.case_id] ? ' has-fiche' : ''}`}
             data-id={c.case_id}
             data-cat={statutCat(c.statut_judiciaire)}
@@ -579,8 +579,9 @@ function caseYear(c: typeof allCases[0]): string {
       if (!m) return;
       let id: string;
       try { id = decodeURIComponent(m[1]); } catch { return; }
-      const el = document.getElementById(`affaire-${id}`);
+      const el = document.getElementById(`affaire-${id.toLowerCase()}`);
       if (!el || !el.classList.contains('case-item')) return;
+      // Forme canonique : minuscules (/#affaire-fr-2026-0143, comme /affaires/fr-2026-0143/) ; une majuscule dans le fragment est tolérée (comparaison en minuscules).
       // Un filtre actif qui masquerait l'entrée est levé : sinon l'ancre ne mènerait nulle part.
       if (el.style.display === 'none') document.querySelector<HTMLElement>('.tb-btn[data-filter="all"]')?.click();
       el.classList.add('is-target');
