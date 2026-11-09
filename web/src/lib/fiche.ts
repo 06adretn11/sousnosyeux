@@ -36,6 +36,24 @@ export const evenementsDe = (id: string): any[] => (evenementsDoc as any).affair
 /** Informations validées destinées à CETTE fiche (rattachement explicite) : une seule information, jamais recopiée ; la fiche ne demande aucune nouvelle approbation. */
 export const matiereFiche = (id: string): any[] => ((evenementsDoc as any).matiere ?? []).filter((m: any) => m.destinations?.fiche === id);
 
+/**
+ * Titre et description d'une fiche (règle B validée le 09/11/2026) : identification documentaire NEUTRE, identique pour toutes les fiches
+ * approuvées quel que soit leur état judiciaire. Sources : le libellé public de l'affaire (H1 de la fiche) et sa commune ; le rôle publié
+ * sur la carte seulement pour départager de vrais homonymes établissement + commune parmi les fiches approuvées. Aucun état, compte ni fait.
+ */
+export function identificationFiche(id: string): { titre: string; description: string } {
+  const parId = (x: string) => (casesDoc as any).cases.find((c: any) => c.case_id === x);
+  const c = parId(id);
+  const nom = c.etablissement.charAt(0).toLocaleUpperCase('fr') + c.etablissement.slice(1);
+  const lieu = c.etablissement.toLocaleLowerCase('fr').includes(c.commune.toLocaleLowerCase('fr')) ? '' : ` (${c.commune})`;
+  const homonyme = fichesApprouvees().some((x) => x !== id && parId(x)?.etablissement === c.etablissement && parId(x)?.commune === c.commune);
+  const ident = `${nom}${lieu}${homonyme && c.role_mis_en_cause ? ` — ${c.role_mis_en_cause}` : ''}`;
+  return {
+    titre: `${ident} : dossier et sources · sousnosyeux`,
+    description: `${ident}. Déroulé de l’affaire, informations attribuées à leurs sources et points non établis.`,
+  };
+}
+
 /** Dossier éditorial d'une affaire : celui de son hub, sinon celui des affaires isolées (même forme). */
 export function dossierDe(id: string): { hub: string | null; d: any | null } {
   for (const h of Object.keys(HUBS)) {

@@ -77,7 +77,8 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - Popup partagée `openPopupForCase()` — déclenchée depuis pin ET depuis sidebar, avec pan automatique
   - Sidebar statique scrollable : liste affaires par date, barre colorée, badge statut + tag type_affaire, clic → zoom + popup
   - Footer sombre avec liens légaux
-  - Page `/methodologie` + Page `/mentions-legales` ✅ · `/territoires/` + Hubs · fiches `/affaires/<id>/` · page 404 · **aucune page `/a-propos` en production** (constat du 09/11/2026)
+  - Page `/methodologie` + Page `/mentions-legales` ✅ · `/territoires/` + Hubs · fiches `/affaires/<id>/` · page 404 · `/le-projet/` (texte validé le 09/11/2026 ; il n'existe pas de page `/a-propos`)
+  - Métadonnées des fiches : `identificationFiche()` (`web/src/lib/fiche.ts`) — `{Nom}{ (Commune)}{ — Rôle} : dossier et sources · sousnosyeux`, sans état judiciaire ; rôle seulement pour les homonymes établissement + commune
   - **Source de données** : `data/cases.json` importé statiquement (projection de Neon par `scripts/project-public.mjs`)
 - **Pipeline d'import** : opérationnel ✅
   - `scripts/import-cases.mjs` : CSV → validation → dédoublonnage → géocodage → INSERT Supabase
@@ -134,7 +135,7 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Scheduling veille | Exécution manuelle 1×/mois (rappel calendrier) | Routine distante bloquée par compte Business Cdiscount — revoir quand accès GitHub autorisé côté org |
 | Direction design | **B2 "Éditorial"** — DM Sans + DM Mono + Playfair Display, palette rouge/bleu/vert/orange | 3 directions A/B/C maquettées, 3 variations B1/B2/B3 affinées, B2 validé par l'utilisateur |
 | Porteurs du projet | Adrien Etienne & Ly Nguyen | Couple de parents parisiens — discours "nous" dans tous les supports (site, présentation, email) |
-| Page À propos | `/a-propos` dans Astro, lien dans la nav | Contexte humain séparé de la méthodologie éditoriale — ⚠️ page absente de la production au 09/11/2026 (aucune route) |
+| Page de présentation | `/le-projet/` (menu entre Territoires et Méthodologie, pied de page) — texte validé par Adrien le 09/11/2026 ; aucun second nom ni biographie | Contexte du projet séparé de la méthodologie éditoriale ; l'ancienne `/a-propos` n'a pas de route |
 | Support de présentation | `tools/presentation.html` | Document HTML autonome pour associations/partenaires — même tonalité que le site |
 | Clustering carte | `clusterRadius 30`, `clusterMaxZoom 7` | Pins individuels visibles dès zoom 8 (niveau région) — ajusté post-feedback prod |
 | Centre initial carte | `fitBounds` filtré sur bornes France (lat 41–52, lng -6–10) | Évite les points mal géocodés qui élargissaient la vue hors France |

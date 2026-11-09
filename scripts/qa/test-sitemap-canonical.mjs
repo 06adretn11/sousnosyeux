@@ -114,7 +114,26 @@ if (!existsSync(join(dist, 'sitemap.xml'))) {
     const evt = JSON.parse(readFileSync(join(racine, 'data/evenements.json'), 'utf8'));
     const hubs = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes', ...Object.keys(evt.hubs_approuves ?? {})];
     for (const h of hubs) assert.ok(servies.includes(`${SITE}/territoires/${h}/`), `Hub ${h} absent du sitemap`);
-    for (const u of ['', 'territoires/', 'methodologie/', 'mentions-legales/']) assert.ok(servies.includes(urlDePage(u)), `${u || 'accueil'} absent du sitemap`);
+    for (const u of ['', 'territoires/', 'le-projet/', 'methodologie/', 'mentions-legales/']) assert.ok(servies.includes(urlDePage(u)), `${u || 'accueil'} absent du sitemap`);
+  });
+  t('build : métadonnées des fiches (règle B) — identification neutre, distincte par fiche, partage identique', () => {
+    const fichesHtml = pages.filter((p) => /^affaires\/[^/]+\/$/.test(p.pathname));
+    const titres = new Map();
+    const texte = (s) => s?.replace(/&#39;|&#x27;|&apos;/g, "'").replace(/&quot;|&#34;/g, '"').replace(/&amp;|&#38;/g, '&');
+    for (const p0 of fichesHtml) {
+      const p = { ...p0, html: texte(p0.html) };
+      const titre = (p.html.match(/<title>([^<]*)<\/title>/) || [])[1];
+      const desc = (p.html.match(/<meta name="description" content="([^"]*)"/) || [])[1];
+      const h1 = (p.html.match(/<h1[^>]*>([^<]*)<\/h1>/) || [])[1];
+      assert.ok(titre?.endsWith(' : dossier et sources · sousnosyeux'), `${p.pathname} : titre hors règle`);
+      assert.ok(titre.toLowerCase().startsWith(h1.toLowerCase()), `${p.pathname} : titre ≠ libellé de la fiche`);
+      assert.ok(desc?.endsWith('. Déroulé de l’affaire, informations attribuées à leurs sources et points non établis.'), `${p.pathname} : description hors règle`);
+      assert.equal((p.html.match(/<meta property="og:title" content="([^"]*)"/) || [])[1], titre);
+      assert.equal((p.html.match(/<meta property="og:description" content="([^"]*)"/) || [])[1], desc);
+      assert.ok(!titres.has(titre), `${p.pathname} : même titre que ${titres.get(titre)}`);
+      titres.set(titre, p.pathname);
+    }
+    assert.ok(fichesHtml.length > 0);
   });
   t('build : 404 générée, noindex, sans canonical, hors sitemap, sans contenu d’affaire', () => {
     const h = readFileSync(join(dist, '404.html'), 'utf8');

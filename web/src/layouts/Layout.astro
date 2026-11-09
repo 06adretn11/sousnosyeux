@@ -42,6 +42,7 @@ const ld = jsonld ? JSON.stringify(jsonld).replace(/</g, '\\u003c') : null;
 const nav = [
   { href: '/', label: 'Carte', cta: false },
   { href: '/territoires/', label: 'Territoires', cta: false },
+  { href: '/le-projet/', label: 'Le projet', cta: false },
   { href: '/methodologie/', label: 'Méthodologie', cta: false },
   { href: '/mentions-legales/', label: 'Mentions légales', cta: false },
   { href: 'mailto:contact@sousnosyeux.org', label: 'Nous contacter', cta: true },
@@ -95,6 +96,7 @@ const isActive = (href: string) => {
                 : n.href === '/' ? 'nav-carte'
                 : n.href === '/methodologie/' ? 'nav-methodo'
                 : n.href === '/territoires/' ? 'nav-methodo'
+                : n.href === '/le-projet/' ? 'nav-methodo'
                 : undefined;
               return (
                 <li class={liClass}>
@@ -120,6 +122,7 @@ const isActive = (href: string) => {
         <div class="footer-brand">sousnosyeux · carte citoyenne</div>
         <div class="footer-links">
           <a href="/territoires/">Territoires</a>
+          <a href="/le-projet/">Le projet</a>
           <a href="/methodologie/">Méthodologie</a>
           <a href="/mentions-legales/">Mentions légales</a>
           <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a>
@@ -382,6 +385,10 @@ const isActive = (href: string) => {
         .site-header nav a { font-size: 0.875rem; padding: 0.4rem 0.75rem; }
         .prose { padding: 2.5rem 1rem 4rem; }
         .prose h1 { font-size: 2.1rem; }
+      }
+      /* Largeur intermédiaire : le menu complet (6 entrées) ne tient pas ; « Mentions légales » reste dans le pied de page. */
+      @media (min-width: 720px) and (max-width: 819px) {
+        .site-header nav li.nav-mentions { display: none; }
       }
     </style>
   </body>
