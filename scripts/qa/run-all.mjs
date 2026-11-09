@@ -164,6 +164,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Sitemap et canonicals — population = pages générées indexables (jamais le catalogue), exclusions motivées, canonical propre à chaque page, déclaration dans robots.txt',
+    script: 'scripts/qa/test-sitemap-canonical.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Génération des fiches — gardes d’extraction (citation entière, date écrite, quantités, issue, nom, nombre d’enfants, appel/finalité), état contredit ou non étayé ⇒ jamais READY, proposition Telegram',
     script: 'scripts/qa/test-generer-fiche.mjs',
     bloquant: true,
