@@ -9,6 +9,7 @@
 // =====================================================================
 import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
+import { stadeCite } from './stade-judiciaire.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 // Les acteurs de l'extraction sont normalisés (sans accent) : rendus lisibles, rien n'est inventé.
@@ -17,9 +18,10 @@ const acteurLisible = (a) => (a ? (LISIBLES[a] ?? a) : 'acteur non précisé');
 const jj = (d) => (d ? (d instanceof Date ? d.toISOString() : String(d)).slice(0, 10).split('-').reverse().join('/') : 'date inconnue'); // un objet Date (colonne SQL) ne devient jamais « Thu Oct 15 »
 const lien = (a) => `📰 ${esc(a.media || 'média')} → ${esc(a.url)}`;
 
-/** Réaction ou mesure d'une institution (hors état judiciaire) : fait structuré, libellé public tiré d'une table fermée. */
+/** Réaction ou mesure d'une institution (hors état judiciaire) : fait structuré, libellé public tiré d'une table fermée, avec sa source et sa date. */
 const blocInstitutionnel = (p) => (p.institutionnel
-  ? ['🏛 <b>ÉVÉNEMENT INSTITUTIONNEL</b> (sans effet sur l’état judiciaire)', `${esc(p.institutionnel.libelle_public)} — mesure ${esc(p.institutionnel.realisation)}.`, '']
+  ? ['🏛 <b>ÉVÉNEMENT INSTITUTIONNEL</b> (sans effet sur l’état judiciaire)',
+    `${esc(p.institutionnel.libelle_public)} — mesure ${esc(p.institutionnel.realisation)}${p.institutionnel.media ? ` (${esc(p.institutionnel.media)}${p.institutionnel.published ? ', paru le ' + jj(p.institutionnel.published) : ''})` : ''}.`, '']
   : []);
 
 /** Au plus `n` articles, un par média, dans l'ordre. */
@@ -27,6 +29,39 @@ function trois(articles, n = 3) {
   const vus = new Set();
   return (articles || []).filter((a) => /^https?:\/\//.test(a.url || '') && !vus.has(a.media) && vus.add(a.media)).slice(0, n);
 }
+
+/**
+ * Les articles d'un dossier CONSOLIDÉ. Un par média tant que les médias diffèrent (comportement historique) ; dès que plusieurs articles d'un MÊME
+ * média sont réunis (deux articles d'une même affaire), chaque article est montré, avec ce qu'il apporte, car le dédoublonnage par média les cacherait.
+ */
+function lesArticles(p, n = 4) {
+  const arts = (p.articles || []).filter((a) => /^https?:\/\//.test(a.url || ''));
+  const medias = arts.map((a) => a.media);
+  if (new Set(medias).size === medias.length) return trois(p.articles, 3).map(lien);
+  const vu = new Set();
+  const lignes = [];
+  for (const a of arts.filter((x) => !vu.has(x.url) && vu.add(x.url)).slice(0, n)) {
+    const q = (p.evidence || []).find((e) => e.url === a.url)?.quote;
+    lignes.push(lien(a), ...(q ? [`   ↳ apport : « ${esc(cut(q, 150))} »`] : []));
+  }
+  return lignes;
+}
+
+/** Procédure établie par une citation (stade retenu) : ce qui est établi, par qui, quand. null si aucun stade établi. */
+function blocProcedure(p) {
+  const stade = p.stade_minimal || p.fiche?.statut_judiciaire;
+  if (!stade || stade === 'à qualifier') return [];
+  const e = (p.evidence || []).find((x) => stadeCite([x.quote]) === stade);
+  // `published` est la date de PARUTION de l'article, pas celle de l'acte : elle est dite comme telle.
+  return [`⚖ <b>Procédure</b> : ${esc(stade)}${e ? ` — « ${esc(cut(e.quote, 170))} » (${esc(e.media || 'média')}${e.published ? ', paru le ' + jj(e.published) : ''})` : ''}`];
+}
+
+/** Combien d'articles, d'éditeurs, de sources indépendantes : jamais deux articles présentés comme deux confirmations s'ils viennent du même éditeur. */
+const ligneSources = (p) => {
+  const n = (p.articles || []).length;
+  return n ? `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)` : '';
+};
+const ligneRemplace = (p) => (p.remplace ? `↻ Version consolidée : elle remplace la proposition ${esc(p.remplace.pid8)} (son bouton est inerte) — ${esc(cut(p.remplace.motif || '', 160))}` : '');
 
 /**
  * ENRICHISSEMENT PROPOSÉ (Maintenance) — information NOUVELLE qui ne change pas l'état judiciaire : mobilisation, déclaration, mesure.
@@ -253,14 +288,17 @@ export function messageDecision(p, recommendation) {
     : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent. REVIEW : mettre de côté sans rien créer.`;
   return [
     `🆕 <b>DISCOVERY</b> · AFFAIRE POTENTIELLE · ${esc(p.commune)}`,
+    ligneRemplace(p),
     '',
     `<b>${esc(nomme ? p.etablissement : 'Structure non nommée')}</b>${p.structure && p.structure !== 'autre' ? ' · ' + esc(p.structure) : ''}`,
     '',
     esc(cut(p.resume, 420)),
     '',
     `Dernier événement : ${jj(p.dernier_evenement)}`,
+    ...blocProcedure(p),
     '',
-    ...trois(p.articles).map(lien),
+    ...lesArticles(p),
+    ligneSources(p),
     '',
     ...blocInstitutionnel(p),
     esc(sny),
@@ -286,11 +324,14 @@ export function messageRapprochement(p, recommendation) {
   const contre = a.contre?.length ? a.contre : (a.divergence ? [a.divergence] : []);
   return [
     `🆕 <b>DISCOVERY</b> · 🔗 ${fort ? 'RAPPROCHEMENT PROPOSÉ' : 'RAPPROCHEMENT À ARBITRER'}`,
+    ligneRemplace(p),
     '',
     '<b>NOUVEAU SIGNAL</b>',
     esc(cut(p.resume, 360)),
     `📍 ${esc(p.commune)}${p.etablissement ? ' · ' + esc(p.etablissement) : ''} · dernier événement ${jj(p.dernier_evenement)}`,
-    ...trois(a.nouvelles).map(lien),
+    ...blocProcedure(p),
+    ...lesArticles({ ...p, articles: (a.nouvelles || []).length ? a.nouvelles : p.articles }),
+    ligneSources(p),
     '',
     ...blocInstitutionnel(p),
     '<b>AFFAIRE EXISTANTE</b>',

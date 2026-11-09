@@ -1,0 +1,126 @@
+{
+  "_fixture": "SYNTHÉTIQUE — jeu de test du 09/11/2026 (scripts/qa/test-rapprochement-signaux.mjs). Noms de communes, d'écoles et de médias INVENTÉS ; les phrases reproduisent seulement la STRUCTURE d'un cas réel (deux articles d'un même éditeur sur une même école, un voisin géographique d'une autre commune du même département). Jamais une preuve, jamais réinjecté en base.",
+  "domaines": { "A": "journal-test.example", "C": "radio-test.example", "D": "agence-test.example" },
+  "signaux": {
+    "A": { "cle": "aaaaaaaaaaaaaaaaaaaa", "titre": "Comportements inappropriés envers des élèves : un animateur visé par une enquête dans une école près de Testville", "media": "Journal-Test", "published": "2026-11-06",
+      "url": "https://journal-test.example/saint-exemple/enquete-animateur-ecole" },
+    "B": { "cle": "bbbbbbbbbbbbbbbbbbbb", "titre": "« Tout le monde est sur les nerfs » : des parents s'expriment sur l'enquête visant un animateur d'une école près de Testville", "media": "Journal-Test", "published": "2026-11-06",
+      "url": "https://journal-test.example/saint-exemple/parents-sexpriment-enquete" },
+    "C": { "cle": "cccccccccccccccccccc", "titre": "Animateur périscolaire suspendu à Saint-Exemple-lès-Testbeuf : le parquet confirme une enquête", "media": "Radio-Test", "published": "2026-11-07",
+      "url": "https://radio-test.example/info/saint-exemple-animateur-parquet" },
+    "D": { "cle": "dddddddddddddddddddd", "titre": "Saint-Exemple-lès-Testbeuf : l'enquête sur un animateur périscolaire", "media": "Agence-Test", "published": "2026-11-07",
+      "url": "https://agence-test.example/depeche/saint-exemple-animateur" },
+    "E": { "cle": "eeeeeeeeeeeeeeeeeeee", "titre": "Un second animateur de l'école Marcel-Exemple visé par une autre procédure", "media": "Journal-Test", "published": "2026-11-09",
+      "url": "https://journal-test.example/saint-exemple/second-animateur" },
+    "L": { "cle": "ffffffffffffffffffff", "titre": "À Lilas-sur-Test, un animateur de l'école élémentaire Les Lilas-Test mis en examen", "media": "Journal-Test", "published": "2026-11-07",
+      "url": "https://journal-test.example/lilas/animateur-mis-en-examen" }
+  },
+  "pages": {
+    "A": "Comportements inappropriés envers des élèves : un animateur visé par une enquête dans une école près de Testville\n\nJeudi 5 novembre 2026, des signalements ont révélé qu'une enquête est en cours contre un animateur, soupçonné d'une conduite inappropriée dans une école de Saint-Exemple-lès-Testbeuf.\n\nLe jeudi 5 novembre 2026, le Journal-Test a appris qu'une enquête a été ouverte à l'encontre d'un animateur périscolaire de la commune de Saint-Exemple-lès-Testbeuf (Seine-Test) . D'après les premiers éléments révélés, les faits remontent au mois de septembre 2026. Un animateur aurait eu un comportement déplacé envers des enfants, sur le temps périscolaire, à l' école primaire Marcel-Exemple .\n\nToujours selon nos informations, une enquête a été ouverte, pilotée depuis le commissariat de Testville, et plusieurs familles ont déjà été entendues.\n\nDe son côté, la mairie de Saint-Exemple-lès-Testbeuf a suspendu de ses fonctions cet agent, dès qu'elle a été informée de ces faits. D'ailleurs, elle s'est constituée partie civile dans cette enquête, ce qui lui permettra d'avoir accès au dossier, en déposant une plainte.",
+    "B": "« Tout le monde est sur les nerfs » : des parents s'expriment sur l'enquête visant un animateur d'une école près de Testville\n\nC'est une onde de choc qui déferle actuellement sur l'école Marcel-Exemple de Saint-Exemple-lès-Testbeuf (Seine-Test) . Ce vendredi 6 novembre 2026, de nombreux parents d'élèves ont appris qu'une enquête vise actuellement un animateur périscolaire pour des comportements déplacés sur des enfants .\n\nPar un mail envoyé par la commune, les parents ont eu connaissance des graves faits qui sont reprochés à l'animateur, actuellement suspendu de ses fonctions et sous le coup d'une enquête. Du côté du corps enseignant, un membre affirme avoir pris connaissance des faits par les familles entendues par la police , dans le cadre de l'enquête.\n\nLa ville de Saint-Exemple-lès-Testbeuf a réagi en rappelant la nécessité de laisser la justice finaliser son instruction. Les faits évoqués se seraient produits au cours du mois de septembre 2026.",
+    "C": "Animateur périscolaire suspendu à Saint-Exemple-lès-Testbeuf : le parquet confirme une enquête\n\nLe parquet de Testville a confirmé samedi l'ouverture d'une enquête visant un animateur périscolaire de l'école Marcel-Exemple, à Saint-Exemple-lès-Testbeuf. Le procureur adjoint a précisé que des auditions de familles étaient programmées la semaine suivante par la brigade des mineurs.\n\nL'agent, un homme employé par la commune depuis plusieurs années, a été suspendu à titre conservatoire par la municipalité. Une cellule d'écoute accessible aux familles a été installée à la mairie par la commune.",
+    "D": "Saint-Exemple-lès-Testbeuf : l'enquête sur un animateur périscolaire\n\nLe parquet de Testville a confirmé samedi l'ouverture d'une enquête visant un animateur périscolaire de l'école Marcel-Exemple, à Saint-Exemple-lès-Testbeuf. Le procureur adjoint a précisé que des auditions de familles étaient programmées la semaine suivante par la brigade des mineurs. L'agent, un homme employé par la commune depuis plusieurs années, a été suspendu à titre conservatoire par la municipalité. Une cellule d'écoute accessible aux familles a été installée à la mairie par la commune.",
+    "E": "Un second animateur de l'école Marcel-Exemple visé par une autre procédure\n\nUn second animateur périscolaire de l'école Marcel-Exemple, à Saint-Exemple-lès-Testbeuf, est visé par une plainte distincte déposée par les parents de deux élèves. Les faits remonteraient au printemps 2023 et ne concernent pas le premier animateur, précise le parquet de Testville, qui a ouvert une enquête distincte. Deux agents sont donc désormais concernés dans cette école.",
+    "H1": "Violences dans le périscolaire de Testville : trois agents suspendus\n\nÀ Testville, deux hommes et une femme, agents périscolaires, ont été suspendus dans une crèche et une école maternelle après des plaintes de parents. Une enquête a été ouverte par le parquet de Testville pour des violences sexuelles présumées. La mairie a annoncé des mesures.",
+    "H2": "Périscolaire à Testville : de nouvelles plaintes ont été déposées\n\nDe nouvelles plaintes ont été déposées à Testville contre des animateurs périscolaires. Le parquet de Testville a confirmé que l'enquête sur les violences sexuelles dans le périscolaire se poursuit.",
+    "L": "À Lilas-sur-Test, un animateur de l'école élémentaire Les Lilas-Test mis en examen\n\nUn animateur périscolaire de l'école élémentaire Les Lilas-Test, à Lilas-sur-Test (Seine-Test), a été mis en examen mercredi pour agressions sexuelles sur mineurs et placé en détention provisoire, a indiqué le parquet. Il avait été visé par une plainte de parents en septembre."
+  },
+  "extractions": {
+    "_note": "Formes de réponse du modèle observées le 08/11/2026 : les champs catégoriels reviennent sous forme de LISTES d'une valeur (le schéma est recopié).",
+    "A": {
+      "est_affaire": true, "motif_non": null, "commune": "Saint-Exemple-lès-Testbeuf", "departement": "Seine-Test", "etablissement": "école primaire Marcel-Exemple",
+      "type_structure": ["autre"], "role_mis_en_cause": ["animateur périscolaire"], "type_affaire": ["à qualifier"], "statut_judiciaire": ["enquête"],
+      "statut_des_faits": ["allégué"], "enfants_concernes_public": ["plusieurs enfants"], "nombre_personnes_mises_en_cause": 1, "periode_des_faits": "2026-09",
+      "resume": "Selon la presse, une enquête a été ouverte à la suite de signalements visant un animateur d'une école primaire pour des comportements inappropriés envers des enfants. La mairie a suspendu l'agent et s'est constituée partie civile.",
+      "dernier_evenement": "2026-11-05",
+      "preuves": [
+        { "citation": "Le jeudi 5 novembre 2026, le Journal-Test a appris qu'une enquête a été ouverte à l'encontre d'un animateur périscolaire de la commune de Saint-Exemple-lès-Testbeuf (Seine-Test) ." },
+        { "citation": "Un animateur aurait eu un comportement déplacé envers des enfants, sur le temps périscolaire, à l' école primaire Marcel-Exemple ." },
+        { "citation": "Toujours selon nos informations, une enquête a été ouverte, pilotée depuis le commissariat de Testville, et plusieurs familles ont déjà été entendues." },
+        { "citation": "De son côté, la mairie de Saint-Exemple-lès-Testbeuf a suspendu de ses fonctions cet agent, dès qu'elle a été informée de ces faits." }
+      ],
+      "ambiguite": "Le type exact de l'école (maternelle ou élémentaire) n'est pas précisé, l'article mentionnant une « école primaire »."
+    },
+    "B": {
+      "est_affaire": true, "motif_non": null, "commune": "Saint-Exemple-lès-Testbeuf", "departement": "Seine-Test", "etablissement": "école Marcel-Exemple",
+      "type_structure": ["élémentaire"], "role_mis_en_cause": ["animateur périscolaire"], "type_affaire": ["à qualifier"], "statut_judiciaire": ["enquête"],
+      "statut_des_faits": ["allégué"], "enfants_concernes_public": ["plusieurs enfants"], "nombre_personnes_mises_en_cause": 1, "periode_des_faits": "2026-09",
+      "resume": "Selon la presse, une enquête vise un animateur périscolaire d'une école pour des comportements déplacés rapportés sur des enfants. L'intéressé est suspendu et des familles ont été entendues par la police.",
+      "dernier_evenement": "2026-11-06",
+      "preuves": [
+        { "citation": "Ce vendredi 6 novembre 2026, de nombreux parents d'élèves ont appris qu'une enquête vise actuellement un animateur périscolaire pour des comportements déplacés sur des enfants ." },
+        { "citation": "Par un mail envoyé par la commune, les parents ont eu connaissance des graves faits qui sont reprochés à l'animateur, actuellement suspendu de ses fonctions et sous le coup d'une enquête." },
+        { "citation": "Du côté du corps enseignant, un membre affirme avoir pris connaissance des faits par les familles entendues par la police , dans le cadre de l'enquête." }
+      ],
+      "ambiguite": null
+    },
+    "C": {
+      "est_affaire": true, "motif_non": null, "commune": "Saint-Exemple-lès-Testbeuf", "departement": "Seine-Test", "etablissement": "école Marcel-Exemple",
+      "type_structure": ["élémentaire"], "role_mis_en_cause": ["animateur périscolaire"], "type_affaire": ["à qualifier"], "statut_judiciaire": ["enquête"],
+      "statut_des_faits": ["allégué"], "enfants_concernes_public": ["non précisé"], "nombre_personnes_mises_en_cause": 1, "periode_des_faits": null,
+      "resume": "Selon la presse, le parquet a confirmé l'ouverture d'une enquête visant un animateur périscolaire d'une école. L'agent a été suspendu à titre conservatoire par la municipalité.",
+      "dernier_evenement": "2026-11-07",
+      "preuves": [
+        { "citation": "Le parquet de Testville a confirmé samedi l'ouverture d'une enquête visant un animateur périscolaire de l'école Marcel-Exemple, à Saint-Exemple-lès-Testbeuf." }
+      ],
+      "ambiguite": null
+    },
+    "D": {
+      "est_affaire": true, "motif_non": null, "commune": "Saint-Exemple-lès-Testbeuf", "departement": "Seine-Test", "etablissement": "école Marcel-Exemple",
+      "type_structure": "élémentaire", "role_mis_en_cause": "animateur périscolaire", "type_affaire": "à qualifier", "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué", "enfants_concernes_public": "non précisé", "nombre_personnes_mises_en_cause": 1, "periode_des_faits": null,
+      "resume": "Selon la presse, le parquet a confirmé l'ouverture d'une enquête visant un animateur périscolaire d'une école de la commune.",
+      "dernier_evenement": "2026-11-07",
+      "preuves": [
+        { "citation": "Le parquet de Testville a confirmé samedi l'ouverture d'une enquête visant un animateur périscolaire de l'école Marcel-Exemple, à Saint-Exemple-lès-Testbeuf." }
+      ],
+      "ambiguite": null
+    },
+    "E": {
+      "est_affaire": true, "motif_non": null, "commune": "Saint-Exemple-lès-Testbeuf", "departement": "Seine-Test", "etablissement": "école Marcel-Exemple",
+      "type_structure": "élémentaire", "role_mis_en_cause": "animateur périscolaire", "type_affaire": "à qualifier", "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué", "enfants_concernes_public": "plusieurs enfants", "nombre_personnes_mises_en_cause": 2, "periode_des_faits": "2023",
+      "resume": "Selon la presse, un second animateur de la même école est visé par une plainte distincte et une enquête distincte du parquet.",
+      "dernier_evenement": "2026-11-09",
+      "preuves": [
+        { "citation": "Les faits remonteraient au printemps 2023 et ne concernent pas le premier animateur, précise le parquet de Testville, qui a ouvert une enquête distincte." }
+      ],
+      "ambiguite": null
+    },
+    "L": {
+      "est_affaire": true, "motif_non": null, "commune": "Lilas-sur-Test", "departement": "Seine-Test", "etablissement": "école élémentaire Les Lilas-Test",
+      "type_structure": "élémentaire", "role_mis_en_cause": "animateur périscolaire", "type_affaire": "agression sexuelle", "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué", "enfants_concernes_public": "non précisé", "nombre_personnes_mises_en_cause": 1, "periode_des_faits": null,
+      "resume": "Selon la presse, un animateur périscolaire d'une école élémentaire a été mis en examen et placé en détention provisoire après une plainte de parents.",
+      "dernier_evenement": "2026-11-04",
+      "preuves": [
+        { "citation": "Un animateur périscolaire de l'école élémentaire Les Lilas-Test, à Lilas-sur-Test (Seine-Test), a été mis en examen mercredi pour agressions sexuelles sur mineurs et placé en détention provisoire, a indiqué le parquet." }
+      ],
+      "ambiguite": null
+    }
+  },
+  "index": [
+    { "case_id": "FR-2026-9001", "etablissement": "École du Hameau-Test (périscolaire)", "commune": "Testville", "departement": "Seine-Test", "role_mis_en_cause": "animateur périscolaire", "statut_judiciaire": "plainte", "sources_dates": ["2026-05-23", "2026-06-09"] },
+    { "case_id": "FR-2026-9002", "etablissement": "École Les Lilas-Test", "commune": "Lilas-sur-Test", "departement": "Seine-Test", "role_mis_en_cause": "animateur périscolaire", "statut_judiciaire": "plainte", "sources_dates": ["2026-09-30"] }
+  ],
+  "cas": {
+    "FR-2026-9001": {
+      "case_id": "FR-2026-9001", "etablissement": "École du Hameau-Test (périscolaire)", "commune": "Testville", "departement": "Seine-Test", "type_structure": "périscolaire", "role": "animateur périscolaire",
+      "type_affaire": "violences sexuelles", "statut": "plainte", "publication": "candidate", "commentaire_validation": null, "reexamen": false,
+      "sources": [
+        { "media": "Journal-Historique", "url": "https://historique-test.example/h1", "d": "2026-05-23", "is_primary": true, "page": "H1" },
+        { "media": "Journal-Historique", "url": "https://historique-test.example/h2", "d": "2026-06-09", "is_primary": false, "page": "H2" }
+      ]
+    },
+    "FR-2026-9002": {
+      "case_id": "FR-2026-9002", "etablissement": "École Les Lilas-Test", "commune": "Lilas-sur-Test", "departement": "Seine-Test", "type_structure": "élémentaire", "role": "animateur périscolaire",
+      "type_affaire": "agression sexuelle", "statut": "plainte", "publication": "candidate", "commentaire_validation": null, "reexamen": false,
+      "sources": [
+        { "media": "Ancien-Média", "url": "https://ancien-test.example/lilas-plainte", "d": "2026-09-30", "is_primary": true, "page": "PL" }
+      ]
+    }
+  },
+  "pages_historiques": {
+    "PL": "À Lilas-sur-Test, une plainte visant un animateur périscolaire de l'école Les Lilas-Test\n\nDes parents d'élèves de l'école Les Lilas-Test, à Lilas-sur-Test, ont déposé plainte contre un animateur périscolaire pour des agressions sexuelles présumées sur des enfants, a indiqué la mairie."
+  }
+}

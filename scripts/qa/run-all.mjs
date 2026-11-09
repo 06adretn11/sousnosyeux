@@ -69,6 +69,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Signaux réunis avant d’être décidés · un voisin sans indice positif n’est pas un candidat · trois états d’identité · ancien bouton inerte (fixtures synthétiques)',
+    script: 'scripts/qa/test-rapprochement-signaux.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Une décision humaine, une suite · doctrine judiciaire (stade établi par les citations) · « VALIDER ET PUBLIER » · aucun deuxième GO',
     script: 'scripts/qa/test-une-decision.mjs',
     bloquant: true,

@@ -8,6 +8,8 @@
 //
 //   options : --lookback N (jours, défaut 7) · --max N (signaux qualifiés par run, défaut 8)
 //             --moteur <slug OpenRouter> · --verbose (poste local UNIQUEMENT) · --apres/--avant AAAA-MM-JJ (fenêtre de test)
+//             --cles <clé,clé…> : PASSAGE CIBLÉ — ne réexamine que ces signaux (déjà consignés « attente »), sans nouvelle recherche presse
+//                                 (reprise après une correction du moteur ; voir scripts/reprendre-rapprochement.mjs)
 //
 // Chaîne : recherche presse sur une fenêtre glissante → déduplication persistante (discovery_signaux)
 //          → filtre déterministe → grappes (même histoire) → qualification (qualifier-signal.mjs)
@@ -20,8 +22,9 @@ import { createHash } from 'node:crypto';
 import { connecter } from './lib/neon.mjs';
 import { scannerFenetre, GRILLE } from './lib/discovery-presse.mjs';
 import { scannerBing } from './lib/scan-bing.mjs';
-import { aplatir, filtrer } from './lib/capteurs.mjs';import { construireIndex, resoudre } from './lib/resolver.mjs';
-import { evaluer } from './lib/qualifier-signal.mjs';
+import { aplatir, filtrer } from './lib/capteurs.mjs';
+import { construireIndex, resoudre } from './lib/resolver.mjs';
+import { evaluer, DECIDEUR_MACHINE } from './lib/qualifier-signal.mjs';
 import { messageDecision } from './lib/discovery-messages.mjs';
 
 const A = process.argv.slice(2);
@@ -33,6 +36,7 @@ const VERBOSE = flag('--verbose') && !process.env.CI;
 const LOOKBACK = Number(arg('--lookback', 7));
 const MAX = Number(arg('--max', 8));
 const MODELE = arg('--moteur', 'deepseek/deepseek-v4.1-flash');
+const CLES = arg('--cles', null) ? String(arg('--cles', '')).split(',').filter((x) => /^[0-9a-f]{20}$/.test(x)) : null; // passage ciblé (signaux déjà consignés)
 const ATTENTE_JOURS = 21;
 const iso = (d) => d.toISOString().slice(0, 10);
 const v = (...x) => { if (VERBOSE) console.log(...x); };
@@ -52,10 +56,12 @@ if (!wm && !BASELINE && !DRY) { console.error('aucun watermark : lancer --baseli
 // --- 1. recherche presse ----------------------------------------------------
 const after = arg('--apres', iso(new Date(Date.now() - LOOKBACK * 864e5)));
 const before = arg('--avant', iso(new Date(Date.now() + 864e5)));
-const scanG = await scannerFenetre({ after, before });
-const scanB = flag('--sans-bing') ? { items: [], erreurs: [] } : await scannerBing({ jours: LOOKBACK });
+if (CLES && !CLES.length) { console.error('--cles : aucune clé valide (20 caractères hexadécimaux)'); process.exit(1); }
+if (CLES && BASELINE) { console.error('--cles est incompatible avec --baseline'); process.exit(1); }
+const scanG = CLES ? { items: [], erreurs: [] } : await scannerFenetre({ after, before });
+const scanB = CLES || flag('--sans-bing') ? { items: [], erreurs: [] } : await scannerBing({ jours: LOOKBACK });
 // Un capteur entièrement en panne n'arrête pas le run tant que l'autre répond ; les deux en panne : arrêt, rien consigné.
-if (scanG.erreurs.length >= GRILLE.length && (flag("--sans-bing") || scanB.erreurs.length >= GRILLE.length)) { console.error('sources presse indisponibles : arrêt, rien consigné'); process.exit(1); }
+if (!CLES && scanG.erreurs.length >= GRILLE.length && (flag("--sans-bing") || scanB.erreurs.length >= GRILLE.length)) { console.error('sources presse indisponibles : arrêt, rien consigné'); process.exit(1); }
 
 // Un signal = un titre. Le capteur Bing apporte en plus l'URL éditeur directe (relecture sans recherche).
 const parCle = new Map();
@@ -94,7 +100,9 @@ await consigner(filtres, 'ecarte', (r) => 'filtre : ' + filtrer({ title: r.titre
 const candidatsNeufs = neufs.filter((s) => filtrer({ title: s.titre }).decision === 'CANDIDATE');
 
 // signaux déjà vus et en attente de recoupement : réexaminés tant qu'ils n'ont pas expiré
-const attente = DRY && !wm ? [] : await sql`select cle, titre, media, published::text published, first_seen, urls from discovery_signaux where statut = 'attente' order by first_seen`;
+const attente = DRY && !wm ? [] : CLES
+  ? await sql`select cle, titre, media, published::text published, first_seen, urls from discovery_signaux where statut = 'attente' and cle = any(${CLES}) order by first_seen`
+  : await sql`select cle, titre, media, published::text published, first_seen, urls from discovery_signaux where statut = 'attente' order by first_seen`;
 const expires = attente.filter((r) => Date.now() - Date.parse(r.first_seen) > ATTENTE_JOURS * 864e5);
 if (!DRY && expires.length) await sql`update discovery_signaux set statut = 'expire', last_checked = now() where cle = any(${expires.map((r) => r.cle)})`;
 const aReexaminer = attente.filter((r) => !expires.includes(r)).filter((r) => !candidatsNeufs.some((c) => c.cle === r.cle));
@@ -116,8 +124,11 @@ for (const gr of grappes) gr.rep = { ...gr.rep, urls: gr.membres.flatMap((m) => 
 const anonymesEcartees = new Set((await sql`select case_id from cases where publication_status = 'retirée' and etablissement ~* 'non nomm'`).map((r) => r.case_id));
 const index = (await construireIndex(sql, {})).filter((f) => !anonymesEcartees.has(f.case_id));
 const cache = new Map();
-const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, fusionnes: 0, geo_ecartes: 0, cout: 0 };
-const aEnvoyer = [];
+const cp = { grappes: grappes.length, evalues: 0, propose_new: 0, propose_review: 0, propose_attach: 0, attente: 0, ecartes: 0, incidents: 0, reportes: 0, dejaPropose: 0, fusionnes: 0, remplaces: 0, regroupes: 0, silencieux: 0, geo_ecartes: 0, cout: 0 };
+let aEnvoyer = []; // à blanc : propositions qu'on AURAIT faites (une proposition réunie remplace celles de ses signaux déjà comptés)
+// Mémoire du passage : chaque analyse est comparée aux précédentes AVANT toute décision (deux articles d'une même affaire arrivés dans le même lot,
+// dans un ordre quelconque, deviennent UNE analyse). Elle ne survit pas au passage : l'état durable est dans discovery_signaux / new_case_proposals.
+const contexte = { analyses: [], dry: DRY };
 
 for (const g of grappes) {
   const s = g.rep;
@@ -132,8 +143,9 @@ for (const g of grappes) {
     }
   }
   cp.evalues++;
-  const r = await evaluer({ sql, index, signal: s, modele: MODELE, cache });
+  const r = await evaluer({ sql, index, signal: s, modele: MODELE, cache, contexte });
   cp.cout += Number(r.cout?.cout_usd) || 0;
+  if (r.regroupes?.length) cp.regroupes++;
   if (r.proposition?.payload?.rapprochement_ecarte) cp.geo_ecartes++; // rapprochement contredit par la géographie du signal (garde-fou)
   v(`  [${r.statut}] ${s.titre.slice(0, 90)} — ${r.motif}` + (r.proposition ? ` | ${r.proposition.payload.commune} · ${r.proposition.payload.etablissement || '?'} · matches: ${(r.proposition.payload.possible_matches_sny || []).map((m) => m.case_id).join(',') || r.proposition.attach_case_id || '-'} | ${r.proposition.payload.avertissement || ''}` : ''));
   if (r.statut === null) { cp.incidents++; continue; } // non consigné : repris au prochain run
@@ -143,15 +155,43 @@ for (const g of grappes) {
     // décision : si un humain a cliqué entre-temps, rien n'est écrasé et le signal est repris au prochain run.
     if (DRY) { cp.fusionnes++; statut = 'propose'; }
     else {
+      // Jamais en place sur une proposition déjà ENVOYÉE : son bouton agirait sur un contenu que l'éditeur n'a pas vu (le moteur choisit « remplacer » dans ce cas).
       const maj = await sql`update new_case_proposals set payload = ${JSON.stringify(r.fusion.payload)}::jsonb
                              where proposal_id = ${r.fusion.proposal_id}::uuid and applied_at is null and (decision is null or decision = 'REVIEW_REQUIRED')
+                               and not exists (select 1 from telegram_envois t where t.cle = proposal_id::text)
                              returning proposal_id::text pid`;
       if (maj.length) { cp.fusionnes++; statut = 'propose'; proposalId = maj[0].pid; motif = `fusionné dans ${maj[0].pid.slice(0, 8)}`; }
-      else { statut = 'attente'; motif = 'proposition jumelle décidée entre-temps : repris au prochain run'; cp.attente++; }
+      else { statut = 'attente'; motif = 'proposition jumelle envoyée ou décidée entre-temps : repris au prochain run'; cp.attente++; }
+    }
+  } else if (statut === 'remplace') {
+    // Une proposition déjà ENVOYÉE reçoit un fait nouveau matériel : UNE nouvelle version (nouveau message, nouvelle clé) ; l'ancienne reçoit une décision MACHINE
+    // (son bouton répond « déjà décidée », rien n'est approuvé ni rejeté à la place de l'éditeur) et sa clé de déduplication est libérée.
+    const rp = r.remplace;
+    if (DRY) { cp.remplaces++; statut = 'propose'; aEnvoyer.push({ recommendation: rp.recommendation, payload: rp.payload, cles: s.cle }); }
+    else {
+      const [existe] = await sql`select 1 x from new_case_proposals where dedup_key = ${rp.dedup_key}`;
+      if (existe) { statut = 'attente'; motif = 'version consolidée déjà présente : repris au prochain run'; cp.attente++; }
+      else {
+        const [o] = await sql`
+          with ancienne as (
+            update new_case_proposals set decision = 'REJECT'::proposal_decision, decided_by = ${DECIDEUR_MACHINE}, decided_at = now(), applied_at = now(),
+                   decision_comment = ${'SUPERSEDED — remplacée par une version consolidée (' + String(r.motif).slice(0, 200) + ') ; ce bouton est inerte'},
+                   dedup_key = dedup_key || ${'#remplacee-' + rp.proposal_id.slice(0, 8)}
+             where proposal_id = ${rp.proposal_id}::uuid and decision is null and applied_at is null
+               and exists (select 1 from telegram_envois t where t.cle = proposal_id::text)
+            returning proposal_id),
+          nouvelle as (
+            insert into new_case_proposals (dedup_key, recommendation, attach_case_id, payload)
+            select ${rp.dedup_key}, ${rp.recommendation}, ${rp.attach_case_id}, ${JSON.stringify(rp.payload)}::jsonb where exists (select 1 from ancienne)
+            returning proposal_id::text pid)
+          select (select count(*)::int from ancienne) anc, (select pid from nouvelle) pid`;
+        if (o?.pid) { cp.remplaces++; statut = 'propose'; proposalId = o.pid; motif = `nouvelle version ${o.pid.slice(0, 8)} (remplace ${rp.proposal_id.slice(0, 8)})`; }
+        else { statut = 'attente'; motif = 'proposition jumelle décidée entre-temps : repris au prochain run'; cp.attente++; }
+      }
     }
   } else if (statut === 'propose') {
     const p = r.proposition;
-    if (DRY) { cp['propose_' + (p.recommendation === 'ATTACH_EXISTING' ? 'attach' : p.recommendation === 'REVIEW' ? 'review' : 'new')]++; aEnvoyer.push(p); }
+    if (DRY) { cp['propose_' + (p.recommendation === 'ATTACH_EXISTING' ? 'attach' : p.recommendation === 'REVIEW' ? 'review' : 'new')]++; aEnvoyer = aEnvoyer.filter((x) => !(r.regroupes || []).includes(x.cles)); aEnvoyer.push({ ...p, cles: s.cle }); }
     else {
       const ins = await sql`insert into new_case_proposals (dedup_key, recommendation, attach_case_id, payload)
                             values (${p.dedup_key}, ${p.recommendation}, ${p.attach_case_id}, ${JSON.stringify(p.payload)}::jsonb)
@@ -159,17 +199,23 @@ for (const g of grappes) {
       if (ins.length) { proposalId = ins[0].pid; cp['propose_' + (p.recommendation === 'ATTACH_EXISTING' ? 'attach' : p.recommendation === 'REVIEW' ? 'review' : 'new')]++; }
       else { statut = 'ecarte'; motif = 'déjà proposé'; cp.dejaPropose++; }
     }
-  } else if (statut === 'attente') cp.attente++; else cp.ecartes++;
+  } else if (statut === 'attente') cp.attente++;
+  else { cp.ecartes++; if (r.proposition_jumelle) cp.silencieux++; }
   if (DRY) continue;
+  if (r.proposition_jumelle && !proposalId) proposalId = r.proposition_jumelle; // « même affaire que cette proposition » : le lien est consigné, aucune autre trace
   for (const m of g.membres) {
     await sql`insert into discovery_signaux (cle, titre, media, published, statut, motif, proposal_id, urls, last_checked)
-              values (${m.cle}, ${m.titre}, ${m.media || null}, ${m.published || null}, ${statut}, ${m === s ? motif : 'même histoire'}, ${m === s ? proposalId : null}, ${JSON.stringify(m.urls || [])}::jsonb, now())
+              values (${m.cle}, ${m.titre}, ${m.media || null}, ${m.published || null}, ${statut}, ${m.cle === s.cle ? motif : 'même histoire'}, ${m.cle === s.cle ? proposalId : null}, ${JSON.stringify(m.urls || [])}::jsonb, now())
               on conflict (cle) do update set statut = excluded.statut, motif = excluded.motif, proposal_id = coalesce(excluded.proposal_id, discovery_signaux.proposal_id), last_checked = now()`;
+  }
+  // Signaux déjà évalués dans ce passage et réunis à celui-ci : même issue (une seule candidate), même proposition.
+  if (r.regroupes?.length) {
+    await sql`update discovery_signaux set statut = ${statut}, motif = 'même histoire', proposal_id = coalesce(${proposalId}::uuid, proposal_id), last_checked = now() where cle = any(${r.regroupes})`;
   }
 }
 
 console.log(`signaux : ${neufs.length} jamais vus (${filtres.length} filtrés, ${candidatsNeufs.length} candidats) · ${aReexaminer.length} en attente réexaminés · ${expires.length} expirés`);
-console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.fusionnes} fusionnée(s) dans une proposition ouverte · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s), ${cp.geo_ecartes} rapprochement(s) écarté(s) (contradiction géographique) · coût modèle ${cp.cout.toFixed(4)} $`);
+console.log(`qualification : ${cp.grappes} histoires, ${cp.evalues} évaluées (plafond ${MAX}), ${cp.reportes} reportées · propositions : ${cp.propose_new} nouvelle(s), ${cp.propose_review} à revoir, ${cp.propose_attach} rapprochement(s) · ${cp.fusionnes} fusionnée(s) dans une proposition ouverte, ${cp.remplaces} nouvelle(s) version(s) d'une proposition déjà envoyée, ${cp.silencieux} sans fait nouveau (silence) · ${cp.regroupes} réunie(s) avec un autre signal du passage · ${cp.attente} en attente de recoupement, ${cp.ecartes} écartées, ${cp.dejaPropose} déjà proposées, ${cp.incidents} incident(s), ${cp.geo_ecartes} rapprochement(s) écarté(s) (contradiction géographique) · coût modèle ${cp.cout.toFixed(4)} $`);
 if (DRY) {
   // Diagnostic privé : le dépôt est public, les logs CI ne montrent que des compteurs. Avec SNY_DIAG_NEON=1, les propositions
   // qu'un run à blanc AURAIT faites sont déposées dans `discovery_dryrun` (jamais lue par un autre script) pour relecture locale.
