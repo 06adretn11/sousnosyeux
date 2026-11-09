@@ -1,0 +1,99 @@
+{
+  "lot": "lot-roles-2026-11-09",
+  "objet": "Rôle de la personne mise en cause (carte) de quatre affaires PUBLIÉES créées par Discovery : « autre » → fonction établie par les sources vérifiées.",
+  "statut": "PRÉPARÉ — NON APPLIQUÉ : en attente du GO éditorial sur cette version exacte",
+  "reference_immuable": "ce fichier, la migration et l’aperçu à leur commit (SHA donné dans le message de décision) ; sha256 (16 premiers caractères) ci-dessous",
+  "fichiers": {
+    "migration": {
+      "chemin": "supabase/migrations/024_roles_cartes_discovery.sql",
+      "sha256_16": "2372d6d0010e69ce"
+    },
+    "apercu": {
+      "chemin": "docs/industrialisation/LOT_ROLES_09_11_APERCU.diff",
+      "sha256_16": "c5c0b7d07c96e07b",
+      "note": "diff exact de data/cases.json (copie), 4 lignes"
+    }
+  },
+  "donnee_qui_fait_autorite": "cases.role_mis_en_cause (Neon) ; projections : data/cases.json (carte : liste + popup) — la fiche individuelle ne l’affiche pas",
+  "application_apres_go": [
+    "node scripts/apply-migration.mjs supabase/migrations/024_roles_cartes_discovery.sql  (UPDATE gardés, idempotents)",
+    "node --env-file=.env.local scripts/project-public.mjs --modifier FR-2026-0133,FR-2026-0137,FR-2026-0139,FR-2026-0143  (jamais sans --modifier : 11 retards de projection étrangers au lot)",
+    "QA, PR, merge, vérification du site servi (verifier-site)"
+  ],
+  "effets": {
+    "modifie": "4 lignes de data/cases.json (role_mis_en_cause)",
+    "inchange": "position, couleur du pin, filtres, état judiciaire, type de structure (reste « autre »), fiches individuelles (empreintes approuvées = servies), Hubs, sources"
+  },
+  "ecart_voisin_non_traite": "type_structure reste « autre » sur ces quatre cartes (même signature de repli) ; hors périmètre demandé, non modifié",
+  "lignes": [
+    {
+      "case_id": "FR-2026-0133",
+      "carte": "centre de loisirs de Rots (Calvados)",
+      "champ": "cases.role_mis_en_cause",
+      "avant": "autre",
+      "apres": "animateur périscolaire",
+      "source": {
+        "media": "France Info",
+        "date": "2026-10-07",
+        "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html"
+      },
+      "citation": "Un animateur du centre de loisirs situé à Rots (Calvados) est visé par une enquête",
+      "fiche": {
+        "empreinte_servie": "9618383317ae989e",
+        "approuvee": true
+      }
+    },
+    {
+      "case_id": "FR-2026-0137",
+      "carte": "école maternelle de Soyaux (Charente)",
+      "champ": "cases.role_mis_en_cause",
+      "avant": "autre",
+      "apres": "enseignant",
+      "source": {
+        "media": "Ouest-France",
+        "date": "2026-10-14",
+        "url": "https://www.ouest-france.fr/societe/faits-divers/en-charente-un-instituteur-mis-en-examen-pour-des-agressions-sexuelles-sur-quatre-enfants-08cb91a0-c7f8-11f1-9522-1f9ae0711c0a"
+      },
+      "citation": "Un enseignant […] a été mis en examen mercredi 14 octobre 2026",
+      "fiche": {
+        "empreinte_servie": "46d2c807dccf1983",
+        "approuvee": true
+      }
+    },
+    {
+      "case_id": "FR-2026-0139",
+      "carte": "accueil de loisirs de Lingolsheim (Bas-Rhin)",
+      "champ": "cases.role_mis_en_cause",
+      "avant": "autre",
+      "apres": "animateur périscolaire",
+      "source": {
+        "media": "Les Dernières Nouvelles d’Alsace",
+        "date": "2026-10-15",
+        "url": "https://www.dna.fr/faits-divers-justice/2026/10/15/accuse-d-agressions-sexuelles-sur-des-enfants-un-animateur-du-periscolaire-de-lingolsheim-suspendu"
+      },
+      "citation": "un animateur du périscolaire de Lingolsheim suspendu (titre de l’article)",
+      "fiche": {
+        "empreinte_servie": "1e84bfc4edc4263b",
+        "approuvee": true
+      }
+    },
+    {
+      "case_id": "FR-2026-0143",
+      "carte": "centre de loisirs de Courbevoie (Hauts-de-Seine)",
+      "champ": "cases.role_mis_en_cause",
+      "avant": "autre",
+      "apres": "animateur périscolaire",
+      "source": {
+        "media": "Ouest-France",
+        "date": "2026-11-04",
+        "url": "https://www.ouest-france.fr/ile-de-france/courbevoie-92400/dans-les-hauts-de-seine-une-mairie-suspend-un-animateur-periscolaire-suspecte-dagressions-sexuelles-sur-des-enfants-fe963826-d84a-11f1-9911-9179baff22e2"
+      },
+      "citation": "Un animateur périscolaire du centre de loisirs […] de Courbevoie (Hauts-de-Seine)",
+      "fiche": {
+        "empreinte_servie": null,
+        "approuvee": null,
+        "note": "aucune fiche individuelle : carte seule"
+      }
+    }
+  ]
+}

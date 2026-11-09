@@ -1,0 +1,32 @@
+diff data/cases.json (avant → après)
+index b222609..4f0e68b 100644
+--- a/data/cases.json
++++ b/data/cases.json (après)
+@@ -2108,5 +2108,5 @@
+       "departement": "Calvados",
+       "type_structure": "autre",
+-      "role_mis_en_cause": "autre",
++      "role_mis_en_cause": "animateur périscolaire",
+       "type_affaire": "à qualifier",
+       "statut_judiciaire": "enquête",
+@@ -2160,5 +2160,5 @@
+       "departement": "Charente",
+       "type_structure": "autre",
+-      "role_mis_en_cause": "autre",
++      "role_mis_en_cause": "enseignant",
+       "type_affaire": "à qualifier",
+       "statut_judiciaire": "mise en examen",
+@@ -2254,5 +2254,5 @@
+       "departement": "Bas-Rhin",
+       "type_structure": "autre",
+-      "role_mis_en_cause": "autre",
++      "role_mis_en_cause": "animateur périscolaire",
+       "type_affaire": "à qualifier",
+       "statut_judiciaire": "enquête",
+@@ -2323,5 +2323,5 @@
+       "departement": "Hauts-de-Seine",
+       "type_structure": "autre",
+-      "role_mis_en_cause": "autre",
++      "role_mis_en_cause": "animateur périscolaire",
+       "type_affaire": "à qualifier",
+       "statut_judiciaire": "enquête",
