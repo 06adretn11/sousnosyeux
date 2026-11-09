@@ -60,12 +60,13 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 - **Hébergement** : Cloudflare Workers (static assets) — build auto à chaque push sur `main` ✅
   - URL publique : `https://sousnosyeux.org` ✅
   - URL worker : `https://sousnosyeux.adr-etn.workers.dev` ✅
-  - Redirect `www.sousnosyeux.org` → apex via Cloudflare Redirect Rule (301) ✅
+  - Redirect `www.sousnosyeux.org` → apex via Cloudflare Redirect Rule (301) — ⚠️ observé le 09/11/2026 : la règle renvoie vers l'URL littérale `https://sousnosyeux.org/*` (404) et `http://` est servi en 200 sans redirection ; correction de zone Cloudflare (hors dépôt) décrite dans le suivi du socle SEO
   - SSL automatique Cloudflare ✅
-  - ⚠️ **Pas de variables d'environnement possibles** côté Workers static assets → le front lit `data/cases.json` (synchro Supabase → JSON via script local)
+  - ⚠️ **Pas de variables d'environnement possibles** côté Workers static assets → le front lit `data/cases.json` (projection de Neon par `scripts/project-public.mjs`)
+  - `web/wrangler.jsonc` : `not_found_handling: "404-page"` (URL inconnue → `404.html` avec statut 404) ; `web/public/_headers` : cache `immutable` sur `/_astro/*` seulement
 - **Front Astro** : `web/` (Astro 5 + MapLibre 4, tuiles OSM)
   - **Design B2 implémenté** (Phase 6) ✅ — direction "Éditorial sobre + lanceur d'alerte"
-  - Polices : DM Sans (UI) + DM Mono (chiffres/codes) + Playfair Display (titres)
+  - Polices : DM Sans (UI) + DM Mono (chiffres/codes) + Playfair Display (titres) — auto-hébergées via `@fontsource` (OFL-1.1), aucun appel Google Fonts
   - Palette : rouge `#E63946` · bleu `#457B9D` · vert `#2D6A4F` · orange `#D97706`
   - Header blanc compact : logo avec barre rouge, nav, bouton "Nous contacter" (rouge) · sur mobile seul "Nous contacter" visible (Carte + Méthodologie masqués → présents dans footer/bande info)
   - Bande info compacte (1 ligne) : compteur affaires + tagline (masquée mobile) + lien méthodologie toujours visible
@@ -76,8 +77,8 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
   - Popup partagée `openPopupForCase()` — déclenchée depuis pin ET depuis sidebar, avec pan automatique
   - Sidebar statique scrollable : liste affaires par date, barre colorée, badge statut + tag type_affaire, clic → zoom + popup
   - Footer sombre avec liens légaux
-  - Page `/methodologie` + Page `/mentions-legales` + Page `/a-propos` ✅
-  - **Source de données** : `data/cases.json` importé statiquement (synchro Supabase → JSON via `scripts/sync-data.mjs`)
+  - Page `/methodologie` + Page `/mentions-legales` ✅ · `/territoires/` + Hubs · fiches `/affaires/<id>/` · page 404 · **aucune page `/a-propos` en production** (constat du 09/11/2026)
+  - **Source de données** : `data/cases.json` importé statiquement (projection de Neon par `scripts/project-public.mjs`)
 - **Pipeline d'import** : opérationnel ✅
   - `scripts/import-cases.mjs` : CSV → validation → dédoublonnage → géocodage → INSERT Supabase
   - `scripts/bulk-publish.mjs` : publication en masse des candidates score ≥ 8
@@ -133,7 +134,7 @@ Carte publique des affaires signalées dans les structures accueillant des mineu
 | Scheduling veille | Exécution manuelle 1×/mois (rappel calendrier) | Routine distante bloquée par compte Business Cdiscount — revoir quand accès GitHub autorisé côté org |
 | Direction design | **B2 "Éditorial"** — DM Sans + DM Mono + Playfair Display, palette rouge/bleu/vert/orange | 3 directions A/B/C maquettées, 3 variations B1/B2/B3 affinées, B2 validé par l'utilisateur |
 | Porteurs du projet | Adrien Etienne & Ly Nguyen | Couple de parents parisiens — discours "nous" dans tous les supports (site, présentation, email) |
-| Page À propos | `/a-propos` dans Astro, lien dans la nav | Contexte humain séparé de la méthodologie éditoriale |
+| Page À propos | `/a-propos` dans Astro, lien dans la nav | Contexte humain séparé de la méthodologie éditoriale — ⚠️ page absente de la production au 09/11/2026 (aucune route) |
 | Support de présentation | `tools/presentation.html` | Document HTML autonome pour associations/partenaires — même tonalité que le site |
 | Clustering carte | `clusterRadius 30`, `clusterMaxZoom 7` | Pins individuels visibles dès zoom 8 (niveau région) — ajusté post-feedback prod |
 | Centre initial carte | `fitBounds` filtré sur bornes France (lat 41–52, lng -6–10) | Évite les points mal géocodés qui élargissaient la vue hors France |
@@ -287,8 +288,8 @@ sousnosyeux/
    - ⏭️ Section « parole aux parents/associations » — témoignages liés à une affaire
 7. **Phase 9 — SEO + pages thématiques**
    - ⏭️ Pages SEO statiques par région / type d'affaire / statut judiciaire (ex : `/region/ile-de-france`, `/type/creche`)
-   - ⏭️ Métadonnées structurées (JSON-LD, og:image dynamique par affaire)
-   - ⏭️ Sitemap XML auto-généré (Astro sitemap integration)
+   - ✅ Métadonnées : Open Graph + image de partage GÉNÉRIQUE (aucune image par affaire), JSON-LD minimal `WebSite` (accueil) + `BreadcrumbList` (fiches) — socle SEO du 09/11/2026
+   - ✅ Sitemap XML généré au build (`scripts/lib/sitemap.mjs`, lot D, PR 103), sans `lastmod` (aucune date de modification publiée fiable)
    - ⏭️ Page d'accueil optimisée : titre H1, description, maillage interne
    - ℹ️ Objectif : référencement naturel sur les recherches liées aux affaires de protection de l'enfance
 8. **Phase 10 — Témoignages des familles**
