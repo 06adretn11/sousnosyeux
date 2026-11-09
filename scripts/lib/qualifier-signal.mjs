@@ -18,9 +18,9 @@ import { aplatir } from './capteurs.mjs';
 import { resoudre } from './resolver.mjs';
 import { datesCompletes } from './etat-affaire.mjs';
 import { comprendre } from './comprendre-source.mjs';
-import { niveauGeo, sourceCoherente, forceRapprochement } from './rapprochement-garde.mjs';
+import { niveauGeo, sourceCoherente, forceRapprochement, comparerSignaux, comparerEtablissements, rapprochementEtaye, jetonsEtablissement, estNommeEtab } from './rapprochement-garde.mjs';
 import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
-import { stadeEtabli } from './stade-judiciaire.mjs';
+import { stadeEtabli, stadeCite } from './stade-judiciaire.mjs';
 import { evaluerPublication } from './publication-gates.mjs';
 import { geocoderCommune } from './geocoder-commune.mjs';
 import { localisationDe } from './proposition-publication.mjs';
@@ -45,20 +45,24 @@ RÈGLES ABSOLUES
 6. "statut_judiciaire" = le stade le plus avancé RAPPORTÉ à ce jour (plainte, enquête, mise en examen, procès, condamnation…). Une suspension administrative n'est pas un stade judiciaire : retiens « plainte » ou « enquête » selon ce qui est écrit.
 7. "dernier_evenement" = date (AAAA-MM-JJ) du dernier événement rapporté (pas la date de publication si l'article donne la date de l'événement).
 8. "ambiguite" : UNE phrase si une incertitude change la décision (nom de l'établissement non confirmé, sources divergentes sur le stade, doute sur la commune), sinon null.
-9. Champs catégoriels : valeurs EXACTES parmi celles listées, sinon « à qualifier » / « autre » / « non précisé ». type_structure : « maternelle » ou « élémentaire » pour une école (jamais « école »), « autre » si le type n'est pas écrit.
+9. Champs catégoriels : UNE SEULE valeur, écrite comme une chaîne (jamais une liste), EXACTEMENT parmi celles proposées, sinon « à qualifier » / « autre » / « non précisé ». type_structure : « maternelle » ou « élémentaire » pour une école (jamais « école »), « autre » si le type n'est pas écrit.
+10. "nombre_personnes_mises_en_cause" : un entier si les articles disent combien de personnes sont mises en cause DANS CETTE structure (« un animateur » = 1, « deux agents » = 2) ; null si ce n'est pas écrit. Ne compte pas les personnes d'autres structures.
+11. "periode_des_faits" : « AAAA-MM » (ou « AAAA ») si les articles datent les FAITS eux-mêmes (« les faits remontent à septembre 2026 ») ; ni la date de parution, ni celle d'un acte de procédure ; null sinon.
 
-Réponds UNIQUEMENT par un objet JSON :
+Réponds UNIQUEMENT par un objet JSON (chaque champ catégoriel est une chaîne choisie parmi les valeurs indiquées) :
 {
   "est_affaire": true | false,
   "motif_non": "..." | null,
   "commune": "...", "departement": "...",
   "etablissement": "nom tel qu'écrit" | null,
-  "type_structure": ${JSON.stringify(ENUMS.type_structure)},
-  "role_mis_en_cause": ${JSON.stringify(ENUMS.role_mis_en_cause)},
-  "type_affaire": ${JSON.stringify(ENUMS.type_affaire)},
-  "statut_judiciaire": ${JSON.stringify(ENUMS.statut_judiciaire)},
-  "statut_des_faits": ${JSON.stringify(ENUMS.statut_des_faits)},
-  "enfants_concernes_public": ${JSON.stringify(ENUMS.enfants_concernes_public)},
+  "type_structure": "${ENUMS.type_structure.join(' | ')}",
+  "role_mis_en_cause": "${ENUMS.role_mis_en_cause.join(' | ')}",
+  "type_affaire": "${ENUMS.type_affaire.join(' | ')}",
+  "statut_judiciaire": "${ENUMS.statut_judiciaire.join(' | ')}",
+  "statut_des_faits": "${ENUMS.statut_des_faits.join(' | ')}",
+  "enfants_concernes_public": "${ENUMS.enfants_concernes_public.join(' | ')}",
+  "nombre_personnes_mises_en_cause": 1 | 2 | ... | null,
+  "periode_des_faits": "AAAA-MM" | "AAAA" | null,
   "resume": "...",
   "dernier_evenement": "AAAA-MM-JJ" | null,
   "preuves": [ { "url": "...", "citation": "..." } ],
@@ -66,7 +70,7 @@ Réponds UNIQUEMENT par un objet JSON :
 }`;
 
 const invite = ({ article }) => article.body;
-const CONTRAT = { SYSTEME, invite };
+export const CONTRAT = { SYSTEME, invite };
 
 // --- recherche des pages ------------------------------------------------
 const mots = (s) => new Set(aplatir(s).split(/[^a-z0-9]+/).filter((w) => w.length > 3));
@@ -134,8 +138,12 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
   // l'humain tranche. Le repli est signalé dans l'ambiguïté.
   const REPLI = { type_structure: 'autre', role_mis_en_cause: 'autre', type_affaire: 'à qualifier', statut_judiciaire: 'à qualifier', statut_des_faits: 'allégué', enfants_concernes_public: 'non précisé' };
   const replis = [];
-  for (const [k, vals] of Object.entries(ENUMS)) if (!vals.includes(rep[k])) { rep[k] = REPLI[k]; replis.push(k); }
-  if (replis.length) rep.ambiguite = [rep.ambiguite, `champ(s) à qualifier à la main : ${replis.join(', ')}`].filter(Boolean).join(' · ');
+  for (const [k, vals] of Object.entries(ENUMS)) {
+    const v = valeurEnum(rep[k], vals);
+    if (v) rep[k] = v; else { rep[k] = REPLI[k]; replis.push(k); }
+  }
+  // Le repli est dit EN PREMIER : l'ambiguïté est tronquée à l'affichage, jamais ce qui reste à qualifier à la main.
+  if (replis.length) rep.ambiguite = [`champ(s) à qualifier à la main : ${replis.join(', ')}`, rep.ambiguite].filter(Boolean).join(' · ');
   const commune = String(rep.commune || '').trim();
   if (commune.length < 2) return { ok: false, motif: 'commune absente' };
   const corpsAplati = pages.map((p) => aplatir(p.corps));
@@ -152,6 +160,16 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
   // administrative, plainte seule : jamais promues en « enquête ». Le stade est ramené à ce que les citations établissent.
   const stade = stadeEtabli(rep.statut_judiciaire, evidence.map((e) => e.quote));
   if (!stade.ok) { rep.statut_judiciaire = stade.stade; rep.ambiguite = [rep.ambiguite, stade.raison].filter(Boolean).join(' · '); }
+  // PROCÉDURE ≠ QUALIFICATION. Un stade laissé « à qualifier » (réponse du modèle absente ou hors énumération) alors que les citations
+  // établissent une enquête (acte ou autorité nommée) ou une plainte est RELEVÉ à ce que les citations établissent — jamais au-delà :
+  // les stades supérieurs restent annoncés par le modèle ET prouvés par les citations. La qualification juridique des faits
+  // (`type_affaire`) n'est jamais déduite ici.
+  if (rep.statut_judiciaire === 'à qualifier') {
+    const cite = stadeCite(evidence.map((e) => e.quote));
+    if (cite === 'enquête' || cite === 'plainte') rep.statut_judiciaire = cite;
+  }
+  const personnes = Number(rep.nombre_personnes_mises_en_cause);
+  const periode = periodeAttestee(rep.periode_des_faits, corpsAplati);
   const dernier = /^\d{4}-\d{2}-\d{2}$/.test(rep.dernier_evenement || '') && rep.dernier_evenement <= aujourdhui ? rep.dernier_evenement : null;
   const resume = String(rep.resume || '').replace(/\s+/g, ' ').trim();
   if (resume.length < 30) return { ok: false, motif: 'résumé absent' };
@@ -164,8 +182,28 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
       type_structure: rep.type_structure, role_mis_en_cause: rep.role_mis_en_cause, type_affaire: rep.type_affaire,
       statut_judiciaire: rep.statut_judiciaire, statut_des_faits: rep.statut_des_faits, enfants_concernes_public: rep.enfants_concernes_public,
       resume: resume.slice(0, 600), dernier_evenement: dernier, ambiguite: rep.ambiguite ? String(rep.ambiguite).slice(0, 220) : null,
+      personnes: Number.isInteger(personnes) && personnes >= 1 && personnes <= 30 ? personnes : null, periode_faits: periode,
     },
   };
+}
+
+/** Valeur d'énumération : chaîne, ou liste d'UNE valeur (le modèle recopie parfois le schéma), comparée sans accent ni casse. undefined sinon. */
+export function valeurEnum(v, vals) {
+  const x = Array.isArray(v) ? (new Set(v.map(String)).size === 1 ? v[0] : undefined) : v;
+  if (typeof x !== 'string') return undefined;
+  const n = aplatir(x).trim();
+  return vals.find((e) => aplatir(e) === n);
+}
+
+const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
+/** « AAAA-MM » ou « AAAA » : retenu seulement si l'année (et le mois) figurent dans les articles. null sinon (jamais deviné). */
+export function periodeAttestee(periode, corpsAplatis) {
+  const m = /^(\d{4})(?:-(\d{2}))?$/.exec(String(periode || ''));
+  if (!m) return null;
+  const mo = m[2] ? Number(m[2]) : null;
+  if (mo !== null && (mo < 1 || mo > 12)) return null;
+  const present = corpsAplatis.some((c) => c.includes(m[1]) && (mo === null || c.includes(`${MOIS[mo - 1]} ${m[1]}`) || c.includes(`${m[1]}-${m[2]}`)));
+  return present ? periode : null;
 }
 
 /** Familles de dépêches : deux pages qui partagent ≥ 3 longues phrases sont UNE source, pas deux. */
@@ -231,6 +269,9 @@ export async function construireAttach({ k, c, lues, nouvelles, res, geo, cache,
     }
   }
   if (datesCommunes.length) pour.push(`même fait daté cité par les deux jeux de sources : ${datesCommunes.slice(0, 2).map((d) => d.split('-').reverse().join('/')).join(', ')}`);
+  // Établissement : concordance, information absente (un nom d'école absent n'est pas un nom différent) ou contradiction étayée.
+  const etab = comparerEtablissements({ nom: c.etablissement }, { nom: k.etablissement });
+  if (etab.etat === 'concordance') pour.push(etab.detail); else if (etab.etat === 'contradiction') contre.push(etab.detail);
   // Le résolveur parle de TOUTES ses candidates : seules les lignes de CETTE affaire (ou sans identifiant) lui sont attribuées.
   // Sans ce filtre, le manque d'une autre candidate (« établissement non retrouvé » d'une affaire nantaise) apparaissait
   // comme un contre-argument contre l'affaire visée.
@@ -251,7 +292,7 @@ export async function construireAttach({ k, c, lues, nouvelles, res, geo, cache,
   const { force, raison } = forceRapprochement({ geo, resolution: partiel ? 'POSSIBLE_MATCH' : 'MATCH', memeDepeche, datesCommunes });
   if (force === 'faible' && raison && !contre.includes(raison)) contre.unshift(raison);
   return {
-    force,
+    force, indices: { memeDepeche, datesCommunes },
     bloc: {
       case_id: k.case_id, etablissement: k.etablissement, commune: k.commune, statut: k.statut, type_affaire: k.type_affaire, role: k.role,
       resume: k.resume,
@@ -270,22 +311,37 @@ export async function construireAttach({ k, c, lues, nouvelles, res, geo, cache,
 // converties en deux fiches. Les propositions sont qualifiées l'une après l'autre ; la mémoire consultée (le résolveur) ne contient
 // que les FICHES, jamais les propositions encore ouvertes ; et la clé de déduplication (commune|établissement|rôle) varie avec le
 // nom écrit (« école maternelle X », « école X », « structure non nommée »).
-// Preuve d'identité exigée : la même commune ET une même page citée comme preuve par les deux propositions. Deux établissements
-// nommés différemment, ou deux rôles précis différents, restent deux affaires (procédures distinctes : jamais fusionnées sans preuve).
-const GENERIQUES = new Set(['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'centre', 'loisirs', 'periscolaire', 'autre', 'nommee', 'nomme', 'groupe', 'scolaire']);
-const jetonsEtab = (e) => new Set(aplatir(e || '').split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !GENERIQUES.has(w)));
-const urlsPreuves = (p) => new Set((p.evidence || []).map((e) => canonique(String(e.url || ''))).filter(Boolean));
+// Preuve d'identité (rapprochement-garde.comparerSignaux) : trois états par dimension. « Même affaire » = commune des faits concordante,
+// AUCUNE contradiction étayée (communes, établissements nommés, rôles précis, nombre de personnes, période des faits) ET un indice
+// discriminant (établissement nommé concordant — « école primaire X » = « école X » — ou page citée par les deux). Une page en commun n'est
+// plus exigée : deux articles d'un même éditeur n'en partagent pas (cas du 08/11/2026). Une information absente n'est pas une contradiction.
 const estNomme = (p) => (p.etablissement_nomme ?? p.fiche?.crit_etablissement_nomme) === true;
+const jetonsEtab = jetonsEtablissement;
 
-/** Deux payloads de proposition décrivent-ils la même affaire ? @returns {{ok:boolean, motif:string}} */
+/** Deux payloads de proposition décrivent-ils la même affaire ? @returns {{ok:boolean, motif:string, verdict:string, dimensions:object[]}} */
 export function memeAffaire(a, b) {
-  if (niveauGeo({ commune: a.commune, departement: a.fiche?.departement }, { commune: b.commune, departement: b.fiche?.departement }).niveau !== 'ok') return { ok: false, motif: 'communes différentes' };
-  const ub = urlsPreuves(b);
-  if (![...urlsPreuves(a)].some((u) => ub.has(u))) return { ok: false, motif: 'aucune page citée en commun' };
-  if (estNomme(a) && estNomme(b) && jaccard(jetonsEtab(a.etablissement), jetonsEtab(b.etablissement)) < 0.5) return { ok: false, motif: 'établissements nommés différemment' };
-  const [ra, rb] = [a.fiche?.role_mis_en_cause, b.fiche?.role_mis_en_cause];
-  if (ra && rb && ra !== 'autre' && rb !== 'autre' && ra !== rb) return { ok: false, motif: 'rôles différents : procédures distinctes' };
-  return { ok: true, motif: 'même commune, page citée en commun' };
+  const r = comparerSignaux(a, b);
+  return { ok: r.verdict === 'meme', motif: r.motif, verdict: r.verdict, dimensions: r.dimensions };
+}
+
+/**
+ * Ce qu'un signal rapporté à une proposition DÉJÀ ENVOYÉE change-t-il vraiment pour la décision de l'éditeur ?
+ * Matériel : un média nouveau, un stade judiciaire plus avancé, une mesure institutionnelle nouvelle ou passée d'annoncée à réalisée,
+ * un établissement jusque-là non nommé. Une page de plus du même éditeur sans fait nouveau n'est PAS matérielle : aucun nouveau message.
+ */
+export function changementMateriel(ancien, nouveau) {
+  const raisons = [];
+  const dom = new Set((ancien.articles || []).map((x) => domaine(x.url)));
+  const nouveaux = (nouveau.articles || []).filter((x) => !dom.has(domaine(x.url)));
+  if (nouveaux.length) raisons.push(`un média nouveau (${[...new Set(nouveaux.map((x) => x.media || domaine(x.url)))].join(', ')})`);
+  const RANG = ['à qualifier', 'plainte', 'enquête', 'mise en examen', 'procès', 'condamnation non définitive', 'condamnation définitive'];
+  if (RANG.indexOf(nouveau.stade_minimal) > RANG.indexOf(ancien.stade_minimal) && RANG.indexOf(nouveau.stade_minimal) > 0) raisons.push(`un stade judiciaire plus avancé (« ${nouveau.stade_minimal} »)`);
+  const [ai, ni] = [ancien.institutionnel, nouveau.institutionnel];
+  if (ni && (!ai || ai.mesure !== ni.mesure || (ai.realisation === 'annoncée' && ni.realisation === 'réalisée'))) raisons.push('une mesure institutionnelle nouvelle ou passée à « réalisée »');
+  if (!estNomme(ancien) && estNomme(nouveau)) raisons.push('l’établissement est désormais nommé');
+  const connues = new Set((ancien.articles || []).map((x) => canonique(x.url)));
+  const urlsNouvelles = (nouveau.articles || []).filter((x) => !connues.has(canonique(x.url))).map((x) => x.url);
+  return { materiel: raisons.length > 0, raison: raisons.join(' ; ') || 'aucun fait ni média nouveau', urlsNouvelles };
 }
 
 /**
@@ -312,6 +368,22 @@ export function fusionner(base, ajout) {
   }
   if (ajout.stade_minimal && out.stade_minimal && ajout.stade_minimal !== out.stade_minimal) note(`stade judiciaire rapporté différemment selon les sources : « ${out.stade_minimal} » / « ${ajout.stade_minimal} »`);
   if (ajout.dernier_evenement && (!out.dernier_evenement || ajout.dernier_evenement > out.dernier_evenement)) out.dernier_evenement = ajout.dernier_evenement;
+  // Une information ABSENTE d'un côté n'est pas une contradiction : elle est complétée par l'autre (jamais l'inverse).
+  if (out.stade_minimal === 'à qualifier' && ajout.stade_minimal && ajout.stade_minimal !== 'à qualifier') { out.stade_minimal = ajout.stade_minimal; out.fiche = { ...out.fiche, statut_judiciaire: ajout.stade_minimal, crit_statut_clair: true }; }
+  for (const k of ['role_mis_en_cause', 'type_structure', 'type_affaire']) {
+    const neutre = k === 'type_affaire' ? 'à qualifier' : 'autre';
+    if ((!out.fiche?.[k] || out.fiche[k] === neutre) && ajout.fiche?.[k] && ajout.fiche[k] !== neutre) out.fiche = { ...out.fiche, [k]: ajout.fiche[k] };
+  }
+  if (!out.personnes && ajout.personnes) out.personnes = ajout.personnes;
+  if (!out.periode_faits && ajout.periode_faits) out.periode_faits = ajout.periode_faits;
+  // Mesure institutionnelle : « réalisée » n'est JAMAIS rétrogradée en « annoncée » parce qu'un résumé est moins précis ; une divergence réelle
+  // (mesures différentes) est signalée, pas tranchée par la plus récente.
+  if (ajout.institutionnel) {
+    if (!out.institutionnel) out.institutionnel = ajout.institutionnel;
+    else if (out.institutionnel.mesure === ajout.institutionnel.mesure) {
+      if (out.institutionnel.realisation === 'annoncée' && ajout.institutionnel.realisation === 'réalisée') out.institutionnel = ajout.institutionnel;
+    } else note(`autre mesure institutionnelle rapportée : « ${ajout.institutionnel.libelle_public} »`);
+  }
   out.unknowns = inconnues;
   out.fiche = { ...out.fiche, crit_recoupement: out.independantes >= 2 };
   if (out.articles.length > (base.articles || []).length) out.regroupes = (out.regroupes || 1) + 1; // un rejeu sans page nouvelle ne compte pas
@@ -320,24 +392,60 @@ export function fusionner(base, ajout) {
 
 /**
  * Que faire d'un signal dont une proposition jumelle existe ?
- * @returns {{action:'fusion'|'ecarte'|'rattacher'|'attente', motif:string, case_id?:string}}
+ * Une proposition déjà ENVOYÉE sur Telegram n'est JAMAIS modifiée en place : son bouton agirait sur un contenu que l'éditeur n'a pas vu.
+ * Fait nouveau matériel → `remplacer` (nouvelle version, l'ancienne est rendue inerte) ; sinon `ecarte` en silence.
+ * @param {object} row  proposition jumelle ; `row.envoye` = a déjà un message Telegram
+ * @param {Set<string>} casConnus
+ * @param {object} [nouveau]  payload du signal (nécessaire pour juger la matérialité d'une proposition envoyée)
+ * @returns {{action:'fusion'|'remplacer'|'ecarte'|'rattacher'|'attente', motif:string, case_id?:string}}
  */
-export function decisionJumelle(row, casConnus) {
+export function decisionJumelle(row, casConnus, nouveau = null) {
+  if (row.envoye && !row.decision && !row.applied_at && nouveau) {
+    const m = changementMateriel(row.payload, nouveau);
+    return m.materiel
+      ? { action: 'remplacer', motif: `même affaire qu’une proposition déjà envoyée : ${m.raison}`, urlsNouvelles: m.urlsNouvelles }
+      : { action: 'ecarte', motif: 'même affaire qu’une proposition déjà envoyée : rien de nouveau à décider', urlsNouvelles: m.urlsNouvelles };
+  }
+  if (row.envoye && row.decision === 'REVIEW_REQUIRED' && !row.applied_at) return { action: 'ecarte', motif: 'même affaire qu’une proposition mise de côté par l’éditeur : sa décision n’est pas rejouée' };
   if ((!row.decision || row.decision === 'REVIEW_REQUIRED') && !row.applied_at) return { action: 'fusion', motif: 'même affaire qu’une proposition ouverte : sources ajoutées' };
   if (row.decision === 'REJECT') return { action: 'ecarte', motif: 'même affaire qu’une proposition rejetée' };
   if (row.created_case_id && casConnus.has(row.created_case_id)) return { action: 'rattacher', motif: 'même affaire qu’une fiche déjà créée', case_id: row.created_case_id };
   return { action: 'attente', motif: 'même affaire qu’une proposition validée dont la fiche n’existe pas encore' };
 }
 
-/** Proposition jumelle d'un nouveau signal parmi les propositions de découverte récentes. @returns {Promise<null|{row:object, motif:string}>} */
+/** Décideur MACHINE (jamais l'éditeur) : une proposition ainsi décidée a été REMPLACÉE, elle n'est ni un refus ni une validation humaine. */
+export const MACHINE_RE = /non humain/i;
+/** Signature de la décision machine qui REMPLACE une proposition (bouton rendu inerte « déjà décidée », sans approuver ni rejeter à la place de l'éditeur). */
+export const DECIDEUR_MACHINE = 'consolidation Discovery 09/11/2026 (agent, non humain)';
+
+/**
+ * Proposition jumelle d'un nouveau signal parmi les propositions de découverte récentes.
+ * Une proposition remplacée par une décision machine est ignorée. Si PLUSIEURS propositions sont « la même affaire », rien n'est fusionné
+ * (pas de fusion par transitivité) : `{ ambigu: n }`.
+ * @returns {Promise<null|{row:object, motif:string}|{ambigu:number}>}
+ */
 export async function chercherJumelle(sql, nouveau) {
   const rows = await sql`select proposal_id::text pid, dedup_key, recommendation, attach_case_id, payload, decision::text decision,
-                                created_case_id, applied_at
+                                created_case_id, applied_at, decided_by,
+                                exists (select 1 from telegram_envois t where t.cle = proposal_id::text) as envoye
                            from new_case_proposals
                           where payload ? 'evidence' and recommendation <> 'ATTACH_EXISTING' and created_at > now() - interval '45 days'
                           order by created_at`;
-  for (const row of rows) { const m = memeAffaire(row.payload, nouveau); if (m.ok) return { row, motif: m.motif }; }
-  return null;
+  const memes = [];
+  for (const row of rows) {
+    if (MACHINE_RE.test(row.decided_by || '')) continue;
+    const m = memeAffaire(row.payload, nouveau);
+    if (m.ok) memes.push({ row, motif: m.motif });
+  }
+  if (memes.length > 1) return { ambigu: memes.length };
+  return memes[0] || null;
+}
+
+/** Entrée de la mémoire du passage (analyses déjà faites) qui décrit la même affaire que `nouveau`. Même règle de non-transitivité. */
+export function chercherDansMemoire(memoire, nouveau, { dry = false } = {}) {
+  const memes = (memoire || []).filter((e) => (e.statut === 'attente' || (dry && e.statut === 'propose')) && memeAffaire(e.cmp, nouveau).ok);
+  if (memes.length > 1) return { ambigu: memes.length };
+  return memes[0] ? { entree: memes[0], motif: memeAffaire(memes[0].cmp, nouveau).motif } : null;
 }
 
 const GRAVITE = { MATCH: 2, POSSIBLE_MATCH: 1, NO_MATCH: 0 };
@@ -359,26 +467,132 @@ export function avertissementVoisines(ids, geoDe) {
   ].filter(Boolean).join(' · ');
 }
 
+/** Clé de déduplication d'une NOUVELLE VERSION d'une proposition déjà envoyée (l'ancienne garde la sienne : elle est remplacée, pas effacée). */
+export function cleVersion(cle) {
+  const m = /^(.*)#v(\d+)$/.exec(String(cle));
+  return m ? `${m[1]}#v${Number(m[2]) + 1}` : `${cle}#v2`;
+}
+
+/** Après fusion, la publiabilité affichée (bouton « VALIDER ET PUBLIER » ou « non publiable : … ») est recalculée sur les preuves RÉUNIES, jamais héritée. */
+export async function republier(p, recommendation, geocoder = geocoderCommune) {
+  if (!('publication_directe' in p) && !('non_publiable' in p)) return p;
+  const { publication_directe, non_publiable, ...reste } = p;
+  const f = reste.fiche || {};
+  const dp = await dossierPublication({
+    c: { commune: reste.commune, etablissement: reste.etablissement, type_structure: f.type_structure, role_mis_en_cause: f.role_mis_en_cause, statut_judiciaire: reste.stade_minimal,
+      enfants_concernes_public: f.enfants_concernes_public, ambiguite: reste.unknowns?.[0] ?? null },
+    fiche: f, nomme: estNomme(reste), evidence: reste.evidence || [], indep: reste.independantes || 0, recommendation, voisins: reste.possible_matches_sny || [], geocoder,
+  });
+  return { ...reste, ...(dp.directe ? { publication_directe: dp.directe } : { non_publiable: dp.non }) };
+}
+
+// --- consolidation des signaux d'un même passage -----------------------------------------------------------------------
+// Les signaux sont qualifiés un par un (un appel modèle chacun), mais JAMAIS décidés isolément : chaque analyse est comparée aux analyses
+// déjà faites dans le passage (`contexte.analyses`, signaux en attente de recoupement) AVANT toute décision. Même affaire → une seule
+// analyse, avec les pages et les preuves des deux ; la décision (rapprochement historique, attente, proposition) porte sur l'ensemble.
+
+/** Forme comparable (rapprochement-garde.comparerSignaux) d'une analyse. */
+export function formeComparable({ c, evidence, lues }) {
+  return {
+    commune: c.commune, etablissement: c.etablissement, etablissement_nomme: estNommeEtab(c.etablissement), personnes: c.personnes, periode_faits: c.periode_faits,
+    fiche: { departement: c.departement || '', role_mis_en_cause: c.role_mis_en_cause, type_structure: c.type_structure },
+    articles: lues.map((p) => ({ url: p.url, media: p.media, published: p.published })), evidence,
+  };
+}
+
+/** Réunit deux analyses de la MÊME affaire : sources et preuves des deux, information absente complétée, divergences consignées, jamais tranchées. */
+export function fuserAnalyses(a, b) {
+  const lues = [...a.lues, ...b.lues.filter((p) => !a.lues.some((q) => canonique(q.url) === canonique(p.url)))];
+  const vu = new Set(a.evidence.map((e) => `${canonique(e.url)}|${e.quote}`));
+  const evidence = [...a.evidence, ...b.evidence.filter((e) => !vu.has(`${canonique(e.url)}|${e.quote}`))];
+  const [x, y] = [a.c, b.c];
+  const neutre = { type_structure: 'autre', role_mis_en_cause: 'autre', type_affaire: 'à qualifier', statut_judiciaire: 'à qualifier', statut_des_faits: 'allégué', enfants_concernes_public: 'non précisé' };
+  const c = { ...x };
+  const notes = [];
+  for (const [k, n] of Object.entries(neutre)) {
+    if (c[k] === n && y[k] && y[k] !== n) c[k] = y[k];                                    // information absente d'un côté : complétée
+    else if (c[k] !== n && y[k] && y[k] !== n && y[k] !== c[k] && k === 'statut_judiciaire') notes.push(`stade judiciaire rapporté différemment selon les articles : « ${c[k]} » / « ${y[k]} »`);
+  }
+  if (!estNommeEtab(c.etablissement) && estNommeEtab(y.etablissement)) c.etablissement = y.etablissement;
+  else if (estNommeEtab(c.etablissement) && estNommeEtab(y.etablissement)) {
+    // « école primaire X » / « école X » : même nom, écrit plus ou moins complètement — pas une divergence. Seuls des jetons distinctifs différents le sont.
+    const [ja, jb] = [jetonsEtablissement(c.etablissement), jetonsEtablissement(y.etablissement)];
+    if (ja.size !== jb.size || [...ja].some((j) => !jb.has(j))) notes.push(`dénomination différente rapportée : « ${y.etablissement} »`);
+  }
+  c.departement = c.departement || y.departement;
+  c.personnes = c.personnes || y.personnes;
+  c.periode_faits = c.periode_faits || y.periode_faits;
+  if (y.dernier_evenement && (!c.dernier_evenement || y.dernier_evenement > c.dernier_evenement)) c.dernier_evenement = y.dernier_evenement;
+  const dites = [];
+  for (const t of [x.ambiguite, y.ambiguite, ...notes]) if (t && !dites.some((d) => d.includes(t))) dites.push(t);
+  c.ambiguite = dites.join(' · ').slice(0, 260) || null;
+  return { c, evidence, lues };
+}
+
 /**
- * Évalue UN signal.
- * @returns {{statut:'propose'|'ecarte'|'attente'|null, motif:string, proposition?:object, cout?:object}}
- *   statut null = incident technique (modèle, réseau) : le signal n'est pas consigné, il sera repris au prochain run.
+ * Mesure institutionnelle des preuves réunies. « réalisée » n'est jamais rétrogradée en « annoncée » parce qu'un autre article est moins
+ * précis, quel que soit l'ordre d'arrivée des articles (cas du 08/11/2026 : « mairie a suspendu » / « actuellement suspendu »).
  */
-export async function evaluer({ sql, index, signal, modele, cle, cache = new Map() }) {
-  const { pages, erreurs } = await chercherPages(signal, { cache });
+export function institutionnelDe(evidence) {
+  const premier = detecterInstitutionnel(evidence.map((e) => e.quote));
+  if (!premier) return null;
+  let retenu = premier;
+  if (premier.realisation === 'annoncée') {
+    for (const e of evidence) { const d = detecterInstitutionnel([e.quote]); if (d && d.mesure === premier.mesure && d.realisation === 'réalisée') { retenu = d; break; } }
+  }
+  const src = evidence.find((e) => String(e.quote).replace(/\s+/g, ' ').trim() === retenu.citation) || evidence[0];
+  return { ...retenu, url: src.url, media: src.media, published: src.published || null };
+}
+
+/**
+ * Évalue UN signal : pages relues → extraction (modèle) → vérification (code) → consolidation avec les signaux déjà analysés dans le passage
+ * → rapprochement (affaires connues, propositions ouvertes) → décision déterministe.
+ * `contexte` = { analyses: [], dry } mémoire du passage (partagée entre les signaux) ; `pagesFn` / `comprendreFn` : injectables (tests, rejeu).
+ * @returns {{statut:'propose'|'fusion'|'remplace'|'ecarte'|'attente'|null, motif:string, proposition?:object, cout?:object, regroupes?:string[]}}
+ *   statut null = incident technique (modèle, réseau) : le signal n'est pas consigné, il sera repris au prochain run.
+ *   regroupes = clés des signaux déjà évalués dans ce passage et réunis à celui-ci (le runner leur applique la même issue).
+ */
+export async function evaluer(o) {
+  const etat = { entree: null, regroupes: [] };
+  const r = await evaluerInterne(o, etat);
+  if (o.contexte && etat.entree) { etat.entree.statut = r.statut; o.contexte.analyses.push(etat.entree); }
+  if (etat.regroupes.length) r.regroupes = etat.regroupes;
+  return r;
+}
+
+async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map(), contexte = null, pagesFn = chercherPages, comprendreFn = comprendre, geocoder = geocoderCommune }, etat) {
+  const { pages, erreurs } = await pagesFn(signal, { cache });
   if (!pages.length) return { statut: erreurs.length ? null : 'attente', motif: erreurs.length ? 'recherche en erreur' : 'aucune page retrouvée' };
 
   let ext;
   try {
-    ext = await comprendre({ fiche: {}, article: { media: signal.media, publication_date: signal.published, body: corpsPourModele(signal, pages) }, modele, contrat: CONTRAT, cle });
+    ext = await comprendreFn({ fiche: {}, article: { media: signal.media, publication_date: signal.published, body: corpsPourModele(signal, pages) }, modele, contrat: CONTRAT, cle });
   } catch (e) { return { statut: null, motif: 'modèle indisponible : ' + String(e.message).slice(0, 60) }; }
   const v = verifier(ext.reponse, pages);
   if (!v.ok) return { statut: 'ecarte', motif: v.motif, cout: ext.cout };
-  const { c, evidence } = v;
+  let { c, evidence } = v;
+  let lues = pages.filter((p) => evidence.some((e) => canonique(e.url) === canonique(p.url)));
 
-  const lues = pages.filter((p) => evidence.some((e) => canonique(e.url) === canonique(p.url)));
+  // CONSOLIDATION : ce signal décrit-il la même affaire qu'un signal déjà analysé dans ce passage ? (jamais par transitivité : si plusieurs
+  // analyses se ressemblent, rien n'est fusionné et l'ambiguïté est consignée.)
+  let ambiguMemoire = null;
+  etat.cles = [signal.cle].filter(Boolean);
+  if (contexte) {
+    const m = chercherDansMemoire(contexte.analyses, formeComparable({ c, evidence, lues }), { dry: !!contexte.dry });
+    if (m?.entree) {
+      contexte.analyses = contexte.analyses.filter((x) => x !== m.entree);
+      etat.regroupes = m.entree.cles;
+      ({ c, evidence, lues } = fuserAnalyses(m.entree, { c, evidence, lues }));
+      etat.cles = [...m.entree.cles, ...etat.cles];
+    } else if (m?.ambigu) ambiguMemoire = `identité possible avec ${m.ambigu} autres signaux du passage : non fusionnés, à arbitrer`;
+  }
+  if (ambiguMemoire) c = { ...c, ambiguite: [c.ambiguite, ambiguMemoire].filter(Boolean).join(' · ').slice(0, 260) };
+  etat.entree = { cmp: formeComparable({ c, evidence, lues }), c, evidence, lues, cles: etat.cles, signal, statut: null };
   const domaines = new Set(evidence.map((e) => domaine(e.url)));
-  const indep = independantes(lues);
+  // Sources indépendantes : familles de dépêches (textes), PLAFONNÉES par le nombre d'éditeurs. Deux articles d'un même éditeur, même de textes
+  // différents, ne sont jamais deux confirmations indépendantes (un éditeur commun n'exclut pas une information originale complémentaire, mais
+  // celle-ci enrichit le dossier : elle ne le recoupe pas).
+  const indep = Math.min(independantes(lues), domaines.size);
 
   // Rapprochement : une résolution PAR page, jamais sur le texte concaténé (faux POSSIBLE_MATCH constaté).
   const parPage = lues.map((p) => resoudre({ candidate: { title: '' }, index, corps: p.corps }));
@@ -388,11 +602,34 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   // (commune extraite ET retrouvée dans le corps des articles) : contradiction forte → l'affaire visée est écartée.
   const geoDe = (id) => { const f = index.find((x) => x.case_id === id); return niveauGeo({ commune: c.commune, departement: c.departement }, { commune: f?.commune, departement: f?.departement }); };
   const ecartes = [];
-  const voisinsResolver = [...new Set(parPage.flatMap((r) => r.voisins || []))].filter((id) => {
+  const nomme = !!c.etablissement && !/non nomm|non pr[ée]cis/i.test(c.etablissement);
+  // RAISONS POSITIVES EXIGÉES. Un voisin ne devient un candidat de rapprochement que s'il existe au moins un indice positif discriminant (ou une
+  // commune des faits concordante sans établissement nommé contredit). Le département, la proximité, le mot « Rouen » d'un titre ou d'un commissariat
+  // cherchent des candidats, ils ne prouvent pas l'identité. Un voisin non étayé reste une TRACE INTERNE (`rapprochement_ecarte`) : le signal poursuit
+  // comme candidat autonome — l'absence de correspondance est une issue normale, pas un rejet du signal.
+  const etayer = async (id, resolution) => {
+    const f = index.find((x) => x.case_id === id);
+    const geo = geoDe(id);
+    const etab = comparerEtablissements({ nom: c.etablissement, nomme }, { nom: f?.etablissement });
+    let e = rapprochementEtaye({ geo, etab, resolution, memeDepeche: false, datesCommunes: [] });
+    if (!e.etaye && geo.niveau !== 'bloquant') {
+      // Dernier recours : les sources historiques (relues) et les nouvelles partagent-elles une dépêche ou un fait daté ?
+      const k = await infosCase(sql, id);
+      const nouvelles = k ? lues.filter((p) => !new Set(k.sources.map((s) => canonique(s.url))).has(canonique(p.url))) : [];
+      if (k && nouvelles.length) {
+        const a = await construireAttach({ k, c, lues, nouvelles, res, geo, cache, partiel: resolution !== 'MATCH' });
+        e = rapprochementEtaye({ geo, etab, resolution, memeDepeche: a.indices.memeDepeche, datesCommunes: a.indices.datesCommunes });
+      }
+    }
+    if (!e.etaye) ecartes.push({ case_id: id, raison: e.raison });
+    return e.etaye;
+  };
+  const voisinsResolver = [];
+  for (const id of [...new Set(parPage.flatMap((r) => r.voisins || []))]) {
     const g = geoDe(id);
-    if (g.niveau === 'bloquant') { ecartes.push({ case_id: id, raison: g.raison }); return false; }
-    return true;
-  });
+    if (g.niveau === 'bloquant') { ecartes.push({ case_id: id, raison: g.raison }); continue; }
+    if (await etayer(id, 'VOISIN')) voisinsResolver.push(id);
+  }
   // Plusieurs rapprochements partiels : seuls comptent ceux de la MÊME commune (un « Saint-Denis » d'Ardèche ne se rapproche pas
   // d'un article parisien). Un seul reste → c'est l'affaire visée ; aucun → pas de rapprochement ; plusieurs, tous déjà
   // suivis (publiés, en réexamen, écartés) → couverture d'affaires connues, silence.
@@ -414,6 +651,7 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   if (cible) {
     const g = geoDe(cible);
     if (g.niveau === 'bloquant') { ecartes.push({ case_id: cible, raison: g.raison }); cible = null; statutRes = 'NO_MATCH'; }
+    else if (statutRes !== 'MATCH' && !(await etayer(cible, statutRes))) { cible = null; statutRes = 'NO_MATCH'; }
   }
   const communeN = aplatir(c.commune);
   const voisins = index.filter((f) => aplatir(f.commune) === communeN && f.case_id !== cible)
@@ -428,16 +666,13 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
     resume: c.resume, commune: c.commune, etablissement: c.etablissement, structure: c.type_structure, stade_minimal: c.statut_judiciaire,
     evidence, articles: lues.map((p) => ({ media: p.media, url: p.url, published: p.published })),
     unknowns: c.ambiguite ? [c.ambiguite] : [],
-    independantes: indep, medias: domaines.size,
+    independantes: indep, medias: domaines.size, personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
+    ...(etat.regroupes.length ? { regroupes: etat.cles.length } : {}),
   };
   // Réaction ou mesure d'une institution rapportée par la presse : conservée comme fait STRUCTURÉ, distinct de l'état judiciaire
   // (jamais de transition). Libellé public tiré d'une table fermée ; la citation reste en mémoire privée.
-  const inst = detecterInstitutionnel(evidence.map((e) => e.quote));
-  if (inst) {
-    const src = evidence.find((e) => String(e.quote).replace(/\s+/g, ' ').trim() === inst.citation) || evidence[0];
-    base.institutionnel = { ...inst, url: src.url, media: src.media, published: src.published || null };
-  }
-  const nomme = !!c.etablissement && !/non nomm|non pr[ée]cis/i.test(c.etablissement);
+  const inst = institutionnelDe(evidence);
+  if (inst) base.institutionnel = inst;
   const etab = nomme ? c.etablissement : `${c.type_structure} non nommée`;
   const cleStd = `${aplatir(c.commune)}|${aplatir(etab)}|${aplatir(c.role_mis_en_cause)}`;
   const fiche = {
@@ -452,12 +687,21 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   //   validée et déjà devenue fiche           → rapprochement vers CETTE fiche (ATTACH/REVIEW), jamais une seconde création ;
   //   validée, fiche pas encore créée         → en attente (repris au run suivant, quand la fiche existe) ;
   //   rejetée                                 → écartée (une décision humaine n'est pas rejouée).
+  //   déjà ENVOYÉE sur Telegram              → jamais modifiée en place (son bouton agirait sur un contenu non vu) : fait nouveau matériel →
+  //                                            NOUVELLE version qui remplace l'ancienne (rendue inerte) ; sinon silence.
   if (statutRes !== 'MATCH') {
-    const j = await chercherJumelle(sql, { ...base, fiche, etablissement_nomme: nomme });
-    if (j) {
-      const d = decisionJumelle(j.row, new Set(index.map((f) => f.case_id)));
-      if (d.action === 'fusion') return { statut: 'fusion', motif: d.motif, cout: ext.cout, fusion: { proposal_id: j.row.pid, payload: fusionner(j.row.payload, { ...base, fiche, etablissement_nomme: nomme }) } };
-      if (d.action === 'ecarte') return { statut: 'ecarte', motif: d.motif, cout: ext.cout };
+    const nouveauP = { ...base, fiche, etablissement_nomme: nomme };
+    const j = await chercherJumelle(sql, nouveauP);
+    if (j?.ambigu) { base.unknowns = [...base.unknowns, `identité possible avec ${j.ambigu} propositions ouvertes : non fusionné, à arbitrer`]; }
+    else if (j) {
+      const d = decisionJumelle(j.row, new Set(index.map((f) => f.case_id)), nouveauP);
+      if (d.action === 'fusion') return { statut: 'fusion', motif: d.motif, cout: ext.cout, fusion: { proposal_id: j.row.pid, payload: await republier(fusionner(j.row.payload, nouveauP), j.row.recommendation, geocoder) } };
+      if (d.action === 'remplacer') {
+        const p = await republier(fusionner(j.row.payload, nouveauP), j.row.recommendation, geocoder);
+        return { statut: 'remplace', motif: d.motif, cout: ext.cout, remplace: { proposal_id: j.row.pid, dedup_key: cleVersion(j.row.dedup_key), recommendation: j.row.recommendation, attach_case_id: j.row.attach_case_id,
+          payload: { ...p, remplace: { pid8: j.row.pid.slice(0, 8), motif: d.motif } } } };
+      }
+      if (d.action === 'ecarte') return { statut: 'ecarte', motif: d.motif, cout: ext.cout, urlsNouvelles: d.urlsNouvelles, proposition_jumelle: j.row.pid };
       if (d.action === 'attente') return { statut: 'attente', motif: d.motif, cout: ext.cout };
       cible = d.case_id; statutRes = 'POSSIBLE_MATCH';
     }
@@ -538,7 +782,7 @@ export async function evaluer({ sql, index, signal, modele, cle, cache = new Map
   }
   // UNE SEULE DÉCISION : si le dossier est complet ET publiable, le bouton unique est « VALIDER ET PUBLIER » ; sinon la validation reste
   // documentaire (candidate, sans publication) et le message dit pourquoi la publication n'est pas proposée.
-  const dp = await dossierPublication({ c, fiche, nomme, evidence, indep, recommendation, voisins });
+  const dp = await dossierPublication({ c, fiche, nomme, evidence, indep, recommendation, voisins, geocoder });
   return {
     statut: 'propose', motif: recommendation, cout: ext.cout,
     proposition: {

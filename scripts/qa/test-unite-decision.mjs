@@ -61,7 +61,10 @@ test('même commune, page commune, mais deux établissements NOMMÉS différemme
 test('même établissement, deux procédures (rôles précis différents) → distinctes', !memeAffaire(prop({ role: 'enseignant', urls: [URL.a, URL.b] }), prop({ role: 'animateur périscolaire', urls: [URL.b, URL.c] })).ok);
 test('même établissement, un rôle précis et un « autre » → pas de conflit', memeAffaire(prop({ role: 'enseignant', urls: [URL.a, URL.b] }), prop({ role: 'autre', urls: [URL.b, URL.c] })).ok);
 test('communes différentes, page commune (article multi-affaires) → distinctes', !memeAffaire(P1, prop({ commune: 'Autre-Ville', urls: [URL.b, URL.c] })).ok);
-test('page lue mais citée par une seule des deux (pas une preuve) → distinctes', !memeAffaire(P1, { ...prop({ urls: [URL.d, URL.e] }), articles: [{ url: URL.b }, { url: URL.d }] }).ok);
+// Une page seulement LUE par l'un des deux n'est pas une preuve d'identité. (Ici un établissement n'est pas nommé : c'est la page citée en
+// commun qui discriminerait, et elle n'existe pas. Avec le même établissement NOMMÉ des deux côtés, la règle du 09/11/2026 suffit :
+// voir test-rapprochement-signaux.mjs.)
+test('page lue mais citée par une seule des deux (pas une preuve), un établissement non nommé → pas fusionnées', !memeAffaire(P1, { ...prop({ etab: 'structure non nommée', urls: [URL.d, URL.e] }), articles: [{ url: URL.b }, { url: URL.d }] }).ok);
 
 console.log('Discovery — proposition jumelle déjà décidée');
 const ligne = (o) => ({ pid: 'p', recommendation: 'NEW_CASE_CANDIDATE', payload: P1, decision: null, applied_at: null, created_case_id: null, ...o });
