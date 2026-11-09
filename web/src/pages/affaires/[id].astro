@@ -12,8 +12,20 @@ export function getStaticPaths() {
 const { id } = Astro.props as { id: string };
 const { c, hub } = ficheDe(id);
 const verifieLe = chargerHub(hub?.id ?? 'isoles').matiere._meta.redige_le;
+// Fil d'Ariane structuré = celui affiché par la fiche (Carte › [Territoire publié] › fiche) ; aucun territoire inventé pour une fiche isolée.
+const site = Astro.site ?? 'https://sousnosyeux.org';
+const miettes = [
+  { name: 'Carte', item: new URL('/', site).href },
+  ...(hub ? [{ name: hub.titre, item: new URL(hub.url, site).href }] : []),
+  { name: c.etablissement },
+];
+const jsonld = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: miettes.map((m, i) => ({ '@type': 'ListItem', position: i + 1, ...m })),
+};
 ---
 
-<Layout title={`${c.etablissement}, ${c.commune} — fiche — sousnosyeux`} description={`Fiche de l'affaire : ${c.etablissement}, ${c.commune}. Déroulé daté et sourcé, réactions attribuées, ce que l'on ne sait pas.`}>
+<Layout title={`${c.etablissement}, ${c.commune} — fiche — sousnosyeux`} description={`Fiche de l'affaire : ${c.etablissement}, ${c.commune}. Déroulé daté et sourcé, réactions attribuées, ce que l'on ne sait pas.`} {jsonld}>
   <FicheUnique {id} {verifieLe} />
 </Layout>

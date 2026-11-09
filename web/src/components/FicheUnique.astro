@@ -127,7 +127,8 @@ const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 
   {d.verifie_le && <p class="verif">Dernière vérification : {lib(d.verifie_le)}.</p>}
   <p class="retours">
     {hub && <a class="r-hub" href={`${hub.url}#${c.case_id.toLowerCase()}`}>← {hub.titre}</a>}
-    <a class="r-home" href="/">← Retour à la carte</a>
+    {/* Retour à l'entrée de CETTE affaire dans la liste de la carte (ancre /#affaire-<id>, PR 102) ; une affaire sans point sur la carte n'a pas d'entrée → accueil. */}
+    <a class="r-home" href={typeof c.lat === 'number' && typeof c.lng === 'number' ? `/#affaire-${c.case_id.toLowerCase()}` : '/'}>← Retour à la carte</a>
   </p>
 </article>
 

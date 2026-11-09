@@ -5,23 +5,52 @@ interface Props {
   variant?: 'map' | 'page';
   /** Prévisualisations : jamais indexées. Absent = comportement inchangé. */
   noindex?: boolean;
+  /** Données structurées de la page (WebSite, BreadcrumbList) : décrivent seulement ce que la page affiche. */
+  jsonld?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description, variant = 'page', noindex = false } = Astro.props;
+// Polices auto-hébergées (fontsource, licence OFL-1.1) : mêmes familles et graisses que l'ancien appel Google Fonts, sous-ensembles latin + latin-ext.
+import '@fontsource/dm-sans/latin-400.css';
+import '@fontsource/dm-sans/latin-ext-400.css';
+import '@fontsource/dm-sans/latin-400-italic.css';
+import '@fontsource/dm-sans/latin-ext-400-italic.css';
+import '@fontsource/dm-sans/latin-500.css';
+import '@fontsource/dm-sans/latin-ext-500.css';
+import '@fontsource/dm-sans/latin-700.css';
+import '@fontsource/dm-sans/latin-ext-700.css';
+import '@fontsource/dm-mono/latin-400.css';
+import '@fontsource/dm-mono/latin-ext-400.css';
+import '@fontsource/dm-mono/latin-500.css';
+import '@fontsource/dm-mono/latin-ext-500.css';
+import '@fontsource/playfair-display/latin-700.css';
+import '@fontsource/playfair-display/latin-ext-700.css';
+import '@fontsource/playfair-display/latin-400-italic.css';
+import '@fontsource/playfair-display/latin-ext-400-italic.css';
+
+const { title, description, variant = 'page', noindex = false, jsonld } = Astro.props;
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const SITE = Astro.site ?? 'https://sousnosyeux.org';
 // Canonical : l'URL finale servie de la page elle-même (barre finale, ni paramètre ni fragment), sur l'origine publique.
 // Absente des pages noindex (signaux contradictoires). Doit rester identique à l'URL listée dans /sitemap.xml (scripts/lib/sitemap.mjs).
-const canonical = new URL(path === '/' ? '/' : path + '/', Astro.site ?? 'https://sousnosyeux.org').href;
+const canonical = new URL(path === '/' ? '/' : path + '/', SITE).href;
+// Aperçu de partage : image GÉNÉRIQUE de marque (aucun contenu d'affaire), mêmes titre et description que la page.
+const ogImage = new URL('/og-sousnosyeux.png', SITE).href;
+// JSON-LD sérialisé sans possibilité de fermer la balise <script>.
+const ld = jsonld ? JSON.stringify(jsonld).replace(/</g, '\\u003c') : null;
 
+// Liens internes sous leur forme canonique (barre finale) : aucune redirection 307 depuis le menu.
 const nav = [
   { href: '/', label: 'Carte', cta: false },
-  { href: '/territoires', label: 'Territoires', cta: false },
-  { href: '/methodologie', label: 'Méthodologie', cta: false },
-  { href: '/mentions-legales', label: 'Mentions légales', cta: false },
+  { href: '/territoires/', label: 'Territoires', cta: false },
+  { href: '/methodologie/', label: 'Méthodologie', cta: false },
+  { href: '/mentions-legales/', label: 'Mentions légales', cta: false },
   { href: 'mailto:contact@sousnosyeux.org', label: 'Nous contacter', cta: true },
 ];
 
-const isActive = (href: string) => (href === '/' ? path === '/' : path === href || path.startsWith(href + '/'));
+const isActive = (href: string) => {
+  const h = href.replace(/\/+$/, '') || '/';
+  return h === '/' ? path === '/' : path === h || path.startsWith(h + '/');
+};
 ---
 
 <!doctype html>
@@ -33,13 +62,22 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex ? <meta name="robots" content="noindex,nofollow,noarchive" /> : <link rel="canonical" href={canonical} />}
-    <!-- Polices B2 — DM Sans (UI) + DM Mono (chiffres/codes) + Playfair Display (titres) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:site_name" content="sousnosyeux" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {!noindex && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="sousnosyeux — carte des affaires signalées dans les lieux d’accueil des mineurs" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {ld && <script type="application/ld+json" set:html={ld} />}
   </head>
   <body data-variant={variant}>
 
@@ -53,10 +91,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
           <ul>
             {nav.map((n) => {
               const liClass =
-                n.href === '/mentions-legales' ? 'nav-mentions'
+                n.href === '/mentions-legales/' ? 'nav-mentions'
                 : n.href === '/' ? 'nav-carte'
-                : n.href === '/methodologie' ? 'nav-methodo'
-                : n.href === '/territoires' ? 'nav-methodo'
+                : n.href === '/methodologie/' ? 'nav-methodo'
+                : n.href === '/territoires/' ? 'nav-methodo'
                 : undefined;
               return (
                 <li class={liClass}>
@@ -81,9 +119,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
       <div class="footer-inner">
         <div class="footer-brand">sousnosyeux · carte citoyenne</div>
         <div class="footer-links">
-          <a href="/territoires">Territoires</a>
-          <a href="/methodologie">Méthodologie</a>
-          <a href="/mentions-legales">Mentions légales</a>
+          <a href="/territoires/">Territoires</a>
+          <a href="/methodologie/">Méthodologie</a>
+          <a href="/mentions-legales/">Mentions légales</a>
           <a href="mailto:contact@sousnosyeux.org">contact@sousnosyeux.org</a>
           <a href="https://github.com/06adretn11/sousnosyeux" rel="noopener noreferrer" target="_blank">Code source (AGPL)</a>
         </div>

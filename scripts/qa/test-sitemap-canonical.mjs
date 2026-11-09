@@ -106,5 +106,66 @@ if (!existsSync(join(dist, 'sitemap.xml'))) {
     for (const i of sansFiche) assert.ok(!servies.includes(urlDePage(`affaires/${i.toLowerCase()}/`)), `${i} : sans fiche ⇒ sans URL`);
     console.log(`    (${fiches.length} fiches dans le sitemap ; ${sansFiche.length} affaires publiées sans fiche : ${sansFiche.join(', ') || '—'})`);
   });
+
+  // ---- socle SEO (consensus du 09/11) : liens internes, 404, partage, données structurées, polices ----
+  const parChemin = new Map(pages.map((p) => ['/' + p.pathname, p.html]));
+  const idsDe = (html) => new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
+  t('build : Hubs attendus (rédigés + approuvés) et pages fixes tous présents dans le sitemap', () => {
+    const evt = JSON.parse(readFileSync(join(racine, 'data/evenements.json'), 'utf8'));
+    const hubs = ['paris-11e', 'bordeaux-gironde', 'hautes-alpes', 'landes', ...Object.keys(evt.hubs_approuves ?? {})];
+    for (const h of hubs) assert.ok(servies.includes(`${SITE}/territoires/${h}/`), `Hub ${h} absent du sitemap`);
+    for (const u of ['', 'territoires/', 'methodologie/', 'mentions-legales/']) assert.ok(servies.includes(urlDePage(u)), `${u || 'accueil'} absent du sitemap`);
+  });
+  t('build : 404 générée, noindex, sans canonical, hors sitemap, sans contenu d’affaire', () => {
+    const h = readFileSync(join(dist, '404.html'), 'utf8');
+    assert.ok(/<meta name="robots" content="noindex/.test(h) && !/rel="canonical"/.test(h));
+    assert.ok(!servies.some((u) => /\/404\/?$/.test(u)));
+    assert.ok(!/data-fiche=|data-dossier=/.test(h));
+  });
+  t('build : liens internes vers des pages = forme canonique (barre finale) et cible générée ; ancres existantes', () => {
+    const fautes = [];
+    for (const p of pages) {
+      if (p.pathname.startsWith('brouillons/')) continue;
+      for (const m of p.html.matchAll(/<a\b[^>]*\shref="(\/[^"]*)"/g)) {
+        const [chemin, frag] = m[1].split('#'); const c = chemin.split('?')[0];
+        if (/\.[a-z0-9]+$/i.test(c)) continue; // fichier
+        if (!c.endsWith('/')) { fautes.push(`${p.pathname || '/'} → ${m[1]} : sans barre finale`); continue; }
+        const cible = parChemin.get(c);
+        if (cible === undefined) { fautes.push(`${p.pathname || '/'} → ${m[1]} : page non générée`); continue; }
+        if (frag && !idsDe(cible).has(decodeURIComponent(frag))) fautes.push(`${p.pathname || '/'} → ${m[1]} : ancre absente de la cible`);
+      }
+    }
+    assert.deepEqual(fautes, []);
+  });
+  t('build : partage (Open Graph) et données structurées fidèles ; aucune police chargée depuis Google', () => {
+    for (const p of pages) {
+      if (p.pathname.startsWith('brouillons/')) continue;
+      const qui = p.pathname || '/';
+      assert.ok(!/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(p.html), `${qui} : appel Google Fonts`);
+      const og = (k) => (p.html.match(new RegExp(`<meta property="og:${k}" content="([^"]*)"`)) || [])[1];
+      const can = (p.html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
+      if (can) assert.equal(og('url'), can, `${qui} : og:url = canonical`);
+      assert.ok(og('title') && og('description'), `${qui} : og:title / og:description`);
+      assert.equal(og('image'), `${SITE}/og-sousnosyeux.png`);
+      for (const m of p.html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+        const j = JSON.parse(m[1]);
+        assert.ok(['WebSite', 'BreadcrumbList'].includes(j['@type']), `${qui} : type ${j['@type']} hors périmètre`);
+        const cles = JSON.stringify(j).match(/"([^"]+)":/g).map((k) => k.slice(1, -2));
+        assert.ok(cles.every((k) => ['@context', '@type', 'name', 'url', 'inLanguage', 'itemListElement', 'position', 'item'].includes(k)), `${qui} : propriété inattendue`);
+        if (j['@type'] === 'BreadcrumbList') {
+          assert.ok(p.pathname.startsWith('affaires/'), 'fil structuré seulement sur les fiches (seules à afficher un fil)');
+          const el = j.itemListElement;
+          el.forEach((e, i) => assert.equal(e.position, i + 1));
+          assert.equal(el[0].item, `${SITE}/`);
+          for (const e of el.slice(1, -1)) {
+            assert.ok(servies.includes(e.item), `${qui} : ${e.item} hors sitemap`);
+            assert.ok(p.html.includes(`href="${e.item.slice(SITE.length)}"`), `${qui} : ${e.item} absent du fil affiché`);
+          }
+          assert.ok(!el.at(-1).item && el.at(-1).name, `${qui} : dernier élément sans URL (page courante)`);
+        }
+      }
+    }
+    for (const f of ['og-sousnosyeux.png', 'favicon.ico', 'favicon.svg', 'apple-touch-icon.png', '_headers']) assert.ok(existsSync(join(dist, f)), `${f} absent du build`);
+  });
 }
 console.log(`\n${n} contrôles sitemap / canonicals : OK`);
