@@ -70,7 +70,7 @@ console.log(`mises à jour de fiches : ${parAffaire.size} affaire(s) avec propos
 if (ECRIRE) {
   const ids = aReprendre.map((x) => x.id).slice(0, LIMITE);
   const lignes = ids.length ? await sql`
-    select p.proposal_id::text k, p.case_id, a.url, a.media, a.publication_date::text pd, p.payload->>'rattachement' rat, p.decision::text decision, p.facts
+    select p.proposal_id::text k, p.case_id, a.url, a.media, a.publication_date::text pd, p.payload->>'rattachement' rat, p.decision::text decision, p.decided_by decideur, p.facts
       from state_proposals p join articles a using (article_id)
      where p.analysis_action = 'ENRICHMENT' and p.created_at > now() - interval '75 days' and p.case_id = any(${ids}) order by p.created_at` : [];
   const revues = ids.length ? await sql`select case_id, reviewed_by, decision::text decision, comment from reviews where case_id = any(${ids}) and comment like '[Fiche approuvée %' order by reviewed_at` : [];

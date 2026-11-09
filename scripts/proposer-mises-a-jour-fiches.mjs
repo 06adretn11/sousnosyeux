@@ -35,7 +35,7 @@ const holds = new Set(lire('data/publication-holds.json').holds.map((h) => h.cas
 const { sql } = connecter();
 
 const lignes = await sql`
-  select p.proposal_id::text k, p.case_id, a.url, a.media, a.publication_date::text pd, p.payload->>'rattachement' rat, p.decision::text decision, p.facts
+  select p.proposal_id::text k, p.case_id, a.url, a.media, a.publication_date::text pd, p.payload->>'rattachement' rat, p.decision::text decision, p.decided_by decideur, p.facts
   from state_proposals p join articles a using (article_id)
   where p.analysis_action = 'ENRICHMENT' and p.created_at > now() - interval '21 days'
   order by p.created_at`;
