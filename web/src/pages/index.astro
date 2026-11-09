@@ -36,7 +36,8 @@ const allCases = (casesDoc.cases as any[])
 // Liens vers les fiches : pages publiques des fiches APPROUVÉES ; pages de revue seulement dans le build de revue (SNY_DRAFTS=1).
 const fichesRevue: Record<string, string> = Object.fromEntries(allCases.map((c) => [c.case_id, urlFiche(c.case_id)]).filter(([, u]) => u) as [string, string][]);
 
-const totalCount    = casesDoc.cases.length;
+// Périmètre AFFICHÉ : les affaires de data/cases.json qui ont un point (méthodologie : « le site n'affiche pas une affaire sans point sur la carte »).
+// Une affaire de l'export sans coordonnées n'est consultable sur aucune page : elle n'est donc pas comptée parmi les affaires présentées.
 const geocodedCount = allCases.length;
 
 // Tri sidebar : plus récent en premier
@@ -90,7 +91,7 @@ function caseYear(c: typeof allCases[0]): string {
     <h1 class="info-h1">Affaires dans les lieux d'accueil des mineurs : la carte et les sources</h1>
     <div class="info-band-inner">
       <span class="info-count">
-        <strong>{totalCount}</strong> affaires publiées
+        <strong>{geocodedCount}</strong> affaires publiées
       </span>
       <span class="info-sep" aria-hidden="true">·</span>
       <span class="info-tagline">Sources presse publiques · présomption d'innocence respectée</span>
@@ -136,8 +137,7 @@ function caseYear(c: typeof allCases[0]): string {
           <li><span class="ldot" style="background:var(--orange)"></span>Allégué / Plainte</li>
           <li><span class="ldot" style="background:var(--green)"></span>Classé / Relaxé</li>
         </ul>
-        {/* Périmètres : affaires publiées (data/cases.json) ⊇ affaires localisées (coordonnées), seules placées sur la carte et dans la liste. */}
-        <p class="legend-count">{geocodedCount} sur la carte{totalCount > geocodedCount ? ` · ${totalCount - geocodedCount} publiée${totalCount - geocodedCount > 1 ? 's' : ''} sans localisation précise` : ''} · score ≥ 8/10</p>
+        <p class="legend-count">{geocodedCount} affaires · score ≥ 8/10</p>
       </div>
     </div>
 
@@ -308,7 +308,9 @@ function caseYear(c: typeof allCases[0]): string {
     mesurerAuDessus();
 
     // ── Carte ──
-    const map = new maplibregl.Map({
+    // Sa création peut échouer (WebGL indisponible : « Failed to initialize WebGL »). La liste, les filtres, les liens et les ancres
+    // ne doivent pas en dépendre : en cas d'échec, `map` vaut null et seuls les appels propres à la carte sont ignorés.
+    const map: maplibregl.Map | null = (() => { try { return new maplibregl.Map({
       container: 'map',
       style: {
         version: 8,
@@ -333,128 +335,133 @@ function caseYear(c: typeof allCases[0]): string {
       pitchWithRotate: false,
       touchPitch: false,
       attributionControl: false,
-    });
-    map.touchZoomRotate.disableRotation();
-    if (import.meta.env.DEV) (window as any)._map = map;
+    }); } catch (e) { console.warn('Carte non initialisée ; la liste reste utilisable.', e); return null; } })();
+    if (map) {
+      map.touchZoomRotate.disableRotation();
+      if (import.meta.env.DEV) (window as any)._map = map;
 
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    map.addControl(new maplibregl.AttributionControl({ compact: true }));
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(new maplibregl.AttributionControl({ compact: true }));
 
-    const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
+      const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
 
-    // Expression couleur par catégorie (statut_judiciaire → cat → couleur)
-    const colorExpr: maplibregl.ExpressionSpecification = [
-      'match', ['get', 'stat_cat'],
-      'red',    '#E63946',
-      'blue',   '#457B9D',
-      'orange', '#D97706',
-      'green',  '#2D6A4F',
-      '#8B9BAD',
-    ];
+      // Expression couleur par catégorie (statut_judiciaire → cat → couleur)
+      const colorExpr: maplibregl.ExpressionSpecification = [
+        'match', ['get', 'stat_cat'],
+        'red',    '#E63946',
+        'blue',   '#457B9D',
+        'orange', '#D97706',
+        'green',  '#2D6A4F',
+        '#8B9BAD',
+      ];
 
-    if (bandeInfo && barreFiltres && 'ResizeObserver' in window) {
-      new ResizeObserver(() => { mesurerAuDessus(); map.resize(); }).observe(bandeInfo);
+      if (bandeInfo && barreFiltres && 'ResizeObserver' in window) {
+        new ResizeObserver(() => { mesurerAuDessus(); map.resize(); }).observe(bandeInfo);
+      }
+
+      map.on('load', () => {
+        map.addSource('cases', {
+          type: 'geojson',
+          data: geojson as any,
+          cluster: true,
+          clusterRadius: 30,
+          clusterMaxZoom: 7,    // pins individuels visibles dès zoom 8 (~niveau région)
+        });
+
+        // Centrer sur les affaires en France métropolitaine uniquement.
+        // On filtre les coordonnées hors des bornes FR (évite les points mal géocodés
+        // qui éloigneraient le fitBounds de la France).
+        const FR_BOUNDS = { latMin: 41, latMax: 52, lngMin: -6, lngMax: 10 };
+        const validCases = cases.filter(
+          (c) => c.lat >= FR_BOUNDS.latMin && c.lat <= FR_BOUNDS.latMax
+                && c.lng >= FR_BOUNDS.lngMin && c.lng <= FR_BOUNDS.lngMax
+        );
+        if (validCases.length > 0) {
+          const bounds = new maplibregl.LngLatBounds();
+          for (const c of validCases) bounds.extend([c.lng, c.lat]);
+          map.fitBounds(bounds, {
+            padding: { top: 60, bottom: 80, left: 40, right: 40 },
+            animate: false,
+          });
+        }
+
+        // Clusters — cercles sombres (neutre, pas de couleur de statut)
+        map.addLayer({
+          id: 'clusters',
+          type: 'circle',
+          source: 'cases',
+          filter: ['has', 'point_count'],
+          paint: {
+            'circle-color': '#1A1A1A',
+            'circle-radius': ['step', ['get', 'point_count'], 22, 5, 30, 10, 38],
+            'circle-stroke-width': 3,
+            'circle-stroke-color': '#ffffff',
+            'circle-opacity': 0.92,
+          },
+        });
+
+        map.addLayer({
+          id: 'cluster-count',
+          type: 'symbol',
+          source: 'cases',
+          filter: ['has', 'point_count'],
+          layout: {
+            'text-field': ['get', 'point_count_abbreviated'],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 13,
+            'text-allow-overlap': true,
+          },
+          paint: { 'text-color': '#ffffff' },
+        });
+
+        // Pins individuels — couleur par catégorie de statut
+        map.addLayer({
+          id: 'unclustered',
+          type: 'circle',
+          source: 'cases',
+          filter: ['!', ['has', 'point_count']],
+          paint: {
+            'circle-color': colorExpr,
+            'circle-radius': 9,
+            'circle-stroke-width': 2.5,
+            'circle-stroke-color': '#ffffff',
+          },
+        });
+        // Un filtre choisi avant la fin du chargement de la carte s'applique aussi aux points.
+        filtrerCarte();
+
+        // ── Clic cluster → zoom ──
+        map.on('click', 'clusters', (e) => {
+          const f = e.features?.[0];
+          if (!f || f.geometry.type !== 'Point') return;
+          const src = map.getSource('cases') as maplibregl.GeoJSONSource;
+          src.getClusterExpansionZoom((f.properties as any).cluster_id).then((zoom) => {
+            map.easeTo({ center: f.geometry.coordinates as [number, number], zoom });
+          });
+        });
+
+        // ── Clic pin → popup (délégué à openPopupForCase) ──
+        map.on('click', 'unclustered', (e) => {
+          const f = e.features?.[0];
+          if (!f || f.geometry.type !== 'Point') return;
+          const caseId = (f.properties as any).case_id;
+          const c = cases.find((row) => row.case_id === caseId);
+          if (c) openPopupForCase(c);
+        });
+
+        for (const id of ['clusters', 'unclustered']) {
+          map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
+          map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
+        }
+      });
     }
-
-    map.on('load', () => {
-      map.addSource('cases', {
-        type: 'geojson',
-        data: geojson as any,
-        cluster: true,
-        clusterRadius: 30,
-        clusterMaxZoom: 7,    // pins individuels visibles dès zoom 8 (~niveau région)
-      });
-
-      // Centrer sur les affaires en France métropolitaine uniquement.
-      // On filtre les coordonnées hors des bornes FR (évite les points mal géocodés
-      // qui éloigneraient le fitBounds de la France).
-      const FR_BOUNDS = { latMin: 41, latMax: 52, lngMin: -6, lngMax: 10 };
-      const validCases = cases.filter(
-        (c) => c.lat >= FR_BOUNDS.latMin && c.lat <= FR_BOUNDS.latMax
-              && c.lng >= FR_BOUNDS.lngMin && c.lng <= FR_BOUNDS.lngMax
-      );
-      if (validCases.length > 0) {
-        const bounds = new maplibregl.LngLatBounds();
-        for (const c of validCases) bounds.extend([c.lng, c.lat]);
-        map.fitBounds(bounds, {
-          padding: { top: 60, bottom: 80, left: 40, right: 40 },
-          animate: false,
-        });
-      }
-
-      // Clusters — cercles sombres (neutre, pas de couleur de statut)
-      map.addLayer({
-        id: 'clusters',
-        type: 'circle',
-        source: 'cases',
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': '#1A1A1A',
-          'circle-radius': ['step', ['get', 'point_count'], 22, 5, 30, 10, 38],
-          'circle-stroke-width': 3,
-          'circle-stroke-color': '#ffffff',
-          'circle-opacity': 0.92,
-        },
-      });
-
-      map.addLayer({
-        id: 'cluster-count',
-        type: 'symbol',
-        source: 'cases',
-        filter: ['has', 'point_count'],
-        layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['Noto Sans Regular'],
-          'text-size': 13,
-          'text-allow-overlap': true,
-        },
-        paint: { 'text-color': '#ffffff' },
-      });
-
-      // Pins individuels — couleur par catégorie de statut
-      map.addLayer({
-        id: 'unclustered',
-        type: 'circle',
-        source: 'cases',
-        filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-color': colorExpr,
-          'circle-radius': 9,
-          'circle-stroke-width': 2.5,
-          'circle-stroke-color': '#ffffff',
-        },
-      });
-
-      // ── Clic cluster → zoom ──
-      map.on('click', 'clusters', (e) => {
-        const f = e.features?.[0];
-        if (!f || f.geometry.type !== 'Point') return;
-        const src = map.getSource('cases') as maplibregl.GeoJSONSource;
-        src.getClusterExpansionZoom((f.properties as any).cluster_id).then((zoom) => {
-          map.easeTo({ center: f.geometry.coordinates as [number, number], zoom });
-        });
-      });
-
-      // ── Clic pin → popup (délégué à openPopupForCase) ──
-      map.on('click', 'unclustered', (e) => {
-        const f = e.features?.[0];
-        if (!f || f.geometry.type !== 'Point') return;
-        const caseId = (f.properties as any).case_id;
-        const c = cases.find((row) => row.case_id === caseId);
-        if (c) openPopupForCase(c);
-      });
-
-      for (const id of ['clusters', 'unclustered']) {
-        map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer'; });
-        map.on('mouseleave', id, () => { map.getCanvas().style.cursor = ''; });
-      }
-    });
 
     // ── Fonction partagée : ouvrir la popup pour un cas ──
     // Utilisée depuis le clic sur un pin ET depuis le clic dans la sidebar.
     let activePopup: maplibregl.Popup | null = null;
 
     function openPopupForCase(c: CaseRow) {
+      if (!map) return;
       const coords: [number, number] = [c.lng, c.lat];
       // Source à créditer : celle de l'état validé si elle existe, sinon la
       // source principale de l'affaire.
@@ -526,7 +533,7 @@ function caseYear(c: typeof allCases[0]): string {
       el.querySelector<HTMLElement>('.case-select')!.addEventListener('click', () => {
         const caseId = el.dataset.id!;
         const c = cases.find((row) => row.case_id === caseId);
-        if (!c) return;
+        if (!c || !map) return;
 
         // Si le zoom est trop faible, on zoome d'abord, puis on ouvre la popup
         const targetZoom = Math.max(map.getZoom(), 14);
@@ -542,6 +549,14 @@ function caseYear(c: typeof allCases[0]): string {
     // ── Toolbar : filtres ──
     const filterBtns = document.querySelectorAll<HTMLButtonElement>('.tb-btn[data-filter]');
     let activeFilter = 'all';
+    // Filtre des points : seulement si la carte existe et que sa couche est créée (sinon appliqué à la création, dans map.on('load')).
+    function filtrerCarte() {
+      if (!map?.getLayer('unclustered')) return;
+      const layerFilter = activeFilter === 'all'
+        ? ['!', ['has', 'point_count']]
+        : ['all', ['!', ['has', 'point_count']], ['==', ['get', 'stat_cat'], activeFilter]];
+      map.setFilter('unclustered', layerFilter as any);
+    }
 
     filterBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
@@ -554,11 +569,8 @@ function caseYear(c: typeof allCases[0]): string {
         btn.classList.add('active');
         btn.setAttribute('aria-pressed', 'true');
 
-        // Filtrer la couche carte
-        const layerFilter = activeFilter === 'all'
-          ? ['!', ['has', 'point_count']]
-          : ['all', ['!', ['has', 'point_count']], ['==', ['get', 'stat_cat'], activeFilter]];
-        map.setFilter('unclustered', layerFilter as any);
+        // Filtrer la couche carte (sans effet si la carte n'existe pas ou n'est pas encore chargée)
+        filtrerCarte();
 
         // Filtrer la sidebar
         let visibleCount = 0;
