@@ -323,9 +323,10 @@ async function main() {
       from cases c
       where c.publication_status = 'publiée'
          -- + toute affaire dont un humain a planifié un réexamen (reviews.next_review_at) : les dossiers
-         --   REVIEW / en attente de corroboration de Discovery. Un rejet (« retirer ») n'est jamais surveillé.
-         or exists (select 1 from reviews r
-                     where r.case_id = c.case_id and r.next_review_at is not null and r.decision <> 'retirer')
+         --   REVIEW / en attente de corroboration de Discovery. Un rejet (« retirer ») n'est jamais surveillé : une affaire RETIRÉE sort du stock
+         --   même si une revue antérieure « à corriger » portait encore un réexamen planifié (une décision plus récente ne l'effaçait pas).
+         or (c.publication_status <> 'retirée' and exists (select 1 from reviews r
+                     where r.case_id = c.case_id and r.next_review_at is not null and r.decision <> 'retirer'))
          -- + toute candidate EXPLICITEMENT validée par Adrien (clic VALIDATE de Discovery ou Decision Pack) : surveillée dès sa
          --   validation, publiée ou non. Ni les candidates historiques non décidées, ni un simple rattachement (ATTACH), ni une
          --   validation « par règle conditionnelle » (reviewed_by ne commence pas par « Adrien »).
