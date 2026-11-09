@@ -86,6 +86,8 @@ for (const s of sourcesLibres) {
   {/* BUILD DE REVUE uniquement : urlFicheRevue() vaut null dans le build public → aucun lien vers un brouillon. */}
   {!fiche && urlFicheRevue(c.case_id) && <p class="voir"><a href={urlFicheRevue(c.case_id)}>Fiche de l’affaire (revue) →</a></p>}
   {fiche && <p class="voir"><a href={`/affaires/${c.case_id.toLowerCase()}/`}>Consulter le dossier complet →</a></p>}
+  {/* Fiche publique APPROUVÉE de cette même affaire (même case_id) sans aperçu réduit dans le Hub : lien de navigation seul, le dossier du Hub reste entier. */}
+  {!fiche && fichePubliee(c.case_id) && <p class="voir"><a href={`/affaires/${c.case_id.toLowerCase()}/`}>Fiche de l’affaire →</a></p>}
 
   {!fiche && d.inconnues?.length > 0 && (
     <>

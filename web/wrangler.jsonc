@@ -3,6 +3,8 @@
   "name": "sousnosyeux",
   "compatibility_date": "2026-05-27",
   "assets": {
-    "directory": "dist"
+    "directory": "dist",
+    // URL inconnue : dist/404.html servie AVEC le statut 404 (jamais de repli 200 type application monopage).
+    "not_found_handling": "404-page"
   }
 }

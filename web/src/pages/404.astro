@@ -1,0 +1,17 @@
+---
+// Page d'erreur servie par Cloudflare Workers static assets (`not_found_handling: "404-page"` dans wrangler.jsonc) avec le statut 404.
+// Jamais indexée (noindex, sans canonical) et exclue du sitemap ; aucun contenu d'affaire.
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page introuvable — sousnosyeux" description="Cette page n’existe pas sur sousnosyeux." noindex>
+  <article class="prose">
+    <h1>Page introuvable</h1>
+    <p class="lede">Cette adresse ne correspond à aucune page du site.</p>
+    <ul>
+      <li><a href="/">La carte des affaires</a></li>
+      <li><a href="/territoires/">Les territoires</a></li>
+      <li><a href="/methodologie/">La méthodologie</a></li>
+    </ul>
+  </article>
+</Layout>

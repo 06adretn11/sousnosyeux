@@ -82,6 +82,7 @@ function caseYear(c: typeof allCases[0]): string {
   title="sousnosyeux — Carte des affaires signalées"
   description="Carte publique des affaires signalées dans les structures accueillant des mineurs en France. Sources de presse publiques, présomption d'innocence respectée."
   variant="map"
+  jsonld={{ '@context': 'https://schema.org', '@type': 'WebSite', name: 'sousnosyeux', url: 'https://sousnosyeux.org/', inLanguage: 'fr-FR' }}
 >
 
   <!-- ── BANDE INFO (compacte, 1 ligne) ── -->
@@ -93,7 +94,7 @@ function caseYear(c: typeof allCases[0]): string {
       </span>
       <span class="info-sep" aria-hidden="true">·</span>
       <span class="info-tagline">Sources presse publiques · présomption d'innocence respectée</span>
-      <a href="/methodologie" class="info-link">Méthodologie →</a>
+      <a href="/methodologie/" class="info-link">Méthodologie →</a>
     </div>
   </div>
 
@@ -135,7 +136,8 @@ function caseYear(c: typeof allCases[0]): string {
           <li><span class="ldot" style="background:var(--orange)"></span>Allégué / Plainte</li>
           <li><span class="ldot" style="background:var(--green)"></span>Classé / Relaxé</li>
         </ul>
-        <p class="legend-count">{geocodedCount}/{totalCount} affaires · score ≥ 8/10</p>
+        {/* Périmètres : affaires publiées (data/cases.json) ⊇ affaires localisées (coordonnées), seules placées sur la carte et dans la liste. */}
+        <p class="legend-count">{geocodedCount} sur la carte{totalCount > geocodedCount ? ` · ${totalCount - geocodedCount} publiée${totalCount - geocodedCount > 1 ? 's' : ''} sans localisation précise` : ''} · score ≥ 8/10</p>
       </div>
     </div>
 
@@ -491,7 +493,7 @@ function caseYear(c: typeof allCases[0]): string {
           ${approx}
           <p class="popup-b2-disclaimer">
             Présomption d'innocence. Informations issues de la presse.
-            <a href="/methodologie">Méthodologie</a>
+            <a href="/methodologie/">Méthodologie</a>
           </p>
         </div>
       `;

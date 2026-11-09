@@ -1,0 +1,4 @@
+# Cache long UNIQUEMENT pour les ressources versionnées par leur nom (hash Astro dans /_astro/).
+# Pages HTML, sitemap.xml, robots.txt, favicons et image de partage gardent le comportement par défaut (revalidation).
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
