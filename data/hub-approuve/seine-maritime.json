@@ -1,0 +1,58 @@
+{
+  "_meta": {
+    "hub_id": "seine-maritime",
+    "titre": "Seine-Maritime",
+    "perimetre": {
+      "departement": "Seine-Maritime"
+    },
+    "genere_auto": true,
+    "redige_le": "2026-11-10",
+    "statut": "matière COMPOSÉE automatiquement : publiable seulement après le GO « PUBLIER LE HUB » portant sur son empreinte.",
+    "methode": "composée sans rédaction depuis les affaires publiques non gelées (data/cases.json) et les événements validés (Neon) ; aucune phrase n’est écrite à la main ; ce qui manque est dit dans « Limites »."
+  },
+  "reperes": {
+    "titre": "Seine-Maritime : 3 affaires rapportées par la presse",
+    "chapeau": "3 affaires publiques dans 3 communes (Rouen, Saint-Valéry-en-Caux, Saint-Aubin-lès-Elbeuf) : 2 × condamnation non définitive · 1 × enquête. Rien, dans les sources lues, ne relie ces affaires ; elles ne sont réunies ici que par le territoire. Les personnes mises en cause bénéficient de la présomption d’innocence.",
+    "limite": "Page composée automatiquement depuis les fiches publiques et les événements validés, sans rédaction éditoriale : le déroulé détaillé n’est repris que pour 2 affaire(s) sur 3. Les informations non validées ne figurent pas ici."
+  },
+  "ordre": [
+    "FR-2026-0041",
+    "FR-2026-0045",
+    "FR-2026-0144"
+  ],
+  "dossiers": {},
+  "reponses": [
+    {
+      "titre": "Collectivités et institutions",
+      "items": [
+        {
+          "case_id": "FR-2026-0144",
+          "date": null,
+          "date_nature": "inconnue",
+          "acteur": "Saint-Aubin-lès-Elbeuf",
+          "texte": "Selon la presse, l’agent concerné a été suspendu de ses fonctions.",
+          "source": {
+            "media": "Actu.fr",
+            "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+            "publie_le": "2026-11-06",
+            "acces": "libre"
+          }
+        }
+      ]
+    },
+    {
+      "titre": "Familles et associations",
+      "items": []
+    }
+  ],
+  "recherches": [
+    {
+      "question": "Dossier éditorial détaillé (déroulé daté et sourcé)",
+      "resultat": "absent pour 1 affaire(s) sur 3 (FR-2026-0144) : seuls l’état, les sources et les événements validés sont affichés"
+    },
+    {
+      "question": "Réponses institutionnelles et mobilisations validées",
+      "resultat": "1 dans la mémoire, affichée(s) ci-dessus"
+    }
+  ]
+}

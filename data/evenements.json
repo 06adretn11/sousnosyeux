@@ -670,5 +670,11 @@
         "hubs": []
       }
     }
-  ]
+  ],
+  "hubs_approuves": {
+    "seine-maritime": {
+      "hash": "6b31841b3f2fe1ee",
+      "titre": "Seine-Maritime"
+    }
+  }
 }
