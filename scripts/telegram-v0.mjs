@@ -24,6 +24,7 @@ import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonVala
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { pagesSiValide } from './lib/destinations.mjs';
+import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
@@ -177,7 +178,7 @@ async function decision(cle) {
   return envoyer(
     `🔄 <b>MAINTENANCE</b> · ⚖️ ${entete(p)}\n\nNOUVELLE ÉVOLUTION\n${esc(p.avant)} → <b>${esc(p.apres)}</b>${quand}` +
       `\n\nPreuve :\n« ${esc(q)} »` + (p.limite ? `\n\nLimite : ${esc(p.limite)}` : '') +
-      `\n\nSNY a besoin de ta validation.`,
+      `\n\nSNY a besoin de ta validation.` + (evolutionSignificative(p.avant, p.apres) && porteeRelais('case_update') ? `\n${porteeRelais('case_update')}` : ''),
     boutonsEtat(cle),
   );
 }

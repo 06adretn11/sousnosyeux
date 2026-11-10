@@ -189,6 +189,16 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Diffusion sociale (Buffer) — éligibilité, messages, idempotence, réconciliation, retrait, secrets (mocks : aucune publication)',
+    script: 'scripts/qa/test-diffusion-sociale.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Diffusion sociale — le vrai script de bout en bout (base, Buffer, site, Telegram simulés : désactivé par défaut, GO postérieur, rejeu, panne, retrait)',
+    script: 'scripts/qa/test-diffuser-script.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,
