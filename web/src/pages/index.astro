@@ -336,14 +336,15 @@ function caseYear(c: typeof allCases[0]): string {
       touchPitch: false,
       attributionControl: false,
     }); } catch (e) { console.warn('Carte non initialisée ; la liste reste utilisable.', e); return null; } })();
+    // Hors du `if (map)` : openPopupForCase (portée du script) s'en sert.
+    const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
+
     if (map) {
       map.touchZoomRotate.disableRotation();
       if (import.meta.env.DEV) (window as any)._map = map;
 
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       map.addControl(new maplibregl.AttributionControl({ compact: true }));
-
-      const popupMaxWidth = () => Math.min(320, window.innerWidth - 32) + 'px';
 
       // Expression couleur par catégorie (statut_judiciaire → cat → couleur)
       const colorExpr: maplibregl.ExpressionSpecification = [
