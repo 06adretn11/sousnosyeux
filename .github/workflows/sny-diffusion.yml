@@ -1,0 +1,61 @@
+# SNY — diagnostics MANUELS de la diffusion sociale (Buffer → X / Facebook / Instagram). Aucun de ces modes ne publie quoi que ce soit (appliquer-migration ne crée qu'une table de journal).
+#
+#   action = appliquer-migration  applique la migration 025 (journal de diffusion : une table, additive, idempotente) — UNE fois, avant l'activation
+#   action = verifier-connexion  LECTURE SEULE : clé, organisation, canaux (service, connexion, verrouillage, file), requête de réconciliation. À lancer AVANT l'activation.
+#   action = plan                événements éligibles et raisons de silence, sans appel Buffer ni écriture
+#   action = etat                synthèse du journal de diffusion (compteurs par canal et par état) — base des relevés J0 / J+7 / J+28
+#
+# La diffusion elle-même s'exécute dans les workflows existants (sny-telegram après vérification du site, sny-clics en filet) et reste INERTE tant que la variable
+# SNY_DIFFUSION_ACTIVE n'est pas à « 1 » (Settings → Secrets and variables → Actions → Variables).
+# Secret : BUFFER_API_KEY. Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, BUFFER_CHANNEL_INSTAGRAM, SNY_DIFFUSION_CANAUX, SNY_DIFFUSION_DEPUIS.
+# Dépôt public ⇒ logs publics : booléens, identifiants d'affaire et compteurs seulement (aucune clé, aucun texte).
+name: sny-diffusion
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "appliquer-migration | verifier-connexion | plan | etat"
+        required: true
+        type: choice
+        options: [appliquer-migration, verifier-connexion, plan, etat]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  diffusion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      BUFFER_ORGANIZATION_ID: ${{ vars.BUFFER_ORGANIZATION_ID }}
+      BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+      BUFFER_CHANNEL_FACEBOOK: ${{ vars.BUFFER_CHANNEL_FACEBOOK }}
+      BUFFER_CHANNEL_INSTAGRAM: ${{ vars.BUFFER_CHANNEL_INSTAGRAM }}
+      SNY_DIFFUSION_CANAUX: ${{ vars.SNY_DIFFUSION_CANAUX }}
+      SNY_DIFFUSION_ACTIVE: ${{ vars.SNY_DIFFUSION_ACTIVE }}
+      SNY_DIFFUSION_DEPUIS: ${{ vars.SNY_DIFFUSION_DEPUIS }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Exécuter l'action demandée (aucune publication)
+        env:
+          ACTION: ${{ inputs.action }}
+        run: |
+          case "$ACTION" in
+            appliquer-migration) node scripts/diffuser-social.mjs --appliquer-migration ;;
+            verifier-connexion) node scripts/diffuser-social.mjs --verifier-connexion ;;
+            plan)               node scripts/diffuser-social.mjs ;;
+            etat)               node scripts/diffuser-social.mjs --etat ;;
+            *) echo "action inconnue"; exit 2 ;;
+          esac

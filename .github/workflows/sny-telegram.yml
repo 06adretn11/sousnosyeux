@@ -27,6 +27,14 @@ jobs:
       NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+      SNY_DIFFUSION_ACTIVE: ${{ vars.SNY_DIFFUSION_ACTIVE }}
+      SNY_DIFFUSION_DEPUIS: ${{ vars.SNY_DIFFUSION_DEPUIS }}
+      SNY_DIFFUSION_CANAUX: ${{ vars.SNY_DIFFUSION_CANAUX }}
+      BUFFER_API_KEY: ${{ secrets.BUFFER_API_KEY }}
+      BUFFER_ORGANIZATION_ID: ${{ vars.BUFFER_ORGANIZATION_ID }}
+      BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+      BUFFER_CHANNEL_FACEBOOK: ${{ vars.BUFFER_CHANNEL_FACEBOOK }}
+      BUFFER_CHANNEL_INSTAGRAM: ${{ vars.BUFFER_CHANNEL_INSTAGRAM }}
       SNY_WEBHOOK: '1'
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -145,6 +153,12 @@ jobs:
         if: ${{ !cancelled() }}
         continue-on-error: true
         run: node scripts/diagnostic-territoire.mjs --ecrire
+      # Relais social factuel (Buffer → X, Facebook) : INERTE tant que la variable SNY_DIFFUSION_ACTIVE n'est pas « 1 ». Ne lit que ce que l'éditeur a approuvé ET que le site sert déjà ;
+      # une panne ici ne bloque JAMAIS la publication (continue-on-error) et ne republie jamais (journal idempotent). Voir docs/industrialisation/DIFFUSION_SOCIALE.md.
+      - name: Relais social factuel (réconciliation, diffusion, retraits) — inerte si désactivé
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+        run: node scripts/diffuser-social.mjs --ecrire
       # Jamais de perte silencieuse : le webhook a déjà répondu 200 à Telegram, qui ne rejouera pas ce clic.
       - name: Alerter si le traitement a échoué
         if: ${{ failure() }}

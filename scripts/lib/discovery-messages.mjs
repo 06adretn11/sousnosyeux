@@ -7,6 +7,7 @@
 // Règles : liens éditeur DIRECTS obligatoires, 1 à 3 articles, pas de longue citation, aucun détail technique.
 // Les liens sont écrits en clair (aperçu désactivé à l'envoi) : un lien non cliquable reste copiable.
 // =====================================================================
+import { porteeRelais } from './diffusion-sociale.mjs';
 import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 import { stadeCite } from './stade-judiciaire.mjs';
@@ -144,6 +145,7 @@ export function messagePublication(p) {
     x.publiable
       ? '📢 PUBLIER = GO éditorial explicite, enregistré : publication, projection, QA, déploiement, puis vérification du site. « Publié et vérifié » n’est annoncé qu’après lecture du site servi.'
       : 'PUBLIER indisponible : REVIEW ou REJECT seulement.',
+    (x.publiable && porteeRelais('new_case')) || '',
     '🟡 REVIEW : rien publié, mis de côté · ⛔ REJECT : refus de publier, l’affaire est conservée (candidate).',
   ].join('\n').replace(/\n{3,}/g, '\n\n');
 }
@@ -282,7 +284,7 @@ export function messageDecision(p, recommendation) {
   const dp = pending ? null : p.publication_directe; // jamais un bouton « publier » sous une création « preuves à compléter »
   const reco = dp
     // Contrat du bouton unique : confirmer l'affaire + autoriser la publication + accepter la localisation et les réserves.
-    ? `→ VALIDER ET PUBLIER : je confirme cette affaire, j’autorise sa publication sur SNY, j’accepte la localisation (approximative, centre de commune) et les réserves ci-dessous. Stade judiciaire retenu : « ${p.stade_minimal || p.fiche?.statut_judiciaire} ».\nRéserves : ${(dp.reserves || []).join(' ; ') || 'aucune'}.\n🟡 REVIEW : mettre de côté, rien n’est créé · ⛔ REJECT : écarter.`
+    ? `→ VALIDER ET PUBLIER : je confirme cette affaire, j’autorise sa publication sur SNY${porteeRelais('new_case') ? ' et son relais social strictement factuel (X, Facebook ; seulement si la page est servie, la source a moins de 7 jours et rien n’est retiré ; annulable avant envoi)' : ''}, j’accepte la localisation (approximative, centre de commune) et les réserves ci-dessous. Stade judiciaire retenu : « ${p.stade_minimal || p.fiche?.statut_judiciaire} ».\nRéserves : ${(dp.reserves || []).join(' ; ') || 'aucune'}.\n🟡 REVIEW : mettre de côté, rien n’est créé · ⛔ REJECT : écarter.`
     : !pending
     ? `→ VALIDATE${p.non_publiable?.length ? ' (validation documentaire, SANS publication)' : ''} : ${p.independantes || p.medias} sources indépendantes recoupent les faits${preuvesDe(p).manques.length ? ` (réserve : ${preuvesDe(p).manques.join(' ; ')})` : ''}.`
     : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent. REVIEW : mettre de côté sans rien créer.`;
