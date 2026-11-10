@@ -58,7 +58,10 @@ export function comparerAuSchema(introspection) {
   ok('mode accepte « customScheduled » (heure de publication choisie = fenêtre d’annulation)', mode.includes('customScheduled'), `valeurs : ${mode.join(', ')}`);
   const sortie = T(nomNu(cp?.type));
   const membres = (sortie?.possibleTypes || []).map((p) => p.name);
-  ok('createPost renvoie PostActionSuccess ou MutationError', membres.includes('PostActionSuccess') && membres.includes('MutationError'), `${sortie?.name} : ${membres.join(' | ')}`);
+  // PostActionPayload est une UNION : le succès + des erreurs typées. Le client lit `... on MutationError { message }` : valide seulement si toutes les erreurs implémentent MutationError.
+  const erreurs = new Set((T('MutationError')?.possibleTypes || []).map((p) => p.name));
+  const horsInterface = membres.filter((m) => m !== 'PostActionSuccess' && !erreurs.has(m));
+  ok('createPost : un succès (PostActionSuccess) + des erreurs qui implémentent toutes MutationError', membres.includes('PostActionSuccess') && horsInterface.length === 0, `${sortie?.name} : ${membres.join(' | ')}${horsInterface.length ? ` — hors MutationError : ${horsInterface.join(', ')}` : ''}`);
   ok('PostActionSuccess.post', champDe(T('PostActionSuccess'), 'post'));
   ok('MutationError.message', champDe(T('MutationError'), 'message'));
 
@@ -83,7 +86,7 @@ export function comparerAuSchema(introspection) {
   const pi = T('PostsInput');
   ok('PostsInput.organizationId', champDe(pi, 'organizationId'));
   const filtre = T(nomNu(champDe(pi, 'filter')?.type));
-  ok('PostsInput.filter.channelIds et startDate', champDe(filtre, 'channelIds') && champDe(filtre, 'startDate'), filtre ? `${filtre.name} : ${champs(filtre).map((f) => f.name).join(', ')}` : 'absent');
+  ok('PostsInput.filter.channelIds et un filtre de date (createdAt ou dueAt)', champDe(filtre, 'channelIds') && (champDe(filtre, 'createdAt') || champDe(filtre, 'dueAt')), filtre ? `${filtre.name} : ${champs(filtre).map((f) => f.name).join(', ')}` : 'absent');
   const connexion = T(nomNu(lp?.type));
   const aretes = T(nomNu(champDe(connexion, 'edges')?.type));
   ok('posts → edges { node }', champDe(aretes, 'node'), connexion ? connexion.name : 'absent');
@@ -103,9 +106,16 @@ export function comparerAuSchema(introspection) {
   return r;
 }
 
-/** Lignes d'information (non bloquantes) : champs de Post, Channel, Organization utiles pour décider de la suite (limites de plan, erreur détaillée). */
+/** Lignes d'information (non bloquantes) : types utiles pour décider de la suite (filtres de posts, limites de plan, erreurs typées). */
 export function informations(introspection) {
   const { par } = indexer(introspection);
   const noms = (n) => champs(par.get(n)).map((f) => `${f.name}:${typeEnTexte(f.type)}`).join(', ');
-  return ['Post', 'Organization', 'PostActionSuccess'].map((n) => `${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
+  const lignes = [];
+  for (const n of ['PostsInput', 'PostsFiltersInput', 'PostsResults', 'OrganizationLimits', 'LimitReachedError', 'InvalidInputError', 'MutationError']) lignes.push(`${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
+  // Types de comparaison des filtres de date / statut, résolus dynamiquement.
+  for (const f of ['createdAt', 'dueAt', 'status']) {
+    const t = par.get(nomNu(champDe(par.get('PostsFiltersInput'), f)?.type));
+    if (t) lignes.push(`${t.name} (${t.kind}) → ${t.kind === 'ENUM' ? (t.enumValues || []).map((v) => v.name).join(', ') : noms(t.name)}`);
+  }
+  return lignes;
 }
