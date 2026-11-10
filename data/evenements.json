@@ -197,6 +197,17 @@
         }
       }
     ],
+    "FR-2026-0144": [
+      {
+        "event_id": "b82c873c-90d5-4302-94c1-cd88f34dc7d2",
+        "date": null,
+        "type": "suspension",
+        "statut": null,
+        "libelle": "Selon la presse, l’agent concerné a été suspendu de ses fonctions.",
+        "realisation": "réalisée",
+        "source": null
+      }
+    ],
     "POC-05": [
       {
         "event_id": "bf3e73ae-05f3-422a-ad50-246e164a3cff",

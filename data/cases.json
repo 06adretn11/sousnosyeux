@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 63,
+    "total_cases": 64,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -2342,6 +2342,44 @@
           "url": "https://actu.fr/ile-de-france/courbevoie_92026/info-actu-paris-suspecte-d-agressions-sexuelles-sur-des-enfants-un-agent-periscolaire-de-courbevoie-suspendu_65007456.html",
           "media": "actu",
           "publication_date": "2026-11-03",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0144",
+      "etablissement": "école Marcel-Touchard",
+      "commune": "Saint-Aubin-lès-Elbeuf",
+      "departement": "Seine-Maritime",
+      "type_structure": "élémentaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "à qualifier",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 49.302552,
+      "lng": 1.020026,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-11-06",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-11-06",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+          "media": "Tendance Ouest",
+          "publication_date": "2026-11-10",
           "source_type": "presse",
           "is_primary": false
         }
