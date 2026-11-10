@@ -2,6 +2,7 @@
 #
 #   action = appliquer-migration  applique la migration 025 (journal de diffusion : une table, additive, idempotente) — UNE fois, avant l'activation
 #   action = verifier-connexion  LECTURE SEULE : clé, organisation, canaux (service, connexion, verrouillage, file), requête de réconciliation. À lancer AVANT l'activation.
+#   action = sonder-api          LECTURE SEULE : confronte le client Buffer au schéma réel (introspection) ; sondes sur identifiants inexistants (rien créé/publié/supprimé)
 #   action = plan                événements éligibles et raisons de silence, sans appel Buffer ni écriture
 #   action = etat                synthèse du journal de diffusion (compteurs par canal et par état) — base des relevés J0 / J+7 / J+28
 #
@@ -15,10 +16,10 @@ on:
   workflow_dispatch:
     inputs:
       action:
-        description: "appliquer-migration | verifier-connexion | plan | etat"
+        description: "appliquer-migration | verifier-connexion | sonder-api | plan | etat"
         required: true
         type: choice
-        options: [appliquer-migration, verifier-connexion, plan, etat]
+        options: [appliquer-migration, verifier-connexion, sonder-api, plan, etat]
 
 permissions:
   contents: read
@@ -55,6 +56,7 @@ jobs:
           case "$ACTION" in
             appliquer-migration) node scripts/diffuser-social.mjs --appliquer-migration ;;
             verifier-connexion) node scripts/diffuser-social.mjs --verifier-connexion ;;
+            sonder-api)         node scripts/diffuser-social.mjs --sonder-api ;;
             plan)               node scripts/diffuser-social.mjs ;;
             etat)               node scripts/diffuser-social.mjs --etat ;;
             *) echo "action inconnue"; exit 2 ;;
