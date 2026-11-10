@@ -57,7 +57,7 @@ Le clic Telegram reste **l'unique** validation. Quand la diffusion est activée,
 
 1. Compte Buffer (gratuit) → connecter le profil **X** et la **Page Facebook** (Instagram professionnel ensuite) → clé API : https://publish.buffer.com/settings/api.
 2. GitHub → Settings → Secrets and variables → Actions : secret `BUFFER_API_KEY`.
-3. Actions → **sny-diffusion** → `appliquer-migration`, puis `verifier-connexion` (sans variable : il affiche l'identifiant de l'organisation et ceux des canaux ; mettre ensuite en **Variables** `BUFFER_ORGANIZATION_ID`, `BUFFER_CHANNEL_X`, `BUFFER_CHANNEL_FACEBOOK`, puis relancer `verifier-connexion` : tout doit être ✅). Cette vérification est en lecture seule et **valide aussi la forme des requêtes GraphQL que la documentation ne permet pas de confirmer sans clé**.
+3. *(Migration 025 déjà appliquée en production le 10/11/2026 via `sny-diffusion` → `appliquer-migration` : 4/4 instructions, journal présent ; rejouable sans effet.)* Actions → **sny-diffusion** → `verifier-connexion` (sans variable : il affiche l'identifiant de l'organisation et ceux des canaux ; mettre ensuite en **Variables** `BUFFER_ORGANIZATION_ID`, `BUFFER_CHANNEL_X`, `BUFFER_CHANNEL_FACEBOOK`, puis relancer `verifier-connexion` : tout doit être ✅). Cette vérification est en lecture seule et **valide aussi la forme des requêtes GraphQL que la documentation ne permet pas de confirmer sans clé**.
 4. Activer : variable `SNY_DIFFUSION_DEPUIS` = l'instant ISO UTC de la mise en service (ex. `2026-11-12T09:00:00Z`), **puis** `SNY_DIFFUSION_ACTIVE` = `1`. (Instagram : ajouter `BUFFER_CHANNEL_INSTAGRAM` et `SNY_DIFFUSION_CANAUX` = `x,facebook,instagram` après vérification du mode de publication automatique.)
 5. **Désactiver** : `SNY_DIFFUSION_ACTIVE` = `0` (ou supprimer la variable). Effet immédiat au passage suivant ; le journal est conservé.
 
@@ -107,6 +107,6 @@ Trame de comparaison (à remplir, sans valeur inventée ; aucun seuil fixé ici 
 ## 10. Limites résiduelles
 
 - **Écart technique** : la forme exacte de la requête `posts` (réconciliation) et du sous-objet `error` n'a pas pu être confirmée sans clé ; `verifier-connexion` la teste avant toute activation (échec ⇒ pas d'activation). Aucun test sur un compte réel, par consigne.
-- **Accès extérieur manquant** : comptes Buffer/X/Facebook/Instagram, clé API, identifiants de canaux ; connexion au tableau de bord Cloudflare ; application de la migration 025 (secret Neon uniquement dans GitHub).
+- **Accès extérieur manquant** : comptes Buffer/X/Facebook/Instagram, clé API, identifiants de canaux ; connexion au tableau de bord Cloudflare.
 - **Plateforme** : Buffer ne supprime pas un post publié ; Cloudflare Web Analytics sans UTM ; Instagram sans lien cliquable en légende ; l'offre gratuite plafonne à 10 posts programmés par canal (posts à +15 min : sans effet pratique).
 - **Décisions éditoriales ultérieures** : diffusion des mobilisations / prises de parole ; relaxe / classement ; seuils de décision sur la valeur de chaque canal ; mise à jour de `CLAUDE.md` (non modifié ici, sur ton go).
