@@ -79,6 +79,9 @@ export function clientBuffer({ cle, organisationId = null, fetchImpl = globalThi
       const d = await requete(`mutation($input: CreatePostInput!){ createPost(input:$input){ __typename ... on PostActionSuccess { post { ${SORTIE_POST} } } ... on MutationError { message } } }`, { input });
       const p = d.createPost;
       if (p?.post?.id) return p.post;
+      // Plan Buffer Free : 10 publications programmées au total. Une limite atteinte n'a rien créé et se lève d'elle-même (les posts partent 15 min après leur création) :
+      // « incertain » = la ligne reste réservée, relue avant tout nouvel essai, abandonnée avec alerte après 24 h — jamais un échec définitif.
+      if (p?.__typename === 'LimitReachedError') throw new ErreurBuffer('incertain', `limite du plan Buffer atteinte : nouvel essai au prochain passage (${purge(p.message)})`);
       if (p?.__typename === 'MutationError' || p?.message) throw new ErreurBuffer('refus', `refus de création : ${purge(p.message)}`);
       throw new ErreurBuffer('incertain', 'réponse de création non reconnue');
     },
