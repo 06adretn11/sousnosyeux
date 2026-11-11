@@ -85,6 +85,17 @@ if (A.includes('--sonder-api')) {
   for (const c of comparerAuSchema(schema)) ligne(c.ok, c.nom, c.detail);
   for (const i of informations(schema)) console.log(`ℹ️ ${i}`);
 
+  // Réconciliation réelle (filtre createdAt.start) sur les canaux configurés : lecture seule, doit être acceptée.
+  for (const c of CANAUX.filter((x) => CANAL_ID[x])) {
+    try { const t = await b.trouverPost({ channelId: CANAL_ID[c], signature: 'utm_content=sonde-sans-effet', depuis: new Date(Date.now() - 864e5).toISOString() }); ligne(t === null, `réconciliation ${c} : requête (createdAt.start) acceptée, aucun post de sonde`); }
+    catch (e) { ligne(false, `réconciliation ${c} : requête refusée`, e.message); }
+  }
+  // Limites du plan (nombres seulement) : la file de publications programmées est-elle compatible avec nos besoins ?
+  try {
+    const d = await b.requete('query { account { organizations { limits { channels scheduledPosts } } } }');
+    for (const o of d.account?.organizations || []) console.log(`ℹ️ limites du plan : ${o.limits.channels} canaux, ${o.limits.scheduledPosts} publications programmées`);
+  } catch (e) { console.log(`ℹ️ limites du plan illisibles : ${e.message}`); }
+
   // Sondes : un identifiant qui n'existe pas ne peut rien créer ni supprimer. Elles prouvent que la clé est acceptée par les chemins d'écriture (autre chose qu'un refus d'authentification).
   const INEXISTANT = '000000000000000000000000';
   const authent = (m) => /unauthor|forbidden|permission|authenticat|invalid (api )?(key|token)|scope/i.test(String(m));

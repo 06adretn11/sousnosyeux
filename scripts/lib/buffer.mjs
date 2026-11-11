@@ -95,7 +95,7 @@ export function clientBuffer({ cle, organisationId = null, fetchImpl = globalThi
      */
     async trouverPost({ channelId, signature, depuis }) {
       const d = await requete(`query($input: PostsInput!){ posts(first: 100, input: $input){ edges { node { ${SORTIE_POST} } } } }`,
-        { input: { organizationId: organisationId, filter: { channelIds: [channelId], startDate: depuis } } });
+        { input: { organizationId: organisationId, filter: { channelIds: [channelId], createdAt: { start: depuis } } } });
       const noeuds = (d.posts?.edges || []).map((e) => e?.node).filter(Boolean);
       const norm = (t) => String(t || '').replace(/\s+/g, ' ').trim();
       // `utm_content=fr-2026-0144` ne doit pas reconnaître `utm_content=fr-2026-0144-enquete` (autre événement de la même affaire) : le jeton se termine là.

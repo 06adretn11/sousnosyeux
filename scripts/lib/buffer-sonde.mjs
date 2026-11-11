@@ -111,7 +111,7 @@ export function informations(introspection) {
   const { par } = indexer(introspection);
   const noms = (n) => champs(par.get(n)).map((f) => `${f.name}:${typeEnTexte(f.type)}`).join(', ');
   const lignes = [];
-  for (const n of ['PostsInput', 'PostsFiltersInput', 'PostsResults', 'OrganizationLimits', 'LimitReachedError', 'InvalidInputError', 'MutationError']) lignes.push(`${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
+  for (const n of ['PostsInput', 'PostsFiltersInput', 'PostsResults', 'OrganizationLimits', 'PostPublishingError', 'LimitReachedError', 'InvalidInputError', 'MutationError']) lignes.push(`${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
   // Types de comparaison des filtres de date / statut, résolus dynamiquement.
   for (const f of ['createdAt', 'dueAt', 'status']) {
     const t = par.get(nomNu(champDe(par.get('PostsFiltersInput'), f)?.type));
