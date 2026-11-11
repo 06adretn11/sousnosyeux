@@ -5,6 +5,7 @@
 //   node scripts/diffuser-social.mjs                       PLAN (défaut) : événements éligibles et raisons, AUCUN appel Buffer, AUCUNE écriture
 //   node scripts/diffuser-social.mjs --ecrire              diffuse (si activée), réconcilie, suit, retire — idempotent, rejouable
 //   node scripts/diffuser-social.mjs --verifier-connexion  LECTURE SEULE : clé, organisation, canaux, requête de réconciliation (à lancer avant l'activation)
+//   node scripts/diffuser-social.mjs --sonder-api         LECTURE SEULE : confronte le client Buffer au schéma réel (introspection) + 3 sondes sans effet (identifiants inexistants) — aucune publication
 //   node scripts/diffuser-social.mjs --appliquer-migration  applique supabase/migrations/025_diffusions_sociales.sql (additive, idempotente) — action manuelle du workflow sny-diffusion
 //   node scripts/diffuser-social.mjs --etat                synthèse du journal (compteurs par canal et par état)
 //
@@ -19,7 +20,8 @@ import { connecter } from './lib/neon.mjs';
 import { goPublication } from './lib/publication-gates.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
 import { prevenir } from './lib/prevenir.mjs';
-import { clientBuffer } from './lib/buffer.mjs';
+import { clientBuffer, ErreurBuffer } from './lib/buffer.mjs';
+import { REQUETE_INTROSPECTION, comparerAuSchema, informations } from './lib/buffer-sonde.mjs';
 import { diffuserCanal, suivreLigne, retirerLigne, reconcilierSansCreer } from './lib/diffusion-flux.mjs';
 import { CANAUX, evaluerEvenement, composerMessage, lienDiffusion, cleEvenement, dateSourceNouvelleAffaire } from './lib/diffusion-sociale.mjs';
 
@@ -70,6 +72,50 @@ if (A.includes('--etat')) {
   for (const x of l) console.log(`  ${x.canal.padEnd(9)} ${x.type_event.padEnd(11)} ${x.etat.padEnd(18)} ${String(x.n).padStart(3)}  (${x.premier} → ${x.dernier})`);
   if (!l.length) console.log('  (aucune ligne : « prêt et testé, publication réelle non encore observée »)');
   process.exit(0);
+}
+
+// --- --sonder-api : LECTURE SEULE (introspection) + sondes sur des identifiants INEXISTANTS : rien ne peut être créé, publié ni supprimé -------------------------
+if (A.includes('--sonder-api')) {
+  if (!env('BUFFER_API_KEY')) { console.log('❌ clé d’API absente'); process.exit(1); }
+  const b = clientBuffer({ cle: env('BUFFER_API_KEY'), organisationId: env('BUFFER_ORGANIZATION_ID') });
+  let bon = true;
+  const ligne = (cond, nom, detail = '') => { if (!cond) bon = false; console.log(`${cond ? '✅' : '❌'} ${nom}${detail ? ` — ${detail}` : ''}`); };
+  let schema;
+  try { schema = await b.requete(REQUETE_INTROSPECTION); } catch (e) { console.log(`❌ introspection impossible : ${e.message}`); process.exit(1); }
+  for (const c of comparerAuSchema(schema)) ligne(c.ok, c.nom, c.detail);
+  for (const i of informations(schema)) console.log(`ℹ️ ${i}`);
+
+  // Réconciliation réelle (filtre createdAt.start) sur les canaux configurés : lecture seule, doit être acceptée.
+  for (const c of CANAUX.filter((x) => CANAL_ID[x])) {
+    try { const t = await b.trouverPost({ channelId: CANAL_ID[c], signature: 'utm_content=sonde-sans-effet', depuis: new Date(Date.now() - 864e5).toISOString() }); ligne(t === null, `réconciliation ${c} : requête (createdAt.start) acceptée, aucun post de sonde`); }
+    catch (e) { ligne(false, `réconciliation ${c} : requête refusée`, e.message); }
+  }
+  // Limites du plan (nombres seulement) : la file de publications programmées est-elle compatible avec nos besoins ?
+  try {
+    const d = await b.requete('query { account { organizations { limits { channels scheduledPosts } } } }');
+    for (const o of d.account?.organizations || []) console.log(`ℹ️ limites du plan : ${o.limits.channels} canaux, ${o.limits.scheduledPosts} publications programmées`);
+  } catch (e) { console.log(`ℹ️ limites du plan illisibles : ${e.message}`); }
+
+  // Sondes : un identifiant qui n'existe pas ne peut rien créer ni supprimer. Elles prouvent que la clé est acceptée par les chemins d'écriture (autre chose qu'un refus d'authentification).
+  const INEXISTANT = '000000000000000000000000';
+  const authent = (m) => /unauthor|forbidden|permission|authenticat|invalid (api )?(key|token)|scope/i.test(String(m));
+  try {
+    await b.supprimerPost(INEXISTANT);
+    ligne(false, 'sonde deletePost : réponse inattendue (succès sur un identifiant inexistant)');
+  } catch (e) {
+    ligne(e instanceof ErreurBuffer && e.kind === 'refus' && !authent(e.message), 'sonde deletePost (identifiant inexistant) : chemin d’annulation joignable, refus métier typé', e.message);
+  }
+  try { const p = await b.lirePost(INEXISTANT); ligne(p === null, 'sonde post (identifiant inexistant) : introuvable = null', String(p)); }
+  catch (e) { ligne(e instanceof ErreurBuffer && e.kind === 'refus' && !authent(e.message), 'sonde post (identifiant inexistant) : refus métier typé, pas d’échec d’authentification', e.message); }
+  try {
+    const p = await b.creerPost({ channelId: INEXISTANT, canal: 'x', texte: 'sonde sans effet', dueAt: new Date(Date.now() + 30 * 864e5).toISOString() });
+    ligne(false, 'sonde createPost : un post a été créé sur un canal inexistant (ANORMAL) — suppression tentée');
+    try { await b.supprimerPost(p.id); } catch { /* signalé ci-dessus */ }
+  } catch (e) {
+    ligne(e instanceof ErreurBuffer && e.kind === 'refus' && !authent(e.message), 'sonde createPost (canal inexistant) : chemin de création joignable, refus métier typé, rien créé', e.message);
+  }
+  console.log(bon ? 'schéma et permissions conformes aux hypothèses du client (aucun post créé, publié ni supprimé)' : 'ÉCART démontré : corriger les ❌ avant d’activer');
+  process.exit(bon ? 0 : 1);
 }
 
 // --- --verifier-connexion : LECTURE SEULE ---------------------------------------------------------------------------------------------

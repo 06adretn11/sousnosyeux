@@ -311,6 +311,13 @@ section('Client Buffer — forme des requêtes (mocks)');
   verifie('Instagram : image à URL publique + type « post », schedulingType automatic', derniere.corps.variables.input.assets[0].image.url.endsWith('og-sousnosyeux.png') && derniere.corps.variables.input.schedulingType === 'automatic');
   let refus = null; try { await c.creerPost({ channelId: 'CI', canal: 'instagram', texte: 't', dueAt: 'd' }); } catch (e) { refus = e; }
   verifie('Instagram sans image : refus (jamais une publication sans média)', refus?.kind === 'refus');
+  await clientBuffer({ cle: 'k', organisationId: 'org', fetchImpl: faux({ data: { posts: { edges: [] } } }) }).trouverPost({ channelId: 'CX', signature: 'utm_content=a', depuis: '2026-11-12T10:00:00.000Z' });
+  const fl = derniere.corps.variables.input.filter;
+  verifie('réconciliation : filtre de dates = createdAt.start (champ réel du schéma Buffer), jamais startDate', fl.createdAt?.start === '2026-11-12T10:00:00.000Z' && !('startDate' in fl) && fl.channelIds[0] === 'CX' && derniere.corps.variables.input.organizationId === 'org');
+  let lim = null; try { await clientBuffer({ cle: 'k', organisationId: 'o', fetchImpl: faux({ data: { createPost: { __typename: 'LimitReachedError', message: 'limit' } } }) }).creerPost({ channelId: 'CX', canal: 'x', texte: 't', dueAt: 'd' }); } catch (e) { lim = e; }
+  verifie('limite du plan atteinte (LimitReachedError) : « incertain » — réessayé plus tard, pas un échec définitif', lim?.kind === 'incertain');
+  let nf = null; try { await clientBuffer({ cle: 'k', organisationId: 'o', fetchImpl: faux({ data: { createPost: { __typename: 'NotFoundError', message: 'Channel not found' } } }) }).creerPost({ channelId: 'CX', canal: 'x', texte: 't', dueAt: 'd' }); } catch (e) { nf = e; }
+  verifie('canal introuvable (NotFoundError) : refus définitif', nf?.kind === 'refus');
   verifie('mutation de suppression = deletePost sur un id', await clientBuffer({ cle: 'k', organisationId: 'o', fetchImpl: faux({ data: { deletePost: { __typename: 'DeletePostSuccess' } } }) }).supprimerPost('p9') && /deletePost/.test(derniere.corps.query) && derniere.corps.variables.input.id === 'p9');
   let r500 = null; try { await clientBuffer({ cle: 'k', organisationId: 'o', fetchImpl: async () => ({ ok: false, status: 503, json: async () => ({}) }) }).canaux(); } catch (e) { r500 = e; }
   verifie('HTTP 5xx : « incertain » (à réconcilier)', r500?.kind === 'incertain');

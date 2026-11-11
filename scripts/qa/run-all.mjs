@@ -199,6 +199,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Diffusion sociale — la sonde de schéma Buffer sait échouer (filtre de dates, enums, erreurs typées, statuts) : introspection simulée',
+    script: 'scripts/qa/test-buffer-sonde.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,
