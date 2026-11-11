@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 64,
+    "total_cases": 65,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -2379,6 +2379,58 @@
         {
           "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
           "media": "Tendance Ouest",
+          "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0145",
+      "etablissement": "accueil périscolaire de Noyant-Villages",
+      "commune": "Noyant-Villages",
+      "departement": "Maine-et-Loire",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "1 enfant",
+      "lat": 47.510698,
+      "lng": 0.107821,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.20minutes.fr/justice/4262065-20261110-maine-loire-accuse-agression-sexuelle-enfant-agent-periscolaire-sous-statut-temoin-assiste",
+          "media": "20 Minutes",
+          "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://angers.maville.com/actu/actudet_-soupcons-d-agressions-sexuelles-dans-le-periscolaire-en-maine-et-loire-un-agent-place-sous-le-statut-de-temoin-assiste_fil-7564252_actu.Htm",
+          "media": "Angers Maville",
+          "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-dans-le-periscolaire-en-anjou-un-agent-ecarte-un-elu-demissionne-fb5b92ea-d60c-11f1-84f3-5611f158a658",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-01",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/maine-et-loire/angers/suspicion-de-violences-sexuelles-en-milieu-periscolaire-l-animateur-denonce-par-des-parents-a-ete-place-sous-le-statut-de-temoin-assiste-3447522.html",
+          "media": "france3-regions.franceinfo",
           "publication_date": "2026-11-10",
           "source_type": "presse",
           "is_primary": false
