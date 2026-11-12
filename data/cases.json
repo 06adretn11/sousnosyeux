@@ -2721,16 +2721,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
           "media": "franceinfo",
-          "publication_date": "2026-07-09",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
-          "media": "franceinfo",
-          "publication_date": "2026-07-09",
+          "publication_date": "2026-05-27",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2742,9 +2735,16 @@
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
           "media": "franceinfo",
-          "publication_date": "2026-05-27",
+          "publication_date": "2026-07-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+          "media": "franceinfo",
+          "publication_date": "2026-07-09",
           "source_type": "presse",
           "is_primary": false
         }
