@@ -208,6 +208,21 @@
         "source": null
       }
     ],
+    "FR-2026-0145": [
+      {
+        "event_id": "ebc6da64-bd57-48d7-8672-f3c989f2de88",
+        "date": "2026-11-19",
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Selon la presse, un collectif ou une association a annoncé un rassemblement.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "france3-regions.franceinfo",
+          "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/maine-et-loire/angers/suspicion-de-violences-sexuelles-en-milieu-periscolaire-l-animateur-denonce-par-des-parents-a-ete-place-sous-le-statut-de-temoin-assiste-3447522.html",
+          "publie_le": "2026-11-10"
+        }
+      }
+    ],
     "POC-05": [
       {
         "event_id": "bf3e73ae-05f3-422a-ad50-246e164a3cff",
