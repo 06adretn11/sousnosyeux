@@ -320,7 +320,10 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
 
   // `maxVu` : l'écriture n'a lieu que si AUCUNE fiche n'est apparue depuis le contrôle ci-dessus (concurrence entre deux exécutions, rejeu) ; sinon rien n'est écrit
   // et la proposition reste due : le contrôle est refait, contre la base à jour, au prochain passage. Un rejet (sans contrôle) n'est pas soumis à cette condition.
-  const cree = r.created_case_id ? [] : await sql`
+  // Perdre une course n'est pas une panne : l'unicité de `case_id` (23505) refuse la seconde écriture AVANT tout effet (une seule instruction, tout ou rien — prouvé
+  // sur PostgreSQL réel par scripts/qa/concurrence-postgres.mjs) ; la proposition reste due et ne fait pas échouer les suivantes.
+  let cree = [];
+  if (!r.created_case_id) try { cree = await sql`
     with nxt as (
       select 'FR-2026-' || lpad((coalesce(max(substring(case_id from 9)::int), 0) + 1)::text, 4, '0') id, coalesce(max(substring(case_id from 9)::int), 0)::int m
         from cases where case_id ~ '^FR-2026-[0-9]{4}$'),
@@ -348,7 +351,7 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
       returning 1)
     update new_case_proposals set created_case_id = (select case_id from c), applied_at = case when ${direct} then null else now() end
      where proposal_id = ${r.pid}::uuid and applied_at is null and exists (select 1 from c)
-    returning created_case_id`;
+    returning created_case_id`; } catch (e) { if (e?.code !== '23505') throw e; console.log('  création perdue face à une écriture concurrente (unicité) : rien d’écrit, contrôle refait au passage suivant'); }
   if (!cree.length && !r.created_case_id && maxVu !== null) {
     const [deja] = await sql`select created_case_id from new_case_proposals where proposal_id = ${r.pid}::uuid`;
     if (!deja?.created_case_id) { console.log('  rien écrit : la base a changé pendant le contrôle — contrôle refait au prochain passage'); refusees++; continue; }

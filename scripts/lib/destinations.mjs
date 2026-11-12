@@ -97,6 +97,7 @@ function lignesDeFait(f, ctx, site) {
 /** Pourquoi un fait n'a AUCUNE page : dit en clair (territoire non établi, hors des Hubs publiés, affaire sans fiche…), jamais « rien » sans raison. */
 function raisonSansPage(f, ctx) {
   if (f.portee === 'territoire') {
+    if (!f.territoire && f.territoires?.length > 1) return `la phrase nomme plusieurs territoires (${f.territoires.join(', ')}) : aucun n’est retenu seul, donc aucune page n’est déduite — le fait reste proposé à votre décision`;
     if (!f.territoire) return 'territoire non établi par la source : aucune page ne peut être déduite';
     return `aucun Hub publié ne couvre « ${f.territoire} », et la commune de l’affaire d’où l’article est parti n’est pas dans ce territoire (la provenance ne tient pas lieu de portée)`;
   }

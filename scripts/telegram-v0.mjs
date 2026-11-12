@@ -228,7 +228,7 @@ function pagesSiValidee(case_id, neufs) {
     const hubs = Object.fromEntries(slugs.map((s) => [s, { publie: true, groupes: reponses(s).map((g) => g.titre), items: Object.fromEntries(reponses(s).map((g) => [g.titre, g.items])) }]));
     const ctx = { publiques: new Set(cases.map((c) => c.case_id)), holds: new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id)),
       approuvees: new Set(Object.keys(ev.fiches_approuvees ?? {})), cases: new Map(cases.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs };
-    const faits = neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null, date: f.event_date || null }));
+    const faits = neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null, territoires: f.territoires || null, date: f.event_date || null }));
     const site = process.env.SNY_SITE_URL || 'https://sousnosyeux.org';
     return { flat: pagesSiValide(faits, ctx, site), parFait: pagesParFait(faits, ctx, site) };
   } catch { return null; }

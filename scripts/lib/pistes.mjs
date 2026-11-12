@@ -49,4 +49,5 @@ export async function suivrePistes({ liens, url, deja, max, lire, qualifier, com
 }
 
 /** Un article atteint par un lien associé qui ne nomme pas l'établissement ne peut porter que des faits de TERRITOIRE dont la source nomme le territoire. */
-export const estFaitDeTerritoireNomme = (f) => f?.portee === 'territoire' && !!f.territoire;
+// Un fait dont la phrase nomme PLUSIEURS territoires (`territoires`) est aussi un fait de territoire NOMMÉ : proposé à l'éditeur, jamais abandonné en silence ni rattaché à un seul lieu.
+export const estFaitDeTerritoireNomme = (f) => f?.portee === 'territoire' && (!!f.territoire || (f.territoires?.length ?? 0) > 1);
