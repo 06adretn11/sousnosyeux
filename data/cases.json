@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 65,
+    "total_cases": 66,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -2432,6 +2432,37 @@
           "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/maine-et-loire/angers/suspicion-de-violences-sexuelles-en-milieu-periscolaire-l-animateur-denonce-par-des-parents-a-ete-place-sous-le-statut-de-temoin-assiste-3447522.html",
           "media": "france3-regions.franceinfo",
           "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0146",
+      "etablissement": "école maternelle Johann-Wolfgang-Von-Goethe",
+      "commune": "Montpellier",
+      "departement": "Hérault",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "enseignant",
+      "type_affaire": "agression sexuelle",
+      "statut_judiciaire": "enquête",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 43.610476,
+      "lng": 3.87048,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-11-11",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+          "media": "ToutMontpellier.fr",
+          "publication_date": "2026-11-11",
           "source_type": "presse",
           "is_primary": false
         }
