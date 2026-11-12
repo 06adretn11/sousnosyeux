@@ -55,23 +55,44 @@ export function datePublication(html, url = '') {
   return iso(m?.[1]) || (u ? `${u[1]}-${u[2]}-${u[3]}` : null);
 }
 
-/**
- * @param {string} html
- * @param {string} [url]  adresse de la page (résout les liens relatifs, date la page)
- * @returns {{titre: string, corps: string, paragraphes: string[], liens_associes: {titre: string, url: string}[], publie_le: string|null}}
- *          `corps` est vide si la structure de page n'est pas reconnue. Les blocs « À lire aussi » ne sont PAS dans le corps :
- *          ils sont rendus à part (`liens_associes`), comme pistes de découverte.
- */
-const CLASSE_BLOC_LIE = '(?:read-more|related|lire-aussi|see-also|teaser|recommend)';
-// Un paragraphe peut ne rien porter lui-même et se trouver dans un conteneur « related » encore ouvert : c'est un titre voisin, pas l'article.
-const dansBlocLie = (html, index) => {
+// Classes des blocs qui ne sont PAS l'article : liens associés, suggestions (« ranking-profile » / « suggested » chez Le Figaro), articles suivants, commentaires des lecteurs.
+// Cas réel (12/11/2026) : sur une page du Figaro, deux « chapôs » d'articles recommandés (autres affaires, autres villes) étaient lus comme des phrases de l'article
+// et ont produit deux faits de « territoire » (Montreuil, Paris) annoncés comme informations de cette affaire.
+export const CLASSE_BLOC_LIE = '(?:read-more|related|lire-aussi|see-also|teaser|recommend|suggest|ranking-profile|article-next|more-articles|most-read|comments?__|comments?-(?:list|item|text|body|thread|wrapper|section|content)|commentaires?-(?:liste|item|texte|corps))';
+// Conteneurs SÉMANTIQUES (rarement imbriqués dans eux-mêmes, balancés même dans du HTML de presse) : « encore ouvert » se décide par PROFONDEUR (ouvertures et fermetures
+// de la même balise), non par la première fermeture venue — une carte de suggestion (<article class="…ranking-profile…">) contient ses propres <div> (image, légende)
+// avant son paragraphe, et la première fermeture rencontrée ne la ferme pas. Les <div>, eux, ne sont pas comptés en profondeur : le HTML réel de la presse est trop
+// déséquilibré pour cela (mesuré : un bloc « related » apparaissait ouvert alors qu'il était fermé) ; ils gardent la règle d'origine (première fermeture).
+const CONTENEURS_PROFONDEUR = ['article', 'aside', 'section', 'ul', 'nav', 'li'];
+/** Le paragraphe situé à `index` se trouve-t-il dans un bloc de liens associés, de suggestions ou de commentaires encore ouvert ? (titre voisin, pas l'article) */
+export const dansBlocLie = (html, index) => {
   const avant = html.slice(0, index);
-  const ouvertures = [...avant.matchAll(new RegExp(`<(?:div|aside|section|ul|nav)\\b[^>]*class=["'][^"']*${CLASSE_BLOC_LIE}[^"']*["'][^>]*>`, 'gi'))];
-  const o = ouvertures[ouvertures.length - 1];
-  return !!o && !/<\/(?:div|aside|section|ul|nav)>/i.test(avant.slice(o.index + o[0].length));
+  for (const t of CONTENEURS_PROFONDEUR) {
+    const ouvertures = [...avant.matchAll(new RegExp(`<${t}\\b[^>]*class=["'][^"']*${CLASSE_BLOC_LIE}[^"']*["'][^>]*>`, 'gi'))];
+    for (const o of ouvertures.slice(-6)) {
+      const apres = avant.slice(o.index + o[0].length);
+      const ouverts = (apres.match(new RegExp(`<${t}\\b`, 'gi')) || []).length;
+      const fermes = (apres.match(new RegExp(`</${t}>`, 'gi')) || []).length;
+      if (fermes <= ouverts) return true;   // le conteneur « lié » est encore ouvert à cet endroit
+    }
+  }
+  const divs = [...avant.matchAll(new RegExp(`<div\\b[^>]*class=["'][^"']*${CLASSE_BLOC_LIE}[^"']*["'][^>]*>`, 'gi'))];
+  const d = divs[divs.length - 1];
+  return !!d && !/<\/(?:div|aside|section|ul|nav)>/i.test(avant.slice(d.index + d[0].length));
 };
 
-export function extraireCorps(html, url = '') {
+/** Contenus qui ne sont jamais du texte d'article : scripts, feuilles de style, commentaires HTML. */
+const sansCodeEtStyle = (html) => html.replace(/<(script|style|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi, ' ').replace(/<!--[\s\S]*?-->/g, ' ');
+
+/**
+ * @param {string} htmlBrut
+ * @param {string} [url]  adresse de la page (résout les liens relatifs, date la page)
+ * @returns {{titre: string, corps: string, paragraphes: string[], liens_associes: {titre: string, url: string}[], publie_le: string|null}}
+ *          `corps` est vide si la structure de page n'est pas reconnue. Les blocs « À lire aussi », les suggestions d'autres articles et les commentaires
+ *          de lecteurs ne sont PAS dans le corps : les liens sont rendus à part (`liens_associes`), comme pistes de découverte.
+ */
+export function extraireCorps(htmlBrut, url = '') {
+  const html = sansCodeEtStyle(htmlBrut);
   const liens_associes = [];
   const paragraphes = [...html.matchAll(/<p([^>]*)>([\s\S]*?)<\/p>/gi)]
     .map((m) => ({ attrs: m[1], html: m[2], texte: nettoyer(m[2]), lie: dansBlocLie(html, m.index) }))
@@ -97,7 +118,7 @@ export function extraireCorps(html, url = '') {
     titre,
     paragraphes,
     liens_associes,
-    publie_le: datePublication(html, url),
+    publie_le: datePublication(htmlBrut, url),   // la date vit dans les balises méta et le JSON-LD (<script>) : lue sur la page brute
     corps: paragraphes.length ? [titre, ...paragraphes].join('\n\n') : '',
   };
 }

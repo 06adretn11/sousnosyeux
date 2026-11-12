@@ -118,6 +118,11 @@ export function comparerEtablissements(a, b) {
 }
 
 const PRECIS = (r) => !!r && r !== 'autre' && r !== 'à qualifier';
+// Rôles dont une même personne peut cumuler les deux : à l'école maternelle, le directeur ou la directrice enseigne (« directeur et enseignant »).
+// Une paire absente de cette liste reste une contradiction (animateur périscolaire / enseignant : employeurs et procédures distincts, invariant Aqueduc).
+const ROLES_CUMULABLES = [['direction', 'enseignant']];
+/** Les deux rôles précis peuvent-ils désigner la même personne ? */
+export const rolesCompatibles = (a, b) => ROLES_CUMULABLES.some(([x, y]) => (a === x && b === y) || (a === y && b === x));
 const mois = (p) => { const m = /^(\d{4})(?:-(\d{2}))?$/.exec(String(p || '')); return m ? { an: Number(m[1]), mo: m[2] ? Number(m[2]) : null } : null; };
 // Pages CITÉES comme preuve par chaque côté : une page seulement LUE par l'un des deux n'est pas une preuve d'identité.
 const urlsDe = (p) => new Set((p.evidence || []).map((x) => canonique(String(x.url || ''))).filter(Boolean));
@@ -139,7 +144,12 @@ export function comparerSignaux(a, b) {
   const etab = comparerEtablissements({ nom: a.etablissement, nomme: a.etablissement_nomme ?? a.fiche?.crit_etablissement_nomme }, { nom: b.etablissement, nomme: b.etablissement_nomme ?? b.fiche?.crit_etablissement_nomme });
   ajoute('établissement', etab.etat, etab.detail);
   const [ra, rb] = [a.fiche?.role_mis_en_cause, b.fiche?.role_mis_en_cause];
-  if (PRECIS(ra) && PRECIS(rb)) ajoute('rôle', ra === rb ? 'concordance' : 'contradiction', ra === rb ? `même rôle : ${ra}` : `rôles différents (${ra} / ${rb}) : procédures distinctes`);
+  // Deux rôles qui peuvent désigner UNE SEULE personne (le directeur d'une école maternelle est aussi enseignant : cas Montpellier du 12/11/2026,
+  // deux propositions « direction » / « enseignant » pour le même homme) ne sont pas une contradiction. Ils ne sont pas non plus une concordance :
+  // l'identité n'est alors prouvée que si les autres indices la prouvent (voir `rolesCompatibles` plus bas).
+  const compatibles = PRECIS(ra) && PRECIS(rb) && ra !== rb && rolesCompatibles(ra, rb);
+  if (compatibles) ajoute('rôle', 'absente', `rôles compatibles (${ra} / ${rb}) : peuvent désigner la même personne, ils ne la distinguent pas`);
+  else if (PRECIS(ra) && PRECIS(rb)) ajoute('rôle', ra === rb ? 'concordance' : 'contradiction', ra === rb ? `même rôle : ${ra}` : `rôles différents (${ra} / ${rb}) : procédures distinctes`);
   else ajoute('rôle', 'absente', 'rôle précis absent d’un côté');
   // Deux structures d'un même groupe scolaire (« maternelle X » / « élémentaire X ») : distinctes dès que les deux NIVEAUX sont écrits et différents.
   // « périscolaire », « centre de loisirs », « autre » ne distinguent rien : le même établissement est décrit tantôt comme une école, tantôt par son
@@ -162,6 +172,11 @@ export function comparerSignaux(a, b) {
   const contra = dim.filter((d) => d.etat === 'contradiction');
   const etat = (nom) => dim.find((d) => d.nom === nom).etat;
   if (contra.length) return { verdict: 'distinct', dimensions: dim, motif: contra.map((d) => d.detail).join(' · ') };
+  // Rôles seulement COMPATIBLES : le rôle ne distingue rien, donc il faut TROIS indices positifs — établissement nommé concordant, nombre de
+  // personnes identique et écrit des deux côtés, page citée par les deux. Sinon : ambigu (jamais fusionné automatiquement).
+  if (compatibles && !(etat('commune') === 'concordance' && etat('établissement') === 'concordance' && etat('personnes') === 'concordance' && etat('pages citées') === 'concordance')) {
+    return { verdict: 'ambigu', dimensions: dim, motif: 'rôles compatibles sans preuve suffisante d’une même personne : ' + dim.filter((d) => d.etat === 'absente').map((d) => d.detail).join(' · ') };
+  }
   if (etat('commune') === 'concordance' && (etat('établissement') === 'concordance' || etat('pages citées') === 'concordance')) {
     return { verdict: 'meme', dimensions: dim, motif: dim.filter((d) => d.etat === 'concordance').map((d) => d.detail).join(' · ') };
   }

@@ -18,6 +18,26 @@ export const VERS_DB = Object.freeze({ VALIDATE: 'ACCEPT', REVIEW: 'REVIEW_REQUI
 export const NC_VERS_DB = Object.freeze({ VALIDATE: 'ACCEPT', CREATE: 'ACCEPT', ATTACH: 'ACCEPT', PENDING: 'ACCEPT', REVIEW: 'REVIEW_REQUIRED', REJECT: 'REJECT' });
 export const ACTION_NC = Object.freeze({ VALIDATE: 'CREATE', CREATE: 'CREATE', ATTACH: 'ATTACH', PENDING: 'CREATE_PENDING', REVIEW: null, REJECT: null });
 
+/**
+ * « Étape suivante » de l'accusé d'un clic POSITIF sur une proposition de nouvelle affaire. Ce que le message promet doit être ce que le clic a fait :
+ *   · VALIDER ET PUBLIER (publication_directe) : le clic PORTE le GO de publication — l'accusé ne dit jamais « publication jamais automatique » ;
+ *     il dit que l'autorisation est reçue et que la publication suit APRÈS contrôles (doublon, preuves, localisation), « publié » n'étant annoncé qu'après
+ *     lecture du site servi ;
+ *   · création documentaire (VALIDATE sans GO, CRÉER en attente de preuves) : la publication reste soumise à un GO explicite ;
+ *   · rapprochement : ce n'est pas une nouvelle affaire, aucune phrase sur la publication.
+ * @param {{action:string|null, directe:boolean, webhook:boolean}} o  action = `ACTION_NC[bouton]`
+ */
+export function suiteClicNouvelle({ action, directe, webhook }) {
+  const application = webhook
+    ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif.'
+    : '\nÉtape suivante : application en base (au prochain passage).';
+  if (action === 'ATTACH') return application;
+  if (action === 'CREATE' && directe) {
+    return `${application}\nAutorisation de publication reçue (VALIDER ET PUBLIER) : l’affaire est créée, puis publiée après les contrôles habituels (doublon, preuves, localisation). « Publié et vérifié » ne t’est annoncé qu’après lecture du site servi ; si un contrôle bloque, tu en reçois le motif.`;
+  }
+  return `${application} Nouvelle affaire : sa publication exige un GO explicite.`;
+}
+
 const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_ETAT = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_TEST = /^sny:TEST:([0-9a-f]{8})$/;

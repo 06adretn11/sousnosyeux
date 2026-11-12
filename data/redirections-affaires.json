@@ -1,0 +1,8 @@
+{
+  "_meta": {
+    "note": "Anciens identifiants d’affaires (doublons réconciliés, fiche retirée) → affaire conservée. Lu par la page d’accueil : /#affaire-<ancien> mène à /#affaire-<conservé>. Compilé par scripts/consolider-doublon.mjs."
+  },
+  "redirections": {
+    "fr-2026-0147": "fr-2026-0146"
+  }
+}

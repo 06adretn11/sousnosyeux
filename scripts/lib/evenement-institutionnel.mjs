@@ -108,6 +108,11 @@ export function libelleInstitutionnel(mesure, realisation) {
   return LIBELLES[mesure]?.[realisation] || null;
 }
 
+const REMISE_CONCLUSIONS = /\b(?:a|ont)\s+(?:rendu|remis|publie|presente|livre)\w*\s+(?:ses|son|leurs?|sa|le|la|les)\s+(?:conclusions?|rapport|avis|recommandations?|preconisations?|propositions?)\b/;
+const PLAN_COMME_CONTEXTE = /\bcomme\s+(?:l'une|l'un|une|un)\s+(?:des\s+)?(?:mesures?|volets?|axes?|piliers?)\b[^.]{0,60}\b(?:de|du)\s+(?:son|leur|ce|la|le)?\s*plan d'action/;
+/** Le « plan d'action » de cette phrase n'est-il qu'un contexte (remise de conclusions, « présentée comme une mesure de son plan ») ? `texte` : déjà normalisé (`norm`) ou non. */
+export const planSeulementEnContexte = (texte) => { const n = norm(texte); return REMISE_CONCLUSIONS.test(n) || PLAN_COMME_CONTEXTE.test(n); };
+
 /** « réalisée » seulement si la citation établit l'accomplissement ET n'annonce rien. */
 export function realisationDe(citation) {
   const n = norm(citation);
@@ -173,6 +178,24 @@ export function planReactions(faits, memoire = []) {
   return { neufs, propres: neufs.filter((f) => f.portee !== 'territoire'), territoire: neufs.filter((f) => f.portee === 'territoire') };
 }
 
+/**
+ * UNE DÉCISION = UNE PORTÉE. Les faits d'un même article ne se décident pas ensemble quand leur portée diffère : un fait lié à l'affaire / à l'établissement, un fait
+ * du territoire A, un fait du territoire B sont des décisions distinctes (une mobilisation à Montreuil et une mesure de la Ville de Paris n'ont ni la même preuve, ni la
+ * même destination, ni le même acteur). Ordre déterministe (rejeu idempotent) : l'affaire d'abord, puis les territoires par ordre alphabétique ; un territoire non
+ * établi forme son propre groupe.
+ * @returns {{cle:string, faits:object[]}[]}
+ */
+export function separerParPortee(faits) {
+  const groupes = new Map();
+  for (const f of faits || []) {
+    const cle = f.portee === 'territoire' ? `territoire|${norm(f.territoire || '')}` : 'affaire';
+    (groupes.get(cle) || groupes.set(cle, []).get(cle)).push(f);
+  }
+  return [...groupes.entries()]
+    .sort(([a], [b]) => (a === 'affaire' ? -1 : b === 'affaire' ? 1 : a.localeCompare(b)))
+    .map(([cle, fs]) => ({ cle, faits: fs }));
+}
+
 // MOBILISATIONS de la société civile (parents, enseignants, collectifs…) : vocabulaire fermé, acteur COLLECTIF seulement. Un acteur
 // institutionnel dans la phrase n'est jamais une mobilisation. Le libellé public ne reprend ni parole ni citation de parent.
 const COLLECTIF = /\b(parents?(?: d'eleves)?|enseignants?|professeurs?|personnels?|collectifs?|associations?|riverains|habitants|syndicats?)\b/g;
@@ -209,7 +232,15 @@ const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"
 
 /** Territoire NOMMÉ par la phrase (« rassemblés à Paris ») — jamais la commune de l'affaire dont on est parti. */
 // (`\b` ne voit pas les lettres accentuées : « à » s'ancre par lookbehind.)
-const territoireDe = (phrase) => /(?<![\p{L}])(?:à\s+travers|à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de|(?:le\s+)?(?:tribunal|palais de justice|préfecture|rectorat)\s+(?:judiciaire\s+|correctionnel\s+)?(?:de|d['’]))(?:\s+|(?<=['’]))(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/u.exec(phrase)?.[1] ?? null;
+const TERRITOIRE_RE = /(?<![\p{L}])(?:à\s+travers|à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de|(?:le\s+)?(?:tribunal|palais de justice|préfecture|rectorat)\s+(?:judiciaire\s+|correctionnel\s+)?(?:de|d['’]))(?:\s+|(?<=['’]))(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/gu;
+// Une phrase qui nomme PLUSIEURS territoires (« dans le 7e arrondissement parisien et à Montreuil ») n'a aucun territoire unique : en retenir un seul, c'est
+// attribuer le fait à un lieu et faire disparaître l'autre. Le territoire reste « non établi » ; le fait n'ira vers aucun Hub par déduction.
+const territoireDe = (phrase) => {
+  const lieux = [...String(phrase || '').matchAll(TERRITOIRE_RE)].map((m) => m[1]);
+  if (new Set(lieux.map(norm)).size > 1) return null;
+  if (lieux.length && !/^paris\b/.test(norm(lieux[0])) && /\b\d{1,2}\s*(?:er|e|eme|ème)?\s*arrondissement\b/i.test(norm(phrase))) return null;
+  return lieux[0] ?? null;
+};
 
 /**
  * Réactions et mesures d'institutions rapportées par un ARTICLE ENTIER (et non seulement par la citation qui porte l'événement
@@ -297,6 +328,9 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
     if (!acteur) continue;
     for (const [mesure, motif] of MESURES) {
       if (mesure === 'suspension_agent' || !motif.test(propre ? norm(propre) : n)) continue;
+      // Un plan d'action cité seulement comme CONTEXTE d'un autre acte (« la convention citoyenne, présentée comme l'une des mesures phare de son plan d'action,
+      // a rendu ses conclusions le 23 juin ») n'est pas l'annonce d'un plan : la phrase rapporte la remise de conclusions, qu'aucun libellé fermé ne couvre.
+      if (mesure === 'plan_action_encadrement' && planSeulementEnContexte(propre ?? n)) continue;
       const realisation = realisationDe(propre ?? phrase);
       // Lien à l'affaire ≠ étendue. Le rattachement de l'ARTICLE aide à comprendre le fait, il ne décide pas seul de sa portée : la réponse reste liée à l'affaire
       // (même si la mesure vise plusieurs structures ; étendue conservée à part dans `territoire`) SEULEMENT si le contexte ne la contredit pas :

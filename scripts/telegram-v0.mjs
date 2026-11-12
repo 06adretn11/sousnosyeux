@@ -20,10 +20,10 @@ import { connecter } from './lib/neon.mjs';
 import { hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
 import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
-import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer } from './lib/telegram-clics.mjs';
+import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer, suiteClicNouvelle } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
-import { pagesSiValide } from './lib/destinations.mjs';
+import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
 import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 
@@ -207,7 +207,8 @@ async function decisionReactions(cle, p, faits) {
   const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
   if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
   const complement = await complementDeclaration(p);
-  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pagesSiValidee(p.case_id, neufs)) + complement, boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+  const pv = pagesSiValidee(p.case_id, neufs);   // { flat, parFait } ou null : les pages sont dites FAIT PAR FAIT (chaque fait a sa portée, donc sa destination)
+  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pv?.flat ?? null, pv?.parFait ?? null) + complement, boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
 }
 /** Publication d'organisme suivi : ce que la proposition ne dit pas d'elle-même (attribution, rattachement, dates) + le lien de continuité avec l'information déjà envoyée. */
 async function complementDeclaration(p) {
@@ -227,7 +228,9 @@ function pagesSiValidee(case_id, neufs) {
     const hubs = Object.fromEntries(slugs.map((s) => [s, { publie: true, groupes: reponses(s).map((g) => g.titre), items: Object.fromEntries(reponses(s).map((g) => [g.titre, g.items])) }]));
     const ctx = { publiques: new Set(cases.map((c) => c.case_id)), holds: new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id)),
       approuvees: new Set(Object.keys(ev.fiches_approuvees ?? {})), cases: new Map(cases.map((c) => [c.case_id, { commune: c.commune, departement: c.departement, etablissement: c.etablissement }])), hubs };
-    return pagesSiValide(neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null, date: f.event_date || null })), ctx, process.env.SNY_SITE_URL || 'https://sousnosyeux.org');
+    const faits = neufs.map((f) => ({ case_id, nature: f.nature || 'mesure', portee: f.portee || 'établissement', territoire: f.territoire || null, date: f.event_date || null }));
+    const site = process.env.SNY_SITE_URL || 'https://sousnosyeux.org';
+    return { flat: pagesSiValide(faits, ctx, site), parFait: pagesParFait(faits, ctx, site) };
   } catch { return null; }
 }
 async function decisionInstitutionnelle(cle) {
@@ -325,9 +328,12 @@ async function notifierNouvelles(max = 5) {
 /** Accusé de réception : ce qui est enregistré, ce qui vient ensuite, et ce qui ne se fait JAMAIS tout seul (publier). */
 // « Décision exécutée » arrive dans un second message (appliquée / bloquée avec motif) ; la publication d'une NOUVELLE affaire reste
 // soumise à ton GO. Par webhook l'application suit dans la minute ; par relève périodique, au prochain passage.
-const SUITE = process.env.SNY_WEBHOOK === '1'
-  ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif. Nouvelle affaire : publication jamais automatique.'
-  : '\nÉtape suivante : application en base (au prochain passage). Nouvelle affaire : publication jamais automatique.';
+// Le texte de l'accusé d'une NOUVELLE affaire dépend de ce que le clic porte (GO de publication ou non) : lib/telegram-clics.mjs · suiteClicNouvelle.
+// SUITE (Maintenance : état, enrichissement) ne parle pas de « nouvelle affaire ».
+const WEBHOOK = process.env.SNY_WEBHOOK === '1';
+const SUITE = WEBHOOK
+  ? '\nApplication en base en cours : tu recevras « Appliqué » ou « Non appliqué » avec le motif.'
+  : '\nÉtape suivante : application en base (au prochain passage).';
 // Proposition de PUBLICATION : libellés et suite propres (PUBLIER = GO enregistré ; REJECT conserve l'affaire ; REVIEW ne publie rien).
 const LIBELLE_PUBLICATION = { VALIDATE: 'PUBLIER (GO publication)', REVIEW: 'REVIEW (rien publié)', REJECT: 'REFUS DE PUBLIER (l’affaire est conservée)' };
 const SUITE_PUBLICATION = '\nPublication en cours : tu recevras « Publié et vérifié » seulement après lecture du site servi, ou le motif si elle ne peut pas aboutir.';
@@ -383,7 +389,7 @@ async function clicNouvelle(cb, d, cle) {
     console.log(`nouvelle affaire : décision ${d} → ${NC_VERS_DB[d]} enregistrée sur ${cle}`);
     const quoi = pr.payload?.etablissement ? `${esc(pr.payload.etablissement)} — ${esc(pr.payload.commune)}` : esc(pr.payload?.commune || cle);
     const pub = !!pr.payload?.publication, hub = !!pr.payload?.hub, hubPub = !!pr.payload?.hub_publication;
-    await accuser(cb, `✅ <b>Décision enregistrée : ${(hubPub ? LIBELLE_HUB_PUB : hub ? LIBELLE_HUB : pub ? LIBELLE_PUBLICATION : LIBELLE_ACTION)[d]}</b>\n${quoi} (${cle})` + (NC_VERS_DB[d] === 'ACCEPT' ? (hubPub ? SUITE_HUB_PUB : hub ? SUITE_HUB : pub ? SUITE_PUBLICATION : SUITE) : '\nAucune écriture sur les fiches.'));
+    await accuser(cb, `✅ <b>Décision enregistrée : ${(hubPub ? LIBELLE_HUB_PUB : hub ? LIBELLE_HUB : pub ? LIBELLE_PUBLICATION : LIBELLE_ACTION)[d]}</b>\n${quoi} (${cle})` + (NC_VERS_DB[d] === 'ACCEPT' ? (hubPub ? SUITE_HUB_PUB : hub ? SUITE_HUB : pub ? SUITE_PUBLICATION : suiteClicNouvelle({ action, directe: !!pr.payload?.publication_directe, webhook: WEBHOOK })) : '\nAucune écriture sur les fiches.'));
     return 'enregistree';
   }
   const [cur] = await sql`select decision::text d from new_case_proposals where proposal_id = ${pr.pid}::uuid`;

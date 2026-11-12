@@ -11,8 +11,15 @@ import { porteeRelais } from './diffusion-sociale.mjs';
 import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 import { stadeCite } from './stade-judiciaire.mjs';
+import { comparerEtablissements } from './rapprochement-garde.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
+/** Coupe à une limite de MOTS (jamais « … le 9 novemb ») : pour les réserves et avertissements, dont la fin porte souvent ce qui est contesté. */
+const cutMot = (s, n) => {
+  if (s.length <= n) return s;
+  const brut = s.slice(0, n - 1), i = brut.lastIndexOf(' ');
+  return `${(i > n * 0.6 ? brut.slice(0, i) : brut).replace(/[\s,;:(]+$/, '')}…`;
+};
 // Les acteurs de l'extraction sont normalisés (sans accent) : rendus lisibles, rien n'est inventé.
 const LISIBLES = { municipalite: 'Municipalité', mairie: 'Mairie', maire: 'Maire', academie: 'Académie', prefecture: 'Préfecture', prefet: 'Préfet', rectorat: 'Rectorat', 'education nationale': 'Éducation nationale', 'conseil municipal': 'Conseil municipal' };
 const acteurLisible = (a) => (a ? (LISIBLES[a] ?? a) : 'acteur non précisé');
@@ -48,6 +55,12 @@ function lesArticles(p, n = 4) {
   return lignes;
 }
 
+/** Une affaire connue de la commune, dite pour ce qu'elle est : « autre établissement » seulement si les deux noms sont écrits et distincts. */
+function etablissementDe(p, v) {
+  const c = comparerEtablissements({ nom: p.etablissement, nomme: p.etablissement_nomme ?? p.fiche?.crit_etablissement_nomme }, { nom: v.etablissement });
+  return c.etat === 'contradiction' ? 'autre établissement' : c.etat === 'concordance' ? 'même établissement, rôle ou procédure à comparer' : 'établissement non comparable';
+}
+
 /** Procédure établie par une citation (stade retenu) : ce qui est établi, par qui, quand. null si aucun stade établi. */
 function blocProcedure(p) {
   const stade = p.stade_minimal || p.fiche?.statut_judiciaire;
@@ -60,7 +73,10 @@ function blocProcedure(p) {
 /** Combien d'articles, d'éditeurs, de sources indépendantes : jamais deux articles présentés comme deux confirmations s'ils viennent du même éditeur. */
 const ligneSources = (p) => {
   const n = (p.articles || []).length;
-  return n ? `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)` : '';
+  if (!n) return '';
+  // Autant d'éditeurs n'est pas autant d'origines : un média qui reprend une dépêche ou en relaie un autre n'ajoute pas une origine indépendante.
+  const reprises = p.medias != null && p.independantes != null && p.independantes < p.medias;
+  return `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)${reprises ? ' — les autres éditeurs reprennent ou relaient : ils ne comptent pas comme des origines de plus' : ''}`;
 };
 const ligneRemplace = (p) => (p.remplace ? `↻ Version consolidée : elle remplace la proposition ${esc(p.remplace.pid8)} (son bouton est inerte) — ${esc(cut(p.remplace.motif || '', 160))}` : '');
 
@@ -80,7 +96,11 @@ export function etiquetteRealisation(f) {
   if (f.organisme) return ` (déclaration de ${esc(f.acteur_nomme || f.acteur || 'l’organisme')} : la démarche n’est pas constatée par une source indépendante)`;
   return f.realisation ? ` (${esc(f.realisation)})` : '';
 }
-export function messageEnrichissement(p, neufs, territorial, pages = null) {
+export function messageEnrichissement(p, neufs, territorial, pages = null, parFait = null) {
+  // Faits de PORTÉES ou de TERRITOIRES différents dans une même proposition (anciennes propositions : les nouvelles sont séparées par portée) : un seul en-tête de
+  // territoire et une seule liste de pages seraient faux pour l'un d'eux. Chaque fait est alors dit avec SA portée, SON territoire, SON acteur, SA date et SES pages.
+  const portees = new Set(neufs.map((f) => (f.portee === 'territoire' ? `territoire|${f.territoire || ''}` : 'affaire')));
+  if (portees.size > 1) return messageEnrichissementParFait(p, neufs, parFait);
   const f1 = neufs[0];
   const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : `date non établie (la phrase n’en donne pas ; article du ${jj(p.publication_date)})`);
   // Pourquoi ce fait est (ou n'est pas) rattaché à l'affaire : dit en clair, jamais sous-entendu.
@@ -113,11 +133,39 @@ export function messageEnrichissement(p, neufs, territorial, pages = null) {
     `<b>Portée</b> : ${territorial ? `territoire${f1.territoire ? ` « ${esc(f1.territoire)} »` : ''} (non propre à un établissement ni à une affaire)` : f1.lien === 'procédure' ? `affaire — fait lié à la procédure de cette affaire${f1.territoire ? ` · lieu : ${esc(f1.territoire)}` : ''}` : `établissement — réponse liée à cette affaire${f1.territoire ? ` · étendue de la mesure : ${esc(f1.territoire)} (non limitée à cet établissement)` : ''}`}`,
     ...(lienTexte(f1) ? [`<b>Lien avec l’affaire</b> : ${esc(lienTexte(f1))}`] : []),
     ...(Array.isArray(pages)
-      ? ['<b>Pages concernées si VALIDATE</b>', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
+      ? ['<b>Pages concernées si VALIDATE</b> (calcul de la projection : Hub publié, fiche approuvée, contrôles — le clic lui-même ne publie rien)', ...(pages.length ? pages.map((x) => `• ${esc(x)}`) : ['aucune page publique : l’information resterait en mémoire'])]
       : [`<b>Utilisation possible</b> : ${territorial ? 'un Hub PUBLIÉ dont le périmètre contient ce territoire, avec sa portée écrite (contexte) ; jamais la fiche d’une affaire par défaut' : 'fiche individuelle (détail) et Hub du territoire (synthèse)'}`]),
     '',
     '<b>Décision</b>',
     'VALIDATE : conserver en mémoire (aucune mise à jour publique immédiate n’est promise ; reprise automatique si la fiche ou le Hub existent) · REVIEW · REJECT',
+  ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n');
+}
+
+/** Message d'enrichissement pour des faits de portées / territoires différents : chaque fait porte sa portée, son acteur, sa date, sa preuve et ses pages. */
+function messageEnrichissementParFait(p, neufs, parFait) {
+  const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : `date non établie (article du ${jj(p.publication_date)})`);
+  const portee = (f) => (f.portee === 'territoire' ? `territoire${f.territoire ? ` « ${esc(f.territoire)} »` : ' non établi par la source'} (non propre à une affaire)` : `affaire / établissement${f.territoire ? ` · étendue : ${esc(f.territoire)}` : ''}`);
+  const blocs = neufs.slice(0, 3).flatMap((f, i) => {
+    const pf = parFait?.[i];
+    return [
+      `<b>${i + 1}. ${esc(f.libelle_public)}</b>${etiquetteRealisation(f)}`,
+      `  « ${esc(cut(f.evidence.find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? f.evidence[0], 320))} »`,
+      `  Portée : ${portee(f)} · ${esc(acteurLisible(f.acteur_nomme || f.acteur))} · ${esc(quand(f))}`,
+      ...(pf ? [pf.pages.length ? '  Pages si VALIDATE :' : `  Aucune page publique : ${esc(pf.aucune)} — l’information resterait en mémoire.`, ...pf.pages.map((x) => `   • ${esc(x)}`)] : []),
+      '',
+    ];
+  });
+  return [
+    '🔄 <b>MAINTENANCE</b> · 📌 INFORMATIONS DE PORTÉES DIFFÉRENTES',
+    `Provenance seulement : découvertes via un article lié à <b>${esc(p.etablissement)}</b> (${esc(p.commune)}) — la provenance n’est ni la portée ni la destination de chaque fait ; l’état judiciaire de l’affaire n’est pas concerné.`,
+    '',
+    ...blocs,
+    neufs.length > 3 ? `(+${neufs.length - 3} autre(s) information(s))` : '',
+    '<b>Source</b>',
+    `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${/^https?:\/\//.test(p.url || '') ? `\n${esc(p.url)}` : ''}`,
+    '',
+    '<b>Décision</b>',
+    '⚠ Cette proposition réunit des faits de portées différentes : VALIDATE les concerne tous ; REVIEW pour les examiner séparément. VALIDATE conserve en mémoire (aucune mise à jour publique immédiate n’est promise) · REVIEW · REJECT',
   ].filter((l, i, a) => !(l === '' && a[i - 1] === '')).join('\n');
 }
 
@@ -276,7 +324,7 @@ export function messageDecision(p, recommendation) {
   const nomme = p.etablissement_nomme !== false && p.etablissement;
   const matches = p.possible_matches_sny || [];
   const sny = recommendation === 'NEW_CASE_CANDIDATE'
-    ? 'SNY : aucune correspondance dans la base.' + (matches.length ? `\n(${matches.length} autre(s) affaire(s) SNY dans la commune, autre(s) établissement(s) : ${matches.map((v) => v.case_id).join(', ')}.)` : '')
+    ? 'SNY : aucune correspondance dans la base au moment de l’envoi.' + (matches.length ? `\n(${matches.length} affaire(s) SNY dans la commune : ${matches.map((v) => `${v.case_id} — ${etablissementDe(p, v)}`).join(' ; ')}.)` : '')
       + (p.rapprochement_ecarte ? `\nℹ Rapprochement avec ${esc(p.rapprochement_ecarte.case_id)} écarté : ${esc(cut(p.rapprochement_ecarte.raison, 140))}.` : '')
     : `SNY : correspondance à vérifier${matches.length ? ' — ' + matches.map((v) => v.case_id).join(', ') : ''}.`;
   // La ligne de recommandation dit EXACTEMENT ce que le bouton proposé fera (modeCreation) : jamais « VALIDATE » sous un bouton « preuves à compléter ».
@@ -304,7 +352,8 @@ export function messageDecision(p, recommendation) {
     '',
     ...blocInstitutionnel(p),
     esc(sny),
-    p.avertissement ? `\n⚠ ${esc(cut(p.avertissement, 200))}` : '',
+    p.avertissement ? `\n⚠ ${esc(cutMot(p.avertissement, 360))}` : '',
+    p.resume_neutralise?.length ? `ℹ Résumé volontairement neutre : les articles divergent sur ${esc(p.resume_neutralise.join(', '))}, ce n’est donc pas présenté comme établi.` : '',
     !dp && p.non_publiable?.length ? `\n🚫 Publication non proposée : ${esc(cut(p.non_publiable.join(' ; '), 260))}.` : '',
     '',
     esc(reco),
