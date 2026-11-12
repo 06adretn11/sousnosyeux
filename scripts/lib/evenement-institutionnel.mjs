@@ -235,6 +235,22 @@ const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"
 const TERRITOIRE_RE = /(?<![\p{L}])(?:à\s+travers|à|au|aux|en|dans|(?:la\s+)?(?:mairie|ville)\s+de|(?:le\s+)?(?:tribunal|palais de justice|préfecture|rectorat)\s+(?:judiciaire\s+|correctionnel\s+)?(?:de|d['’]))(?:\s+|(?<=['’]))(?:la\s+ville\s+de\s+)?([A-ZÀ-Ý][\p{L}'’-]+(?:[ -][A-ZÀ-Ý][\p{L}'’-]+){0,2})/gu;
 // Une phrase qui nomme PLUSIEURS territoires (« dans le 7e arrondissement parisien et à Montreuil ») n'a aucun territoire unique : en retenir un seul, c'est
 // attribuer le fait à un lieu et faire disparaître l'autre. Le territoire reste « non établi » ; le fait n'ira vers aucun Hub par déduction.
+/** Tous les territoires NOMMÉS par une phrase, dans l'ordre (« le 7e arrondissement parisien et à Montreuil » → Paris 7e, Montreuil). */
+export const territoiresDePhrase = (phrase) => {
+  const lieux = [...String(phrase || '').matchAll(TERRITOIRE_RE)].map((m) => m[1]);
+  for (const m of String(phrase || '').matchAll(/\b(\d{1,2})\s*(?:er|e|eme|ème)\s*(?:<sup>[^<]*<\/sup>\s*)?arrondissement\s+(?:parisien|de\s+Paris)/giu)) lieux.unshift(`Paris ${m[1]}e`);
+  const vus = new Set();
+  return lieux.filter((l) => { const k = norm(l); if (vus.has(k)) return false; vus.add(k); return true; });
+};
+/**
+ * Une phrase qui nomme PLUSIEURS territoires n'a pas UN territoire : le fait n'est rattaché à aucun (aucune page déduite) mais il n'est NI abandonné NI caché — il garde la
+ * liste `territoires` et reste proposé à l'éditeur avec la mention « plusieurs territoires nommés : … » (revue explicite, décision humaine, rien d'automatique).
+ */
+const avecTerritoires = (f) => {
+  if (f.nature !== 'mobilisation' || f.territoire) return f;
+  const multi = f.evidence.map(territoiresDePhrase).find((l) => l.length > 1);
+  return multi ? { ...f, territoires: multi } : f;
+};
 const territoireDe = (phrase) => {
   const lieux = [...String(phrase || '').matchAll(TERRITOIRE_RE)].map((m) => m[1]);
   if (new Set(lieux.map(norm)).size > 1) return null;
@@ -354,7 +370,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       }
     }
   }
-  return [...parMesure.values()].filter((f) => !f.evidence.every(estTitre)).map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && ((f.portee !== 'territoire' && f.lien !== 'procédure') || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
+  return [...parMesure.values()].filter((f) => !f.evidence.every(estTitre)).map(avecTerritoires).map(({ _nomme, ...f }) => (f.nature === 'mobilisation' && ((f.portee !== 'territoire' && f.lien !== 'procédure') || !f.territoire) ? (delete f.territoire, f) : f)).map((f) => ({ ...f,libelle_public: f.nature === 'mobilisation' ? libelleMobilisation(f.mesure, f.realisation, f.acteurs) : libelleInstitutionnel(f.mesure, f.realisation) }));
 }
 
 /**

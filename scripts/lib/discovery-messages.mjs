@@ -111,7 +111,7 @@ export function messageEnrichissement(p, neufs, territorial, pages = null, parFa
   // Un fait de TERRITOIRE se présente par sa portée : l'affaire par laquelle il a été découvert n'est qu'une provenance, il n'est pas « un enrichissement de cette affaire ».
   const tete = territorial
     ? [`🔄 <b>MAINTENANCE</b> · 🗺 INFORMATION TERRITORIALE PROPOSÉE`,
-      `<b>Territoire : ${f1.territoire ? esc(f1.territoire) : 'non établi par la source'}</b>`,
+      `<b>Territoire : ${f1.territoire ? esc(f1.territoire) : f1.territoires?.length > 1 ? `plusieurs territoires nommés (${esc(f1.territoires.join(' · '))}) — aucun n’est retenu seul` : 'non établi par la source'}</b>`,
       `Provenance seulement : découverte via un article lié à ${esc(p.etablissement)} — ce fait n’est pas propre à cette affaire, dont l’état judiciaire n’est pas concerné.`]
     : [`🔄 <b>MAINTENANCE</b> · 📌 ENRICHISSEMENT PROPOSÉ`,
       `<b>${esc(p.etablissement)}</b> — ${esc(p.commune)} · état judiciaire inchangé (${esc(p.courant)})`];
@@ -144,7 +144,7 @@ export function messageEnrichissement(p, neufs, territorial, pages = null, parFa
 /** Message d'enrichissement pour des faits de portées / territoires différents : chaque fait porte sa portée, son acteur, sa date, sa preuve et ses pages. */
 function messageEnrichissementParFait(p, neufs, parFait) {
   const quand = (f) => (f.event_date ? jj(f.event_date) : f.event_period ? `${moisFr(f.event_period)} (jour non établi)` : `date non établie (article du ${jj(p.publication_date)})`);
-  const portee = (f) => (f.portee === 'territoire' ? `territoire${f.territoire ? ` « ${esc(f.territoire)} »` : ' non établi par la source'} (non propre à une affaire)` : `affaire / établissement${f.territoire ? ` · étendue : ${esc(f.territoire)}` : ''}`);
+  const portee = (f) => (f.portee === 'territoire' ? `territoire${f.territoire ? ` « ${esc(f.territoire)} »` : f.territoires?.length > 1 ? `s nommés (${esc(f.territoires.join(' · '))}) — aucun retenu seul` : ' non établi par la source'} (non propre à une affaire)` : `affaire / établissement${f.territoire ? ` · étendue : ${esc(f.territoire)}` : ''}`);
   const blocs = neufs.slice(0, 3).flatMap((f, i) => {
     const pf = parFait?.[i];
     return [

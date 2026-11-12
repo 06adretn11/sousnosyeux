@@ -150,7 +150,7 @@ await t('le proposeur ne redemande jamais un GO déjà donné (clic unique ou GO
 });
 await t('une reprise ne produit ni seconde création ni seconde décision : created_case_id court-circuite la création, applied_at reste ouvert jusqu’au GO', () => {
   const a = src('scripts/appliquer-nouvelles-affaires.mjs');
-  assert.ok(a.includes('const cree = r.created_case_id ? [] : await sql'));
+  assert.ok(a.includes('if (!r.created_case_id) try { cree = await sql'));
   assert.ok(a.includes('applied_at = case when ${direct} then null else now() end'));
   assert.ok(a.includes('Telegram VALIDER ET PUBLIER') && a.includes('const direct = accepte && !rejet && !enAttente && action === \'CREATE\' && !!p.publication_directe'));
   assert.ok(a.includes("o.etat === 'refus'") && a.includes('Ton GO est conservé'));

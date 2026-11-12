@@ -21,6 +21,7 @@ import { messageDecision, messageEnrichissement } from '../lib/discovery-message
 import { suiteClicNouvelle } from '../lib/telegram-clics.mjs';
 import { extraireCorps } from '../lib/corps-article.mjs';
 import { extraireReactions, separerParPortee, planSeulementEnContexte } from '../lib/evenement-institutionnel.mjs';
+import { estFaitDeTerritoireNomme } from '../lib/pistes.mjs';
 import { destinationsDe, pagesParFait, pagesSiValide, construireMatiere, territoireDansHub } from '../lib/destinations.mjs';
 
 let ko = 0;
@@ -60,7 +61,7 @@ test('la garde est posée AVANT l’écriture et seulement pour une création (n
 test('écriture conditionnée à l’état vu par le contrôle : aucune fiche apparue entre-temps (plus grand numéro inchangé)', a.includes('where (${maxVu}::int is null or nxt.m = ${maxVu}::int)'));
 test('la proposition n’est JAMAIS marquée appliquée si rien n’a été écrit', a.includes('and applied_at is null and exists (select 1 from c)'));
 test('une base modifiée pendant le contrôle → rien n’est écrit, contrôle refait au passage suivant', a.includes('la base a changé pendant le contrôle'));
-test('rejeu d’une proposition déjà créée : jamais une seconde fiche (created_case_id)', a.includes('const cree = r.created_case_id ? [] : await sql`'));
+test('rejeu d’une proposition déjà créée : jamais une seconde fiche (created_case_id)', a.includes('if (!r.created_case_id) try { cree = await sql`'));
 test('même affaire certaine : sources rattachées, created_case_id = l’affaire existante, AUCUNE publication déclenchée par ce chemin',
   (() => { const bloc = a.slice(a.indexOf("g.decision === 'rattacher'"), a.indexOf("g.decision === 'revue'")); return bloc.includes('rattacherSources(sql, {') && bloc.includes('created_case_id = ${cible}') && !bloc.includes('publierGo'); })());
 test('workflows : une seule exécution à la fois (même groupe de concurrence) pour tous les consommateurs de décisions', ['sny-clics', 'sny-cycle', 'sny-discovery', 'sny-telegram'].every((w) => /group: sny-telegram/.test(src(`.github/workflows/${w}.yml`))));
@@ -190,6 +191,19 @@ test('l’absence de l’affaire d’origine du Hub du 11e (affaire du 10e) n’
 console.log('\n7. Preuve ou portée insuffisante : aucune projection injustifiée');
 test('territoire non établi par la source → aucune destination (jamais déduite de la fiche d’où l’on est parti)', destinationsDe(mobSansTerr, ctx).hubs.length === 0 && destinationsDe(mobSansTerr, ctx).fiche === null);
 test('affaire non publique ou sous HOLD → aucune destination pour un fait propre', destinationsDe({ ...mesureParis, case_id: 'FR-CAND', portee: 'établissement' }, ctx).fiche === null && destinationsDe({ ...mesureParis, case_id: 'FR-HOLD', portee: 'établissement' }, ctx).hubs.length === 0);
+console.log('\n   Phrase à plusieurs territoires : prudence ≠ disparition (revue explicite, rien de rattaché)');
+{
+  const multi = extraireReactions('Les parents sont appelés à se mobiliser ce jeudi dans le 7 e arrondissement parisien et à Montreuil.', OPTS);
+  const f = multi[0];
+  test('le fait n’est PAS abandonné : il garde la liste des territoires nommés, sans en retenir un seul', multi.length === 1 && !f.territoire && f.territoires.join() === 'Paris 7e,Montreuil');
+  test('reçu via un article lié (piste), il reste retenu : proposé à l’éditeur, jamais supprimé en silence', estFaitDeTerritoireNomme(f) && !estFaitDeTerritoireNomme({ ...f, territoires: undefined }));
+  test('aucune destination déduite (ni Hub, ni fiche) : aucun mauvais rattachement', destinationsDe({ ...f, case_id: 'FR-P10', nature: 'mobilisation', libelle: 'l' }, ctx).hubs.length === 0 && destinationsDe({ ...f, case_id: 'FR-P10', nature: 'mobilisation', libelle: 'l' }, ctx).fiche === null);
+  const pf1 = pagesParFait([{ ...f, case_id: 'FR-P10', nature: 'mobilisation' }], ctx, 'https://site.example')[0];
+  test('l’éditeur est prévenu : « plusieurs territoires nommés », aucune page déduite, décision à lui', pf1.pages.length === 0 && /plusieurs territoires \(Paris 7e, Montreuil\)/.test(pf1.aucune) && /reste proposé à votre décision/.test(pf1.aucune));
+  const m = messageEnrichissement({ etablissement: 'école privée Les Tilleuls', commune: 'Paris 10e', courant: 'mise en examen', media: 'Presse', publication_date: '2026-09-24', url: 'https://presse.example/a' }, [f], true, [], pagesParFait([{ ...f, case_id: 'FR-P10', nature: 'mobilisation' }], ctx).map((x) => x));
+  test('le message dit « plusieurs territoires nommés (Paris 7e · Montreuil) — aucun n’est retenu seul »', /plusieurs territoires nommés \(Paris 7e · Montreuil\) — aucun n’est retenu seul/.test(m));
+}
+
 console.log('\n8. Cohérence : destinations affichées = calcul réel de la projection');
 const tous = [mesureParis, mobMontreuil, mobSept, mobSansTerr, mobOnze];
 const pf = pagesParFait(tous, ctx, 'https://site.example');
