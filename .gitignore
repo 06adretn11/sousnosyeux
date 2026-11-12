@@ -62,3 +62,6 @@ data/hub-prive/
 
 # --- Fiches générées (traçabilité = extraits littéraux pouvant contenir un nom de mis en cause) : jamais dans le dépôt public ---
 data/fiches-generees/
+
+# --- Sorties locales (banc d’essai éditorial social : jamais publiées) ---
+/out/

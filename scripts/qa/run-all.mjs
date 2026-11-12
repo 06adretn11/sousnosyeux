@@ -204,6 +204,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Pilote éditorial social V3 — banc d’essai : pare-feux documentaires, traçabilité, sécurité des personnes, corpus réel, aucun chemin Buffer',
+    script: 'scripts/qa/test-banc-social.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

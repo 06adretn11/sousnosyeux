@@ -1,0 +1,1682 @@
+{
+  "version": "pilote-social-v3.2",
+  "genere_le": "2026-11-12T10:55:38.868Z",
+  "resultats": [
+    {
+      "id": "S01",
+      "titre": "Nouvelle affaire — information judiciaire riche",
+      "famille": "nouvelle_affaire",
+      "case_id": "FR-2026-0113",
+      "etablissement": "École maternelle Frida-Kahlo",
+      "commune": "Bordeaux",
+      "statut_public": "enquête",
+      "fiche_approuvee": "fa7a412f94bd5b04",
+      "source_principale": {
+        "media": "France 3 Nouvelle-Aquitaine",
+        "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+        "publie_le": "2026-07-02",
+        "acces": "libre"
+      },
+      "age_source_jours": 133,
+      "etat": "CONFORME",
+      "motifs": [],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "REVUE",
+          "texte": "Bordeaux · École maternelle Frida-Kahlo\n\nSelon Ouest-France, une enquête a été ouverte. L'ouverture d'une enquête ne vaut pas culpabilité.\n\nSource : https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f Suivi : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113",
+          "longueur": 204,
+          "urls": [
+            "https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f",
+            "https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113"
+          ],
+          "repli": true,
+          "attention": [
+            "accès à la source liée (Ouest-France) non constaté par SNY (référence de la carte, non relue dans le dossier)"
+          ],
+          "source": {
+            "media": "Ouest-France",
+            "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f",
+            "publie_le": "2026-07-01",
+            "acces": null
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "X ≤ 280 caractères (URL = 23)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 89,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 12,
+              "lisibilite": 12,
+              "sny": 5,
+              "famille": "nouvelle_affaire"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Bordeaux · École maternelle Frida-Kahlo",
+              "source": null,
+              "passage": "entree.commune : « Bordeaux » ; entree.departement : « Gironde » ; entree.etablissement : « École maternelle Frida-Kahlo » ; libelle : « enquête en cours »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon Ouest-France, une enquête a été ouverte.",
+              "source": {
+                "media": "Ouest-France",
+                "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f",
+                "publie_le": "2026-07-01"
+              },
+              "passage": "site:etat-wording : « Selon Ouest-France, une enquête a été ouverte. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "L'ouverture d'une enquête ne vaut pas culpabilité.",
+              "source": {
+                "media": "France 3 Nouvelle-Aquitaine",
+                "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+                "publie_le": "2026-07-02"
+              },
+              "passage": "dossier.etat_actuel[2] : « L'ouverture d'une enquête ne vaut pas culpabilité. »",
+              "validation": "fiche approuvée (empreinte fa7a412f94bd5b04)"
+            }
+          ],
+          "motifs": []
+        },
+        "facebook": {
+          "etat": "CONFORME",
+          "texte": "Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête en cours\n\nSelon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves. Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.\n\nL'ouverture d'une enquête ne vaut pas culpabilité.\n\nSource : France 3 Nouvelle-Aquitaine, 2 juillet 2026 — https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113",
+          "longueur": 960,
+          "urls": [
+            "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+            "https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "France 3 Nouvelle-Aquitaine",
+            "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+            "publie_le": "2026-07-02",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 95,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 20,
+              "accroche": 20,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "nouvelle_affaire"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête en cours",
+              "source": null,
+              "passage": "entree.commune : « Bordeaux » ; entree.departement : « Gironde » ; entree.etablissement : « École maternelle Frida-Kahlo » ; libelle : « enquête en cours »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves.",
+              "source": {
+                "media": "France 3 Nouvelle-Aquitaine",
+                "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+                "publie_le": "2026-07-02"
+              },
+              "passage": "dossier.etat_actuel[0] : « Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves. »",
+              "validation": "fiche approuvée (empreinte fa7a412f94bd5b04)"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.",
+              "source": {
+                "media": "France 3 Nouvelle-Aquitaine",
+                "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+                "publie_le": "2026-07-02"
+              },
+              "passage": "dossier.etat_actuel[1] : « Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée. »",
+              "validation": "fiche approuvée (empreinte fa7a412f94bd5b04)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "L'ouverture d'une enquête ne vaut pas culpabilité.",
+              "source": {
+                "media": "France 3 Nouvelle-Aquitaine",
+                "url": "https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html",
+                "publie_le": "2026-07-02"
+              },
+              "passage": "dossier.etat_actuel[2] : « L'ouverture d'une enquête ne vaut pas culpabilité. »",
+              "validation": "fiche approuvée (empreinte fa7a412f94bd5b04)"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — École maternelle Frida-Kahlo, Bordeaux. Selon Ouest-France, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113",
+          "longueur": 205
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — École maternelle Frida-Kahlo, Bordeaux (Gironde).\n\nSelon Ouest-France, une enquête a été ouverte.\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113"
+        }
+      }
+    },
+    {
+      "id": "S02",
+      "titre": "Nouvelle affaire — documentation limitée (3 articles)",
+      "famille": "nouvelle_affaire",
+      "case_id": "FR-2026-0025",
+      "etablissement": "Collège-lycée Saint-Martin-de-France",
+      "commune": "Pontoise",
+      "statut_public": "mise en examen",
+      "fiche_approuvee": "7c92fed95fdedaa6",
+      "source_principale": {
+        "media": "France info",
+        "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+        "publie_le": "2024-02-15",
+        "acces": "libre"
+      },
+      "age_source_jours": 1001,
+      "etat": "CONFORME",
+      "motifs": [],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "CONFORME",
+          "texte": "Pontoise · Collège-lycée Saint-Martin-de-France\n\nSelon France info, une mise en examen a été prononcée. La mise en examen ne vaut pas culpabilité.\n\nSource : https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025",
+          "longueur": 212,
+          "urls": [
+            "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+            "https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025"
+          ],
+          "repli": true,
+          "attention": [],
+          "source": {
+            "media": "France info",
+            "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+            "publie_le": "2024-02-15",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "X ≤ 280 caractères (URL = 23)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 89,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 12,
+              "lisibilite": 12,
+              "sny": 5,
+              "famille": "nouvelle_affaire"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Pontoise · Collège-lycée Saint-Martin-de-France",
+              "source": null,
+              "passage": "entree.commune : « Pontoise » ; entree.departement : « Val-d'Oise » ; entree.etablissement : « Collège-lycée Saint-Martin-de-France » ; libelle : « mise en examen »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon France info, une mise en examen a été prononcée.",
+              "source": {
+                "media": "France info",
+                "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+                "publie_le": "2024-02-15"
+              },
+              "passage": "site:etat-wording : « Selon France info, une mise en examen a été prononcée. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "La mise en examen ne vaut pas culpabilité.",
+              "source": {
+                "media": "France info",
+                "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+                "publie_le": "2024-02-15"
+              },
+              "passage": "site:etat-wording : « La mise en examen ne vaut pas culpabilité. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        },
+        "facebook": {
+          "etat": "CONFORME",
+          "texte": "Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen\n\nSelon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire.\n\nLa mise en examen ne vaut pas culpabilité.\n\nSource : France info, 15 février 2024 — https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025",
+          "longueur": 777,
+          "urls": [
+            "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+            "https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "France info",
+            "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+            "publie_le": "2024-02-15",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 100,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "nouvelle_affaire"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen",
+              "source": null,
+              "passage": "entree.commune : « Pontoise » ; entree.departement : « Val-d'Oise » ; entree.etablissement : « Collège-lycée Saint-Martin-de-France » ; libelle : « mise en examen »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire.",
+              "source": {
+                "media": "France info",
+                "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+                "publie_le": "2024-02-15"
+              },
+              "passage": "dossier.etat_actuel[0] : « Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire. »",
+              "validation": "fiche approuvée (empreinte 7c92fed95fdedaa6)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "La mise en examen ne vaut pas culpabilité.",
+              "source": {
+                "media": "France info",
+                "url": "https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html",
+                "publie_le": "2024-02-15"
+              },
+              "passage": "site:etat-wording : « La mise en examen ne vaut pas culpabilité. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — Collège-lycée Saint-Martin-de-France, Pontoise. Selon France info, une mise en examen a été prononcée. La mise en examen ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025",
+          "longueur": 213
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — Collège-lycée Saint-Martin-de-France, Pontoise (Val-d'Oise).\n\nSelon France info, une mise en examen a été prononcée.\nLa mise en examen ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025"
+        }
+      }
+    },
+    {
+      "id": "S03",
+      "titre": "Évolution — mise en examen",
+      "famille": "evolution",
+      "case_id": "FR-2026-0005",
+      "event_id": "54946f38-6f58-4631-a904-a07ea92545ce",
+      "etablissement": "École maternelle Saint-Dominique",
+      "commune": "Paris 7e",
+      "statut_public": "mise en examen",
+      "fiche_approuvee": "3ab999ae475d3262",
+      "source_principale": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+        "publie_le": "2026-05-22",
+        "acces": "libre"
+      },
+      "age_source_jours": 174,
+      "etat": "CONFORME",
+      "motifs": [],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "CONFORME",
+          "texte": "Paris 7e · École maternelle Saint-Dominique\n\nDeux animateurs mis en examen pour des faits à caractère sexuel et placés en détention provisoire (selon franceinfo). La mise en examen ne vaut pas culpabilité.\n\nSource : https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen",
+          "longueur": 271,
+          "urls": [
+            "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen"
+          ],
+          "repli": true,
+          "attention": [],
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "publie_le": "2026-05-22",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "X ≤ 280 caractères (URL = 23)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 92,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 12,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "evolution"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 7e · École maternelle Saint-Dominique",
+              "source": null,
+              "passage": "entree.commune : « Paris 7e » ; entree.departement : « Paris » ; entree.etablissement : « École maternelle Saint-Dominique » ; libelle : « mise en examen le 22 mai 2026 »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Deux animateurs mis en examen pour des faits à caractère sexuel et placés en détention provisoire (selon franceinfo).",
+              "source": {
+                "media": "franceinfo",
+                "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+                "publie_le": "2026-05-22"
+              },
+              "passage": "evenement:54946f38-6f58-4631-a904-a07ea92545ce#phrase1 : « Deux animateurs mis en examen pour des faits à caractère sexuel et placés en détention provisoire » ; evenement:54946f38-6f58-4631-a904-a07ea92545ce.source.media : « franceinfo »",
+              "validation": "événement validé (Neon, 54946f38-6f58-4631-a904-a07ea92545ce) — première phrase entière du libellé"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "La mise en examen ne vaut pas culpabilité.",
+              "source": {
+                "media": "franceinfo",
+                "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+                "publie_le": "2026-05-22"
+              },
+              "passage": "site:etat-wording : « La mise en examen ne vaut pas culpabilité. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        },
+        "facebook": {
+          "etat": "CONFORME",
+          "texte": "Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026\n\nSelon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026.\n\nLa mise en examen ne vaut pas culpabilité.\n\nSource : franceinfo, 22 mai 2026 — https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen",
+          "longueur": 897,
+          "urls": [
+            "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "franceinfo",
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "publie_le": "2026-05-22",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 100,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "evolution"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026",
+              "source": null,
+              "passage": "entree.commune : « Paris 7e » ; entree.departement : « Paris » ; entree.etablissement : « École maternelle Saint-Dominique » ; libelle : « mise en examen le 22 mai 2026 »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026.",
+              "source": {
+                "media": "Le Journal du Dimanche",
+                "url": "https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787",
+                "publie_le": "2026-10-11"
+              },
+              "passage": "dossier.deroule[17] : « Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et… »",
+              "validation": "fiche approuvée (empreinte 3ab999ae475d3262)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "La mise en examen ne vaut pas culpabilité.",
+              "source": {
+                "media": "franceinfo",
+                "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+                "publie_le": "2026-05-22"
+              },
+              "passage": "site:etat-wording : « La mise en examen ne vaut pas culpabilité. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École maternelle Saint-Dominique, Paris 7e. Selon franceinfo, une mise en examen a été prononcée le 22 mai 2026. La mise en examen ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen",
+          "longueur": 216
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École maternelle Saint-Dominique, Paris 7e (Paris).\n\nSelon franceinfo, une mise en examen a été prononcée le 22 mai 2026.\nLa mise en examen ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0005/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0005-mise-en-examen"
+        }
+      }
+    },
+    {
+      "id": "S04",
+      "titre": "Évolution — condamnation, recours non documentés",
+      "famille": "evolution",
+      "case_id": "FR-2026-0001",
+      "event_id": "a85574bb-c8c9-47fa-b5fe-70f688b3441b",
+      "etablissement": "École Aqueduc",
+      "commune": "Paris 10e",
+      "statut_public": "condamnation non définitive",
+      "fiche_approuvee": "5d9c5ba2fb532698",
+      "source_principale": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      },
+      "age_source_jours": 125,
+      "etat": "CONFORME",
+      "motifs": [],
+      "attention": [],
+      "soeurs": [
+        "FR-2026-0002"
+      ],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 507 car. ; option écartée : procédure non distinguée ; option écartée : procédure non distinguée)"
+          ]
+        },
+        "facebook": {
+          "etat": "CONFORME",
+          "texte": "Paris 10e (Paris) — École Aqueduc : condamnation prononcée le 10 juillet 2026\n\nSelon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.\n\nAppel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.\n\nSource : CNEWS, 10 juillet 2026 — https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0001-condamnation-non-definitive",
+          "longueur": 974,
+          "urls": [
+            "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+            "https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0001-condamnation-non-definitive"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "CNEWS",
+            "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+            "publie_le": "2026-07-10",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 100,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "evolution"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 10e (Paris) — École Aqueduc : condamnation prononcée le 10 juillet 2026",
+              "source": null,
+              "passage": "entree.commune : « Paris 10e » ; entree.departement : « Paris » ; entree.etablissement : « École Aqueduc » ; libelle : « condamnation prononcée le 10 juillet 2026 »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.deroule[4] : « Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un sui… »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.etat_actuel[1] : « Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive. »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École Aqueduc, Paris 10e. Selon CNEWS, une condamnation a été prononcée le 10 juillet 2026. https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0001-condamnation-non-definitive",
+          "longueur": 152
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École Aqueduc, Paris 10e (Paris).\n\nSelon CNEWS, une condamnation a été prononcée le 10 juillet 2026.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0001-condamnation-non-definitive"
+        }
+      }
+    },
+    {
+      "id": "S05",
+      "titre": "Déclaration associative — L'Enfant Bleu",
+      "famille": "declaration_association",
+      "case_id": "POC-05",
+      "matiere_id": "0eca8e5246d4",
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "commune": "Paris 11e",
+      "statut_public": "relaxe / non-lieu / classement",
+      "fiche_approuvee": "b0d36eade7a33635",
+      "source_principale": {
+        "media": "L'Enfant Bleu",
+        "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+        "publie_le": "2026-07-21",
+        "acces": "événement validé"
+      },
+      "age_source_jours": 114,
+      "etat": "REVUE",
+      "motifs": [],
+      "attention": [
+        "déclaration : GO Telegram SPÉCIFIQUE requis (texte exact présenté avant approbation) — jamais couverte par le GO de publication"
+      ],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 575 car.)"
+          ]
+        },
+        "facebook": {
+          "etat": "REVUE",
+          "texte": "Paris 11e (Paris) — École maternelle Alphonse-Baudin : déclaration de L'Enfant Bleu\n\nDans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.\n\nSelon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute sérieux ».\n\nUn appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit.\n\nSource : L'Enfant Bleu, 21 juillet 2026 — https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/poc-05/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=poc-05",
+          "longueur": 1126,
+          "urls": [
+            "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+            "https://sousnosyeux.org/affaires/poc-05/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=poc-05"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "L'Enfant Bleu",
+            "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+            "publie_le": "2026-07-21",
+            "acces": "événement validé"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 97,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 12,
+              "sny": 5,
+              "famille": "declaration_association"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 11e (Paris) — École maternelle Alphonse-Baudin : déclaration de L'Enfant Bleu",
+              "source": null,
+              "passage": "entree.commune : « Paris 11e » ; entree.departement : « Paris » ; entree.etablissement : « École maternelle Alphonse-Baudin » ; libelle : « déclaration de L'Enfant Bleu »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.",
+              "source": {
+                "media": "L'Enfant Bleu",
+                "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
+                "publie_le": "2026-07-21"
+              },
+              "passage": "matiere:0eca8e5246d4 : « Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans pr… »",
+              "validation": "information validée (Neon, 0eca8e5246d4)"
+            },
+            {
+              "role": "contexte",
+              "affirmation": "Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute sérieux ».",
+              "source": {
+                "media": "franceinfo",
+                "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+                "publie_le": "2026-07-09"
+              },
+              "passage": "dossier.etat_actuel[0] : « Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute séri… »",
+              "validation": "fiche approuvée (empreinte b0d36eade7a33635)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "Un appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit.",
+              "source": {
+                "media": "franceinfo",
+                "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+                "publie_le": "2026-07-09"
+              },
+              "passage": "site:etat-wording : « Un appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — École maternelle Alphonse-Baudin, Paris 11e. Selon franceinfo, une relaxe, un non-lieu ou un classement a été prononcé le 7 juillet 2026. https://sousnosyeux.org/affaires/poc-05/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=poc-05",
+          "longueur": 205
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — École maternelle Alphonse-Baudin, Paris 11e (Paris).\n\nSelon franceinfo, une relaxe, un non-lieu ou un classement a été prononcé le 7 juillet 2026.\nUn appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/poc-05/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=poc-05"
+        }
+      }
+    },
+    {
+      "id": "S06",
+      "titre": "Prise de parole côté victime — avocat de la famille",
+      "famille": "declaration_victime",
+      "case_id": "FR-2026-0001",
+      "reaction": 0,
+      "citation": 0,
+      "etablissement": "École Aqueduc",
+      "commune": "Paris 10e",
+      "statut_public": "condamnation non définitive",
+      "fiche_approuvee": "5d9c5ba2fb532698",
+      "source_principale": {
+        "media": "CNEWS",
+        "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+        "publie_le": "2026-07-10",
+        "acces": "libre"
+      },
+      "age_source_jours": 125,
+      "etat": "REVUE",
+      "motifs": [],
+      "attention": [
+        "prise de parole côté victime : GO Telegram SPÉCIFIQUE requis ; vérifier caractère public et risque d’identification"
+      ],
+      "soeurs": [
+        "FR-2026-0002"
+      ],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : option écartée : procédure non distinguée)"
+          ]
+        },
+        "facebook": {
+          "etat": "REVUE",
+          "texte": "Paris 10e (Paris) — École Aqueduc : prise de parole de Charles Héran, avocat de la famille\n\nCharles Héran, avocat de la famille (propos rapportés par CNEWS, 10 juillet 2026) : « On est très satisfait de cette décision qui vient d'être rendue »\n\nSelon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.\n\nUne prise de parole n’établit pas son contenu. Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.\n\nSource : CNEWS, 10 juillet 2026 — https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0001",
+          "longueur": 1156,
+          "urls": [
+            "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+            "https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0001"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "CNEWS",
+            "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+            "publie_le": "2026-07-10",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 97,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 12,
+              "sny": 5,
+              "famille": "declaration_victime"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 10e (Paris) — École Aqueduc : prise de parole de Charles Héran, avocat de la famille",
+              "source": null,
+              "passage": "entree.commune : « Paris 10e » ; entree.departement : « Paris » ; entree.etablissement : « École Aqueduc » ; libelle : « prise de parole de Charles Héran, avocat de la famille »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Charles Héran, avocat de la famille (propos rapportés par CNEWS, 10 juillet 2026) : « On est très satisfait de cette décision qui vient d'être rendue »",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.reactions[0].acteur : « Charles Héran, avocat de la famille » ; dossier.reactions[0].qualite : « propos rapportés par CNEWS » ; dossier.reactions[0].date : « 10 juillet 2026 » ; dossier.reactions[0].citations : « On est très satisfait de cette décision qui vient d'être rendue »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            },
+            {
+              "role": "contexte",
+              "affirmation": "Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.etat_actuel[0] : « Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un sui… »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "Une prise de parole n’établit pas son contenu.",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.reactions[0].etabli : « Une prise de parole n’établit pas son contenu. »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.",
+              "source": {
+                "media": "CNEWS",
+                "url": "https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce",
+                "publie_le": "2026-07-10"
+              },
+              "passage": "dossier.etat_actuel[1] : « Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive. »",
+              "validation": "fiche approuvée (empreinte 5d9c5ba2fb532698)"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — École Aqueduc, Paris 10e. Selon CNEWS, une condamnation a été prononcée le 10 juillet 2026. https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0001",
+          "longueur": 159
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — École Aqueduc, Paris 10e (Paris).\n\nSelon CNEWS, une condamnation a été prononcée le 10 juillet 2026.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0001"
+        }
+      }
+    },
+    {
+      "id": "S07",
+      "titre": "Contrôle — affaire insuffisamment documentée (aucune fiche approuvée)",
+      "famille": "nouvelle_affaire",
+      "case_id": "FR-2026-0144",
+      "controle": true,
+      "etablissement": "école Marcel-Touchard",
+      "commune": "Saint-Aubin-lès-Elbeuf",
+      "statut_public": "enquête",
+      "fiche_approuvee": null,
+      "source_principale": null,
+      "age_source_jours": null,
+      "etat": "BLOQUE",
+      "motifs": [
+        "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)"
+      ],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)"
+          ]
+        },
+        "facebook": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)"
+          ]
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — école Marcel-Touchard, Saint-Aubin-lès-Elbeuf. Selon Actu.fr, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0144#affaire-fr-2026-0144",
+          "longueur": 207
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — école Marcel-Touchard, Saint-Aubin-lès-Elbeuf (Seine-Maritime).\n\nSelon Actu.fr, une enquête a été ouverte.\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0144#affaire-fr-2026-0144"
+        }
+      }
+    },
+    {
+      "id": "S08",
+      "titre": "Contrôle — information judiciaire ambiguë (événement « condamnation », carte « enquête »)",
+      "famille": "evolution",
+      "case_id": "FR-2026-0004",
+      "event_id": "deefe35b-ca3b-4823-99c0-59e594a947f4",
+      "controle": true,
+      "etablissement": "École Vigée Lebrun",
+      "commune": "Paris 15e",
+      "statut_public": "enquête",
+      "fiche_approuvee": null,
+      "source_principale": null,
+      "age_source_jours": null,
+      "etat": "BLOQUE",
+      "motifs": [
+        "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)",
+        "statut ambigu : l’événement validé porte « condamnation non définitive », la fiche publique « enquête »",
+        "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+      ],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)",
+            "statut ambigu : l’événement validé porte « condamnation non définitive », la fiche publique « enquête »",
+            "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+          ]
+        },
+        "facebook": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)",
+            "statut ambigu : l’événement validé porte « condamnation non définitive », la fiche publique « enquête »",
+            "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+          ]
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École Vigée Lebrun, Paris 15e. Selon Le Parisien, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0004-enquete#affaire-fr-2026-0004",
+          "longueur": 188
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École Vigée Lebrun, Paris 15e (Paris).\n\nSelon Le Parisien, une enquête a été ouverte.\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0004-enquete#affaire-fr-2026-0004"
+        }
+      }
+    },
+    {
+      "id": "S09",
+      "titre": "Contrôle — événement étiqueté « mise en examen » qui est une remise en liberté",
+      "famille": "evolution",
+      "case_id": "FR-2026-0027",
+      "event_id": "46766808-26d3-4f0b-bf28-7018fb43110f",
+      "controle": true,
+      "etablissement": "École maternelle Les Aresquiers",
+      "commune": "Vic-la-Gardiole",
+      "statut_public": "mise en examen",
+      "fiche_approuvee": "773d64814328ad06",
+      "source_principale": null,
+      "age_source_jours": null,
+      "etat": "BLOQUE",
+      "motifs": [
+        "type d’événement « mesure_procédurale » : n’est pas une étape judiciaire qui fait avancer le statut (aucune nouvelle étape à annoncer)",
+        "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+      ],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "type d’événement « mesure_procédurale » : n’est pas une étape judiciaire qui fait avancer le statut (aucune nouvelle étape à annoncer)",
+            "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+          ]
+        },
+        "facebook": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "type d’événement « mesure_procédurale » : n’est pas une étape judiciaire qui fait avancer le statut (aucune nouvelle étape à annoncer)",
+            "l’événement validé précise lui-même que l’état de l’affaire ne change pas"
+          ]
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École maternelle Les Aresquiers, Vic-la-Gardiole. Selon ICI (France Bleu), une mise en examen a été prononcée. La mise en examen ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0027/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0027-mise-en-examen",
+          "longueur": 214
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École maternelle Les Aresquiers, Vic-la-Gardiole (Hérault).\n\nSelon ICI (France Bleu), une mise en examen a été prononcée.\nLa mise en examen ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0027/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0027-mise-en-examen"
+        }
+      }
+    },
+    {
+      "id": "S10",
+      "titre": "Contrôle — relaxe frappée d'appel (finalité)",
+      "famille": "evolution",
+      "case_id": "POC-09",
+      "event_id": "40822595-4ee6-49a9-90ed-f00625514e9d",
+      "controle": true,
+      "etablissement": "École Titon",
+      "commune": "Paris 11e",
+      "statut_public": "relaxe / non-lieu / classement",
+      "fiche_approuvee": "3142989bfb102f51",
+      "source_principale": null,
+      "age_source_jours": null,
+      "etat": "BLOQUE",
+      "motifs": [
+        "relaxe / non-lieu / classement : finalité non établie par la presse, hors automatisation (doctrine POC-09)",
+        "événement validé sans lien de source conservé",
+        "fait principal sans source rattachée identifiable (aucun média nommé ne correspond aux sources de l’affaire)"
+      ],
+      "attention": [],
+      "soeurs": [],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "relaxe / non-lieu / classement : finalité non établie par la presse, hors automatisation (doctrine POC-09)",
+            "événement validé sans lien de source conservé",
+            "fait principal sans source rattachée identifiable (aucun média nommé ne correspond aux sources de l’affaire)"
+          ]
+        },
+        "facebook": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "relaxe / non-lieu / classement : finalité non établie par la presse, hors automatisation (doctrine POC-09)",
+            "événement validé sans lien de source conservé",
+            "fait principal sans source rattachée identifiable (aucun média nommé ne correspond aux sources de l’affaire)"
+          ]
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École Titon, Paris 11e. Selon franceinfo, une relaxe, un non-lieu ou un classement a été prononcé le 16 juin 2026. Un appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit. https://sousnosyeux.org/affaires/poc-09/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=poc-09-relaxe-non-lieu-classement",
+          "longueur": 273
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École Titon, Paris 11e (Paris).\n\nSelon franceinfo, une relaxe, un non-lieu ou un classement a été prononcé le 16 juin 2026.\nUn appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/poc-09/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=poc-09-relaxe-non-lieu-classement"
+        }
+      }
+    },
+    {
+      "id": "S11",
+      "titre": "Aqueduc — 2e procédure au même établissement (enseignant)",
+      "famille": "nouvelle_affaire",
+      "case_id": "FR-2026-0002",
+      "controle": true,
+      "etablissement": "École Aqueduc",
+      "commune": "Paris 10e",
+      "statut_public": "enquête",
+      "fiche_approuvee": "ab9ef095d6882e3c",
+      "source_principale": {
+        "media": "Le Journal du Dimanche",
+        "url": "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+        "publie_le": "2026-03-21",
+        "acces": "libre"
+      },
+      "age_source_jours": 236,
+      "etat": "CONFORME",
+      "motifs": [],
+      "attention": [],
+      "soeurs": [
+        "FR-2026-0001"
+      ],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 403 car. ; option écartée : procédure non distinguée)"
+          ]
+        },
+        "facebook": {
+          "etat": "CONFORME",
+          "texte": "Paris 10e (Paris) — École Aqueduc : enquête en cours\n\nSelon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré.\n\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSource : Le Journal du Dimanche, 21 mars 2026 — https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230\n\nContexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002",
+          "longueur": 746,
+          "urls": [
+            "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+            "https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002"
+          ],
+          "repli": false,
+          "attention": [],
+          "source": {
+            "media": "Le Journal du Dimanche",
+            "url": "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+            "publie_le": "2026-03-21",
+            "acces": "libre"
+          },
+          "controles": [
+            {
+              "nom": "texte = assemblage exact des segments (rien d’ajouté)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gabarits de la liste blanche uniquement",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "100 % des valeurs proviennent de la matière approuvée de CETTE affaire",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "gardes de sécurité des personnes (texte final)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien SNY présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "lien source présent",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "le lien « Source » est celui d’un média nommé dans le texte",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "réserve judiciaire présente",
+              "ok": true,
+              "detail": ""
+            },
+            {
+              "nom": "aucune donnée interne (identifiant, champ technique)",
+              "ok": true,
+              "detail": ""
+            }
+          ],
+          "note": {
+            "total": 100,
+            "detail": {
+              "fidelite": 35,
+              "contexte": 25,
+              "accroche": 20,
+              "lisibilite": 15,
+              "sny": 5,
+              "famille": "nouvelle_affaire"
+            }
+          },
+          "preuves": [
+            {
+              "role": "accroche",
+              "affirmation": "Paris 10e (Paris) — École Aqueduc : enquête en cours",
+              "source": null,
+              "passage": "entree.commune : « Paris 10e » ; entree.departement : « Paris » ; entree.etablissement : « École Aqueduc » ; libelle : « enquête en cours »",
+              "validation": "champs publics de la fiche carte (data/cases.json) + libellé fixe"
+            },
+            {
+              "role": "fait",
+              "affirmation": "Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré.",
+              "source": {
+                "media": "Le Journal du Dimanche",
+                "url": "https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230",
+                "publie_le": "2026-03-21"
+              },
+              "passage": "dossier.etat_actuel[0] : « Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il … »",
+              "validation": "fiche approuvée (empreinte ab9ef095d6882e3c)"
+            },
+            {
+              "role": "reserve",
+              "affirmation": "L’ouverture d’une enquête ne vaut pas culpabilité.",
+              "source": {
+                "media": "Le Parisien",
+                "url": "https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php",
+                "publie_le": "2026-03-20"
+              },
+              "passage": "site:etat-wording : « L’ouverture d’une enquête ne vaut pas culpabilité. »",
+              "validation": "formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche"
+            }
+          ],
+          "motifs": []
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Nouvelle affaire documentée par la presse — École Aqueduc, Paris 10e. Selon Le Parisien, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002",
+          "longueur": 190
+        },
+        "facebook": {
+          "texte": "Nouvelle affaire documentée par la presse — École Aqueduc, Paris 10e (Paris).\n\nSelon Le Parisien, une enquête a été ouverte.\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002"
+        }
+      }
+    },
+    {
+      "id": "S12",
+      "titre": "Aqueduc — tentative d'attribuer la condamnation de FR-2026-0001 à FR-2026-0002",
+      "famille": "evolution",
+      "case_id": "FR-2026-0002",
+      "event_id": "a85574bb-c8c9-47fa-b5fe-70f688b3441b",
+      "controle": true,
+      "etablissement": "École Aqueduc",
+      "commune": "Paris 10e",
+      "statut_public": "enquête",
+      "fiche_approuvee": "ab9ef095d6882e3c",
+      "source_principale": null,
+      "age_source_jours": null,
+      "etat": "BLOQUE",
+      "motifs": [
+        "événement non rattaché à cette affaire (absent des événements validés de la fiche) : aucune attribution par ressemblance"
+      ],
+      "attention": [],
+      "soeurs": [
+        "FR-2026-0001"
+      ],
+      "canaux": {
+        "x": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "événement non rattaché à cette affaire (absent des événements validés de la fiche) : aucune attribution par ressemblance"
+          ]
+        },
+        "facebook": {
+          "etat": "BLOQUE",
+          "motifs": [
+            "événement non rattaché à cette affaire (absent des événements validés de la fiche) : aucune attribution par ressemblance"
+          ]
+        }
+      },
+      "actuel": {
+        "x": {
+          "texte": "Évolution documentée par la presse — École Aqueduc, Paris 10e. Selon Le Parisien, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=x&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0002-enquete",
+          "longueur": 183
+        },
+        "facebook": {
+          "texte": "Évolution documentée par la presse — École Aqueduc, Paris 10e (Paris).\n\nSelon Le Parisien, une enquête a été ouverte.\nL’ouverture d’une enquête ne vaut pas culpabilité.\n\nSources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0002-enquete"
+        }
+      }
+    }
+  ]
+}
