@@ -1,7 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import casesDoc from '../../../data/cases.json';
+import redirectionsDoc from '../../../data/redirections-affaires.json';
 import { urlFiche } from '../lib/revue';
+
+// Anciens identifiants d'affaires (doublons réconciliés, fiche retirée) → affaire conservée : l'ancienne ancre /#affaire-<ancien> mène à la conservée.
+// Alias compilé par scripts/consolider-doublon.mjs ; jamais un identifiant d'une affaire qui existe encore.
+const redirections: Record<string, string> = ((redirectionsDoc as any).redirections ?? {});
 
 // Source de vérité : data/cases.json
 // Synchronisé depuis Supabase via : node --env-file=.env.local scripts/sync-data.mjs
@@ -187,6 +192,7 @@ function caseYear(c: typeof allCases[0]): string {
 
   <!-- Données JSON pour le script client -->
   <script type="application/json" id="cases-data" set:html={JSON.stringify(allCases)} />
+  <script type="application/json" id="redirections-affaires" set:html={JSON.stringify(redirections)} />
   {Object.keys(fichesRevue).length > 0 && <script type="application/json" id="fiches-revue" set:html={JSON.stringify(fichesRevue)} />}
 
   <!-- ── SCRIPT CARTE ── -->
@@ -594,6 +600,11 @@ function caseYear(c: typeof allCases[0]): string {
       if (!m) return;
       let id: string;
       try { id = decodeURIComponent(m[1]); } catch { return; }
+      // Ancien identifiant d'un doublon réconciliée : l'adresse est préservée en menant à l'affaire conservée (le fragment est réécrit, sans nouvelle entrée d'historique).
+      try {
+        const alias = JSON.parse(document.getElementById('redirections-affaires')?.textContent || '{}')[id.toLowerCase()];
+        if (alias && !document.getElementById(`affaire-${id.toLowerCase()}`)) { id = alias; history.replaceState(null, '', `#affaire-${alias}`); }
+      } catch { /* alias illisible : l'ancre est traitée comme inconnue */ }
       const el = document.getElementById(`affaire-${id.toLowerCase()}`);
       if (!el || !el.classList.contains('case-item')) return;
       // Forme canonique : minuscules (/#affaire-fr-2026-0143, comme /affaires/fr-2026-0143/) ; une majuscule dans le fragment est tolérée (comparaison en minuscules).

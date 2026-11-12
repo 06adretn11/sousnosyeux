@@ -34,6 +34,7 @@ import { schemaBoucle } from './lib/telegram-clics.mjs';
 import { preuvesDe } from './lib/preuves.mjs';
 import { prevenir, prevenirUneFois, phrasePublication, esc } from './lib/prevenir.mjs';
 import { argsPublierAffaire, motifRefus } from './lib/proposition-publication.mjs';
+import { verifierCreation, candidatsPertinents } from './lib/garde-creation.mjs';
 import { execFileSync } from 'node:child_process';
 
 const ECRIRE = process.argv.includes('--ecrire');
@@ -43,13 +44,34 @@ const S = await schemaBoucle(sql);
 
 const dues = S.action
   ? await sql`
-      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, action, created_case_id
+      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, action, created_case_id, created_at
         from new_case_proposals
        where decision is not null and applied_at is null order by created_at`
   : await sql`
-      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, null::text as action, created_case_id
+      select proposal_id::text pid, recommendation, attach_case_id, decision::text decision, payload, null::text as action, created_case_id, created_at
         from new_case_proposals
        where decision is not null and applied_at is null order by created_at`;
+
+/**
+ * GARDE AU MOMENT DE LA CRÉATION (lib/garde-creation.mjs) : la proposition a été qualifiée à son ÉMISSION ; la base a pu changer depuis (une proposition
+ * sœur validée puis créée — Montpellier, 12/11/2026 : deux fiches publiées pour une affaire). Relue ICI, contre l'état ACTUEL de la base, juste avant l'écriture.
+ * Rend aussi le plus grand numéro de fiche vu : l'écriture n'a lieu que si aucune fiche n'est apparue entre ce contrôle et l'INSERT (concurrence, rejeu).
+ */
+async function controlerCreation(r, p, f) {
+  const [{ m }] = await sql`select coalesce(max(substring(case_id from 9)::int), 0)::int m from cases where case_id ~ '^FR-2026-[0-9]{4}$'`;
+  const lignes = await sql`
+    select c.case_id, c.etablissement, c.commune, c.departement, c.type_structure::text type_structure, c.role_mis_en_cause::text role,
+           c.publication_status::text publication_status, c.created_at,
+           coalesce((select json_agg(s.url) from sources s where s.case_id = c.case_id), '[]'::json) urls,
+           (select pp.payload from new_case_proposals pp where pp.created_case_id = c.case_id order by pp.created_at limit 1) origine
+      from cases c
+     where c.commune = ${p.commune || ''} or c.departement = ${f?.departement || '∅'}`;
+  // Maintien séparé : une affaire que l'humain a écartée du rapprochement n'est jamais remise en cause (CRÉER choisi contre un candidat de rattachement,
+  // ou arbitrage consigné dans le payload).
+  const exclus = [...(Array.isArray(p.maintien_separe) ? p.maintien_separe : []), ...(r.action === 'CREATE' ? [r.attach_case_id, p.attach?.case_id] : [])].filter(Boolean);
+  const candidats = candidatsPertinents(lignes, p, r.created_at);
+  return { ...verifierCreation({ payload: p, candidats, exclus }), maxVu: m, candidats };
+}
 
 /**
  * GO de publication : exécuté par publier-affaire.mjs (SES contrôles, SA transaction, SA revue « GO d'Adrien ») — aucune seconde logique.
@@ -254,15 +276,53 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
   // (ses contrôles), réconciliation, projection, QA, déploiement, vérification du site. Un échec technique ne perd rien : la fiche existe
   // (created_case_id) et la publication est REPRISE au passage suivant, jamais une seconde création ni une seconde demande.
   const direct = accepte && !rejet && !enAttente && action === 'CREATE' && !!p.publication_directe;
+  // --- GARDE AU MOMENT DE LA CRÉATION -------------------------------------------------------------------------------------------------
+  // Avant d'écrire une NOUVELLE fiche, la base ACTUELLE est relue : la même affaire a pu apparaître depuis l'émission de la proposition.
+  //   même affaire certaine (même page citée) → AUCUNE seconde fiche : les sources validées rejoignent la fiche existante ;
+  //   possible doublon sans preuve suffisante   → AUCUNE écriture, une revue explicite est demandée ;
+  //   affaires distinctes / aucune candidate    → création, comme avant.
+  // Un rejet (carte « retirée » = mémoire du refus) et une reprise (fiche déjà créée par CETTE proposition) ne sont pas concernés.
+  let maxVu = null;
+  if (!rejet && !r.created_case_id) {
+    const g = await controlerCreation(r, p, f);
+    maxVu = g.maxVu;
+    if (g.decision === 'rattacher') {
+      const cible = g.case_id;
+      const pubCible = g.candidats.find((k) => k.case_id === cible)?.publication_status;
+      if (!ECRIRE) { console.log(`  rattacherait ${sources.length} source(s) à ${cible} (même affaire, aucune création)`); continue; }
+      const o = await rattacherSources(sql, {
+        case_id: cible, sources, par: 'Adrien (Telegram, Discovery)', balise: `[Discovery-rapprochee:${id8}]`,
+        commentaire: `Création évitée : la proposition ${id8} (validée par l'éditeur) décrit la même affaire que ${cible} — ${g.motif}. ${sources.length} article(s) rattaché(s) ; aucun changement d'état, d'établissement ni de rôle.`,
+      });
+      await sql`update new_case_proposals set created_case_id = ${cible}, applied_at = now(),
+                       decision_comment = left(coalesce(decision_comment, '') || ${` · même affaire que ${cible} (contrôle à l’application) : sources rattachées, aucune seconde fiche`}, 500)
+                 where proposal_id = ${r.pid}::uuid and applied_at is null`;
+      console.log(`  ${cible} : même affaire, ${o.ajoutees ?? 0} source(s) rattachée(s), aucune création`);
+      await prevenir(`📌 <b>Appliqué en base</b> — même affaire déjà enregistrée (${id8})\n${esc(cible)} : ${o.ajoutees ?? 0} source(s) validée(s) ajoutée(s) ; AUCUNE seconde fiche n’a été créée. État judiciaire, établissement et rôle inchangés.\n${phrasePublication(pubCible)}${direct ? '\nTon GO de cette proposition ne publie rien de plus : il ne porte que sur le contenu que tu as validé (ses sources).' : ''}`);
+      rattachees++;
+      continue;
+    }
+    if (g.decision === 'revue') {
+      console.log(`  REVUE : création suspendue — ${g.motif}`);
+      refusees++;
+      if (!ECRIRE) continue;
+      await sql`update new_case_proposals set decision_comment = left(coalesce(decision_comment, '') || ${` · création suspendue (contrôle à l’application) : ${g.motif}`}, 500)
+                 where proposal_id = ${r.pid}::uuid and applied_at is null and coalesce(decision_comment, '') not like '%création suspendue%'`;
+      await prevenirUneFois(sql, { cle: id8, resultat: 'revue_doublon', texte: `⚠️ <b>Création NON effectuée — doublon possible</b> (${id8})\n${esc(g.motif)}\nAucune fiche créée, aucun rattachement. Ton ${direct ? 'GO' : 'choix'} est conservé : il faut arbitrer — MÊME affaire (les sources rejoignent l’affaire existante) ou affaire DISTINCTE (création, avec « maintien séparé » consigné).` });
+      continue;
+    }
+  }
   if (!ECRIRE) { console.log(`  ${r.created_case_id ? 'reprendrait la publication de ' + r.created_case_id : 'créerait'} ${pubStatus} · ${sources.length} source(s) · revue ${revue}${direct ? ' + GO publication (VALIDER ET PUBLIER)' : ''}`); continue; }
   const prochain = revue === 'à corriger' ? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10) : null;
   const note = enAttente
     ? `${balise} CREATE_PENDING_EVIDENCE — NON PUBLIABLE tant que les preuves manquent : ${manques.join(' ; ') || 'à confirmer'} — ${p.resume}`
     : `${balise} ${rejet ? 'REJECT' : 'VALIDATE'} — ${p.resume}`;
 
+  // `maxVu` : l'écriture n'a lieu que si AUCUNE fiche n'est apparue depuis le contrôle ci-dessus (concurrence entre deux exécutions, rejeu) ; sinon rien n'est écrit
+  // et la proposition reste due : le contrôle est refait, contre la base à jour, au prochain passage. Un rejet (sans contrôle) n'est pas soumis à cette condition.
   const cree = r.created_case_id ? [] : await sql`
     with nxt as (
-      select 'FR-2026-' || lpad((coalesce(max(substring(case_id from 9)::int), 0) + 1)::text, 4, '0') id
+      select 'FR-2026-' || lpad((coalesce(max(substring(case_id from 9)::int), 0) + 1)::text, 4, '0') id, coalesce(max(substring(case_id from 9)::int), 0)::int m
         from cases where case_id ~ '^FR-2026-[0-9]{4}$'),
     c as (
       insert into cases (case_id, etablissement, commune, departement, type_structure, role_mis_en_cause,
@@ -275,7 +335,7 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
              ${f.enfants_concernes_public}::enfants_concernes_public,
              0, ${pubStatus}::publication_status, ${note},
              ${f.crit_source_fiable}, ${f.crit_article_recent}, ${f.crit_etablissement_nomme}, ${f.crit_statut_clair}, ${f.crit_recoupement}
-        from nxt
+        from nxt where (${maxVu}::int is null or nxt.m = ${maxVu}::int)
       returning case_id),
     s as (
       insert into sources (case_id, url, media, publication_date, source_type, is_primary)
@@ -287,8 +347,12 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
       select c.case_id, 'Adrien (Telegram, Discovery)', ${revue}::review_decision, ${note}, ${prochain}::date from c
       returning 1)
     update new_case_proposals set created_case_id = (select case_id from c), applied_at = case when ${direct} then null else now() end
-     where proposal_id = ${r.pid}::uuid and applied_at is null
+     where proposal_id = ${r.pid}::uuid and applied_at is null and exists (select 1 from c)
     returning created_case_id`;
+  if (!cree.length && !r.created_case_id && maxVu !== null) {
+    const [deja] = await sql`select created_case_id from new_case_proposals where proposal_id = ${r.pid}::uuid`;
+    if (!deja?.created_case_id) { console.log('  rien écrit : la base a changé pendant le contrôle — contrôle refait au prochain passage'); refusees++; continue; }
+  }
   console.log(cree.length ? `  ${cree[0].created_case_id} (${pubStatus}, non publiée)` : r.created_case_id ? `  ${r.created_case_id} déjà créée : reprise de la publication` : '  rien écrit (déjà appliquée)');
   if (cree.length) {
     creees++;

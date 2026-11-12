@@ -24,7 +24,13 @@ const blocDe = (nature, groupes) => (groupes || []).find((g) => (nature === 'mob
 export function territoireDansHub(territoire, zone, departementDeCommune) {
   const t = norm(territoire);
   if (!t || !zone) return false;
-  if (zone.ville) return t.split(' ')[0] === zone.ville;                       // « Paris », « Paris 11e » ⊂ Paris
+  if (zone.ville) {
+    if (t.split(' ')[0] !== zone.ville) return false;                           // « Paris », « Paris 11e » ⊂ Paris
+    // Un Hub d'ARRONDISSEMENT (Paris 11e) accueille une mesure de TOUTE la ville (« Paris » : elle vaut pour le 11e aussi) et un fait de SON arrondissement ; pas un fait
+    // d'un AUTRE arrondissement (« Paris 7e ») : une mobilisation dans le 7e ne concerne pas le 11e sans preuve de ce lien.
+    const arr = /\b(\d{1,2})\s*(?:er|e|eme)\b/.exec(t);
+    return !(arr && zone.arrondissement && Number(arr[1]) !== zone.arrondissement);
+  }
   if (zone.departement) return t === norm(zone.departement) || norm(departementDeCommune.get(t)) === norm(zone.departement);
   return false;
 }
@@ -71,16 +77,43 @@ export function destinationsDe(fait, ctx) {
  */
 export function pagesSiValide(faits, ctx, site = 'https://sousnosyeux.org') {
   const out = new Set();
-  for (const f of faits) {
-    const d = destinationsDe(f, ctx);
-    for (const h of d.hubs) {
-      const meme = f.date ? (ctx.hubs[h.hub]?.items?.[h.groupe] ?? []).find((i) => i.date === f.date) : null;
-      out.add(`Hub ${HUBS_PERIMETRES[h.hub]?.titre ?? h.hub}, bloc « ${h.groupe} » — ${site}/territoires/${h.hub}/${meme ? ` — déjà dans ce bloc à cette date : « ${String(meme.texte).slice(0, 90)}… »` : ''}`);
-    }
-    if (d.fiche) out.add(`fiche ${d.fiche} — ${site}/affaires/${d.fiche.toLowerCase()}/`);
-    for (const b of d.bloques) out.add(`non intégrable : ${b}`);
-  }
+  for (const f of faits) for (const l of lignesDeFait(f, ctx, site)) out.add(l);
   return [...out];
+}
+
+/** Pages qu'UN fait mettrait à jour s'il était validé (même calcul que la projection). Vide si aucune. */
+function lignesDeFait(f, ctx, site) {
+  const out = [];
+  const d = destinationsDe(f, ctx);
+  for (const h of d.hubs) {
+    const meme = f.date ? (ctx.hubs[h.hub]?.items?.[h.groupe] ?? []).find((i) => i.date === f.date) : null;
+    out.push(`Hub ${HUBS_PERIMETRES[h.hub]?.titre ?? h.hub}, bloc « ${h.groupe} » — ${site}/territoires/${h.hub}/${meme ? ` — déjà dans ce bloc à cette date : « ${String(meme.texte).slice(0, 90)}… »` : ''}`);
+  }
+  if (d.fiche) out.push(`fiche ${d.fiche} — ${site}/affaires/${d.fiche.toLowerCase()}/`);
+  for (const b of d.bloques) out.push(`non intégrable : ${b}`);
+  return out;
+}
+
+/** Pourquoi un fait n'a AUCUNE page : dit en clair (territoire non établi, hors des Hubs publiés, affaire sans fiche…), jamais « rien » sans raison. */
+function raisonSansPage(f, ctx) {
+  if (f.portee === 'territoire') {
+    if (!f.territoire) return 'territoire non établi par la source : aucune page ne peut être déduite';
+    return `aucun Hub publié ne couvre « ${f.territoire} », et la commune de l’affaire d’où l’article est parti n’est pas dans ce territoire (la provenance ne tient pas lieu de portée)`;
+  }
+  const c = ctx.cases.get(f.case_id);
+  if (!c || !ctx.publiques.has(f.case_id)) return 'l’affaire n’est pas publique';
+  if (ctx.holds.has(f.case_id)) return 'l’affaire est sous HOLD : aucun fait propre n’est projeté';
+  return 'ni fiche approuvée, ni Hub publié couvrant cette affaire';
+}
+
+/**
+ * Pour CHAQUE fait, dans l'ordre : les pages qu'il mettrait à jour si la proposition était validée, ou la raison pour laquelle il n'en a aucune.
+ * Le message de décision l'affiche fait par fait : une page n'est jamais annoncée « pour la proposition » en bloc (des faits de portées différentes n'ont pas les
+ * mêmes destinations — cas du 12/11/2026 : un Hub et une fiche annoncés pour une mobilisation à Montreuil qui n'avait aucune destination).
+ * @returns {{pages:string[], aucune:string|null}[]}
+ */
+export function pagesParFait(faits, ctx, site = 'https://sousnosyeux.org') {
+  return faits.map((f) => { const pages = lignesDeFait(f, ctx, site); return { pages, aucune: pages.length ? null : raisonSansPage(f, ctx) }; });
 }
 
 /** Projection publique : SEULES les informations qui ont au moins une destination ; le reste ne quitte jamais Neon. Pas de citation (preuve ≠ publication). */

@@ -209,6 +209,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Incidents du 12/11 — une affaire = une fiche (garde à la création, rejeu, concurrence, séparation, revue) · recommandations ≠ article · une décision = une portée, des destinations dites fait par fait',
+    script: 'scripts/qa/test-incident-12-11.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

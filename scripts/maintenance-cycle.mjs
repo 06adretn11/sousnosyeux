@@ -57,7 +57,7 @@ import {
 } from './lib/routage-veille.mjs';
 import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
 import { suivrePistes, estFaitDeTerritoireNomme, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
-import { extraireReactions, dateEcrite } from './lib/evenement-institutionnel.mjs';
+import { extraireReactions, dateEcrite, separerParPortee } from './lib/evenement-institutionnel.mjs';
 import { dejaConnu } from './lib/nouveaute.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -429,20 +429,27 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
 /** Proposition ENRICHMENT SÉPARÉE (version « +reactions ») : décision et effets distincts du changement d'état ; idempotente. */
 async function ecrireReactions(base, reactions) {
   if (DRY || !reactions.length) return;
-  const faits = reactions.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
-  const r2 = await enregistrerProposition(sql, {
+  // UNE PROPOSITION PAR PORTÉE (evenement-institutionnel.separerParPortee) : des faits de portées ou de territoires différents ne se décident pas ensemble (cas du
+  // 12/11/2026 : une mobilisation à « Montreuil » et une mesure de « Paris » dans UNE proposition, annoncée sous le seul territoire du premier fait). Le premier groupe garde
+  // la clé d'idempotence d'origine ; les suivants portent un suffixe d'empreinte (la clé unique est (affaire, article, empreinte, version)).
+  const groupes = separerParPortee(reactions);
+  for (const [i, g] of groupes.entries()) {
+    const faits = g.faits.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
+    const r2 = await enregistrerProposition(sql, {
     // `.q2` : qualification des réponses corrigée (lien à l'affaire ≠ étendue, mobilisation sur preuve directe, libellés non élargis). Les lignes « +reactions » d'avant
     // (REVIEW compris) sont conservées telles quelles ; seules les propositions corrigées naissent sous cette version, une fois (clé d'idempotence inchangée).
     // `.q3` (06/11/2026) : « mobilisation » n'est plus un « rassemblement » (libellé = preuve : « des parents se sont mobilisés »), « a manifesté » est un fait accompli, le territoire nommé par
     // « devant le tribunal de Paris » / « à travers Paris » est lu, et un fait rapporté à « cette procédure » est lié à l'affaire. Les lignes `.q2` (REVIEW compris) restent telles quelles ;
     // celles encore sans décision sont remplacées par scripts/reprendre-sans-perte.mjs (jamais approuvées à la place de leur version corrigée).
     ...base, version: `${base.version || PRIMITIVE_VERSION}.q3+reactions`,
+    ...(i > 0 && base.content_fingerprint ? { content_fingerprint: `${base.content_fingerprint}~${i + 1}` } : {}),
     engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
     PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
     _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
-    RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee})`).join(' ; ')}`,
-  });
-  if (!r2.deja_presente) F.propositions_reactions++;
+    RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee}${x.territoire ? ' · ' + x.territoire : ''})`).join(' ; ')}`,
+    });
+    if (!r2.deja_presente) F.propositions_reactions++;
+  }
 }
 
 /**

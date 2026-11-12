@@ -176,8 +176,13 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
   const personnes = Number(rep.nombre_personnes_mises_en_cause);
   const periode = periodeAttestee(rep.periode_des_faits, corpsAplati);
   const dernier = /^\d{4}-\d{2}-\d{2}$/.test(rep.dernier_evenement || '') && rep.dernier_evenement <= aujourdhui ? rep.dernier_evenement : null;
-  const resume = String(rep.resume || '').replace(/\s+/g, ' ').trim();
+  let resume = sansNombreDEnfants(String(rep.resume || '').replace(/\s+/g, ' ').trim());
   if (resume.length < 30) return { ok: false, motif: 'résumé absent' };
+  // Une réserve ne répare pas une affirmation principale injustifiée : si les articles DIVERGENT sur un acte de procédure (garde à vue, interpellation…) et que le
+  // résumé le dit comme certain, le résumé est remplacé par une formulation neutre bâtie sur les champs vérifiés ; la divergence reste affichée.
+  const ambiguite = rep.ambiguite ? coupeMot(String(rep.ambiguite), 420) : null;
+  const contestes = faitsContestes(resume, ambiguite);
+  if (contestes.length) resume = resumeNeutre({ commune, type_structure: rep.type_structure, statut_judiciaire: rep.statut_judiciaire }, contestes);
   return {
     ok: true,
     evidence,
@@ -186,11 +191,47 @@ export function verifier(rep, pages, aujourdhui = new Date().toISOString().slice
       etablissement: rep.etablissement ? String(rep.etablissement).trim() : null,
       type_structure: rep.type_structure, role_mis_en_cause: rep.role_mis_en_cause, type_affaire: rep.type_affaire,
       statut_judiciaire: rep.statut_judiciaire, statut_des_faits: rep.statut_des_faits, enfants_concernes_public: rep.enfants_concernes_public,
-      resume: resume.slice(0, 600), dernier_evenement: dernier, ambiguite: rep.ambiguite ? String(rep.ambiguite).slice(0, 220) : null,
+      resume: resume.slice(0, 600), dernier_evenement: dernier, ambiguite,
+      ...(contestes.length ? { resume_neutralise: contestes } : {}),
       personnes: Number.isInteger(personnes) && personnes >= 1 && personnes <= 30 ? personnes : null, periode_faits: periode,
       ...(diag.liste.length || replis.length ? { diag_enum: diag } : {}),
     },
   };
+}
+
+/** Coupe à une limite de mots : jamais au milieu d'un mot (« … le 9 novemb »), avec une ellipse quand le texte est abrégé. */
+export function coupeMot(texte, max) {
+  const s = String(texte ?? '').replace(/\s+/g, ' ').trim();
+  if (s.length <= max) return s;
+  const brut = s.slice(0, max - 1);
+  const i = brut.lastIndexOf(' ');
+  return `${(i > max * 0.6 ? brut.slice(0, i) : brut).replace(/[\s,;:(]+$/, '')}…`;
+}
+
+// Jamais le nombre d'enfants (règle 5 du contrat, non négociable) : un modèle l'écrit parfois malgré la consigne (« une douzaine d'enfants »).
+const NB_ENFANTS = /\b(?:(?:une|la)\s+)?(?:(?:douzaine|dizaine|vingtaine|quinzaine|trentaine|centaine)|\d+|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize|vingt)\s+(?:d['’]\s*)?(enfants|élèves|eleves|fillettes|garçons|garcons|garçonnets|garconnets|victimes)\b/gi;
+/** « sur une douzaine d'enfants » → « sur plusieurs enfants ». */
+export const sansNombreDEnfants = (resume) => String(resume || '').replace(NB_ENFANTS, 'plusieurs $1');
+
+// Actes de procédure dont un désaccord entre articles ne doit jamais devenir une certitude du résumé.
+const ACTES_PROCEDURE = [
+  ['garde à vue', /garde a vue/], ['interpellation', /interpell/], ['mise en examen', /mis(?:e)? en examen/],
+  ['détention', /ecroue|detention provisoire|incarcere/], ['déferrement', /deferre|presente (?:a|au) (?:un )?juge/],
+];
+const DIVERGENCE = /diverg|contradict|ne concordent|se contredisent|dementi|conteste|tandis que|alors que|en revanche/;
+/** Actes de procédure à la fois contestés par la réserve (divergence entre articles) ET affirmés par le résumé. */
+export function faitsContestes(resume, ambiguite) {
+  const a = aplatir(ambiguite || '');
+  if (!DIVERGENCE.test(a)) return [];
+  const r = aplatir(resume || '');
+  return ACTES_PROCEDURE.filter(([, re]) => re.test(a) && re.test(r)).map(([nom]) => nom);
+}
+const STRUCTURES = { maternelle: 'une école maternelle', 'élémentaire': 'une école élémentaire', 'crèche': 'une crèche', 'collège': 'un collège', 'lycée': 'un lycée', 'périscolaire': 'un accueil périscolaire', 'centre de loisirs': 'un centre de loisirs', internat: 'un internat' };
+const STADES = { enquête: ' ; une enquête est en cours', plainte: ' ; une plainte a été déposée', 'mise en examen': ' ; une mise en examen est rapportée' };
+/** Résumé neutre bâti sur les seuls champs vérifiés (lieu, type de structure, stade établi) : aucun acte contesté n'y figure. */
+export function resumeNeutre({ commune, type_structure, statut_judiciaire }, contestes) {
+  const lieu = STRUCTURES[type_structure] || 'une structure accueillant des mineurs';
+  return `Selon la presse, des faits sont reprochés à un membre du personnel d’${lieu} à ${commune}${STADES[statut_judiciaire] || ''}. Les sources divergent sur ${contestes.length > 1 ? 'certains actes de procédure' : 'un acte de procédure'} (${contestes.join(', ')}) : ce point n’est pas établi.`;
 }
 
 /**
@@ -229,7 +270,10 @@ export function periodeAttestee(periode, corpsAplatis) {
   return present ? periode : null;
 }
 
-/** Familles de dépêches : deux pages qui partagent ≥ 3 longues phrases sont UNE source, pas deux. */
+// Une page qui dit elle-même tenir son information d'AUTRES médias (« selon plusieurs médias locaux », « selon nos confrères », « comme le rapporte X ») est un
+// RELAIS : un éditeur de plus, jamais une origine de plus (cas ToutMontpellier, 12/11/2026 : paraphrase de Midi Libre comptée comme troisième source indépendante).
+const RELAIS = /\b(?:selon|d['’]apr[èe]s)\s+(?:plusieurs|de nombreux|les|des|nos)\s+(?:m[ée]dias|confr[èe]res|journaux|sources? m[ée]diatiques?)|\bcomme\s+(?:le\s+)?(?:rapportent?|r[ée]v[èe]lent?|indiquent?)\s+(?:plusieurs\s+)?(?:m[ée]dias|confr[èe]res)|\bselon\s+(?:le\s+quotidien|nos\s+confr[èe]res)\b/i;
+/** Familles de dépêches : deux pages qui partagent ≥ 3 longues phrases sont UNE source, pas deux ; un relais déclaré n'en est pas une (au moins une reste). */
 export function independantes(pages) {
   const ph = pages.map((p) => phrases(p.corps));
   const parent = pages.map((_, i) => i);
@@ -238,7 +282,10 @@ export function independantes(pages) {
     let n = 0; for (const x of ph[i]) if (ph[j].has(x)) n++;
     if (n >= 3) parent[racine(j)] = racine(i);
   }
-  return new Set(pages.map((_, i) => racine(i))).size;
+  const familles = new Map();
+  pages.forEach((p, i) => { const r = racine(i); (familles.get(r) || familles.set(r, []).get(r)).push(p); });
+  const originales = [...familles.values()].filter((f) => f.some((p) => !RELAIS.test(String(p.corps || ''))));
+  return Math.max(originales.length, pages.length ? 1 : 0);
 }
 
 // --- rapprochement et décision ------------------------------------------
@@ -723,6 +770,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     independantes: indep, medias: domaines.size, personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
     ...(etat.regroupes.length ? { regroupes: etat.cles.length } : {}),
     ...(c.diag_enum ? { diag_extraction: c.diag_enum } : {}),   // forme originale des champs catégoriels (liste récupérée / repli et sa raison)
+    ...(c.resume_neutralise?.length ? { resume_neutralise: c.resume_neutralise } : {}),   // actes de procédure contestés : absents du résumé (voir faitsContestes)
   };
   // Réaction ou mesure d'une institution rapportée par la presse : conservée comme fait STRUCTURÉ, distinct de l'état judiciaire
   // (jamais de transition). Libellé public tiré d'une table fermée ; la citation reste en mémoire privée.
