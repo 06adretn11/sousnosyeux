@@ -1,10 +1,10 @@
 // =====================================================================
-// scripts/qa/test-banc-social.mjs — PILOTE ÉDITORIAL SOCIAL V3 : pare-feux documentaires, traçabilité, sécurité des personnes, non-régression sur le corpus réel,
+// scripts/qa/test-banc-social.mjs — PILOTE ÉDITORIAL SOCIAL (V3 → V4) : pare-feux documentaires, traçabilité, sécurité des personnes, non-régression sur le corpus réel,
 // absence de tout chemin Buffer. Aucun réseau, aucune base, AUCUNE publication. Usage : node scripts/qa/test-banc-social.mjs
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4 } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES } from '../lib/social-editorial.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
 import { genererBanc, htmlBanc, mdBanc } from '../banc-social.mjs';
@@ -37,7 +37,7 @@ section('1. Corpus réel — états attendus (non-régression)');
 const banc = await genererBanc({ now: new Date('2026-11-12T10:00:00Z') });
 const R = Object.fromEntries(banc.resultats.map((r) => [r.id, r]));
 const attendu = {
-  S01: ['REVUE', 'CONFORME'], S02: ['CONFORME', 'CONFORME'], S03: ['CONFORME', 'CONFORME'], S04: ['BLOQUE', 'CONFORME'], S05: ['BLOQUE', 'REVUE'], S06: ['BLOQUE', 'REVUE'],
+  S01: ['CONFORME', 'CONFORME'], S02: ['CONFORME', 'CONFORME'], S03: ['CONFORME', 'CONFORME'], S04: ['BLOQUE', 'CONFORME'], S05: ['BLOQUE', 'BLOQUE'], S06: ['BLOQUE', 'BLOQUE'],
   S07: ['BLOQUE', 'BLOQUE'], S08: ['BLOQUE', 'BLOQUE'], S09: ['BLOQUE', 'BLOQUE'], S10: ['BLOQUE', 'BLOQUE'], S11: ['BLOQUE', 'CONFORME'], S12: ['BLOQUE', 'BLOQUE'],
 };
 for (const [id, [x, fb]] of Object.entries(attendu)) verifie(`${id} : X ${x} · Facebook ${fb}`, R[id]?.canaux.x.etat === x && R[id]?.canaux.facebook.etat === fb, `${R[id]?.canaux.x.etat} / ${R[id]?.canaux.facebook.etat}`);
@@ -49,23 +49,25 @@ for (const { r, c, k } of publies) {
   verifie(`${r.id} ${c} : réserve judiciaire présente`, RE_RESERVE.test(k.texte));
   verifie(`${r.id} ${c} : lien source = média cité dans le texte`, !k.source || k.texte.includes(k.source.url) && k.texte.toLowerCase().includes(String(k.source.media).toLowerCase().split(/[ (]/)[0]) || /selon franceinfo|selon france info/i.test(k.texte), k.source?.media);
 }
-verifie('déclarations : jamais « conforme » sans GO Telegram spécifique', ['S05', 'S06'].every((id) => R[id].attention.some((a) => /GO Telegram SPÉCIFIQUE/.test(a)) && R[id].canaux.facebook.etat !== 'CONFORME'));
+verifie('déclarations : jamais « conforme », REVUE_HUMAINE + GO social distinct exigés', ['S05', 'S06'].every((id) => R[id].attention.some((a) => /REVUE_HUMAINE obligatoire — GO social humain distinct/.test(a)) && R[id].canaux.facebook.etat !== 'CONFORME' && /déclaration : GO spécifique/.test(R[id].validation_requise)));
 verifie('A2 : S01 lie France 3 (accès libre) malgré « sept parents » dans l’adresse ; le TEXTE ne contient aucun décompte', R.S01.canaux.facebook.texte.includes('sept-parents') && !/\bsept parents\b/i.test(R.S01.canaux.facebook.texte.replace(/https?:\/\/\S+/g, '')));
 verifie('S11 : Facebook distingue la procédure (« un professeur ») ; X bloqué car aucune version courte ne la distingue', /professeur/.test(R.S11.canaux.facebook.texte ?? '') && /non distinguée/.test(R.S11.canaux.x.motifs.join(' ')));
-verifie('A4 : la mention courte du site ne répète pas la réserve « caractère définitif » de la fiche', ['S04', 'S06'].every((id) => { const t = R[id].canaux.facebook.texte; return /définiti/.test(t) && !(t.includes('Appel et caractère définitif non documentés') && t.includes('Caractère définitif non documenté.')); }));
+verifie('A4 + V4 : une seule mention « caractère définitif », la forme courte (la réserve de la fiche ne constate qu’une absence)', R.S04.canaux.facebook.texte.includes(MENTION_A4) && !R.S04.canaux.facebook.texte.includes('Appel et caractère définitif non documentés'));
 verifie('A1 : la fonction de la fiche approuvée est reprise, jamais la valeur exacte de la carte', /l’animateur/.test(R.S04.canaux.facebook.texte) && !/animateur périscolaire/.test(R.S04.canaux.facebook.texte));
 verifie('A5 : le sexe d’un enfant (déjà approuvé) ne met plus en revue', R.S04.canaux.facebook.etat === 'CONFORME' && /une enfant/.test(R.S04.canaux.facebook.texte));
 verifie('S12 : la condamnation de FR-2026-0001 n’est jamais attribuée à FR-2026-0002', R.S12.motifs.some((m) => /non rattaché/.test(m)) && !JSON.stringify(R.S12.canaux).includes('18 mois'));
 verifie('S08 : statut ambigu détecté', R.S08.motifs.some((m) => /statut ambigu/.test(m)));
 verifie('S09 : remise en liberté jamais annoncée comme mise en examen', R.S09.motifs.some((m) => /ne change pas|mesure_procédurale/.test(m)));
 verifie('S10 : relaxe hors automatisation', R.S10.motifs.some((m) => /relaxe/.test(m)));
-verifie('S06 : X bloqué car la procédure Aqueduc n’y serait pas distinguée', /non distinguée/.test(R.S06.canaux.x.motifs.join(' ')));
+verifie('S06 : réaction d’avocat purement évaluative ⇒ bloquée (intérêt concret), citation exacte et lien direct établis', R.S06.motifs.some((m) => /intérêt concret/.test(m)) && R.S06.declaration.controles[0].ok && R.S06.declaration.controles[2].ok);
+verifie('S05 : paraphrase SNY ≠ citation, portée « établissement » ⇒ bloquée sur les trois contrôles', R.S05.declaration.controles.every((k) => !k.ok) && R.S05.canaux.facebook.etat === 'BLOQUE');
 
 // ---------------------------------------------------------------------
 section('2. HTML = mêmes sorties (aucun texte dupliqué ou réécrit)');
 const html = htmlBanc(banc);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-for (const { r, c, k } of publies) verifie(`${r.id} ${c} : le texte affiché est le texte généré`, html.includes(esc(k.texte.split('\n')[0])) && html.includes(esc(k.texte.split('\n\n')[1].split('\n')[0]).slice(0, 80)));
+// Chaque paragraphe, jusqu'à sa première URL (que le HTML rend en lien raccourci), figure tel quel dans la page.
+for (const { r, c, k } of publies) verifie(`${r.id} ${c} : le texte affiché est le texte généré`, k.texte.split('\n\n').every((p) => html.includes(esc(p.split(/https?:\/\//)[0]).replace(/\n/g, '<br>'))));
 const md = mdBanc(banc);
 for (const { r, c, k } of publies) verifie(`${r.id} ${c} : le Markdown porte le texte EXACT généré`, md.includes('```text\n' + k.texte + '\n```'));
 verifie('Markdown : 12 scénarios, 24 déclinaisons, avertissement « aucune publication »', banc.resultats.every((r) => md.includes(`## ${r.id}`)) && (md.match(/^### (X|Facebook) — /gm) || []).length === 24 && md.includes("Aucun de ces messages n'a été publié"));
@@ -91,7 +93,8 @@ verifie('témoin : FR-2026-0025 compose', base.etat === 'OK' && base.facebook.et
 { const M13 = M_de('FR-2026-0113'); const r = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M: M13, publiques: cases, site: SITE });
   const p = clone(r.x); const att = p.paragraphes.flat().find((s) => s.role === 'attribution'); const figaro = [...M13.sources.values()].find((s) => s.media === 'Le Figaro');
   att.champs.url.valeur = figaro.url; att.texte = `Source : ${figaro.url}`; p.texte = p.paragraphes.map((x) => x.map((y) => y.texte).join(' ')).join('\n\n');
-  verifie('défaut v1 : lien d’un média non cité par le texte ⇒ contrôle en échec', r.x.texte.includes('Ouest-France') && !verifierPost(p, 'x', M13, SITE).ok); }
+  verifie('défaut v1 : lien d’un média non cité par le texte ⇒ contrôle en échec', r.x.etat === 'OK' && !verifierPost(p, 'x', M13, SITE).ok);
+  verifie('V4 : X de S01 ne crédite plus Ouest-France (article non relu par SNY)', !r.x.texte.includes('Ouest-France') && r.x.texte.includes('France 3')); }
 // 3d. gabarit hors liste blanche → refus
 { const p = clone(base.facebook); p.paragraphes[0][0].gabarit = 'inconnu'; verifie('gabarit hors liste blanche ⇒ contrôle en échec', !verifierPost(p, 'facebook', M_de('FR-2026-0025'), SITE).ok); }
 // 3e. empreinte d'approbation différente → bloqué
@@ -150,7 +153,44 @@ section('4. Arbitrages A3 (accroche courte approuvée) et A4 (mention courte, pi
     const seg = r.x.paragraphes?.flat().find((x) => x.texte === MENTION_A4);
     verifie('A4 (pilote) : X d’une condamnation à finalité inconnue tient avec la mention courte, contrôles verts', r.x.etat === 'OK' && r.x.texte.includes(MENTION_A4) && verifierPost(r.x, 'x', M1, SITE).ok, r.x.texte ?? r.x.motifs);
     verifie('A4 (pilote) : preuve = arbitrage, « NON servie sur le site »', /NON servie sur le site/.test(seg?.preuve?.validation ?? ''));
-    verifie('A4 (pilote) : Facebook garde la réserve approuvée de la fiche, sans redite', r.facebook.texte.includes('Appel et caractère définitif non documentés') && !r.facebook.texte.includes(MENTION_A4)); } }
+    verifie('A4 + V4 : Facebook porte la mention courte, sans redite de la réserve de la fiche', r.facebook.texte.includes(MENTION_A4) && !r.facebook.texte.includes('Appel et caractère définitif non documentés')); } }
+
+// ---------------------------------------------------------------------
+section('5. V4 — le fait avant la procédure (arbitrage n°1)');
+const conformes = publies.filter(({ k }) => k.etat === 'CONFORME');
+for (const { r, c, k } of conformes) verifie(`${r.id} ${c} : part factuelle ≥ 70 % (hors mention judiciaire)`, k.note.detail.part_factuelle >= 70, String(k.note.detail.part_factuelle));
+verifie('X : plus aucun repli sur la seule étape (« Selon X, une enquête a été ouverte. »)', publies.filter(({ c }) => c === 'x').every(({ k }) => !/Selon [^,]+, (une enquête a été ouverte|une mise en examen a été prononcée)\./.test(k.texte)));
+verifie('S01 / S02 X : l’objet de la procédure est dit (« pour … »)', /enquête ouverte pour agressions sexuelles sur mineurs de 15 ans/.test(R.S01.canaux.x.texte) && /mise en examen pour viol sur mineur/.test(R.S02.canaux.x.texte));
+verifie('accroches Facebook : étape + objet (S01–S04)', ['S01', 'S02', 'S03', 'S04'].every((id) => / pour /.test(R[id].canaux.facebook.texte.split('\n')[0])));
+verifie('« enquête en cours » n’est plus affirmé (non établi)', !Object.values(LIBELLES.nouvelle_affaire).some((l) => /en cours/.test(l)) && !banc.resultats.some((r) => /enquête en cours/.test(r.canaux.facebook.texte ?? '')));
+{ const d1 = dossierFiche('FR-2026-0001').d, d25 = dossierFiche('FR-2026-0025').d;
+  verifie('objet = extrait de la phrase approuvée, jamais la catégorie de la carte (atteinte ≠ agression sexuelle)', qualification('condamnation non définitive', [{ texte: d1.etat_actuel[0], origine: 'x' }], cases.get('FR-2026-0001')).qualif === 'atteinte sexuelle sur une enfant');
+  verifie('objet coupé à la première articulation (« viol sur mineur », sans « pour des faits datant… »)', qualification('mise en examen', [{ texte: d25.etat_actuel[0], origine: 'x' }], cases.get('FR-2026-0025')).qualif === 'viol sur mineur');
+  verifie('statut sans ancre ⇒ aucun objet (repli sur l’étape seule)', qualification('procès', [{ texte: d25.etat_actuel[0], origine: 'x' }], {}) === null); }
+{ const p = clone(base.facebook); const a = p.paragraphes[0][0]; a.champs.qualif.valeur = 'viol aggravé'; a.texte = a.texte.replace('viol sur mineur', 'viol aggravé'); p.texte = p.paragraphes.map((x) => x.map((y) => y.texte).join(' ')).join('\n\n');
+  verifie('objet altéré (« viol aggravé », absent de la matière) ⇒ contrôle en échec', a.gabarit === 'accroche_fb_qualif' && !verifierPost(p, 'facebook', M_de('FR-2026-0025'), SITE).ok); }
+verifie('S01 Facebook : contexte nouveau (garde à vue, perquisitions), lien vers la source relue', /garde à vue/.test(R.S01.canaux.facebook.texte) && !/ouest-france/.test(R.S01.canaux.facebook.texte));
+verifie('S02 : l’article Linfo.re (titre : condamnation dans l’affaire Stanislas) n’est jamais lié à Pontoise', !/linfo\.re/.test(R.S02.canaux.facebook.texte) && urlAnnonceAutreEtape('https://www.linfo.re/x/un-ancien-maitre-d-internat-ecope-d-un-an-de-prison-avec-sursis', 'mise en examen'));
+verifie('S11 : lien préféré au JDD « trois hommes déférés » (le professeur n’a pas été déféré)', !/lejdd/.test(R.S11.canaux.facebook.texte) && urlAnnonceAutreEtape('https://www.lejdd.fr/x/trois-hommes-deferes-pour', 'enquête'));
+verifie('une adresse « condamné » reste admise pour une affaire jugée', !urlAnnonceAutreEtape('https://x.fr/animateur-condamne-a-18-mois', 'condamnation non définitive'));
+verifie('S03 : contexte du MÊME article (gardes à vue levées, témoin assisté), aucune phrase anaphorique (« ces images »)', /témoin assisté/.test(R.S03.canaux.facebook.texte) && /relâchées/.test(R.S03.canaux.facebook.texte) && !/ces images/.test(R.S03.canaux.facebook.texte));
+verifie('S04 : motivation du jugement reprise ; étape dépassée (renvoi pour agression sexuelle) écartée', /cohérence et la constance/.test(R.S04.canaux.facebook.texte) && !/renvoyé/.test(R.S04.canaux.facebook.texte));
+verifie('une source par média nommé, et seulement des médias nommés (contrôle indépendant vert)', conformes.every(({ k }) => k.controles.find((x) => /média nommé/.test(x.nom))?.ok));
+
+section('6. V4 — déclarations (arbitrages n°2 et n°3)');
+const [cit0, cit1] = dossierFiche('FR-2026-0001').d.reactions.map((r) => r.citations[0].texte);
+verifie('« très satisfait de cette décision » : réaction évaluative seule ⇒ pas d’intérêt concret', !interetConcret(cit0).ok);
+verifie('« la parole de cette enfant ait été entendue » : explication ⇒ intérêt (à confirmer en revue)', interetConcret(cit1).ok);
+verifie('priorité : parents < collectif < association < avocat', categorieParole('des parents d’élèves').rang < categorieParole('collectif #MeTooEcole').rang && categorieParole('collectif #MeTooEcole').rang < categorieParole('L’Enfant Bleu').rang && categorieParole('L’Enfant Bleu').rang < categorieParole('Charles Héran, avocat de la famille').rang);
+verifie('« avocat des parents » est un avocat, pas un parent', categorieParole('avocat des parents d’élèves').nom === 'avocat');
+// Déclaration associative IDÉALE (citation exacte, portée « affaire ») : jamais conforme d'office — REVUE_HUMAINE + GO social distinct.
+{ const M5 = M_de('POC-05'); const x = clone(M5.matiere[0]); x.portee = 'affaire'; x.citations = [{ texte: 'Nous nous sommes constitués partie civile pour accompagner les familles.' }];
+  const r = composerPilote({ scenario: { id: 'T', famille: 'declaration_association', case_id: 'POC-05', matiere_id: x.id }, M: { ...M5, matiere: [x] }, publiques: cases, site: SITE });
+  verifie('déclaration parfaite : contrôles de déclaration verts mais revue humaine obligatoire (jamais automatique)', r.declaration?.controles.every((k) => k.ok) && r.attention.some((a) => /REVUE_HUMAINE obligatoire/.test(a)), JSON.stringify(r.declaration?.controles)); }
+{ const r = composerPilote({ scenario: { id: 'T', famille: 'declaration_victime', case_id: 'FR-2026-0005', reaction: 0 }, M: M_de('FR-2026-0005'), publiques: cases, site: SITE });
+  verifie('avocat, affaire en cours, demande précise (« obligation de garantir … sécurité ») ⇒ intérêt reconnu, revue humaine', r.declaration?.controles[1].ok && r.attention.some((a) => /déclaration d’avocat/.test(a)), JSON.stringify(r.declaration?.controles)); }
+verifie('banc : plus aucun état « REVUE » ambigu (REVUE_HUMAINE explicite)', banc.resultats.every((r) => ['x', 'facebook'].every((c) => ['CONFORME', 'REVUE_HUMAINE', 'BLOQUE'].includes(r.canaux[c].etat))));
+verifie('chaque scénario affiche la validation sociale requise (aucun GO accordé)', banc.resultats.every((r) => /GO social humain distinct, par réseau .* aucun accordé/.test(r.validation_requise)));
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ banc social : tous les contrôles passent (aucune publication, aucun appel Buffer)');
 process.exit(ko ? 1 : 0);
