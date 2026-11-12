@@ -41,20 +41,20 @@
 
 | # | Affaire | Famille | Source exploitable | X | Facebook | Principal problème |
 |---|---|---|---|---|---|---|
-| S01 | FR-2026-0113 Frida-Kahlo, Bordeaux | Nouvelle affaire (riche) | oui | revue | revue | Article France 3 non liable (titre « sept parents… ») ⇒ lien Le Figaro en accès partiel ; X réduit à la phrase d'état du site |
-| S02 | FR-2026-0025 Pontoise | Nouvelle affaire (limitée) | oui | **conforme** | **conforme** | X minimal (phrase d'état) ; article de 2024 |
+| S01 | FR-2026-0113 Frida-Kahlo, Bordeaux | Nouvelle affaire (riche) | oui | revue | **conforme** | FB lié à France 3 (A2) ; X minimal lié à Ouest-France, dont l'accès n'est pas constaté par SNY |
+| S02 | FR-2026-0025 Pontoise | Nouvelle affaire (limitée) | oui | **conforme** | **conforme** | X minimal (phrase d'état, A3) ; article de 2024 |
 | S03 | FR-2026-0005 Saint-Dominique, Paris 7e | Évolution — mise en examen | oui | **conforme** | **conforme** | — |
-| S04 | FR-2026-0001 Aqueduc | Évolution — condamnation | oui | bloqué | revue | X : réserve « caractère définitif non documenté » trop longue (≈ 140 car.) ; « une enfant » (sexe) |
+| S04 | FR-2026-0001 Aqueduc | Évolution — condamnation | oui | bloqué | **conforme** | X : aucune phrase courte ne distingue la procédure de l'enseignant (FR-2026-0002) |
 | S05 | POC-05 Alphonse-Baudin | Déclaration associative (L'Enfant Bleu) | oui | bloqué | revue (GO spécifique) | X trop court pour déclaration + situation de la procédure |
 | S06 | FR-2026-0001 Aqueduc | Prise de parole (avocat de la famille) | oui | bloqué | revue (GO spécifique) | X : la procédure ne serait pas distinguée de FR-2026-0002 |
 | S07 | FR-2026-0144 Saint-Aubin-lès-Elbeuf | Contrôle — insuffisant | non | bloqué | bloqué | Aucune fiche approuvée : seulement carte, titres, URL |
 | S08 | FR-2026-0004 Vigée-Lebrun | Contrôle — ambigu | non | bloqué | bloqué | Événement « condamnation » vs carte « enquête » ; l'événement dit lui-même que l'état ne change pas |
 | S09 | FR-2026-0027 Vic-la-Gardiole | Contrôle — piège | oui | bloqué | bloqué | Événement étiqueté « mise en examen » = remise en liberté : aucune nouvelle étape |
 | S10 | POC-09 Titon | Contrôle — relaxe frappée d'appel | — | bloqué | bloqué | Relaxe hors automatisation ; source d'état sans lien |
-| S11 | FR-2026-0002 Aqueduc (enseignant) | Contrôle — même établissement | oui | bloqué | bloqué | Seule source du fait (Le Figaro, 20/03/2026) : URL « …sur-douze-enfants… » |
+| S11 | FR-2026-0002 Aqueduc (enseignant) | Contrôle — même établissement | oui | bloqué | **conforme** | FB distingue la procédure (« un professeur ») et lie Le JDD (URL « …douze-enfants… » tolérée, A2) ; X : aucune version courte ne la distingue |
 | S12 | FR-2026-0002 ← événement de FR-2026-0001 | Contrôle — non-confusion | — | bloqué | bloqué | Événement non rattaché : la condamnation n'est jamais attribuée à l'autre procédure |
 
-**Bilan** : 4 messages conformes aux contrôles (S02 et S03, X et Facebook) · 5 en revue humaine (S01 X et FB, S04 FB, S05 FB, S06 FB) · 15 canaux bloqués avec motif précis. **0 manquement critique** sur les messages produits (contrôles automatisés 100 %). Aucun message n'est « publiable » : corpus historique (sources de 2024 à octobre 2026), aucune diffusion rétroactive, aucun GO.
+**Bilan après arbitrages (§5)** : 7 messages conformes aux contrôles (Facebook S01, S02, S03, S04, S11 ; X S02, S03) · 3 en revue humaine (X S01 ; Facebook S05 et S06, déclarations soumises au GO spécifique) · 14 canaux bloqués avec motif précis. *(Avant arbitrages : 4 conformes, 5 en revue, 15 bloqués.)* **0 manquement critique** sur les messages produits (contrôles automatisés 100 %). Aucun message n'est « publiable » : corpus historique (sources de 2024 à octobre 2026), aucune diffusion rétroactive, aucun GO.
 
 ## 4. Livrable 3 — Progression mesurée (même corpus, même code de génération)
 
@@ -69,7 +69,19 @@
 
 **Mon jugement rédactionnel (distinct des contrôles)** : les Facebook S01, S02, S03 sont de bonne tenue (fait daté, attribué, nuancé, compréhensible sans contexte) ; S04 est exact mais dense (peine, FIJAIS) ; S05/S06 sont fidèles mais longs (≈ 1 100 car.). Les X restent **en deçà** de 95 dans 2 cas sur 3 : la phrase d'état du site (« Selon France info, une mise en examen a été prononcée. ») est exacte mais pauvre — la matière approuvée ne contient **aucune phrase courte** décrivant le fait. Cas encore insatisfaisants : X S01/S02 (pauvres), X S04/S05/S06 (impossibles en l'état).
 
-## 5. Livrable 4 — Derniers arbitrages humains (5)
+## 5. Livrable 4 — Arbitrages humains : TRANCHÉS par Adrien le 12/11/2026
+
+| # | Question | Décision | Mise en œuvre |
+|---|---|---|---|
+| A1 | Fonction de la personne visée | **Oui, telle qu'écrite dans la fiche approuvée** (la valeur exacte de la carte reste bloquée) | comportement du composeur ; une procédure sœur distinguée n'est plus un point de revue mais une note |
+| A2 | Lien dont l'adresse / le titre porte un décompte | **Autorisé si le texte du post n'en contient aucun** | `ARBITRAGES.lienAvecDecompte` ; les gardes restent bloquantes sur le texte ; S01 lie France 3, S11 lie Le JDD |
+| A3 | Format X | **X minimal maintenant ; phrase courte approuvée ensuite** | champ facultatif `accroche_courte` du dossier (≤ 140 car., « Selon <média>, … »), couvert par l'empreinte d'approbation, utilisé en priorité par X ; testé, encore présent dans **aucun** dossier |
+| A4 | Réserve courte, condamnation à finalité inconnue | **Mention fixe « Caractère définitif non documenté. »** | ajoutée à `web/src/lib/etat-wording.ts` (site et posts identiques) — **effet public au déploiement** : 14 affaires publiées l'affichent dans la fenêtre de la carte (fiches inchangées : leur état approuvé prime) ; vérifié sur le site construit localement (FR-2026-0001) |
+| A5 | Détails déjà approuvés (sexe d'un enfant, peine, FIJAIS) | **Repris tels quels** | `ARBITRAGES.revueSexeEnfant = false` |
+
+Effet mesuré : Facebook S01, S04, S11 passent à « conforme » ; X S04 et S06 restent bloqués (procédure Aqueduc non distinguable en version courte : A1 n'y suffit pas sans `accroche_courte`).
+
+### Libellé des questions telles que posées
 
 1. **Fonction de la personne visée dans les posts.** La V1 garantissait « jamais le rôle » ; les fiches approuvées le disent (« l'animateur », « un professeur », « une ATSEM ») et c'est **la seule chose** qui distingue les deux procédures Aqueduc (S04 vs S11). Le pilote reprend la fonction **telle qu'écrite dans la fiche approuvée** et bloque seulement la valeur exacte de la carte. *Valider, ou exiger l'ancienne garantie (alors S04, S06, S11 restent bloqués et les affaires à procédures multiples ne sont jamais relayées).*
 2. **Liens dont l'adresse ou le titre porte un décompte** (« sept parents d'élèves portent plainte », « …sur douze enfants »). Le pilote ne les lie jamais (l'aperçu de lien afficherait le titre). Conséquence : S01 lie Le Figaro (accès partiel) au lieu de France 3 ; S11 est bloqué. *Maintenir, ou accepter le lien quand le texte du post, lui, ne contient pas le nombre.*
@@ -81,15 +93,14 @@
 
 ## 6. Livrable 5 — Bilan technique
 
-- **Tests** : `test-banc-social` 92/92 ✅ · non-régression `test-diffusion-sociale` 94 ✅, `test-diffuser-script` 27 ✅ (après `npm ci` dans le worktree : il échouait seulement faute de `node_modules`), `test-buffer-sonde` 13 ✅, `test-wording-proces` 10 ✅. `run-all` : 2 échecs **préexistants**, identiques sur `main` sans ces changements (`test-fiche-priorite` : chemin `%20` sous Windows ; `test-declaration-organisme` : assertion) + constat de corpus R5 (FR-2026-0024, FR-2026-0035) déjà connu.
+- **Tests** : `test-banc-social` 106/106 ✅ (dont arbitrages A1–A5) · non-régression `test-diffusion-sociale` 94 ✅, `test-diffuser-script` 27 ✅ (après `npm ci` dans le worktree : il échouait seulement faute de `node_modules`), `test-buffer-sonde` 13 ✅, `test-wording-proces` 10 ✅. `run-all` : 2 échecs **préexistants**, identiques sur `main` sans ces changements (`test-fiche-priorite` : chemin `%20` sous Windows ; `test-declaration-organisme` : assertion) + constat de corpus R5 (FR-2026-0024, FR-2026-0035) déjà connu.
 - **Absence de publication** : aucun appel Buffer, aucune écriture Neon, aucune variable modifiée ; journal de diffusion vide.
 - **Diffusion** : désactivée (`SNY_DIFFUSION_ACTIVE=0`, `SNY_DIFFUSION_DEPUIS` non daté).
 - **Écarts restants avant un GO éditorial** (plus petit changement à chaque fois) :
-  1. *Phrase courte approuvée* : n'existe nulle part. Ajouter au dossier de fiche un champ facultatif `accroche_courte` (≤ 140 car., attribuée), couvert par l'empreinte d'approbation ; le composeur l'utiliserait pour X en priorité.
-  2. *Niveau d'accès des sources de la carte* : `acces` n'est connu que pour les sources relues du dossier ; l'enregistrer aussi dans `cases.sources` lors de la relecture (sinon « non constaté » ⇒ revue).
-  3. *S11* : rattacher au fait « garde à vue » une source à URL propre (le dossier cite Le Journal du Dimanche du 21 mars sans la lier).
-  4. *Garde partagée* : `RE_AGE_ENFANT` (`fiche-extraction.mjs`) ne voit pas « âgée de 6 ans » (`\b` devant « â ») — corrigé localement dans le pilote seulement ; à corriger dans le module partagé (hors périmètre).
-  5. *Intégration* (après GO seulement) : dans `diffuser-social.mjs`, remplacer `composerMessage` par `composerPilote` + `verifierPost` (≈ 20 lignes) et adapter la porte d'éligibilité aux familles « déclaration » (GO spécifique).
+  1. *Phrase courte approuvée (A3)* : le composeur la lit déjà ; il reste à la **rédiger et l'approuver** fiche par fiche (une nouvelle approbation de fiche, son empreinte changeant). C'est elle qui débloquera X sur S01/S04/S05/S06.
+  2. *Niveau d'accès des sources de la carte* : `acces` n'est connu que pour les sources relues du dossier ; l'enregistrer aussi dans `cases.sources` lors de la relecture (sinon « non constaté » ⇒ revue, cas du X S01).
+  3. *Garde partagée* : `RE_AGE_ENFANT` (`fiche-extraction.mjs`) ne voit pas « âgée de 6 ans » (`\b` devant « â ») — corrigé localement dans le pilote seulement ; à corriger dans le module partagé (hors périmètre).
+  4. *Intégration* (après GO seulement) : dans `diffuser-social.mjs`, remplacer `composerMessage` par `composerPilote` + `verifierPost` (≈ 20 lignes) et adapter la porte d'éligibilité aux familles « déclaration » (GO spécifique).
 
 ## 7. Note de sécurité
 

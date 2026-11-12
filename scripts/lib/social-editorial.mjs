@@ -54,6 +54,16 @@ const ROLES_GENERIQUES = new Set(['autre', 'non precise', 'inconnu', 'a qualifie
 // Désignation de la personne visée par sa FONCTION (distingue deux procédures d'un même établissement). Testée sur le texte APLATI (sans accents) : « éducatif » compris.
 const RE_FONCTION = /\b(animat\w*|enseignan\w*|professeur\w*|atsem|agents?|directeur|directrice|educat\w*|surveillant\w*|cadre\w*|instituteur\w*|institutrice\w*|assistantes? maternelles?|auxiliaires?)\b/;
 export const RE_DESIGNATION_ROLE = { test: (t) => RE_FONCTION.test(plat(t)) };
+
+// ---------------------------------------------------------------------
+// ARBITRAGES ÉDITORIAUX D'ADRIEN (12/11/2026) — docs/industrialisation/PILOTE_EDITORIAL_SOCIAL_V3.md §5. Toute modification exige un nouvel arbitrage.
+//   A1 fonction de la personne visée : reprise telle qu'écrite dans la fiche approuvée (la valeur exacte de la carte reste bloquée) ;
+//   A2 lien dont l'adresse / le titre porte un décompte : autorisé, à condition que le TEXTE du post n'en contienne aucun (gardes sur le texte) ;
+//   A3 X minimal (phrase d'état du site) autorisé ; une phrase courte approuvée (`accroche_courte` du dossier) est utilisée en priorité quand elle existe ;
+//   A4 mention fixe « Caractère définitif non documenté. » dans la formulation officielle (web/src/lib/etat-wording.ts) ;
+//   A5 détails déjà approuvés sur la fiche (sexe d'un enfant, peine, FIJAIS) : repris tels quels, sans revue spécifique.
+// ---------------------------------------------------------------------
+export const ARBITRAGES = Object.freeze({ date: '2026-11-12', lienAvecDecompte: true, revueSexeEnfant: false });
 const RE_SEXE_ENFANT = /\b(?:une|cette|la) enfant\b|\bfillettes?\b|\bpetite fille\b|\bmineure\b/i;
 
 export function gardes(texte, entree) {
@@ -68,10 +78,12 @@ export function gardes(texte, entree) {
   const role = plat(entree?.role_mis_en_cause);
   if (role.length >= 6 && !ROLES_GENERIQUES.has(role) && (' ' + plat(t) + ' ').includes(` ${role} `)) bloquants.push('rôle exact de la fiche (garantie du moteur actuel)');
   if (/\.\.\.|…\s*$/.test(t)) bloquants.push('texte tronqué');
-  const attention = RE_SEXE_ENFANT.test(sansQualif) ? ['indication du sexe d’un enfant (déjà publiée sur la fiche) : risque d’identification à apprécier'] : [];
+  const attention = ARBITRAGES.revueSexeEnfant && RE_SEXE_ENFANT.test(sansQualif) ? ['indication du sexe d’un enfant (déjà publiée sur la fiche) : risque d’identification à apprécier'] : [];
   return { bloquants, attention };
 }
-const urlSure = (url) => !!url && !RE_NOMBRE_ENFANTS.test(decodeURIComponent(url).replace(/[-_/]+/g, ' '));
+/** URL portant un décompte d'enfants ou de plaignants dans son adresse (« …sur-douze-enfants… », « sept-parents-d-eleves… »). */
+export const urlAvecDecompte = (url) => !!url && RE_NOMBRE_ENFANTS.test(decodeURIComponent(url).replace(/[-_/]+/g, ' '));
+const urlSure = (url) => !!url && (ARBITRAGES.lienAvecDecompte || !urlAvecDecompte(url));
 
 // ---------------------------------------------------------------------
 // MATIÈRE APPROUVÉE d'une affaire (tout ce qui peut être repris à l'identique) et rattachement des sources.
@@ -172,7 +184,7 @@ export const RE_RESERVE = /ne vaut pas culpabilit|présumée? innocente?|présom
  * @returns {{etat:string, motifs:string[], attention:string[], x:object, facebook:object, preuves:object[], sourcePrincipale:object|null}}
  */
 export function composerPilote({ scenario, M, publiques, site }) {
-  const bloque = [], attention = [];
+  const bloque = [], attention = [], notes = [];
   const e = M.entree;
   const out = (extra = {}) => ({ etat: 'BLOQUE', motifs: bloque, attention, x: { etat: 'BLOQUE', motifs: ['scénario bloqué'] }, facebook: { etat: 'BLOQUE', motifs: ['scénario bloqué'] }, preuves: [], sourcePrincipale: null, ...extra });
   if (!FAMILLES.includes(scenario.famille)) { bloque.push(`famille inconnue : ${scenario.famille}`); return out(); }
@@ -275,7 +287,7 @@ export function composerPilote({ scenario, M, publiques, site }) {
   if (soeurs.length && principal.length) {
     const t = [...principal.map((p) => p.texte ?? p.citation), situationDecl?.texte ?? ''].join(' ');
     if (!RE_DESIGNATION_ROLE.test(t)) bloque.push(`même établissement que ${soeurs.join(', ')} : le fait principal ne distingue pas la procédure (confusion possible)`);
-    else attention.push(`même établissement que ${soeurs.join(', ')} : procédure distinguée par la fonction de la personne visée`);
+    else notes.push(`même établissement que ${soeurs.join(', ')} : procédure distinguée par la fonction de la personne visée`);
   }
 
   // Réserve judiciaire INDISPENSABLE : la formulation du site (mention de présomption / suite de recours), sinon une réserve approuvée de la fiche.
@@ -314,7 +326,11 @@ export function composerPilote({ scenario, M, publiques, site }) {
   const fbContexte = [];
   if (situationDecl && !dejaDit.has(plat(situationDecl.texte))) { fbContexte.push(segFait(situationDecl, 'contexte')); dejaDit.add(plat(situationDecl.texte)); }
   const fbReserves = [];
-  for (const r of reserves) if (!dejaDit.has(plat(r.texte))) { fbReserves.push(segRes(r)); dejaDit.add(plat(r.texte)); }
+  // Une réserve par THÈME (présomption, caractère définitif, prise de parole, confirmation) : la première, la plus précise (fiche), l'emporte ; la mention courte du site
+  // ne la répète pas (défaut après A4 : « Appel et caractère définitif non documentés… » suivi de « Caractère définitif non documenté. »).
+  const theme = (t) => (/culpabilit|présum|présomption/i.test(t) ? 'presomption' : /définiti/i.test(t) ? 'definitif' : /n['’]établit/i.test(t) ? 'parole' : /confirmée/i.test(t) ? 'confirmation' : plat(t));
+  const themes = new Set([...principal, ...contexte].filter((p) => p.texte && RE_RESERVE.test(p.texte) && dejaDit.has(plat(p.texte))).map((p) => theme(p.texte)));
+  for (const r of reserves) if (!dejaDit.has(plat(r.texte)) && !themes.has(theme(r.texte))) { fbReserves.push(segRes(r)); dejaDit.add(plat(r.texte)); themes.add(theme(r.texte)); }
   for (const c of contexte) if (!dejaDit.has(plat(c.texte))) { fbContexte.push(segFait(c, 'contexte')); dejaDit.add(plat(c.texte)); }
   const fbBase = [[seg('accroche_fb', lieuChamps, 'accroche')], fbFaits];
   const fbFin = [[sourceFb], [seg('suivi_fb', { lien: champ(lien('facebook'), 'lien') }, 'renvoi')]];
@@ -333,6 +349,14 @@ export function composerPilote({ scenario, M, publiques, site }) {
   const ajoutOption = (segs, src) => { if (src?.url && urlSure(src.url) && !MEDIAS_PAYANTS.includes(src.media)) options.push({ segs, src }); };
   if (principal.length > 1 && !principal[0].parole) ajoutOption(principal.map((p) => segFait(p)), srcLien);
   ajoutOption([segFait(principal[0])], srcLien);
+  // Arbitrage A3 : phrase courte APPROUVÉE du dossier (`accroche_courte`, ≤ 140 car., attribuée « Selon <média>, … »). Couverte par l'empreinte de la fiche :
+  // l'ajouter ou la modifier exige une nouvelle approbation. N'existe encore dans aucun dossier ; pour une évolution, seulement si l'état publié EST l'événement.
+  const ac = typeof d?.accroche_courte === 'string' ? d.accroche_courte.trim() : null;
+  if (ac && ac.length <= 140 && /^Selon /.test(ac) && !gardes(ac, e).bloquants.length && !scenario.famille.startsWith('declaration')
+    && (scenario.famille === 'nouvelle_affaire' || (evt && e.etat?.statut === evt.statut && e.etat?.date === evt.date))) {
+    const src = sourceALier(sourcesNommees(ac, M.sources));
+    if (src) ajoutOption([segFait({ texte: ac, origine: 'dossier.accroche_courte' })], src);
+  }
   // Évolution : PREMIÈRE PHRASE ENTIÈRE du libellé de l'événement validé, attribuée à sa source (plus précise que la phrase d'état du site ; ajout v3, S03).
   if (scenario.famille === 'evolution' && evt?.libelle) { const p1 = phrasesDe(evt.libelle)[0]; if (p1 && p1 !== principal[0]?.texte && /\.$/.test(p1) && p1.length >= 40 && !gardes(p1, e).bloquants.length) ajoutOption([seg('libelle_evenement', { libelle: champ(sansPointFinal(p1), `evenement:${evt.event_id}#phrase1`), media: champ(evt.source?.media, `evenement:${evt.event_id}.source.media`) }, 'fait', preuve(null, srcLien, `événement validé (Neon, ${evt.event_id}) — première phrase entière du libellé`))], srcLien); }
   // Repli : la phrase d'état du site (attribuée, déjà servie). Pour une évolution, seulement si l'état publié EST cet événement (même statut, même date, même source).
@@ -349,7 +373,7 @@ export function composerPilote({ scenario, M, publiques, site }) {
     if (longueurX(t) <= LIMITE_X) { x = { paragraphes: paras, texte: t, repli: o !== options[0], source: o.src, attention: alerteAcces(o.src) }; break; }
   }
   const xRes = x ? { etat: 'OK', ...x } : { etat: 'BLOQUE', motifs: [`aucune version fidèle ne tient en ${LIMITE_X} caractères avec la réserve indispensable et les deux liens (essais : ${essais.join(' ; ') || 'aucune option sourcée'})`] };
-  return { etat: 'OK', motifs: [], attention: [...new Set(attention)], soeurs, x: xRes, facebook: { etat: 'OK', ...facebook }, sourcePrincipale: srcLien };
+  return { etat: 'OK', motifs: [], attention: [...new Set(attention)], notes, soeurs, x: xRes, facebook: { etat: 'OK', ...facebook }, sourcePrincipale: srcLien };
 }
 
 // ---------------------------------------------------------------------
@@ -362,6 +386,7 @@ export function valeursAutorisees(M, site) {
   if (e) { add(e.commune); add(e.departement); add(e.etablissement); }
   if (M.d) {
     for (const t of M.d.etat_actuel || []) add(t);
+    if (typeof M.d.accroche_courte === 'string') add(M.d.accroche_courte.trim());
     for (const x of M.d.deroule || []) add(x.texte);
     for (const r of [...(M.d.reactions || []), ...(M.d.paroles || [])]) { add(r.acteur); add(r.qualite); add(dateLongue(r.date)); for (const c of r.citations || []) add(c.texte); if (/Une prise de parole n’établit pas son contenu\./.test(r.etabli || '')) add('Une prise de parole n’établit pas son contenu.'); }
   }
@@ -396,7 +421,7 @@ export function verifierPost(post, canal, M, site) {
   const g = gardes(post.texte.replace(/https?:\/\/\S+/g, ''), M.entree);
   ok('gardes de sécurité des personnes (texte final)', !g.bloquants.length, g.bloquants.join(', '));
   const urls = post.texte.match(/https?:\/\/\S+/g) || [];
-  ok('URL sûres (aucun décompte d’enfants dans l’adresse, aucun média payant)', urls.every((u) => urlSure(u)) && !segs.some((s) => s.gabarit.startsWith('source') && MEDIAS_PAYANTS.includes(s.champs.media?.valeur)), urls.filter((u) => !urlSure(u)).join(' '));
+  ok(ARBITRAGES.lienAvecDecompte ? 'URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)' : 'URL sûres (aucun décompte d’enfants dans l’adresse, aucun média payant)', urls.every((u) => urlSure(u)) && !segs.some((s) => s.gabarit.startsWith('source') && MEDIAS_PAYANTS.includes(s.champs.media?.valeur)), urls.filter((u) => !urlSure(u)).join(' '));
   ok('lien SNY présent', segs.some((s) => s.role === 'renvoi'));
   ok('lien source présent', segs.some((s) => s.role === 'attribution'));
   // Le média du lien « Source » doit être NOMMÉ par le texte qui affirme (hors ligne « Source : » elle-même). Défaut v1 non détecté : « Selon Ouest-France » + lien Le Figaro.

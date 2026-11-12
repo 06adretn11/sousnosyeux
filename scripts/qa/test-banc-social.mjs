@@ -4,7 +4,8 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES } from '../lib/social-editorial.mjs';
+import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
 import { genererBanc, htmlBanc } from '../banc-social.mjs';
 
@@ -36,8 +37,8 @@ section('1. Corpus réel — états attendus (non-régression)');
 const banc = await genererBanc({ now: new Date('2026-11-12T10:00:00Z') });
 const R = Object.fromEntries(banc.resultats.map((r) => [r.id, r]));
 const attendu = {
-  S01: ['REVUE', 'REVUE'], S02: ['CONFORME', 'CONFORME'], S03: ['CONFORME', 'CONFORME'], S04: ['BLOQUE', 'REVUE'], S05: ['BLOQUE', 'REVUE'], S06: ['BLOQUE', 'REVUE'],
-  S07: ['BLOQUE', 'BLOQUE'], S08: ['BLOQUE', 'BLOQUE'], S09: ['BLOQUE', 'BLOQUE'], S10: ['BLOQUE', 'BLOQUE'], S11: ['BLOQUE', 'BLOQUE'], S12: ['BLOQUE', 'BLOQUE'],
+  S01: ['REVUE', 'CONFORME'], S02: ['CONFORME', 'CONFORME'], S03: ['CONFORME', 'CONFORME'], S04: ['BLOQUE', 'CONFORME'], S05: ['BLOQUE', 'REVUE'], S06: ['BLOQUE', 'REVUE'],
+  S07: ['BLOQUE', 'BLOQUE'], S08: ['BLOQUE', 'BLOQUE'], S09: ['BLOQUE', 'BLOQUE'], S10: ['BLOQUE', 'BLOQUE'], S11: ['BLOQUE', 'CONFORME'], S12: ['BLOQUE', 'BLOQUE'],
 };
 for (const [id, [x, fb]] of Object.entries(attendu)) verifie(`${id} : X ${x} · Facebook ${fb}`, R[id]?.canaux.x.etat === x && R[id]?.canaux.facebook.etat === fb, `${R[id]?.canaux.x.etat} / ${R[id]?.canaux.facebook.etat}`);
 const publies = banc.resultats.flatMap((r) => ['x', 'facebook'].map((c) => ({ r, c, k: r.canaux[c] }))).filter(({ k }) => k.texte);
@@ -49,8 +50,11 @@ for (const { r, c, k } of publies) {
   verifie(`${r.id} ${c} : lien source = média cité dans le texte`, !k.source || k.texte.includes(k.source.url) && k.texte.toLowerCase().includes(String(k.source.media).toLowerCase().split(/[ (]/)[0]) || /selon franceinfo|selon france info/i.test(k.texte), k.source?.media);
 }
 verifie('déclarations : jamais « conforme » sans GO Telegram spécifique', ['S05', 'S06'].every((id) => R[id].attention.some((a) => /GO Telegram SPÉCIFIQUE/.test(a)) && R[id].canaux.facebook.etat !== 'CONFORME'));
-verifie('S01 : l’article France 3 (titre portant le décompte des familles plaignantes) n’est jamais lié', !JSON.stringify(R.S01.canaux).includes('sept-parents'));
-verifie('S11 : seule source du fait = URL portant « douze enfants » ⇒ bloqué', R.S11.motifs.some((m) => /liable/.test(m)));
+verifie('A2 : S01 lie France 3 (accès libre) malgré « sept parents » dans l’adresse ; le TEXTE ne contient aucun décompte', R.S01.canaux.facebook.texte.includes('sept-parents') && !/\bsept parents\b/i.test(R.S01.canaux.facebook.texte.replace(/https?:\/\/\S+/g, '')));
+verifie('S11 : Facebook distingue la procédure (« un professeur ») ; X bloqué car aucune version courte ne la distingue', /professeur/.test(R.S11.canaux.facebook.texte ?? '') && /non distinguée/.test(R.S11.canaux.x.motifs.join(' ')));
+verifie('A4 : la mention courte du site ne répète pas la réserve « caractère définitif » de la fiche', ['S04', 'S06'].every((id) => { const t = R[id].canaux.facebook.texte; return /définiti/.test(t) && !(t.includes('Appel et caractère définitif non documentés') && t.includes('Caractère définitif non documenté.')); }));
+verifie('A1 : la fonction de la fiche approuvée est reprise, jamais la valeur exacte de la carte', /l’animateur/.test(R.S04.canaux.facebook.texte) && !/animateur périscolaire/.test(R.S04.canaux.facebook.texte));
+verifie('A5 : le sexe d’un enfant (déjà approuvé) ne met plus en revue', R.S04.canaux.facebook.etat === 'CONFORME' && /une enfant/.test(R.S04.canaux.facebook.texte));
 verifie('S12 : la condamnation de FR-2026-0001 n’est jamais attribuée à FR-2026-0002', R.S12.motifs.some((m) => /non rattaché/.test(m)) && !JSON.stringify(R.S12.canaux).includes('18 mois'));
 verifie('S08 : statut ambigu détecté', R.S08.motifs.some((m) => /statut ambigu/.test(m)));
 verifie('S09 : remise en liberté jamais annoncée comme mise en examen', R.S09.motifs.some((m) => /ne change pas|mesure_procédurale/.test(m)));
@@ -108,7 +112,8 @@ verifie('rôle générique « autre » n’est pas une fuite de rôle', gardes('
   verifie('même établissement, fait sans fonction ⇒ bloqué (confusion)', r.etat === 'BLOQUE' && r.motifs.some((m) => /confusion/.test(m)), r.motifs.join(' / ')); }
 // 3i. sources : payantes et URL portant un décompte jamais liées
 verifie('média payant jamais lié', sourceALier([{ media: 'Libération', url: 'https://www.liberation.fr/x', acces: 'libre' }]) === null);
-verifie('URL portant « douze enfants » jamais liée', sourceALier([{ media: 'Le Figaro', url: 'https://x.fr/sur-douze-enfants-2026', acces: 'libre' }]) === null);
+verifie('A2 : URL portant « douze enfants » détectée et autorisée (texte contrôlé à part)', ARBITRAGES.lienAvecDecompte && urlAvecDecompte('https://x.fr/sur-douze-enfants-2026') && sourceALier([{ media: 'Le Figaro', url: 'https://x.fr/sur-douze-enfants-2026', acces: 'libre' }])?.media === 'Le Figaro');
+verifie('A2 : un décompte dans le TEXTE reste bloquant', gardes('Selon X, douze enfants seraient concernés.', {}).bloquants.length > 0);
 verifie('accès libre préféré à l’accès partiel', sourceALier([{ media: 'A', url: 'https://a.fr/1', acces: 'partiel', publie_le: '2026-07-02' }, { media: 'B', url: 'https://b.fr/1', acces: 'libre', publie_le: '2026-07-01' }]).media === 'B');
 // 3j. événement d'une autre affaire, événement non daté, événement non lié
 const evt0001 = EV.affaires['FR-2026-0001'][0];
@@ -117,6 +122,25 @@ verifie('événement non daté ⇒ bloqué', composerPilote({ scenario: { id: 'T
 // 3k. phrases entières seulement
 verifie('découpe en phrases entières (aucune coupe à l’intérieur d’une phrase)', JSON.stringify(phrasesDe('Deux animateurs mis en examen. L’enquête vise trois écoles.')) === JSON.stringify(['Deux animateurs mis en examen.', 'L’enquête vise trois écoles.']));
 verifie('liste blanche : aucun gabarit ne contient de verbe d’affirmation factuelle', Object.values(GABARITS).every((g) => !/\b(a été|ont été|est|sont|accus|condamn|viol|agress)\b/i.test(g.replace(/\{\w+\}/g, ''))));
+
+
+section('4. Arbitrages A3 (accroche courte approuvée) et A4 (mention courte du site)');
+{ const d = clone(dossierFiche('FR-2026-0113')); d.d.accroche_courte = 'Selon France 3, le parquet de Bordeaux a ouvert une enquête préliminaire après des plaintes de parents d’élèves.';
+  const M = matiereApprouvee({ entree: cases.get('FR-2026-0113'), dossier: d, empreinteApprouvee: hashDossier(d.d), wording });
+  const r = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M, publiques: cases, site: SITE });
+  verifie('accroche courte approuvée utilisée par X, liée à son média, contrôles verts', r.x.etat === 'OK' && r.x.texte.includes(d.d.accroche_courte) && r.x.texte.includes('france3-regions') && verifierPost(r.x, 'x', M, SITE).ok, r.x.texte ?? r.x.motifs);
+  verifie('accroche courte NON approuvée (empreinte ancienne) ⇒ fiche entière refusée', composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M: matiereApprouvee({ entree: cases.get('FR-2026-0113'), dossier: d, empreinteApprouvee: EV.fiches_approuvees['FR-2026-0113'].hash, wording }), publiques: cases, site: SITE }).etat === 'BLOQUE');
+  const d2 = clone(d); d2.d.accroche_courte = 'Le parquet a ouvert une enquête.';
+  const r2 = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M: matiereApprouvee({ entree: cases.get('FR-2026-0113'), dossier: d2, empreinteApprouvee: hashDossier(d2.d), wording }), publiques: cases, site: SITE });
+  verifie('accroche courte non attribuée (« Selon … ») ignorée', !r2.x.texte?.includes('Le parquet a ouvert une enquête.')); }
+{ const src = { media: 'CNEWS', date: '2026-07-10', url: null };
+  const l = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: '2026-07-10', type_evenement: 'décision', finalite: null, suites: [], sources: [src] }, src);
+  verifie('A4 : condamnation sans recours ni finalité ⇒ « Caractère définitif non documenté. »', l.includes('Caractère définitif non documenté.') && !/non définitive/.test(l.join(' ')), l.join(' | '));
+  const a = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: null, suites: ['APPEL_EN_COURS'], sources: [src] }, src);
+  verifie('A4 : appel en cours ⇒ phrase d’appel, pas la mention courte', !a.includes('Caractère définitif non documenté.'));
+  const nd = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: 'non_definitive', suites: [], sources: [src] }, src);
+  verifie('A4 : finalité « non définitive » validée ⇒ inchangé', !nd.includes('Caractère définitif non documenté.') && nd.includes("Cette décision n'est pas définitive."));
+  verifie('A4 : enquête inchangée', !wording.phrasesEtat('enquête', null, src).includes('Caractère définitif non documenté.')); }
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ banc social : tous les contrôles passent (aucune publication, aucun appel Buffer)');
 process.exit(ko ? 1 : 0);
