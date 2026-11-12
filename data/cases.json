@@ -2742,13 +2742,6 @@
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
-          "media": "franceinfo",
-          "publication_date": "2026-07-07",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
           "media": "franceinfo",
           "publication_date": "2026-07-09",
@@ -2759,6 +2752,13 @@
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
           "media": "franceinfo",
           "publication_date": "2026-07-09",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
+          "media": "franceinfo",
+          "publication_date": "2026-07-07",
           "source_type": "presse",
           "is_primary": false
         }
