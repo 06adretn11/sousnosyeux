@@ -60,7 +60,8 @@ export const RE_DESIGNATION_ROLE = { test: (t) => RE_FONCTION.test(plat(t)) };
 //   A1 fonction de la personne visée : reprise telle qu'écrite dans la fiche approuvée (la valeur exacte de la carte reste bloquée) ;
 //   A2 lien dont l'adresse / le titre porte un décompte : autorisé, à condition que le TEXTE du post n'en contienne aucun (gardes sur le texte) ;
 //   A3 X minimal (phrase d'état du site) autorisé ; une phrase courte approuvée (`accroche_courte` du dossier) est utilisée en priorité quand elle existe ;
-//   A4 mention fixe « Caractère définitif non documenté. » dans la formulation officielle (web/src/lib/etat-wording.ts) ;
+//   A4 mention fixe « Caractère définitif non documenté. » — appliquée par le PILOTE seulement (`reserveA4`) ; la formulation publique
+//      (web/src/lib/etat-wording.ts) reste inchangée tant qu'une validation spécifique de son effet sur le site n'est pas donnée ;
 //   A5 détails déjà approuvés sur la fiche (sexe d'un enfant, peine, FIJAIS) : repris tels quels, sans revue spécifique.
 // ---------------------------------------------------------------------
 export const ARBITRAGES = Object.freeze({ date: '2026-11-12', lienAvecDecompte: true, revueSexeEnfant: false });
@@ -113,7 +114,18 @@ export function matiereApprouvee({ entree, dossier, empreinteApprouvee, evenemen
     const src = wording.sourceAffichee(entree.etat ?? null, p ? { media: p.media, date: p.publication_date, url: p.url } : null);
     site = wording.phrasesEtat(entree.statut_judiciaire, entree.etat ?? null, src);
   }
-  return { approuve, d: approuve ? d : null, sources, site, evenements, matiere, entree, empreinte: approuve ? empreinteApprouvee : null };
+  return { approuve, d: approuve ? d : null, sources, site, reserveA4: reserveA4(entree), evenements, matiere, entree, empreinte: approuve ? empreinteApprouvee : null };
+}
+
+/**
+ * Arbitrage A4 — mention courte fixe pour une condamnation sans recours ni finalité validés (mêmes conditions que la clause « une condamnation a été
+ * prononcée » de etat-wording.ts). ISOLÉE dans le pilote : la formulation publique du site n'est PAS modifiée (validation spécifique requise).
+ */
+export const MENTION_A4 = 'Caractère définitif non documenté.';
+export function reserveA4(entree) {
+  const etat = entree?.etat ?? null;
+  const cible = etat?.statut ?? entree?.statut_judiciaire;
+  return cible === 'condamnation non définitive' && etat?.finalite !== 'non_definitive' && !(etat?.suites ?? []).length ? MENTION_A4 : null;
 }
 
 /** Sources NOMMÉES dans une phrase (« Selon France 3 et Le Figaro, … ») parmi les sources rattachées à l'affaire. */
@@ -299,7 +311,8 @@ export function composerPilote({ scenario, M, publiques, site }) {
   // Réserves de la fiche seulement si le site n'en porte pas (sinon doublon : « appel formé » dit deux fois, défaut v2 S05).
   if (siteL.length < 2) for (const [i, t] of (d?.etat_actuel || []).entries()) if (RE_RESERVE.test(t) && !gardes(t, e).bloquants.length && !deja(t) && scenario.famille !== 'nouvelle_affaire') reserves.push({ texte: t, origine: `dossier.etat_actuel[${i}]` });
   for (const l of siteL.slice(1)) if (!deja(l)) reserves.push({ texte: l, origine: 'site:etat-wording' });
-  const reserveIndisp = reserves.find((r) => r.origine === 'site:etat-wording') ?? reserves.find((r) => RE_RESERVE.test(r.texte)) ?? null;
+  if (M.reserveA4 && !deja(M.reserveA4)) reserves.push({ texte: M.reserveA4, origine: 'arbitrage:A4' });
+  const reserveIndisp = reserves.find((r) => r.origine === 'site:etat-wording') ?? reserves.find((r) => r.origine === 'arbitrage:A4') ?? reserves.find((r) => RE_RESERVE.test(r.texte)) ?? null;
   // Toutes les familles parlent d'une affaire en cours ou jugée : la réserve est exigée partout.
   if (!reserveIndisp && !principal.some((p) => RE_RESERVE.test(p.texte || ''))) bloque.push('aucune réserve judiciaire approuvée disponible (présomption / caractère non définitif) : obligatoire');
 
@@ -307,7 +320,7 @@ export function composerPilote({ scenario, M, publiques, site }) {
 
   // --- 2. SEGMENTS -----------------------------------------------------------------------------------------------------------------
   const preuve = (p, src, validation) => ({ source: src ? { media: src.media, url: src.url, publie_le: src.publie_le } : null, validation });
-  const validationDe = (origine) => origine.startsWith('dossier') ? validationFiche : origine.startsWith('evenement') ? `événement validé (Neon, ${origine.split(':')[1]})` : origine.startsWith('matiere') ? `information validée (Neon, ${origine.split(':')[1]})` : origine.startsWith('site') ? 'formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche' : origine;
+  const validationDe = (origine) => origine.startsWith('dossier') ? validationFiche : origine.startsWith('evenement') ? `événement validé (Neon, ${origine.split(':')[1]})` : origine.startsWith('matiere') ? `information validée (Neon, ${origine.split(':')[1]})` : origine.startsWith('site') ? 'formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche' : origine === 'arbitrage:A4' ? 'mention fixe arbitrée par Adrien (A4, 12/11/2026) — pilote seulement, NON servie sur le site' : origine;
   const srcDe = (t) => sourceALier(sourcesDePhrase(t, M)) ?? sourcesDePhrase(t, M)[0] ?? null;
   const segFait = (p, role = 'fait') => p.parole
     ? seg('parole', { acteur: champ(p.acteur, p.origine + '.acteur'), qualite: champ(p.qualite, p.origine + '.qualite'), date: champ(p.date, p.origine + '.date'), citation: champ(p.citation, p.origine + '.citations') }, role, preuve(p, srcLien, validationDe(p.origine)))
@@ -393,6 +406,7 @@ export function valeursAutorisees(M, site) {
   for (const x of M.evenements || []) { add(x.libelle); for (const p of [x.libelle, ...phrasesDe(x.libelle)]) { add(p); add(sansPointFinal(p)); } add(x.source?.media); }
   for (const x of M.matiere || []) add(x.libelle);
   for (const l of M.site || []) add(l);
+  add(M.reserveA4);
   for (const s of M.sources.values()) { add(s.media); add(s.url); add(dateLongue(s.publie_le)); }
   add('date non précisée');
   // Libellés fixes (avec date d'un événement validé de CETTE affaire) et liens SNY de CETTE affaire.

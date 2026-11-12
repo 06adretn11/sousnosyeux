@@ -4,10 +4,10 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4 } from '../lib/social-editorial.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
-import { genererBanc, htmlBanc } from '../banc-social.mjs';
+import { genererBanc, htmlBanc, mdBanc } from '../banc-social.mjs';
 
 let ko = 0;
 const verifie = (nom, cond, detail = '') => { console.log(`${cond ? '  ✅' : '  ❌'} ${nom}${cond ? '' : ' — ' + detail}`); if (!cond) ko++; };
@@ -66,6 +66,9 @@ section('2. HTML = mêmes sorties (aucun texte dupliqué ou réécrit)');
 const html = htmlBanc(banc);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 for (const { r, c, k } of publies) verifie(`${r.id} ${c} : le texte affiché est le texte généré`, html.includes(esc(k.texte.split('\n')[0])) && html.includes(esc(k.texte.split('\n\n')[1].split('\n')[0]).slice(0, 80)));
+const md = mdBanc(banc);
+for (const { r, c, k } of publies) verifie(`${r.id} ${c} : le Markdown porte le texte EXACT généré`, md.includes('```text\n' + k.texte + '\n```'));
+verifie('Markdown : 12 scénarios, 24 déclinaisons, avertissement « aucune publication »', banc.resultats.every((r) => md.includes(`## ${r.id}`)) && (md.match(/^### (X|Facebook) — /gm) || []).length === 24 && md.includes("Aucun de ces messages n'a été publié"));
 verifie('HTML non indexable et sans ressource externe', html.includes('noindex') && !/<script|<link[^>]+href=|src="http/.test(html));
 verifie('HTML : avertissement « aucune publication »', html.includes('Aucun de ces messages n\'a été publié'));
 const banc2 = await genererBanc({ now: new Date('2026-11-12T10:00:00Z') });
@@ -124,7 +127,7 @@ verifie('découpe en phrases entières (aucune coupe à l’intérieur d’une p
 verifie('liste blanche : aucun gabarit ne contient de verbe d’affirmation factuelle', Object.values(GABARITS).every((g) => !/\b(a été|ont été|est|sont|accus|condamn|viol|agress)\b/i.test(g.replace(/\{\w+\}/g, ''))));
 
 
-section('4. Arbitrages A3 (accroche courte approuvée) et A4 (mention courte du site)');
+section('4. Arbitrages A3 (accroche courte approuvée) et A4 (mention courte, pilote seulement)');
 { const d = clone(dossierFiche('FR-2026-0113')); d.d.accroche_courte = 'Selon France 3, le parquet de Bordeaux a ouvert une enquête préliminaire après des plaintes de parents d’élèves.';
   const M = matiereApprouvee({ entree: cases.get('FR-2026-0113'), dossier: d, empreinteApprouvee: hashDossier(d.d), wording });
   const r = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M, publiques: cases, site: SITE });
@@ -134,13 +137,20 @@ section('4. Arbitrages A3 (accroche courte approuvée) et A4 (mention courte du 
   const r2 = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0113' }, M: matiereApprouvee({ entree: cases.get('FR-2026-0113'), dossier: d2, empreinteApprouvee: hashDossier(d2.d), wording }), publiques: cases, site: SITE });
   verifie('accroche courte non attribuée (« Selon … ») ignorée', !r2.x.texte?.includes('Le parquet a ouvert une enquête.')); }
 { const src = { media: 'CNEWS', date: '2026-07-10', url: null };
-  const l = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: '2026-07-10', type_evenement: 'décision', finalite: null, suites: [], sources: [src] }, src);
-  verifie('A4 : condamnation sans recours ni finalité ⇒ « Caractère définitif non documenté. »', l.includes('Caractère définitif non documenté.') && !/non définitive/.test(l.join(' ')), l.join(' | '));
-  const a = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: null, suites: ['APPEL_EN_COURS'], sources: [src] }, src);
-  verifie('A4 : appel en cours ⇒ phrase d’appel, pas la mention courte', !a.includes('Caractère définitif non documenté.'));
-  const nd = wording.phrasesEtat('condamnation non définitive', { statut: 'condamnation non définitive', date: null, type_evenement: 'décision', finalite: 'non_definitive', suites: [], sources: [src] }, src);
-  verifie('A4 : finalité « non définitive » validée ⇒ inchangé', !nd.includes('Caractère définitif non documenté.') && nd.includes("Cette décision n'est pas définitive."));
-  verifie('A4 : enquête inchangée', !wording.phrasesEtat('enquête', null, src).includes('Caractère définitif non documenté.')); }
+  const etat = (o) => ({ statut: 'condamnation non définitive', date: '2026-07-10', type_evenement: 'décision', finalite: null, suites: [], sources: [src], ...o });
+  const entree = (o) => ({ statut_judiciaire: 'condamnation non définitive', etat: etat(o) });
+  verifie('A4 (pilote) : condamnation sans recours ni finalité ⇒ mention courte', reserveA4(entree({})) === MENTION_A4);
+  verifie('A4 (pilote) : appel en cours ⇒ pas de mention courte', reserveA4(entree({ suites: ['APPEL_EN_COURS'] })) === null);
+  verifie('A4 (pilote) : finalité « non définitive » validée ⇒ pas de mention courte', reserveA4(entree({ finalite: 'non_definitive' })) === null);
+  verifie('A4 (pilote) : enquête ⇒ pas de mention courte', reserveA4({ statut_judiciaire: 'enquête', etat: null }) === null);
+  verifie('A4 ISOLÉ : la formulation publique du site ne contient PAS la mention (aucun effet sur la carte)', !wording.phrasesEtat('condamnation non définitive', etat({}), src).join(' ').includes(MENTION_A4) && !lireTexte('web/src/lib/etat-wording.ts').includes(MENTION_A4));
+  // Sans procédure sœur (publiques réduites à l'affaire), le X de la condamnation Aqueduc tient grâce à la mention courte ; elle n'est jamais attribuée au site.
+  { const seule = new Map([['FR-2026-0001', cases.get('FR-2026-0001')]]); const M1 = M_de('FR-2026-0001');
+    const r = composerPilote({ scenario: { id: 'T', famille: 'evolution', case_id: 'FR-2026-0001', event_id: EV.affaires['FR-2026-0001'][0].event_id }, M: M1, publiques: seule, site: SITE });
+    const seg = r.x.paragraphes?.flat().find((x) => x.texte === MENTION_A4);
+    verifie('A4 (pilote) : X d’une condamnation à finalité inconnue tient avec la mention courte, contrôles verts', r.x.etat === 'OK' && r.x.texte.includes(MENTION_A4) && verifierPost(r.x, 'x', M1, SITE).ok, r.x.texte ?? r.x.motifs);
+    verifie('A4 (pilote) : preuve = arbitrage, « NON servie sur le site »', /NON servie sur le site/.test(seg?.preuve?.validation ?? ''));
+    verifie('A4 (pilote) : Facebook garde la réserve approuvée de la fiche, sans redite', r.facebook.texte.includes('Appel et caractère définitif non documentés') && !r.facebook.texte.includes(MENTION_A4)); } }
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ banc social : tous les contrôles passent (aucune publication, aucun appel Buffer)');
 process.exit(ko ? 1 : 0);

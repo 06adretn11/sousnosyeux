@@ -146,9 +146,6 @@ export function phrasesEtat(statut: string, etat: EtatBloc, source: SourceAffich
   }).filter(Boolean);
   if (suites.length) lignes.push(suites.join(' '));
   else if (etat?.finalite === 'non_definitive') lignes.push("Cette décision n'est pas définitive.");
-  // Condamnation sans recours ni finalité validés : on ne dit ni « définitive » ni « non définitive », mais on ne laisse pas
-  // croire à une décision acquise. Mention courte et fixe (arbitrage d'Adrien du 12/11/2026, pilote éditorial social V3).
-  else if (cible === 'condamnation non définitive') lignes.push('Caractère définitif non documenté.');
 
   const mention = MENTION[etat?.statut ?? statut];
   if (mention) lignes.push(mention);

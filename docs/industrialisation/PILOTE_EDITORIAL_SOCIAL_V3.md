@@ -23,9 +23,9 @@
 | Fichier | Rôle |
 |---|---|
 | `scripts/lib/social-editorial.mjs` | composeur pilote, **pur** : matière approuvée → segments (gabarits en liste blanche + phrases approuvées à l'identique) → X / Facebook ; contrôleur indépendant `verifierPost` ; grille d'aide à la revue |
-| `scripts/banc-social.mjs` | commande locale : `node scripts/banc-social.mjs` → `out/banc-social/banc.html` + `banc.json` (ignorés par git) |
+| `scripts/banc-social.mjs` | commande locale : `node scripts/banc-social.mjs` → `out/banc-social/` (ignoré) ; `--sortie docs/industrialisation/banc-social` → rendus versionnés `banc.html`, `banc.json`, `banc.md` (Markdown lisible sur GitHub), tous issus des mêmes sorties |
 | `scripts/qa/fixtures/banc-social-corpus.json` | corpus = **références** (identifiants d'affaire, d'événement, de déclaration), aucun texte d'article |
-| `scripts/qa/test-banc-social.mjs` (+ `run-all.mjs`) | 92 contrôles : pare-feux, injections, corpus réel, HTML, déterminisme, absence de chemin Buffer |
+| `scripts/qa/test-banc-social.mjs` (+ `run-all.mjs`) | 121 contrôles : pare-feux, injections, corpus réel, HTML et Markdown = sorties exactes, déterminisme, arbitrages A1–A5, A4 isolé du site, absence de chemin Buffer |
 
 **Non modifiés** : `diffusion-sociale.mjs`, `diffuser-social.mjs`, `diffusion-flux.mjs`, `buffer.mjs`, workflows, déclencheurs, variables, schéma.
 
@@ -76,10 +76,10 @@
 | A1 | Fonction de la personne visée | **Oui, telle qu'écrite dans la fiche approuvée** (la valeur exacte de la carte reste bloquée) | comportement du composeur ; une procédure sœur distinguée n'est plus un point de revue mais une note |
 | A2 | Lien dont l'adresse / le titre porte un décompte | **Autorisé si le texte du post n'en contient aucun** | `ARBITRAGES.lienAvecDecompte` ; les gardes restent bloquantes sur le texte ; S01 lie France 3, S11 lie Le JDD |
 | A3 | Format X | **X minimal maintenant ; phrase courte approuvée ensuite** | champ facultatif `accroche_courte` du dossier (≤ 140 car., « Selon <média>, … »), couvert par l'empreinte d'approbation, utilisé en priorité par X ; testé, encore présent dans **aucun** dossier |
-| A4 | Réserve courte, condamnation à finalité inconnue | **Mention fixe « Caractère définitif non documenté. »** | ajoutée à `web/src/lib/etat-wording.ts` (site et posts identiques) — **effet public au déploiement** : 14 affaires publiées l'affichent dans la fenêtre de la carte (fiches inchangées : leur état approuvé prime) ; vérifié sur le site construit localement (FR-2026-0001) |
+| A4 | Réserve courte, condamnation à finalité inconnue | **Mention fixe « Caractère définitif non documenté. »** | **appliquée par le pilote seulement** (`reserveA4`, preuve « arbitrage A4 — NON servie sur le site ») ; elle sert à X, Facebook gardant la réserve approuvée plus précise de la fiche. `web/src/lib/etat-wording.ts` **n'est pas modifié** : l'affichage de la mention sur la carte publique (14 affaires) demande une validation spécifique distincte (testé : la formulation publique ne la contient pas) |
 | A5 | Détails déjà approuvés (sexe d'un enfant, peine, FIJAIS) | **Repris tels quels** | `ARBITRAGES.revueSexeEnfant = false` |
 
-Effet mesuré : Facebook S01, S04, S11 passent à « conforme » ; X S04 et S06 restent bloqués (procédure Aqueduc non distinguable en version courte : A1 n'y suffit pas sans `accroche_courte`).
+Effet mesuré : Facebook S01, S04, S11 passent à « conforme » ; X S04 et S06 restent bloqués (procédure Aqueduc non distinguable en version courte : A1 n'y suffit pas sans `accroche_courte`). Hors procédure sœur, la mention A4 permet un X de condamnation fidèle (testé sur FR-2026-0001 isolée).
 
 ### Libellé des questions telles que posées
 
@@ -91,9 +91,19 @@ Effet mesuré : Facebook S01, S04, S11 passent à « conforme » ; X S04 et S06 
 
 (Pour les déclarations — S05, S06 — le **GO Telegram spécifique** est maintenu par principe : le futur message devra présenter le texte exact X et Facebook, la déclaration, sa source et la situation de la procédure ; non implémenté ici, par consigne.)
 
+## 5 bis. Rendus pour revue humaine
+
+Dans `docs/industrialisation/banc-social/` (instantané du 12/11/2026, régénérable à l’identique par la commande ci-dessus) :
+
+- `banc.md` — lisible directement sur GitHub : synthèse, puis pour chaque scénario les messages X et Facebook **exacts** (blocs de texte), motifs de blocage, points de revue, table des preuves et sortie du moteur actuel.
+- `banc.html` — même contenu en cartes façon fil X / Facebook (à ouvrir localement ; GitHub ne l’affiche pas).
+- `banc.json` — sorties brutes du composeur, contrôles et preuves.
+
+Les trois fichiers sont produits par le même passage du code ; les tests vérifient que HTML et Markdown portent les textes générés à l’identique. Aucun texte n’a été rédigé ni retouché à la main.
+
 ## 6. Livrable 5 — Bilan technique
 
-- **Tests** : `test-banc-social` 106/106 ✅ (dont arbitrages A1–A5) · non-régression `test-diffusion-sociale` 94 ✅, `test-diffuser-script` 27 ✅ (après `npm ci` dans le worktree : il échouait seulement faute de `node_modules`), `test-buffer-sonde` 13 ✅, `test-wording-proces` 10 ✅. `run-all` : 2 échecs **préexistants**, identiques sur `main` sans ces changements (`test-fiche-priorite` : chemin `%20` sous Windows ; `test-declaration-organisme` : assertion) + constat de corpus R5 (FR-2026-0024, FR-2026-0035) déjà connu.
+- **Tests** : `test-banc-social` 121/121 ✅ · non-régression `test-diffusion-sociale` 94 ✅, `test-diffuser-script` 27 ✅, `test-buffer-sonde` 13 ✅, `test-wording-proces` 10 ✅. `run-all` : 2 échecs **préexistants**, identiques sur `main` sans ces changements (`test-fiche-priorite` : chemin `%20` sous Windows ; `test-declaration-organisme` : assertion) + constat de corpus R5 (FR-2026-0024, FR-2026-0035) déjà connu.
 - **Absence de publication** : aucun appel Buffer, aucune écriture Neon, aucune variable modifiée ; journal de diffusion vide.
 - **Diffusion** : désactivée (`SNY_DIFFUSION_ACTIVE=0`, `SNY_DIFFUSION_DEPUIS` non daté).
 - **Écarts restants avant un GO éditorial** (plus petit changement à chaque fois) :

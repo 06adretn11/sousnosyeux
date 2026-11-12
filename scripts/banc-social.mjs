@@ -123,13 +123,47 @@ main{max-width:1180px;margin:auto;padding:20px}table{border-collapse:collapse;wi
 <main><h1 style="font-size:20px">Synthèse</h1><table><tr><th>#</th><th>Affaire</th><th>Famille</th><th>Matière exploitable</th><th>X</th><th>Facebook</th><th>Principal problème / point de revue</th></tr>${lignes}</table>${cartes}</main></body></html>`;
 }
 
+// ---------------------------------------------------------------------
+// Markdown (lisible directement sur GitHub) : mêmes sorties que le HTML, rien de réécrit. Les textes sont en blocs de code (affichage exact, liens non actifs).
+// ---------------------------------------------------------------------
+const ETAT_MD = { CONFORME: '🟢 conforme aux contrôles', REVUE: '🟠 revue humaine', BLOQUE: '🔴 bloqué' };
+const cel = (s) => String(s ?? '').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+const bloc = (t) => '```text\n' + String(t).replace(/```/g, "'''") + '\n```';
+function mdBanc(b) {
+  const L = [`# SNY — banc d'essai éditorial social V3 (${b.version})`, '',
+    `Généré le ${b.genere_le.slice(0, 16).replace('T', ' ')} UTC par \`node scripts/banc-social.mjs --sortie docs/industrialisation/banc-social\`. **Aucun de ces messages n'a été publié, programmé ni transmis à Buffer.** Corpus historique : aucune diffusion rétroactive. Aucun GO éditorial ni de diffusion.`, '',
+    'Les messages ci-dessous sont les sorties EXACTES du composeur (`scripts/lib/social-editorial.mjs`), identiques à `banc.json` et `banc.html` du même dossier.', '',
+    '## Synthèse', '', '| # | Affaire | Famille | X | Facebook | Principal problème / point de revue |', '|---|---|---|---|---|---|'];
+  for (const r of b.resultats) L.push(`| [${r.id}](#${r.id.toLowerCase()}) | ${cel(r.case_id)} · ${cel(r.etablissement)} | ${cel(FAM[r.famille])} | ${ETAT_MD[r.canaux.x.etat]} | ${ETAT_MD[r.canaux.facebook.etat]} | ${cel(([...r.motifs, ...(r.canaux.x.motifs || []), ...(r.canaux.facebook.motifs || []), ...r.attention, ...(r.canaux.facebook.attention || []), ...(r.canaux.x.attention || [])][0] ?? '—').slice(0, 200))} |`);
+  for (const r of b.resultats) {
+    L.push('', `## ${r.id}`, '', `**${cel(r.titre)}** — ${cel(r.case_id)}, ${cel(r.etablissement)} (${cel(r.commune)}) · ${FAM[r.famille]} · statut public : ${cel(r.statut_public)} · fiche approuvée : ${r.fiche_approuvee ?? 'aucune'}`);
+    if (r.source_principale) L.push('', `Article utilisé : ${r.source_principale.media}, ${String(r.source_principale.publie_le ?? '').slice(0, 10)} — ${r.source_principale.url}`);
+    if (r.motifs.length) L.push('', '**Blocages**', '', ...r.motifs.map((m) => `- ${m}`));
+    if (r.attention.length) L.push('', '**Points de revue humaine**', '', ...r.attention.map((m) => `- ${m}`));
+    if (r.notes?.length) L.push('', '**Notes**', '', ...r.notes.map((m) => `- ${m}`));
+    for (const c of ['x', 'facebook']) {
+      const k = r.canaux[c];
+      L.push('', `### ${c === 'x' ? 'X' : 'Facebook'} — ${ETAT_MD[k.etat]}`);
+      if (!k.texte) { L.push('', ...k.motifs.map((m) => `- ${m}`)); continue; }
+      L.push('', `${k.longueur} caractères${c === 'x' ? ' (URL comptées 23)' : ''} · ${k.urls.length} URL · qualité (aide à la revue, mécanique) ${k.note.total}/100${k.repli ? ' · version de repli' : ''} · contrôles ${k.controles.filter((x) => x.ok).length}/${k.controles.length}`, '', bloc(k.texte));
+      if (k.attention?.length) L.push('', ...k.attention.map((m) => `- ⚠️ ${m}`));
+      L.push('', '<details><summary>Affirmations et preuves</summary>', '', '| Rôle | Affirmation | Source | Validation |', '|---|---|---|---|',
+        ...k.preuves.map((p) => `| ${p.role} | ${cel(p.affirmation)} | ${p.source ? `${cel(p.source.media)} ${String(p.source.publie_le ?? '').slice(0, 10)} ${cel(p.source.url)}` : '—'} | ${cel(p.validation)} |`), '', '</details>');
+    }
+    const act = (c) => r.actuel[c]?.texte ?? r.actuel[c]?.erreur ?? '—';
+    L.push('', '<details><summary>Moteur actuel (production, inchangé) — même affaire</summary>', '', '**X**', '', bloc(act('x')), '', '**Facebook**', '', bloc(act('facebook')), '', '</details>');
+  }
+  return L.join('\n') + '\n';
+}
+
 // Exécution directe seulement (le test importe ce module sans rien écrire).
 if (process.argv[1] && basename(process.argv[1]) === 'banc-social.mjs') {
   const b = await genererBanc();
   mkdirSync(SORTIE, { recursive: true });
   writeFileSync(resolve(SORTIE, 'banc.json'), JSON.stringify(b, null, 2));
   writeFileSync(resolve(SORTIE, 'banc.html'), htmlBanc(b));
+  writeFileSync(resolve(SORTIE, 'banc.md'), mdBanc(b));
   for (const r of b.resultats) console.log(`${r.id} ${r.case_id.padEnd(13)} ${r.famille.padEnd(24)} X:${r.canaux.x.etat.padEnd(9)} FB:${r.canaux.facebook.etat.padEnd(9)} q(X/FB) ${r.canaux.x.note?.total ?? '—'}/${r.canaux.facebook.note?.total ?? '—'}  ${(r.motifs[0] ?? r.canaux.x.motifs?.[0] ?? '').slice(0, 110)}`);
   console.log(`\n→ ${resolve(SORTIE, 'banc.html')}`);
 }
-export { htmlBanc };
+export { htmlBanc, mdBanc };
