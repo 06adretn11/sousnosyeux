@@ -1,4 +1,4 @@
-# SNY — banc d'essai éditorial social (pilote-social-v4.0)
+# SNY — banc d'essai éditorial social (pilote-social-v4.1)
 
 Généré le 2026-11-12 18:00 UTC par `node scripts/banc-social.mjs --sortie docs/industrialisation/banc-social`. **Aucun de ces messages n'a été publié, programmé ni transmis à Buffer.** Corpus historique : aucune diffusion rétroactive. Aucun GO éditorial ni de diffusion.
 
@@ -8,7 +8,7 @@ Les messages ci-dessous sont les sorties EXACTES du composeur (`scripts/lib/soci
 
 | # | Affaire | Famille | X | Facebook | Principal problème / point de revue |
 |---|---|---|---|---|---|
-| [S01](#s01) | FR-2026-0113 · École maternelle Frida-Kahlo | Nouvelle affaire (Discovery) | 🟢 conforme aux contrôles | 🟢 conforme aux contrôles | — |
+| [S01](#s01) | FR-2026-0113 · École maternelle Frida-Kahlo | Nouvelle affaire (Discovery) | 🟢 conforme aux contrôles | 🟠 revue humaine | source liée (Le Figaro) en accès partiel lors de la relecture |
 | [S02](#s02) | FR-2026-0025 · Collège-lycée Saint-Martin-de-France | Nouvelle affaire (Discovery) | 🟢 conforme aux contrôles | 🟢 conforme aux contrôles | — |
 | [S03](#s03) | FR-2026-0005 · École maternelle Saint-Dominique | Évolution judiciaire (Maintenance) | 🟢 conforme aux contrôles | 🟢 conforme aux contrôles | — |
 | [S04](#s04) | FR-2026-0001 · École Aqueduc | Évolution judiciaire (Maintenance) | 🔴 bloqué | 🟢 conforme aux contrôles | aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 507 car. ; option écartée : procédure non distinguée ; option écartée : procédure non disting |
@@ -18,8 +18,10 @@ Les messages ci-dessous sont les sorties EXACTES du composeur (`scripts/lib/soci
 | [S08](#s08) | FR-2026-0004 · École Vigée Lebrun | Évolution judiciaire (Maintenance) | 🔴 bloqué | 🔴 bloqué | aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant) |
 | [S09](#s09) | FR-2026-0027 · École maternelle Les Aresquiers | Évolution judiciaire (Maintenance) | 🔴 bloqué | 🔴 bloqué | type d’événement « mesure_procédurale » : n’est pas une étape judiciaire qui fait avancer le statut (aucune nouvelle étape à annoncer) |
 | [S10](#s10) | POC-09 · École Titon | Évolution judiciaire (Maintenance) | 🔴 bloqué | 🔴 bloqué | relaxe / non-lieu / classement : finalité non établie par la presse, hors automatisation (doctrine POC-09) |
-| [S11](#s11) | FR-2026-0002 · École Aqueduc | Nouvelle affaire (Discovery) | 🔴 bloqué | 🟢 conforme aux contrôles | aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 403 car. ; option écartée : procédure non distinguée) |
+| [S11](#s11) | FR-2026-0002 · École Aqueduc | Nouvelle affaire (Discovery) | 🔴 bloqué | 🟢 conforme aux contrôles | aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 403 car. ; option écartée : procédure non distinguée ; 394 car. (pied compact)) |
 | [S12](#s12) | FR-2026-0002 · École Aqueduc | Évolution judiciaire (Maintenance) | 🔴 bloqué | 🔴 bloqué | événement non rattaché à cette affaire (absent des événements validés de la fiche) : aucune attribution par ressemblance |
+| [S13](#s13) | FR-2026-0146 · école maternelle Johann-Wolfgang-Von-Goethe | Nouvelle affaire (Discovery) | 🔴 bloqué | 🔴 bloqué | aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant) |
+| [S14](#s14) | FR-2026-0147 ·  | Nouvelle affaire (Discovery) | 🔴 bloqué | 🔴 bloqué | identifiant retiré : doublon réconcilié vers FR-2026-0146 — aucun message ne cite ni ne lie l’ancien identifiant |
 
 ## S01
 
@@ -31,40 +33,42 @@ Article utilisé : France 3 Nouvelle-Aquitaine, 2026-07-02 — https://france3-r
 
 ### X — 🟢 conforme aux contrôles
 
-259 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 74 % · version de repli · contrôles 11/11
+278 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 77 % · version de repli · contrôles 13/13
 
 ```text
-Bordeaux · École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans (selon France 3 Nouvelle-Aquitaine). L'ouverture d'une enquête ne vaut pas culpabilité.
+Bordeaux · École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité (selon France 3 Nouvelle-Aquitaine). L'ouverture d'une enquête ne vaut pas culpabilité.
 
-Source : https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113
+https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113
 ```
 
 <details><summary>Affirmations et preuves</summary>
 
 | Rôle | Affirmation | Source | Validation |
 |---|---|---|---|
-| fait | Bordeaux · École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans (selon France 3 Nouvelle-Aquitaine). | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) — extrait exact (sans la circonstance « par … ») |
+| fait | Bordeaux · École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité (selon France 3 Nouvelle-Aquitaine). | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) — extrait exact |
 | reserve | L'ouverture d'une enquête ne vaut pas culpabilité. | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) |
 
 </details>
 
-### Facebook — 🟢 conforme aux contrôles
+### Facebook — 🟠 revue humaine
 
-1505 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 95 % · contrôles 10/10
+1238 caractères · 3 URL · grille outil (mécanique, pas l’avis d’Adrien) 90/100 · part factuelle 91 % · contrôles 13/13
 
 ```text
 Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité
 
 Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves. Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.
 
-Placés en garde à vue, les deux agents sont entendus pour la première fois après des perquisitions à leur domicile. La date n’est pas établie : « mardi 30 juin » selon France 3, « mercredi » selon Le Figaro (article publié le mercredi 1er juillet). Les gardes à vue sont levées « afin de permettre l'exploitation du matériel informatique saisi », précise le parquet, qui indique que l'office anti-cybercriminalité de Bordeaux l'exploite « en toute première priorité ».
-
 L'ouverture d'une enquête ne vaut pas culpabilité.
 
 Source : France 3 Nouvelle-Aquitaine, 2 juillet 2026 — https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html
 
+Source : Le Figaro, 1er juillet 2026 — https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701
+
 Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113
 ```
+
+- ⚠️ source liée (Le Figaro) en accès partiel lors de la relecture
 
 <details><summary>Affirmations et preuves</summary>
 
@@ -73,29 +77,28 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 | accroche | Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | champs publics de la fiche carte (data/cases.json) + libellé fixe + objet : fiche approuvée (empreinte fa7a412f94bd5b04) — extrait exact |
 | fait | Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves. | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) |
 | fait | Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée. | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) |
-| contexte | Placés en garde à vue, les deux agents sont entendus pour la première fois après des perquisitions à leur domicile. La date n’est pas établie : « mardi 30 juin » selon France 3, « mercredi » selon Le Figaro (article publié le mercredi 1er juillet). Les gardes à vue sont levées « afin de permettre l'exploitation du matériel informatique saisi », précise le parquet, qui indique que l'office anti-cybercriminalité de Bordeaux l'exploite « en toute première priorité ». | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) |
 | reserve | L'ouverture d'une enquête ne vaut pas culpabilité. | France 3 Nouvelle-Aquitaine 2026-07-02 https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html | fiche approuvée (empreinte fa7a412f94bd5b04) |
 
 </details>
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
-**X** — 🟠 revue humaine
+**X** — 🟢 conforme aux contrôles
 
 ```text
-Bordeaux · École maternelle Frida-Kahlo
+Bordeaux · École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans (selon France 3 Nouvelle-Aquitaine). L'ouverture d'une enquête ne vaut pas culpabilité.
 
-Selon Ouest-France, une enquête a été ouverte. L'ouverture d'une enquête ne vaut pas culpabilité.
-
-Source : https://www.ouest-france.fr/faits-divers/violence-sexuelle/viol/plaintes-pour-violences-sexuelles-dans-une-ecole-de-bordeaux-un-atsem-et-un-animateur-ont-ete-ecartes-5b02cb10-7554-11f1-9172-187ee382b87f Suivi : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113
+Source : https://france3-regions.franceinfo.fr/nouvelle-aquitaine/gironde/bordeaux/violences-sexuelles-a-l-ecole-sept-parents-d-eleves-portent-plainte-un-animateur-et-un-atsem-suspendus-a-bordeaux-3379603.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0113/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0113
 ```
 
 **Facebook** — 🟢 conforme aux contrôles
 
 ```text
-Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête en cours
+Bordeaux (Gironde) — École maternelle Frida-Kahlo : enquête ouverte pour agressions sexuelles sur mineurs de 15 ans par personne ayant autorité
 
 Selon France 3 et Le Figaro, le parquet de Bordeaux a ouvert une enquête préliminaire du chef d'agressions sexuelles sur mineurs de 15 ans par personne ayant autorité, après des plaintes de parents d'élèves. Les deux personnes visées — un agent territorial spécialisé des écoles maternelles (Atsem) et un animateur périscolaire — ont été suspendues. Aucune mise en examen n'est rapportée.
+
+Placés en garde à vue, les deux agents sont entendus pour la première fois après des perquisitions à leur domicile. La date n’est pas établie : « mardi 30 juin » selon France 3, « mercredi » selon Le Figaro (article publié le mercredi 1er juillet). Les gardes à vue sont levées « afin de permettre l'exploitation du matériel informatique saisi », précise le parquet, qui indique que l'office anti-cybercriminalité de Bordeaux l'exploite « en toute première priorité ».
 
 L'ouverture d'une enquête ne vaut pas culpabilité.
 
@@ -137,7 +140,7 @@ Article utilisé : France info, 2024-02-15 — https://www.franceinfo.fr/societe
 
 ### X — 🟢 conforme aux contrôles
 
-215 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 72 % · version de repli · contrôles 11/11
+215 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 72 % · version de repli · contrôles 13/13
 
 ```text
 Pontoise · Collège-lycée Saint-Martin-de-France : mise en examen pour viol sur mineur (selon France info). La mise en examen ne vaut pas culpabilité.
@@ -156,14 +159,14 @@ Source : https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-c
 
 ### Facebook — 🟢 conforme aux contrôles
 
-903 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 91 % · contrôles 10/10
+873 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 91 % · contrôles 13/13
 
 ```text
 Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen pour viol sur mineur
 
 Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire.
 
-Selon France info, le mis en cause nie avec fermeté l'accusation de viol et se dit humilié et effondré.
+Selon France info, le mis en cause nie avec fermeté l'accusation de viol.
 
 La mise en examen ne vaut pas culpabilité.
 
@@ -178,19 +181,17 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 |---|---|---|---|
 | accroche | Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen pour viol sur mineur | France info 2024-02-15 https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html | champs publics de la fiche carte (data/cases.json) + libellé fixe + objet : fiche approuvée (empreinte 7c92fed95fdedaa6) — extrait exact |
 | fait | Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire. | France info 2024-02-15 https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html | fiche approuvée (empreinte 7c92fed95fdedaa6) |
-| contexte | Selon France info, le mis en cause nie avec fermeté l'accusation de viol et se dit humilié et effondré. | France info 2024-02-15 https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html | fiche approuvée (empreinte 7c92fed95fdedaa6) |
+| contexte | Selon France info, le mis en cause nie avec fermeté l'accusation de viol. | France info 2024-02-15 https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html | fiche approuvée (empreinte 7c92fed95fdedaa6) — début exact de la phrase (registre émotionnel retiré, D3) |
 | reserve | La mise en examen ne vaut pas culpabilité. | France info 2024-02-15 https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html | formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche |
 
 </details>
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🟢 conforme aux contrôles
 
 ```text
-Pontoise · Collège-lycée Saint-Martin-de-France
-
-Selon France info, une mise en examen a été prononcée. La mise en examen ne vaut pas culpabilité.
+Pontoise · Collège-lycée Saint-Martin-de-France : mise en examen pour viol sur mineur (selon France info). La mise en examen ne vaut pas culpabilité.
 
 Source : https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-cadre-du-college-lycee-stanislas-mis-en-examen-pour-viol-sur-mineur-dans-un-autre-etablissement-scolaire_6365890.html Suivi : https://sousnosyeux.org/affaires/fr-2026-0025/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0025
 ```
@@ -198,9 +199,11 @@ Source : https://www.franceinfo.fr/societe/education/info-franceinfo-un-ancien-c
 **Facebook** — 🟢 conforme aux contrôles
 
 ```text
-Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen
+Pontoise (Val-d'Oise) — Collège-lycée Saint-Martin-de-France : mise en examen pour viol sur mineur
 
 Selon franceinfo, un ancien cadre éducatif a été mis en examen pour viol sur mineur pour des faits datant de 2001 commis dans le collège-lycée Saint-Martin de France, à Pontoise (Val-d'Oise), et a été placé sous contrôle judiciaire.
+
+Selon France info, le mis en cause nie avec fermeté l'accusation de viol et se dit humilié et effondré.
 
 La mise en examen ne vaut pas culpabilité.
 
@@ -242,7 +245,7 @@ Article utilisé : franceinfo, 2026-05-22 — https://www.franceinfo.fr/societe/
 
 ### X — 🟢 conforme aux contrôles
 
-271 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 79 % · version de repli · contrôles 11/11
+271 caractères (URL comptées 23) · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 79 % · version de repli · contrôles 13/13
 
 ```text
 Paris 7e · École maternelle Saint-Dominique
@@ -264,7 +267,7 @@ Source : https://www.franceinfo.fr/societe/education/violences-dans-le-periscola
 
 ### Facebook — 🟢 conforme aux contrôles
 
-1379 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 95 % · contrôles 10/10
+1379 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 95 % · contrôles 13/13
 
 ```text
 Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026 pour des faits à caractère sexuel
@@ -287,14 +290,14 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 | Rôle | Affirmation | Source | Validation |
 |---|---|---|---|
 | accroche | Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026 pour des faits à caractère sexuel | franceinfo 2026-05-22 https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html | champs publics de la fiche carte (data/cases.json) + libellé fixe + objet : événement validé (Neon, 54946f38-6f58-4631-a904-a07ea92545ce) — extrait exact |
-| fait | Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026. | Le Journal du Dimanche 2026-10-11 https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787 | fiche approuvée (empreinte 3ab999ae475d3262) |
+| fait | Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026. | franceinfo 2026-05-22 https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html | fiche approuvée (empreinte 3ab999ae475d3262) |
 | contexte | Selon franceinfo, qui cite le parquet de Paris, treize des seize personnes placées en garde à vue ont été relâchées le jeudi 21 mai 2026, aucune charge suffisante pour caractériser une infraction pénale ne pouvant être retenue contre elles ; les trois autres ont été présentées à des juges d’instruction le vendredi 22 mai. | franceinfo 2026-05-22 https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html | fiche approuvée (empreinte 3ab999ae475d3262) |
 | contexte | Selon franceinfo, une animatrice du même service périscolaire a par ailleurs été placée sous le statut de témoin assisté. | franceinfo 2026-05-22 https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html | fiche approuvée (empreinte 3ab999ae475d3262) |
 | reserve | La mise en examen ne vaut pas culpabilité. | franceinfo 2026-05-22 https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html | formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche |
 
 </details>
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🟢 conforme aux contrôles
 
@@ -309,9 +312,13 @@ Source : https://www.franceinfo.fr/societe/education/violences-dans-le-periscola
 **Facebook** — 🟢 conforme aux contrôles
 
 ```text
-Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026
+Paris 7e (Paris) — École maternelle Saint-Dominique : mise en examen le 22 mai 2026 pour des faits à caractère sexuel
 
 Selon le parquet de Paris, cité par franceinfo, deux animateurs d’un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld (Paris 7e) ont été mis en examen « pour des faits à caractère sexuel » et placés en détention provisoire le vendredi 22 mai 2026.
+
+Selon franceinfo, qui cite le parquet de Paris, treize des seize personnes placées en garde à vue ont été relâchées le jeudi 21 mai 2026, aucune charge suffisante pour caractériser une infraction pénale ne pouvant être retenue contre elles ; les trois autres ont été présentées à des juges d’instruction le vendredi 22 mai.
+
+Selon franceinfo, une animatrice du même service périscolaire a par ailleurs été placée sous le statut de témoin assisté.
 
 La mise en examen ne vaut pas culpabilité.
 
@@ -357,11 +364,11 @@ Article utilisé : CNEWS, 2026-07-10 — https://www.cnews.fr/france/2026-07-10/
 
 ### X — 🔴 bloqué
 
-- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 507 car. ; option écartée : procédure non distinguée ; option écartée : procédure non distinguée)
+- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 507 car. ; option écartée : procédure non distinguée ; option écartée : procédure non distinguée ; 498 car. (pied compact))
 
 ### Facebook — 🟢 conforme aux contrôles
 
-1222 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 96 % · contrôles 10/10
+1222 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 100/100 · part factuelle 96 % · contrôles 13/13
 
 ```text
 Paris 10e (Paris) — École Aqueduc : condamnation prononcée le 10 juillet 2026 pour atteinte sexuelle sur une enfant
@@ -388,7 +395,7 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 
 </details>
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -397,11 +404,13 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 **Facebook** — 🟢 conforme aux contrôles
 
 ```text
-Paris 10e (Paris) — École Aqueduc : condamnation prononcée le 10 juillet 2026
+Paris 10e (Paris) — École Aqueduc : condamnation prononcée le 10 juillet 2026 pour atteinte sexuelle sur une enfant
 
 Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.
 
-Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.
+Selon CNEWS, dans son jugement du 10 juillet 2026, le tribunal a relevé la cohérence et la constance de la parole de l’enfant, face aux « déclarations évolutives » du mis en cause, et indiqué que celui-ci n’avait donné « aucune explication convaincante » sur les raisons pour lesquelles l’enfant l’aurait dénoncé.
+
+Caractère définitif non documenté.
 
 Source : CNEWS, 10 juillet 2026 — https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce
 
@@ -464,27 +473,19 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-202
 - déclaration — intérêt concret de la déclaration : non évaluable sans extrait exact
 - déclaration — lien direct avec l’affaire : portée validée « établissement » : publication générale de l’association (actions auprès des collectivités) ; elle ne précise ni la date de la démarche ni la procédure visée
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
-- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 575 car.)
+- déclaration — citation exacte visible : la matière validée ne contient qu’une paraphrase rédigée par SNY (« L’association indique… ») : aucun extrait exact de la déclaration
+- déclaration — intérêt concret de la déclaration : non évaluable sans extrait exact
+- déclaration — lien direct avec l’affaire : portée validée « établissement » : publication générale de l’association (actions auprès des collectivités) ; elle ne précise ni la date de la démarche ni la procédure visée
 
-**Facebook** — 🟠 revue humaine
+**Facebook** — 🔴 bloqué
 
-```text
-Paris 11e (Paris) — École maternelle Alphonse-Baudin : déclaration de L'Enfant Bleu
-
-Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.
-
-Selon franceinfo, le tribunal correctionnel de Paris a relaxé l'animateur des faits d'agressions sexuelles sur mineurs le 7 juillet 2026, « en l'absence d'éléments matériels suffisamment constitués », estimant qu'il existait « un doute sérieux ».
-
-Un appel a été formé contre cette relaxe : elle n'est pas définitive et la procédure se poursuit.
-
-Source : L'Enfant Bleu, 21 juillet 2026 — https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/
-
-Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/poc-05/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=poc-05
-```
+- déclaration — citation exacte visible : la matière validée ne contient qu’une paraphrase rédigée par SNY (« L’association indique… ») : aucun extrait exact de la déclaration
+- déclaration — intérêt concret de la déclaration : non évaluable sans extrait exact
+- déclaration — lien direct avec l’affaire : portée validée « établissement » : publication générale de l’association (actions auprès des collectivités) ; elle ne précise ni la date de la démarche ni la procédure visée
 
 </details>
 
@@ -538,27 +539,15 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/poc-05
 
 - déclaration — intérêt concret de la déclaration : réaction évaluative seule (satisfaction / déception) : ni démarche, ni demande, ni explication de la décision
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
-- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : option écartée : procédure non distinguée)
+- déclaration — intérêt concret de la déclaration : réaction évaluative seule (satisfaction / déception) : ni démarche, ni demande, ni explication de la décision
 
-**Facebook** — 🟠 revue humaine
+**Facebook** — 🔴 bloqué
 
-```text
-Paris 10e (Paris) — École Aqueduc : prise de parole de Charles Héran, avocat de la famille
-
-Charles Héran, avocat de la famille (propos rapportés par CNEWS, 10 juillet 2026) : « On est très satisfait de cette décision qui vient d'être rendue »
-
-Selon CNEWS, le tribunal correctionnel de Paris a condamné l’animateur, le 10 juillet 2026, à 18 mois de prison avec sursis pour atteinte sexuelle sur une enfant. D’après une source judiciaire citée par CNEWS, il devra se soumettre à un suivi psychologique et a été inscrit au FIJAIS ; selon l’article, il ne pourra plus exercer d’activité impliquant un contact avec des mineurs.
-
-Une prise de parole n’établit pas son contenu. Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.
-
-Source : CNEWS, 10 juillet 2026 — https://www.cnews.fr/france/2026-07-10/agression-sexuelle-dans-une-ecole-parisienne-le-tribunal-rend-sa-decision-ce
-
-Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0001/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0001
-```
+- déclaration — intérêt concret de la déclaration : réaction évaluative seule (satisfaction / déception) : ni démarche, ni demande, ni explication de la décision
 
 </details>
 
@@ -600,7 +589,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-202
 
 - aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -645,7 +634,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=fac
 
 **Points de revue humaine**
 
-- l’adresse de l’article lié (franceinfo) annonce une étape qui n’est pas celle de cette affaire : confusion possible à apprécier
+- l’adresse de l’article lié (franceinfo) annonce une étape ou un acte non établi pour cette affaire : confusion possible à apprécier
 
 **Validation requise avant toute diffusion :** GO social humain distinct, par réseau (X, Facebook) — aucun accordé
 
@@ -661,7 +650,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=fac
 - statut ambigu : l’événement validé porte « condamnation non définitive », la fiche publique « enquête »
 - l’événement validé précise lui-même que l’état de l’affaire ne change pas
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -719,7 +708,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=fac
 - type d’événement « mesure_procédurale » : n’est pas une étape judiciaire qui fait avancer le statut (aucune nouvelle étape à annoncer)
 - l’événement validé précise lui-même que l’état de l’affaire ne change pas
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -778,7 +767,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-202
 - événement validé sans lien de source conservé
 - fait principal sans source rattachée identifiable (aucun média nommé ne correspond aux sources de l’affaire)
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -829,11 +818,11 @@ Article utilisé : Le Figaro, 2026-03-20 — https://www.lefigaro.fr/actualite-f
 
 ### X — 🔴 bloqué
 
-- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 403 car. ; option écartée : procédure non distinguée)
+- aucune version fidèle ne tient en 280 caractères avec la réserve indispensable et les deux liens (essais : 403 car. ; option écartée : procédure non distinguée ; 394 car. (pied compact))
 
 ### Facebook — 🟢 conforme aux contrôles
 
-790 caractères · 2 URL · grille outil (mécanique, pas l’avis d’Adrien) 90/100 · part factuelle 88 % · contrôles 10/10
+1024 caractères · 3 URL · grille outil (mécanique, pas l’avis d’Adrien) 90/100 · part factuelle 88 % · contrôles 13/13
 
 ```text
 Paris 10e (Paris) — École Aqueduc : enquête ouverte pour des faits présumés d’agressions sexuelles
@@ -844,6 +833,8 @@ L’ouverture d’une enquête ne vaut pas culpabilité.
 
 Source : Le Figaro, 20 mars 2026 — https://www.lefigaro.fr/actualite-france/paris-trois-hommes-dont-deux-animateurs-interpelles-pour-des-agressions-sexuelles-sur-douze-enfants-20260320
 
+Source : Le Parisien, 20 mars 2026 — https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php
+
 Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002
 ```
 
@@ -853,11 +844,11 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 |---|---|---|---|
 | accroche | Paris 10e (Paris) — École Aqueduc : enquête ouverte pour des faits présumés d’agressions sexuelles | Le Journal du Dimanche 2026-03-21 https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230 | champs publics de la fiche carte (data/cases.json) + libellé fixe + objet : fiche approuvée (empreinte ab9ef095d6882e3c) — extrait exact |
 | fait | Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré. | Le Journal du Dimanche 2026-03-21 https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230 | fiche approuvée (empreinte ab9ef095d6882e3c) |
-| reserve | L’ouverture d’une enquête ne vaut pas culpabilité. | Le Parisien 2026-03-20 https://www.leparisien.fr/paris-75/paris-trois-hommes-dont-deux-animateurs-periscolaires-interpelles-pour-agressions-sexuelles-sur-douze-enfants-a-lecole-20-03-2026-JPKBOBEW5BBTZEMR6FDSHUOOVY.php | formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche |
+| reserve | L’ouverture d’une enquête ne vaut pas culpabilité. | Le Figaro 2026-03-20 https://www.lefigaro.fr/actualite-france/paris-trois-hommes-dont-deux-animateurs-interpelles-pour-des-agressions-sexuelles-sur-douze-enfants-20260320 | formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche |
 
 </details>
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -866,13 +857,13 @@ Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeu
 **Facebook** — 🟢 conforme aux contrôles
 
 ```text
-Paris 10e (Paris) — École Aqueduc : enquête en cours
+Paris 10e (Paris) — École Aqueduc : enquête ouverte pour des faits présumés d’agressions sexuelles
 
 Selon l’AFP, citée par Le Figaro et Le Parisien (20 mars 2026) puis relayée par Le Journal du Dimanche (21 mars), un professeur de l’école Aqueduc a été interpellé et placé en garde à vue pour des faits présumés d’agressions sexuelles ; il n’a pas été déféré.
 
 L’ouverture d’une enquête ne vaut pas culpabilité.
 
-Source : Le Journal du Dimanche, 21 mars 2026 — https://www.lejdd.fr/Societe/violences-sexuelles-dans-le-periscolaire-a-paris-trois-hommes-deferes-pour-lagression-de-douze-enfants-169230
+Source : Le Figaro, 20 mars 2026 — https://www.lefigaro.fr/actualite-france/paris-trois-hommes-dont-deux-animateurs-interpelles-pour-des-agressions-sexuelles-sur-douze-enfants-20260320
 
 Contexte, sources et suivi de l’affaire sur Sous nos yeux : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0002
 ```
@@ -918,7 +909,7 @@ Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-202
 
 - événement non rattaché à cette affaire (absent des événements validés de la fiche) : aucune attribution par ressemblance
 
-<details><summary>Version précédente (pilote-social-v3.2) — même scénario</summary>
+<details><summary>Version précédente (pilote-social-v4.0) — même scénario</summary>
 
 **X** — 🔴 bloqué
 
@@ -947,6 +938,79 @@ Selon Le Parisien, une enquête a été ouverte.
 L’ouverture d’une enquête ne vaut pas culpabilité.
 
 Sources, méthode et droit de réponse : https://sousnosyeux.org/affaires/fr-2026-0002/?utm_source=facebook&utm_medium=social&utm_campaign=case_update&utm_content=fr-2026-0002-enquete
+```
+
+</details>
+
+## S13
+
+**Montpellier — affaire réconciliée (FR-2026-0147 → FR-2026-0146), première affaire hors corpus de calibration** — FR-2026-0146, école maternelle Johann-Wolfgang-Von-Goethe (Montpellier) · Nouvelle affaire (Discovery) · statut public : enquête · fiche approuvée : aucune
+
+**Blocages**
+
+- aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)
+
+**Validation requise avant toute diffusion :** GO social humain distinct, par réseau (X, Facebook) — aucun accordé
+
+### X — 🔴 bloqué
+
+- aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)
+
+### Facebook — 🔴 bloqué
+
+- aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)
+
+<details><summary>Moteur actuel (production, inchangé) — même affaire</summary>
+
+**X**
+
+```text
+Nouvelle affaire documentée par la presse — école maternelle Johann-Wolfgang-Von-Goethe, Montpellier. Selon Actu.fr, une enquête a été ouverte. L’ouverture d’une enquête ne vaut pas culpabilité. https://sousnosyeux.org/?utm_source=x&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0146#affaire-fr-2026-0146
+```
+
+**Facebook**
+
+```text
+Nouvelle affaire documentée par la presse — école maternelle Johann-Wolfgang-Von-Goethe, Montpellier (Hérault).
+
+Selon Actu.fr, une enquête a été ouverte.
+L’ouverture d’une enquête ne vaut pas culpabilité.
+
+Sources, méthode et droit de réponse : https://sousnosyeux.org/?utm_source=facebook&utm_medium=social&utm_campaign=new_case&utm_content=fr-2026-0146#affaire-fr-2026-0146
+```
+
+</details>
+
+## S14
+
+**Contrôle — ancien identifiant du doublon retiré (FR-2026-0147)** — FR-2026-0147,  () · Nouvelle affaire (Discovery) · statut public :  · fiche approuvée : aucune
+
+**Blocages**
+
+- identifiant retiré : doublon réconcilié vers FR-2026-0146 — aucun message ne cite ni ne lie l’ancien identifiant
+
+**Validation requise avant toute diffusion :** GO social humain distinct, par réseau (X, Facebook) — aucun accordé
+
+### X — 🔴 bloqué
+
+- identifiant retiré : doublon réconcilié vers FR-2026-0146 — aucun message ne cite ni ne lie l’ancien identifiant
+
+### Facebook — 🔴 bloqué
+
+- identifiant retiré : doublon réconcilié vers FR-2026-0146 — aucun message ne cite ni ne lie l’ancien identifiant
+
+<details><summary>Moteur actuel (production, inchangé) — même affaire</summary>
+
+**X**
+
+```text
+—
+```
+
+**Facebook**
+
+```text
+—
 ```
 
 </details>

@@ -5,7 +5,7 @@
 //   node scripts/banc-social.mjs                 génère out/banc-social/banc.json + banc.html depuis le corpus de référence
 //   node scripts/banc-social.mjs --sortie <dir>  autre dossier de sortie (local)
 //
-// Entrées (lecture seule, dans le dépôt) : data/cases.json, data/evenements.json, data/hub-matiere/*.json, web/src/lib/etat-wording.ts,
+// Entrées (lecture seule, dans le dépôt) : data/cases.json, data/evenements.json, data/redirections-affaires.json, data/hub-matiere/*.json, web/src/lib/etat-wording.ts,
 // scripts/qa/fixtures/banc-social-corpus.json. Le HTML affiche les textes EXACTS sortis du composeur (aucune duplication de texte).
 // La « version actuelle » montrée en regard est la sortie du composeur de PRODUCTION (composerMessage), inchangé.
 // =====================================================================
@@ -30,18 +30,19 @@ export async function genererBanc({ corpus = lire('scripts/qa/fixtures/banc-soci
   const wording = await import('../web/src/lib/etat-wording.ts');
   const cases = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
   const ev = lire('data/evenements.json');
+  const redirections = lire('data/redirections-affaires.json').redirections ?? {};
   const resultats = [];
   for (const sc of corpus.scenarios) {
     const entree = cases.get(sc.case_id) ?? null;
     const dossier = dossierFiche(sc.case_id);
     const M = matiereApprouvee({ entree, dossier, empreinteApprouvee: ev.fiches_approuvees?.[sc.case_id]?.hash ?? null,
       evenements: ev.affaires?.[sc.case_id] ?? [], matiere: (ev.matiere || []).filter((m) => m.case_id === sc.case_id), wording });
-    const r = composerPilote({ scenario: sc, M, publiques: cases, site: SITE });
+    const r = composerPilote({ scenario: sc, M, publiques: cases, site: SITE, redirections });
     const canaux = {};
     for (const canal of ['x', 'facebook']) {
       const p = r[canal];
       if (p.etat !== 'OK') { canaux[canal] = { etat: 'BLOQUE', motifs: r.etat === 'BLOQUE' ? r.motifs : p.motifs }; continue; }
-      const verif = verifierPost(p, canal, M, SITE);
+      const verif = verifierPost(p, canal, M, SITE, redirections);
       const note = noter(p, canal, verif, { famille: sc.famille });
       const attentionCanal = [...r.attention, ...(p.attention || [])];
       const etat = !verif.ok ? 'BLOQUE' : attentionCanal.length ? 'REVUE_HUMAINE' : 'CONFORME';

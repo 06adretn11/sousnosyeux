@@ -15,7 +15,7 @@ import { hashDossier, urlsDe, MEDIAS_PAYANTS } from './fiche-page.mjs';
 import { RE_NOMBRE_ENFANTS, RE_AGE_ENFANT, RE_AGE_MIS_EN_CAUSE, RE_PROCHE_VICTIME } from './fiche-extraction.mjs';
 import { lienDiffusion, LIMITE_X, LONGUEUR_LIEN_X, STATUTS_DIFFUSABLES, rang } from './diffusion-sociale.mjs';
 
-export const VERSION = 'pilote-social-v4.0';
+export const VERSION = 'pilote-social-v4.1';
 export const FAMILLES = Object.freeze(['nouvelle_affaire', 'evolution', 'declaration_association', 'declaration_victime']);
 // Longueur LISIBLE d'un post Facebook, URL comprises pour 23 caractères (comme X) : les adresses longues des médias ne doivent pas évincer le contexte (défaut V3).
 // Au-delà, le contexte facultatif est retiré (jamais coupé).
@@ -41,6 +41,7 @@ export const GABARITS = Object.freeze({
   parole: '{acteur} ({qualite}, {date}) : « {citation} »',
   source_fb: 'Source : {media}, {date} — {url}',
   source_x: 'Source : {url}',
+  source_x_compact: '{url}', // V4.1 : pied X compact (étiquette retirée, jamais le contenu) — seulement si aucune option fidèle ne tient avec « Source : »
   suivi_fb: 'Contexte, sources et suivi de l’affaire sur Sous nos yeux : {lien}',
   suivi_x: 'Suivi : {lien}',
 });
@@ -62,6 +63,7 @@ const ROLES_GENERIQUES = new Set(['autre', 'non precise', 'inconnu', 'a qualifie
 // Désignation de la personne visée par sa FONCTION (distingue deux procédures d'un même établissement). Testée sur le texte APLATI (sans accents) : « éducatif » compris.
 const RE_FONCTION = /\b(animat\w*|enseignan\w*|professeur\w*|atsem|agents?|directeur|directrice|educat\w*|surveillant\w*|cadre\w*|instituteur\w*|institutrice\w*|assistantes? maternelles?|auxiliaires?)\b/;
 export const RE_DESIGNATION_ROLE = { test: (t) => RE_FONCTION.test(plat(t)) };
+const RE_FONCTION_UNIQUE = /\b(?:directeur|directrice|proviseure?|chef d['’]établissement)\b(?!\s+(?:académique|adjointe?|des services|de cabinet|d['’]académie|de la publication|général|générale|départemental|régional))/i;
 
 // ---------------------------------------------------------------------
 // ARBITRAGES ÉDITORIAUX D'ADRIEN (12/11/2026) — docs/industrialisation/PILOTE_EDITORIAL_SOCIAL_V3.md §5. Toute modification exige un nouvel arbitrage.
@@ -87,6 +89,9 @@ export function gardes(texte, entree) {
   const role = plat(entree?.role_mis_en_cause);
   if (role.length >= 6 && !ROLES_GENERIQUES.has(role) && (' ' + plat(t) + ' ').includes(` ${role} `)) bloquants.push('rôle exact de la fiche (garantie du moteur actuel)');
   if (/\.\.\.|…\s*$/.test(t)) bloquants.push('texte tronqué');
+  // V4.1 (S13, hors corpus) : une fonction UNIQUE dans un établissement nommé (« le directeur de l'école maternelle Goethe ») désigne la personne aussi sûrement
+  // qu'un nom (règle : jamais le nom de la personne mise en cause). Les fonctions d'institution (« directeur académique des services ») ne sont pas visées.
+  if (RE_FONCTION_UNIQUE.test(t)) bloquants.push('fonction unique dans l’établissement (identifiante)');
   const attention = ARBITRAGES.revueSexeEnfant && RE_SEXE_ENFANT.test(sansQualif) ? ['indication du sexe d’un enfant (déjà publiée sur la fiche) : risque d’identification à apprécier'] : [];
   return { bloquants, attention };
 }
@@ -201,7 +206,8 @@ export const RE_RESERVE = /ne vaut pas culpabilit|présumée? innocente?|présom
 // ---------------------------------------------------------------------
 /** Ancre de la qualification dans une phrase approuvée qui porte CE statut (« mis en examen pour … », « ouvert une enquête préliminaire du chef d'… »). */
 const ANCRES_QUALIF = {
-  'enquête': /(?:ouvert une enquête(?: préliminaire| judiciaire)? |enquête(?: préliminaire| judiciaire)? (?:a été )?ouverte )(?:du chef d['’]|pour )|en garde à vue pour /i,
+  // V4.1 (S13, hors corpus) : « une enquête … a été ouverte … sur les soupçons d'agressions sexuelles » — l'objet commence à « soupçons » (jamais un chef retenu).
+  'enquête': /(?:ouvert une enquête(?: préliminaire| judiciaire)? |enquête(?: préliminaire| judiciaire)? (?:a été )?ouverte )(?:du chef d['’]|pour )|en garde à vue pour |enquête(?: préliminaire| judiciaire)?[^.;]{0,90}? (?:a été )?ouverte[^.;]{0,40}? sur (?:les |des )?(?=soupçons d)/i,
   'mise en examen': /mise?s? en examen (?:du chef d['’]|pour )/i,
   'condamnation non définitive': /condamn\w*\b[^.;«»]*? pour /i,
   'condamnation définitive': /condamn\w*\b[^.;«»]*? pour /i,
@@ -218,10 +224,8 @@ export function qualification(statut, textes, entree) {
     const m = ancre.exec(t?.texte || '');
     if (!m) continue;
     const q = t.texte.slice(m.index + m[0].length).split(/[,;.()«»:]| et | pour | commis| dans | après | depuis /)[0].trim();
-    // Variante courte (X seulement) : sans la circonstance introduite par « par » (« … sur mineurs de 15 ans » au lieu de « … par personne ayant autorité ») :
-    // toujours une sous-chaîne exacte, moins complète, jamais fausse.
-    const court = q.split(/ par /)[0].trim();
-    if (q.length >= 4 && q.length <= 90 && !gardes(q, entree).bloquants.length) return { qualif: q, court: court !== q && court.length >= 12 ? court : null, texte: t.texte, origine: t.origine };
+    // V4.1 (arbitrage D1) : plus de variante courte. Retirer une circonstance aggravante (« par personne ayant autorité ») altère la qualification pénale.
+    if (q.length >= 4 && q.length <= 90 && !gardes(q, entree).bloquants.length) return { qualif: q, texte: t.texte, origine: t.origine };
   }
   return null;
 }
@@ -249,7 +253,45 @@ export function urlAnnonceAutreEtape(url, statut) {
   if (!RE_URL_ETAPE.test(slug)) return false;
   return !/^condamnation|^relaxe/.test(statut || '') || /defere/.test(slug);
 }
+/**
+ * V4.1 (S13, hors corpus) : adresse qui annonce un ACTE (interpellation, garde à vue) que la matière approuvée n'établit pas — ou dément (« ni convoqué, ni
+ * entendu, ni placé en garde à vue »). Liée, elle fait lire au lecteur un fait non établi (Midi Libre, ToutMontpellier : « … interpellé »).
+ */
+const RE_URL_ACTE = /interpell|garde-a-vue/;
+const RE_ACTE = /(interpell\w*|placée?s? en garde à vue|en garde à vue)/gi;
+export function acteEtabli(textes) {
+  return textes.some((t) => [...String(t || '').matchAll(RE_ACTE)].some((m) => !/\b(ni|pas|jamais|aucune?|sans)\b[^.;]{0,30}$/i.test(String(t).slice(Math.max(0, m.index - 40), m.index))));
+}
+export function textesApprouves(M) {
+  const d = M?.d;
+  return [...(d?.etat_actuel || []), ...phrasesDe(d?.faits), ...(d?.deroule || []).map((x) => x.texte), ...(M?.evenements || []).map((x) => x.libelle)].filter(Boolean);
+}
+export const urlAnnonceActeNonEtabli = (url, M) => !!url && RE_URL_ACTE.test(plat(decodeURIComponent(url)).replace(/ /g, '-')) && !acteEtabli(textesApprouves(M));
+/** Adresse à ne pas lier si une autre existe : autre étape judiciaire, ou acte non établi. */
+export const adresseTrompeuse = (url, M) => urlAnnonceAutreEtape(url, M?.entree?.statut_judiciaire) || urlAnnonceActeNonEtabli(url, M);
+/** V4.1 (S13) : un fait au conditionnel (« se seraient rassemblés ») n'est pas établi par sa source : jamais en contexte. */
+// Seul le conditionnel de l'AFFIRMATION compte : dans une subordonnée (« les raisons pour lesquelles l'enfant l'aurait dénoncé », motivation d'un jugement, S04),
+// il ne rapporte pas une rumeur.
+const RE_COND = /\b(?:serai(?:t|ent)|aurai(?:t|ent)|pourrai(?:t|ent)|devrai(?:t|ent))\b/gi;
+const RE_SUBORDONNEE = /\b(?:lesquel\w*|laquelle|lequel|que|qu['’]|si|dont|où)\b[^,;.]{0,40}$/i;
+export const RE_CONDITIONNEL = { test: (t) => [...String(t).matchAll(RE_COND)].some((m) => !RE_SUBORDONNEE.test(String(t).slice(Math.max(0, m.index - 50), m.index))) };
 const ACCES_CONSTATE = ['libre', 'événement validé', 'information validée'];
+/**
+ * V4.1 (arbitrage D3) : une contestation documentée se rapporte, sans registre émotionnel (« se dit humilié et effondré »). Rien n'est réécrit : on garde le
+ * DÉBUT EXACT de la phrase approuvée jusqu'à l'articulation qui précède l'émotion (« …nie avec fermeté l'accusation de viol »). Sinon la phrase est écartée.
+ * @returns {{texte:string, extrait:boolean}|null}
+ */
+const RE_EMOTION = /\b(humili\w*|effondr\w*|devast\w*|boulevers\w*|aneanti\w*|meurtri\w*|abattu\w*|choque\w*|traumatis\w*|desempar\w*)\b/;
+export function sansRegistreEmotionnel(texte) {
+  const t = String(texte || '');
+  if (!RE_EMOTION.test(plat(t))) return { texte: t, extrait: false };
+  const coupes = [...t.matchAll(/ et |, |; /g)].map((m) => m.index).reverse();
+  for (const p of coupes) {
+    const debut = t.slice(0, p).trim();
+    if (debut.length >= 40 && !RE_EMOTION.test(plat(debut))) return { texte: `${debut}.`, extrait: true };
+  }
+  return null;
+}
 /** Phrase qui commence (après « Selon X, ») par un renvoi à ce qui précède dans le dossier : illisible isolée dans un post. */
 const RE_ANAPHORE = /^(?:(?:selon|d['’]après) [^,]+, )?(?:ces|cette|cet|ce|ceux|celles?|celui|ils|elles|il|elle|leurs?|lui)\b/i;
 
@@ -281,11 +323,14 @@ export function interetConcret(citation) {
  * @param {{scenario:object, M:object, publiques:Map, site:string}} a — M = matiereApprouvee(...)
  * @returns {{etat:string, motifs:string[], attention:string[], x:object, facebook:object, preuves:object[], sourcePrincipale:object|null}}
  */
-export function composerPilote({ scenario, M, publiques, site }) {
+export function composerPilote({ scenario, M, publiques, site, redirections = {} }) {
   const bloque = [], attention = [], notes = [];
   const e = M.entree;
   const out = (extra = {}) => ({ etat: 'BLOQUE', motifs: bloque, attention, x: { etat: 'BLOQUE', motifs: ['scénario bloqué'] }, facebook: { etat: 'BLOQUE', motifs: ['scénario bloqué'] }, preuves: [], sourcePrincipale: null, ...extra });
   if (!FAMILLES.includes(scenario.famille)) { bloque.push(`famille inconnue : ${scenario.famille}`); return out(); }
+  // V4.1 (S13/S14) : un identifiant retiré par réconciliation (data/redirections-affaires.json) n'est jamais une affaire à diffuser, même si une copie le porte encore.
+  const cible = redirections[String(scenario.case_id || '').toLowerCase()];
+  if (cible) { bloque.push(`identifiant retiré : doublon réconcilié vers ${cible.toUpperCase()} — aucun message ne cite ni ne lie l’ancien identifiant`); return out(); }
   if (!e) { bloque.push('affaire absente de l’artefact public (data/cases.json)'); return out(); }
   if (!M.approuve) bloque.push('aucune fiche approuvée dont l’empreinte corresponde à la version courante : la matière disponible se réduit aux champs de la carte, aux titres et aux URL (insuffisant)');
   // Statut public ↔ statut de la fiche approuvée : une divergence est une ambiguïté judiciaire.
@@ -398,8 +443,8 @@ export function composerPilote({ scenario, M, publiques, site }) {
   // Rattachement exact : chaque source du fait doit être rattachée à CETTE affaire ; si la phrase n'en nomme aucune, elle n'est pas traçable.
   if (principal.length && !sourcesFait.length) bloque.push('fait principal sans source rattachée identifiable (aucun média nommé ne correspond aux sources de l’affaire)');
   // V4 : parmi les sources du fait, préférer celle dont l'adresse n'annonce pas une autre étape ; si c'est la seule, la revue humaine juge la confusion.
-  const srcLien = sourceALier(sourcesFait.filter((s) => !urlAnnonceAutreEtape(s.url, e.statut_judiciaire))) ?? sourceALier(sourcesFait);
-  if (srcLien && urlAnnonceAutreEtape(srcLien.url, e.statut_judiciaire)) attention.push(`l’adresse de l’article lié (${srcLien.media}) annonce une étape qui n’est pas celle de cette affaire : confusion possible à apprécier`);
+  const srcLien = sourceALier(sourcesFait.filter((s) => !adresseTrompeuse(s.url, M))) ?? sourceALier(sourcesFait);
+  if (srcLien && adresseTrompeuse(srcLien.url, M)) attention.push(`l’adresse de l’article lié (${srcLien.media}) annonce une étape ou un acte non établi pour cette affaire : confusion possible à apprécier`);
   if (principal.length && sourcesFait.length && !srcLien) bloque.push('aucune source du fait n’est liable (payante, ou URL portant une donnée interdite)');
 
   // Procédures sœurs : le texte doit désigner la personne visée par sa fonction, sinon confusion possible.
@@ -435,12 +480,14 @@ export function composerPilote({ scenario, M, publiques, site }) {
 
   // --- 2. SEGMENTS -----------------------------------------------------------------------------------------------------------------
   const preuve = (p, src, validation) => ({ source: src ? { media: src.media, url: src.url, publie_le: src.publie_le } : null, validation });
-  const validationDe = (origine) => origine.startsWith('dossier') ? validationFiche : origine.startsWith('evenement') ? `événement validé (Neon, ${origine.split(':')[1]})` : origine.startsWith('matiere') ? `information validée (Neon, ${origine.split(':')[1]})` : origine.startsWith('site') ? 'formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche' : origine === 'arbitrage:A4' ? 'mention fixe arbitrée par Adrien (A4, 12/11/2026) — pilote seulement, NON servie sur le site' : origine;
-  const srcDe = (t) => sourceALier(sourcesDePhrase(t, M)) ?? sourcesDePhrase(t, M)[0] ?? null;
+  const validationDe = (origine) => origine.startsWith('extrait:') ? `${validationDe(origine.slice(8))} — début exact de la phrase (registre émotionnel retiré, D3)` : origine.startsWith('dossier') ? validationFiche : origine.startsWith('evenement') ? `événement validé (Neon, ${origine.split(':')[1]})` : origine.startsWith('matiere') ? `information validée (Neon, ${origine.split(':')[1]})` : origine.startsWith('site') ? 'formulation officielle du site (etat-wording.ts) — déjà servie sur la fiche' : origine === 'arbitrage:A4' ? 'mention fixe arbitrée par Adrien (A4, 12/11/2026) — pilote seulement, NON servie sur le site' : origine;
+  // V4.1 (S03) : la preuve d'une phrase est l'article d'un média qu'elle NOMME (« cité par franceinfo » → franceinfo), jamais une source plus récente de la
+  // même étape (le JDD du 11/10 pour une phrase qui cite franceinfo). Concordance média cité ↔ passage ↔ adresse.
+  const srcDe = (t) => { const s = sourcesDePhrase(t, M); const n = sourcesNommees(t, new Map(s.map((x) => [x.url, x]))); return sourceALier(n) ?? sourceALier(s) ?? s[0] ?? null; };
   const segFait = (p, role = 'fait') => p.parole
     ? seg('parole', { acteur: champ(p.acteur, p.origine + '.acteur'), qualite: champ(p.qualite, p.origine + '.qualite'), date: champ(p.date, p.origine + '.date'), citation: champ(p.citation, p.origine + '.citations') }, role, preuve(p, srcLien, validationDe(p.origine)))
     : p.origine.startsWith('evenement') ? seg('libelle_evenement', { libelle: champ(sansPointFinal(p.texte), p.origine), media: champ(p.media, p.origine + '.source.media') }, role, preuve(p, srcLien, validationDe(p.origine)))
-      : phrase(p.texte, p.origine, role, preuve(p, p.origine.startsWith('site') ? sourceDuSite(M) : p.origine.startsWith('matiere') ? srcLien : srcDe(p.texte) ?? srcLien, validationDe(p.origine)));
+      : phrase(p.texte, p.origine, role, preuve(p, p.origine.startsWith('site') ? (role === 'reserve' && srcLien ? srcLien : sourceDuSite(M)) : p.origine.startsWith('matiere') ? srcLien : srcDe(p.texte) ?? srcLien, validationDe(p.origine)));
   const segRes = (r) => segFait(r, 'reserve');
   const type = scenario.famille === 'evolution' ? 'case_update' : 'new_case';
   const fiche = !!M.empreinte;
@@ -476,23 +523,30 @@ export function composerPilote({ scenario, M, publiques, site }) {
     // Défaut V4.1 : trier aussi l'article de l'événement par nouveauté faisait passer d'anciennes mesures disciplinaires avant la suite immédiate (S03).
     const nouveaute = (c) => (c.memeArticle ? -1 : recouvrement(c.texte, dits));
     const ordonnes = cands.map((c, i) => ({ c, i, n: nouveaute(c) })).sort((a, b) => a.n - b.n || a.i - b.i).map((x) => x.c);
-    for (const c of ordonnes) {
+    for (const c0 of ordonnes) {
       if (choisis.length >= MAX_CONTEXTE_FB) break;
+      const em = sansRegistreEmotionnel(c0.texte);
+      if (!em) continue;
+      // Les sources se lisent sur la phrase approuvée ENTIÈRE (étape du dossier) ; le texte publié peut en être le début exact (D3).
+      const c = em.extrait ? { ...c0, texte: em.texte, entiere: c0.texte, origine: `extrait:${c0.origine}` } : c0;
       const t = c.texte;
       if (!t || t.length > 500 || RE_RESERVE.test(t) || !RE_ATTRIBUEE.test(t) || RE_SEXE_ENFANT.test(t) || gardes(t, e).bloquants.length) continue;
       // Procédure sœur : la phrase doit désigner la fonction, sauf si elle décrit le même jugement, dans le même article, que le fait qui la désigne.
       if (soeurs.length && !RE_DESIGNATION_ROLE.test(t) && !c.memeEvt) continue;
       // Phrase AUTONOME : lue seule dans le post, elle ne renvoie à rien d'absent (défaut V4.2, S03 : « Selon Sud Ouest, ces images… »).
       if (RE_ANAPHORE.test(t)) continue;
+      // V4.1 (S13) : un fait au conditionnel n'est pas établi par sa source (« des parents se seraient rassemblés ») : jamais en contexte.
+      if (RE_CONDITIONNEL.test(t)) continue;
       // Doublon de fond : seuil relevé pour l'article de l'événement, où une phrase courte partage forcément le vocabulaire du fait (« témoin assisté », S03).
       if (recouvrement(t, [...dits, ...choisis.map((x) => x.texte)]) >= (c.memeArticle ? 0.7 : 0.5)) continue;
       // Toutes les sources de la phrase doivent avoir été LUES par SNY (accès constaté, libre ou partiel), la source LIÉE en accès libre (défaut V4.0 : « Selon
       // Le Figaro », lu en partie, porté seul par S01), et aucune adresse ne doit annoncer une autre étape (défaut V4.0 : Linfo.re, S02).
-      const srcs = sourcesDePhrase(t, M);
-      if (!srcs.length || srcs.some((s) => s.acces == null) || srcs.some((s) => urlAnnonceAutreEtape(s.url, e.statut_judiciaire))) continue;
+      const srcs = sourcesDePhrase(c.entiere ?? t, M);
+      // V4.1 (S01) : un développement qui repose, même en partie, sur un article lu PARTIELLEMENT n'est pas assez étayé pour un post (« mercredi selon Le Figaro »).
+      if (!srcs.length || srcs.some((s) => !ACCES_CONSTATE.includes(s.acces)) || srcs.some((s) => urlAnnonceAutreEtape(s.url, e.statut_judiciaire))) continue;
       // Le lien est celui d'un média que la phrase NOMME quand elle en nomme un (défaut V4.1, S03 : « Selon Commons Média » lié à CNEWS, source complémentaire
       // de la même étape — détecté par le contrôleur indépendant).
-      const lisibles = srcs.filter((s) => ACCES_CONSTATE.includes(s.acces));
+      const lisibles = srcs.filter((s) => ACCES_CONSTATE.includes(s.acces) && !urlAnnonceActeNonEtabli(s.url, M));
       const nommes = sourcesNommees(t, new Map(lisibles.map((s) => [s.url, s])));
       const src = sourceALier(nommes.length ? nommes : lisibles);
       if (!src) continue;
@@ -524,13 +578,23 @@ export function composerPilote({ scenario, M, publiques, site }) {
   let fbCtx = [...fbContexte];
   const sourcesFb = () => {
     const vues = new Set(); const l = [];
-    for (const s of [srcLien, ...fbCtx.map((x) => x.preuve?.source && M.sources.get(x.preuve.source.url))]) if (s?.url && !vues.has(s.url) && sourceALier([s])) { vues.add(s.url); l.push([sourceSeg(s)]); }
+    // V4.1 (S01) : une ligne « Source » par média NOMMÉ dans le fait (« Selon France 3 et Le Figaro » → les deux articles), puis par phrase de contexte.
+    const nommesFait = fbFaits.flatMap((x) => sourcesNommees(x.texte, new Map(sourcesDePhrase(x.texte, M).map((s) => [s.url, s])))).filter((s) => !adresseTrompeuse(s.url, M));
+    const medias = new Set();
+    for (const s of [srcLien, ...nommesFait, ...fbCtx.map((x) => x.preuve?.source && M.sources.get(x.preuve.source.url))]) {
+      if (!s?.url || vues.has(s.url) || !sourceALier([s])) continue;
+      // Un média nommé une fois n'est lié qu'une fois (son article le plus utile vient en premier : celui du fait).
+      if (s !== srcLien && medias.has(plat(s.media)) && !fbCtx.some((x) => x.preuve?.source?.url === s.url)) continue;
+      vues.add(s.url); medias.add(plat(s.media)); l.push([sourceSeg(s)]);
+    }
     return l;
   };
   const assembler = () => [...fbBase, ...fbCtx.map((x) => [x]), [...fbReserves], ...sourcesFb(), [seg('suivi_fb', { lien: champ(lien('facebook'), 'lien') }, 'renvoi')]];
   let fbParas = assembler();
   while (longueurX(rendre(fbParas)) > LIMITE_FB_LISIBLE && fbCtx.length > garde) { fbCtx = fbCtx.slice(0, -1); fbParas = assembler(); }
-  const facebook = { paragraphes: fbParas, texte: rendre(fbParas), attention: alerteAcces(srcLien) };
+  // V4.1 : CHAQUE article lié est contrôlé (pas seulement le premier) — un article lu en partie reste lié s'il est nommé, mais part en revue humaine.
+  const liesFb = fbParas.flat().filter((s) => s.gabarit === 'source_fb').map((s) => M.sources.get(s.champs.url.valeur)).filter(Boolean);
+  const facebook = { paragraphes: fbParas, texte: rendre(fbParas), attention: [...new Set(liesFb.flatMap(alerteAcces))] };
 
   // X : lieu + fait (phrases approuvées ENTIÈRES) + réserve indispensable + source DU fait affiché + suivi. Du plus riche au plus court ; rien ne tient ⇒ X bloqué.
   // Chaque option porte la source qu'elle cite : le lien « Source » est toujours celui du média nommé (défaut v1 : « Selon Ouest-France » → lien Le Figaro).
@@ -553,17 +617,22 @@ export function composerPilote({ scenario, M, publiques, site }) {
   // de la phrase d'où il est extrait. Remplace le repli V3 sur la seule phrase d'état du site (« Selon X, une enquête a été ouverte. ») : une formule qui ne
   // dit que l'étape, et qui créditait pour S01 un article (Ouest-France) jamais relu par SNY (arbitrage n°1 : pas de formule abstraite à la place du fait).
   if (Q && srcQ) ajoutOption([seg('fait_x', { ...lieuChamps, ...qualifChamp, media: champ(srcQ.media, 'source.media') }, 'fait', preuve(Q, srcQ, `${validationDe(Q.origine)} — extrait exact`))], srcQ, true);
-  if (Q?.court && srcQ) ajoutOption([seg('fait_x', { ...lieuChamps, qualif: champ(Q.court, `extrait:${Q.origine}`), media: champ(srcQ.media, 'source.media') }, 'fait', preuve(Q, srcQ, `${validationDe(Q.origine)} — extrait exact (sans la circonstance « par … »)`))], srcQ, true);
   let x = null; const essais = [];
-  for (const o of options) {
-    // Procédures sœurs : X doit aussi désigner la personne visée par sa fonction, sinon l'option est écartée (défaut v2 S06).
-    if (soeurs.length && !RE_DESIGNATION_ROLE.test(o.segs.map((s) => s.texte).join(' '))) { essais.push('option écartée : procédure non distinguée'); continue; }
-    const porteReserve = o.segs.some((s) => RE_RESERVE.test(s.texte));
-    const resX = porteReserve ? [] : [segRes(reserveIndisp)];
-    const tete = o.lieuInclus ? [] : [[xLieu]];
-    const paras = [...tete, [...o.segs, ...resX], [seg('source_x', { url: champ(o.src.url, 'source.url') }, 'attribution'), seg('suivi_x', { lien: champ(lien('x'), 'lien') }, 'renvoi')]];
-    const t = rendre(paras); essais.push(`${longueurX(t)} car.`);
-    if (longueurX(t) <= LIMITE_X) { x = { paragraphes: paras, texte: t, repli: o !== options[0], source: o.src, attention: alerteAcces(o.src) }; break; }
+  // V4.1 : deux passes. 1) pied habituel « Source : <url> Suivi : <lien> » ; 2) si aucune option fidèle ne tient, pied compact : l'adresse de l'article SANS
+  // l'étiquette « Source : », placée juste après le paragraphe qui nomme ce média (« (selon France 3 …) »). Même contenu, mêmes liens : seule une étiquette
+  // disparaît. Jamais de raccourci de la qualification (D1) ni de réserve retirée.
+  for (const compact of [false, true]) {
+    for (const o of options) {
+      // Procédures sœurs : X doit aussi désigner la personne visée par sa fonction, sinon l'option est écartée (défaut v2 S06).
+      if (soeurs.length && !RE_DESIGNATION_ROLE.test(o.segs.map((s) => s.texte).join(' '))) { if (!compact) essais.push('option écartée : procédure non distinguée'); continue; }
+      const porteReserve = o.segs.some((s) => RE_RESERVE.test(s.texte));
+      const resX = porteReserve ? [] : [segRes(reserveIndisp)];
+      const tete = o.lieuInclus ? [] : [[xLieu]];
+      const paras = [...tete, [...o.segs, ...resX], [seg(compact ? 'source_x_compact' : 'source_x', { url: champ(o.src.url, 'source.url') }, 'attribution'), seg('suivi_x', { lien: champ(lien('x'), 'lien') }, 'renvoi')]];
+      const t = rendre(paras); essais.push(`${longueurX(t)} car.${compact ? ' (pied compact)' : ''}`);
+      if (longueurX(t) <= LIMITE_X) { x = { paragraphes: paras, texte: t, repli: o !== options[0], compact, source: o.src, attention: alerteAcces(o.src) }; break; }
+    }
+    if (x) break;
   }
   const xRes = x ? { etat: 'OK', ...x } : { etat: 'BLOQUE', motifs: [`aucune version fidèle ne tient en ${LIMITE_X} caractères avec la réserve indispensable et les deux liens (essais : ${essais.join(' ; ') || 'aucune option sourcée'})`] };
   return { etat: 'OK', motifs: [], attention: [...new Set(attention)], notes, soeurs, declaration, x: xRes, facebook: { etat: 'OK', ...facebook }, sourcePrincipale: srcLien };
@@ -603,7 +672,7 @@ export function valeursAutorisees(M, site) {
 }
 
 /** @returns {{ok:boolean, controles:{nom:string, ok:boolean, detail?:string}[]}} */
-export function verifierPost(post, canal, M, site) {
+export function verifierPost(post, canal, M, site, redirections = {}) {
   const c = [];
   const ok = (nom, cond, detail = '') => c.push({ nom, ok: !!cond, detail: cond ? '' : detail });
   const autorise = valeursAutorisees(M, site);
@@ -613,7 +682,10 @@ export function verifierPost(post, canal, M, site) {
   ok('gabarits de la liste blanche uniquement', !gab.length, gab.map((s) => s.gabarit).join(', '));
   // Un EXTRAIT (objet de la procédure, V4) n'est pas une valeur entière : il doit être une sous-chaîne exacte d'une phrase approuvée de cette affaire.
   const approuvees = [...autorise].filter((t) => t.length >= 40);
-  const admis = (k, v) => autorise.has(String(v.valeur)) || (k === 'qualif' && String(v.origine || '').startsWith('extrait:') && approuvees.some((t) => t.includes(String(v.valeur))));
+  // V4.1 (D3) : une phrase peut être le DÉBUT EXACT d'une phrase approuvée (contestation sans registre émotionnel), jamais un morceau pris au milieu.
+  const admis = (k, v) => autorise.has(String(v.valeur)) || (String(v.origine || '').startsWith('extrait:') && (k === 'qualif'
+    ? approuvees.some((t) => t.includes(String(v.valeur)))
+    : k === 'phrase' && sansPointFinal(String(v.valeur)).length >= 40 && approuvees.some((t) => phrasesDe(t).some((p) => p.startsWith(sansPointFinal(String(v.valeur)) + ' ')))));
   const hors = segs.flatMap((s) => Object.entries(s.champs).filter(([k, v]) => !admis(k, v)).map(([k, v]) => `${s.gabarit}.${k} = « ${String(v.valeur).slice(0, 60)} »`));
   ok('100 % des valeurs proviennent de la matière approuvée de CETTE affaire (extraits : sous-chaîne exacte d’une phrase approuvée)', !hors.length, hors.join(' | '));
   const g = gardes(post.texte.replace(/https?:\/\/\S+/g, ''), M.entree);
@@ -621,11 +693,25 @@ export function verifierPost(post, canal, M, site) {
   const urls = post.texte.match(/https?:\/\/\S+/g) || [];
   ok(ARBITRAGES.lienAvecDecompte ? 'URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)' : 'URL sûres (aucun décompte d’enfants dans l’adresse, aucun média payant)', urls.every((u) => urlSure(u)) && !segs.some((s) => s.gabarit.startsWith('source') && MEDIAS_PAYANTS.includes(s.champs.media?.valeur)), urls.filter((u) => !urlSure(u)).join(' '));
   ok('lien SNY présent', segs.some((s) => s.role === 'renvoi'));
+  const versRetire = urls.filter((u) => Object.keys(redirections).some((ancien) => u.toLowerCase().includes(`/${ancien}/`) || u.toLowerCase().includes(`affaire-${ancien}`) || u.toLowerCase().includes(`=${ancien}`)));
+  ok('aucun lien vers un identifiant retiré (doublon réconcilié)', !versRetire.length, versRetire.join(' '));
   ok('lien source présent', segs.some((s) => s.role === 'attribution'));
   // Le média du lien « Source » doit être NOMMÉ par le texte qui affirme (hors ligne « Source : » elle-même). Défaut v1 non détecté : « Selon Ouest-France » + lien Le Figaro.
   const corps = segs.filter((s) => s.role !== 'attribution' && s.role !== 'renvoi').map((s) => s.texte).join(' ');
   const lies = segs.filter((s) => s.role === 'attribution').map((s) => M.sources.get(s.champs.url?.valeur)).filter(Boolean);
   ok('le lien « Source » est celui d’un média nommé dans le texte', lies.length > 0 && lies.every((s) => sourcesNommees(corps, new Map([[s.url, s]])).length === 1), lies.map((s) => s.media).join(', '));
+  // V4.1 (S03) : concordance média cité ↔ passage ↔ adresse. Une affirmation qui nomme un média est prouvée par l'article de CE média.
+  const discord = segs.filter((s) => ['fait', 'contexte'].includes(s.role) && s.gabarit === 'phrase' && s.preuve?.source?.url).filter((s) => {
+    const n = sourcesNommees(s.texte, M.sources);
+    return n.length && !n.some((x) => x.url === s.preuve.source.url);
+  });
+  ok('concordance : chaque affirmation qui nomme un média est prouvée par l’article de ce média', !discord.length, discord.map((s) => `« ${s.texte.slice(0, 50)}… » → ${s.preuve.source.media}`).join(' | '));
+  // V4.1 (S01) : Facebook — chaque média liable (adresse n’annonçant pas une autre étape) nommé dans le texte a sa ligne « Source » (« Selon France 3 et Le Figaro » sans lien Le Figaro : défaut V4).
+  if (canal === 'facebook') {
+    const lignes = new Set(lies.map((s) => plat(s.media)));
+    const manquants = [...new Set(sourcesNommees(corps, M.sources).filter((s) => sourceALier([s]) && !adresseTrompeuse(s.url, M)).map((s) => s.media))].filter((m) => !lignes.has(plat(m)));
+    ok('chaque média nommé (et liable) a sa ligne « Source »', !manquants.length, manquants.join(', '));
+  }
   ok('réserve judiciaire présente', segs.some((s) => s.role === 'reserve') || segs.some((s) => RE_RESERVE.test(s.texte)));
   if (canal === 'x') ok(`X ≤ ${LIMITE_X} caractères (URL = ${LONGUEUR_LIEN_X})`, longueurX(post.texte) <= LIMITE_X, String(longueurX(post.texte)));
   ok('aucune donnée interne (identifiant, champ technique)', !/FR-2026-\d{4}(?!\/|\?|-)|POC-\d+(?![\w/?-])|statut_judiciaire|undefined|null\b/i.test(post.texte.replace(/https?:\/\/\S+/g, '')));
