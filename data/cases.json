@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-12"
+    "generated_at": "2026-11-13"
   },
   "cases": [
     {
@@ -2355,12 +2355,26 @@
       "type_structure": "élémentaire",
       "role_mis_en_cause": "animateur périscolaire",
       "type_affaire": "à qualifier",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "mise en examen",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 49.302552,
       "lng": 1.020026,
       "geocode_source": "ban-commune",
+      "etat": {
+        "statut": "mise en examen",
+        "date": "2026-11-12",
+        "type_evenement": "mise_en_examen",
+        "finalite": "non_definitive",
+        "suites": [],
+        "sources": [
+          {
+            "media": "sweetfm",
+            "date": "2026-11-12",
+            "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
