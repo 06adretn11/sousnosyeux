@@ -26,6 +26,8 @@ export const VALIDITE_PROPOSITION_H = 48;
 const HEURE = 36e5;
 
 export const sha256 = (s) => createHash('sha256').update(s).digest('hex');
+/** Dépôt PUBLIC ⇒ journaux publics : un motif de blocage peut citer un extrait de texte ou une adresse (« valeur », URL) ; on n'en garde que la nature, abrégée. */
+export const motifsPublics = (m) => String(m ?? '').replace(/«[^»]*»/g, '«…»').replace(/https?:\/\/\S+/g, '<url>').slice(0, 220);
 /** Empreinte d'un texte publié, insensible aux espaces (Buffer normalise parfois les sauts de ligne) : sert aux exclusions. */
 export const empreinteTexte = (t) => sha256(String(t ?? '').replace(/\s+/g, ' ').trim());
 const canon = (v) => (Array.isArray(v) ? v.map(canon) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon(v[k])])) : v);
@@ -291,7 +293,7 @@ export async function proposerNouveautes(deps) {
       if (comp.canaux[k]?.ok && await port.empreinteTexteExclue(k, empreinteTexte(comp.canaux[k].texte))) comp.canaux[k] = { ok: false, motifs: ['texte identique à une publication déjà faite (exclusion)'] };
     }
     const proposables = CANAUX_RELAIS.filter((k) => comp.canaux[k]?.ok);
-    if (!proposables.length) { bilan.bloquees++; log(`· ${c.type} ${c.case_id} : SILENCE — aucun canal publiable : ${CANAUX_RELAIS.map((k) => `${k}: ${(comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 160)}`).join(' | ')}`); continue; }
+    if (!proposables.length) { bilan.bloquees++; log(`· ${c.type} ${c.case_id} : SILENCE — aucun canal publiable : ${CANAUX_RELAIS.map((k) => `${k}: ${motifsPublics((comp.canaux[k]?.motifs || []).join(' ; '))}`).join(' | ')}`); continue; }
     const ident = identiteDe(c, comp);
     log(`· ${c.type} ${c.case_id} : ÉLIGIBLE (${proposables.join(' + ')})${ecrire ? '' : ' — plan, rien enregistré ni envoyé'}`);
     if (!ecrire) continue;
@@ -378,7 +380,7 @@ export async function publierDecisions(deps) {
       await port.resoudre(p.proposal_id, bloque);
       if (bloque.startsWith('obsolete')) bilan.obsoletes++; else bilan.bloquees++;
       await alerter(`🛑 <b>GO social non exécuté</b> (${id8}) : ${esc(bloque.replace(/^(obsolete|bloque): /, ''))}. Aucune publication. Le GO donné ne vaut plus ; une nouvelle proposition sera faite si l’événement reste éligible.`);
-      log(`· proposition ${id8} : ${bloque}`);
+      log(`· proposition ${id8} : ${motifsPublics(bloque)}`);
       continue;
     }
     let incertain = false;

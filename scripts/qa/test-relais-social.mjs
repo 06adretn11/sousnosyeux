@@ -14,7 +14,7 @@ import { signatureTexte } from '../lib/diffusion-sociale.mjs';
 import { decoderCallback } from '../lib/telegram-clics.mjs';
 import { DATA_RE } from '../../workers/telegram-webhook/worker.mjs';
 import { verifierActivation, executerCycle, enregistrerDecision, evaluerCandidat, controlerFraicheur, decouperInstructions, instructionDestructrice, boutonsProposition,
-  CANAUX_RELAIS, T0_PLANCHER, sha256, empreinteTexte } from '../lib/relais-social.mjs';
+  CANAUX_RELAIS, T0_PLANCHER, sha256, empreinteTexte, motifsPublics } from '../lib/relais-social.mjs';
 
 let ko = 0;
 const verifie = (nom, cond, detail = '') => { console.log(`  ${cond ? '✅' : '❌'} ${nom}${cond ? '' : ' — ' + String(detail).slice(0, 400)}`); if (!cond) ko++; };
@@ -239,6 +239,13 @@ console.log('\nC. Proposition Telegram : textes V4.1 intégraux, boutons, canal 
   const cb2 = propositions(w2)[0].markup.inline_keyboard.flat().map((b) => b.callback_data);
   verifie('canal bloqué non proposé : aucun bouton Facebook ni « X + Facebook »', cb2.length === 2 && cb2.every((d) => /:(X|R):/.test(d)), cb2.join(' '));
   verifie('boutonsProposition : un seul canal ⇒ jamais « X + Facebook »', !boutonsProposition('abcdef12', ['facebook']).inline_keyboard.flat().some((b) => /:XF:/.test(b.callback_data)));
+  // Journaux publics : un motif de blocage qui cite un extrait ou une adresse n'est jamais imprimé tel quel.
+  const lignes = [];
+  const w5 = monde({ t0: new Date(PARTIELLE.now.getTime() - 24 * H), candidats: [candNouvelle(new Date(PARTIELLE.now.getTime() - 24 * H), PARTIELLE.id)] });
+  await executerCycle({ ...deps(w5, PARTIELLE.now), canauxConfigures: [], log: (m) => lignes.push(m) });
+  const sortie = lignes.join('\n');
+  verifie('journal public : aucun texte de post, aucune adresse, aucun nom d’établissement ni de commune', !/https?:\/\//.test(sortie) && !sortie.includes(casesPubliques.get(PARTIELLE.id).etablissement) && !sortie.includes(casesPubliques.get(PARTIELLE.id).commune) && /SILENCE/.test(sortie), sortie.slice(0, 300));
+  verifie('motifsPublics masque « extrait » et adresse', motifsPublics('valeur « Jean Dupont » et https://x.fr/a') === 'valeur «…» et <url>');
 }
 
 // =====================================================================
