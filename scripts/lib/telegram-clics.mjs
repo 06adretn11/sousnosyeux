@@ -41,14 +41,17 @@ export function suiteClicNouvelle({ action, directe, webhook }) {
 const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_ETAT = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_TEST = /^sny:TEST:([0-9a-f]{8})$/;
+// Relais social (mode REVIEW) : GO X + Facebook (XF), GO Facebook seul (F), GO X seul (X), Refuser (R). Une proposition = une clé de 8 caractères.
+const RE_SG = /^sny:SG:(XF|F|X|R):([0-9a-f]{8})$/;
 
-/** @returns {{type:'NC'|'ETAT'|'TEST', action:string|null, cle:string} | null} */
+/** @returns {{type:'NC'|'ETAT'|'TEST'|'SG', action:string|null, cle:string} | null} */
 export function decoderCallback(data) {
   const s = String(data || '');
   let m;
   if ((m = RE_NC.exec(s))) return { type: 'NC', action: m[1], cle: m[2] };
   if ((m = RE_ETAT.exec(s))) return { type: 'ETAT', action: m[1], cle: m[2] };
   if ((m = RE_TEST.exec(s))) return { type: 'TEST', action: null, cle: m[1] };
+  if ((m = RE_SG.exec(s))) return { type: 'SG', action: m[1], cle: m[2] };
   return null;
 }
 

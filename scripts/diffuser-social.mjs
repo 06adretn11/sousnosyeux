@@ -1,76 +1,84 @@
 #!/usr/bin/env node
 // =====================================================================
-// scripts/diffuser-social.mjs — relais social (Buffer → X, Facebook, Instagram) des nouveautés APPROUVÉES et SERVIES. Aucun appel de modèle.
+// scripts/diffuser-social.mjs — RELAIS SOCIAL, MODE REVIEW (Buffer → X, Facebook). Aucun appel de modèle. JAMAIS Instagram.
 //
-//   node scripts/diffuser-social.mjs                       PLAN (défaut) : événements éligibles et raisons, AUCUN appel Buffer, AUCUNE écriture
-//   node scripts/diffuser-social.mjs --ecrire              diffuse (si activée), réconcilie, suit, retire — idempotent, rejouable
-//   node scripts/diffuser-social.mjs --verifier-connexion  LECTURE SEULE : clé, organisation, canaux, requête de réconciliation (à lancer avant l'activation)
-//   node scripts/diffuser-social.mjs --sonder-api         LECTURE SEULE : confronte le client Buffer au schéma réel (introspection) + 3 sondes sans effet (identifiants inexistants) — aucune publication
-//   node scripts/diffuser-social.mjs --appliquer-migration  applique supabase/migrations/025_diffusions_sociales.sql (additive, idempotente) — action manuelle du workflow sny-diffusion
-//   node scripts/diffuser-social.mjs --etat                synthèse du journal (compteurs par canal et par état)
+//   node scripts/diffuser-social.mjs                        PLAN (défaut) : événements éligibles et raisons de silence ; AUCUNE écriture, AUCUN Telegram, AUCUN Buffer
+//   node scripts/diffuser-social.mjs --ecrire               passage du relais : propositions Telegram → GO social recontrôlés → Buffer → suivi / retraits (idempotent, rejouable)
+//   node scripts/diffuser-social.mjs --etat                 synthèse : activation, T0, propositions, décisions, journal
+//   node scripts/diffuser-social.mjs --appliquer-migration  applique 025 + 026 (additives, idempotentes)
+//   node scripts/diffuser-social.mjs --autotest-ecriture    exerce les requêtes d'écriture sur une ligne jetable (supprimée), sans Telegram ni Buffer
+//   node scripts/diffuser-social.mjs --controle-stock       LECTURE SEULE : l'historique de production, évalué avec un T0 = maintenant, ne produit AUCUNE proposition
+//   node scripts/diffuser-social.mjs --initialiser-t0 --confirmer   fixe T0 (horloge de la base, UNE fois, immuable) après avoir rejoué le contrôle du stock
+//   node scripts/diffuser-social.mjs --exclure-montpellier  enregistre l'exclusion des deux publications manuelles de FR-2026-0146 (X, Facebook)
+//   node scripts/diffuser-social.mjs --inventaire-buffer    LECTURE SEULE : posts SNY présents dans Buffer (X, Facebook) et posts en attente
+//   node scripts/diffuser-social.mjs --verifier-connexion | --sonder-api    LECTURE SEULE : clé, canaux, schéma de l'API
 //
-// ACTIVATION (réversible, aucune publication historique) : variables GitHub SNY_DIFFUSION_ACTIVE=1 et SNY_DIFFUSION_DEPUIS=<instant ISO de mise en service>.
-// Tout événement dont le GO (ou le message d'approbation) précède SNY_DIFFUSION_DEPUIS est inéligible : pas de backfill. SNY_DIFFUSION_ACTIVE ≠ 1 ⇒ rien n'est publié.
-// Secrets : BUFFER_API_KEY. Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, BUFFER_CHANNEL_INSTAGRAM, SNY_DIFFUSION_CANAUX (défaut « x,facebook »).
+// ACTIVATION (réversible) : variables GitHub SNY_DIFFUSION_ACTIVE=1 ET SNY_DIFFUSION_MODE=review ET SNY_DIFFUSION_DEPUIS = témoin égal au T0 de la base.
+// COUPE-CIRCUIT : SNY_DIFFUSION_ACTIVE=0 (ou toute autre valeur) ⇒ rien n'est proposé ni publié. Il n'existe AUCUN mode automatique dans ce code : tout post exige un GO social Telegram.
+// Secrets : BUFFER_API_KEY, TELEGRAM_BOT_TOKEN. Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, SNY_DIFFUSION_CANAUX (défaut « x,facebook »).
 // Dépôt public ⇒ logs publics : identifiants d'affaire, canaux et issues seulement — ni nom, ni lieu, ni texte, ni clé.
-// Sortie GitHub Actions : aucune. Code de sortie 1 seulement sur erreur technique (jamais bloquant pour la publication : l'étape est `continue-on-error`).
+// Code de sortie 1 seulement sur erreur technique (l'étape est `continue-on-error` : jamais bloquante pour la publication sur SNY).
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
-import { goPublication } from './lib/publication-gates.mjs';
 import { ecartsSite } from './lib/ecarts-site.mjs';
 import { prevenir } from './lib/prevenir.mjs';
 import { clientBuffer, ErreurBuffer } from './lib/buffer.mjs';
 import { REQUETE_INTROSPECTION, comparerAuSchema, informations } from './lib/buffer-sonde.mjs';
-import { diffuserCanal, suivreLigne, retirerLigne, reconcilierSansCreer } from './lib/diffusion-flux.mjs';
-import { CANAUX, evaluerEvenement, composerMessage, lienDiffusion, cleEvenement, dateSourceNouvelleAffaire } from './lib/diffusion-sociale.mjs';
+import { dossierFiche } from './lib/fiche-page.mjs';
+import { CANAUX } from './lib/diffusion-sociale.mjs';
+import { portNeon, ledgerNeon } from './lib/relais-social-db.mjs';
+import { verifierActivation, executerCycle, proposerNouveautes, evaluerCandidat, decouperInstructions, instructionDestructrice, empreinteTexte, CANAUX_RELAIS } from './lib/relais-social.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire');
 const CI = !!process.env.CI;
 const SITE = (process.env.SNY_SITE_URL || 'https://sousnosyeux.org').replace(/\/$/, '');
-const IMAGE_INSTAGRAM = `${SITE}/og-sousnosyeux.png`; // visuel neutre existant (aucune photo, aucun nom), URL publique stable
 const lire = (f) => JSON.parse(readFileSync(new URL(`../${f}`, import.meta.url), 'utf8'));
 const env = (k) => (process.env[k] || '').trim();
+const log = (m) => console.log(m);
 
-const ACTIVE = env('SNY_DIFFUSION_ACTIVE') === '1';
-const depuis = env('SNY_DIFFUSION_DEPUIS') ? new Date(env('SNY_DIFFUSION_DEPUIS')) : null;
-const depuisValide = depuis && !Number.isNaN(depuis.getTime()) && depuis.getTime() <= Date.now() + 5 * 6e4 ? depuis : null;
-const CANAUX_ACTIFS = (env('SNY_DIFFUSION_CANAUX') || 'x,facebook').split(',').map((c) => c.trim()).filter((c) => CANAUX.includes(c));
-const CANAL_ID = { x: env('BUFFER_CHANNEL_X'), facebook: env('BUFFER_CHANNEL_FACEBOOK'), instagram: env('BUFFER_CHANNEL_INSTAGRAM') };
+const CANAUX_ACTIFS = (env('SNY_DIFFUSION_CANAUX') || 'x,facebook').split(',').map((c) => c.trim()).filter((c) => CANAUX_RELAIS.includes(c));
+const CANAL_ID = { x: env('BUFFER_CHANNEL_X'), facebook: env('BUFFER_CHANNEL_FACEBOOK') };
 const DELAI_MIN = Math.min(120, Math.max(5, Number(env('SNY_DIFFUSION_DELAI_MIN')) || 15));
+const MODES_ECRITURE = ['--ecrire', '--initialiser-t0', '--exclure-montpellier', '--autotest-ecriture', '--appliquer-migration'];
 
-const { sql } = connecter();
-
-// --- journal (Neon) -------------------------------------------------------------------------------------------------------------
-const tablePresente = async () => (await sql`select to_regclass('public.diffusions_sociales') is not null as ok`)[0].ok;
-const iso = (d) => (d instanceof Date ? d.toISOString() : d ?? null);
-const ledger = {
-  lire: async (k, c) => (await sql`select * from diffusions_sociales where event_key = ${k} and canal = ${c}`)[0] || null,
-  reserver: async (l) => (await sql`insert into diffusions_sociales (event_key, canal, type_event, case_id, etat, texte) values (${l.event_key}, ${l.canal}, ${l.type_event}, ${l.case_id}, 'reserve', ${l.texte}) on conflict do nothing returning event_key`).length === 1,
-  maj: async (k, c, p) => sql`update diffusions_sociales set etat = coalesce(${p.etat ?? null}, etat), buffer_post_id = coalesce(${p.buffer_post_id ?? null}, buffer_post_id),
-      soumis_at = coalesce(${iso(p.soumis_at)}::timestamptz, soumis_at), envoye_at = coalesce(${iso(p.envoye_at)}::timestamptz, envoye_at),
-      permalien = coalesce(${p.permalien ?? null}, permalien), erreur = coalesce(${p.erreur ?? null}, erreur), updated_at = now() where event_key = ${k} and canal = ${c}`,
-};
-
-// --- --appliquer-migration : migration 025 (additive, idempotente, aucune instruction destructrice) ---------------------------------------------
-if (A.includes('--appliquer-migration')) {
-  const texte = readFileSync(new URL('../supabase/migrations/025_diffusions_sociales.sql', import.meta.url), 'utf8');
-  const sansCommentaires = texte.replace(/^--.*$/gm, '');
-  if (/\b(drop|truncate|delete)\b/i.test(sansCommentaires)) { console.error('migration refusée : instruction destructrice'); process.exit(2); }
-  const instructions = sansCommentaires.split(/;[ \t]*\r?\n/).map((x) => x.trim()).filter(Boolean);
-  for (const [i, ins] of instructions.entries()) { await sql.query(ins); console.log(`instruction ${i + 1}/${instructions.length} appliquée`); }
-  console.log(`journal présent : ${await tablePresente()}`);
+// COUPE-CIRCUIT AVANT TOUT ACCÈS : une passe d'écriture du cycle ne touche ni la base, ni Buffer, ni Telegram si le relais n'est pas explicitement en mode REVIEW.
+if (ECRIRE && (env('SNY_DIFFUSION_ACTIVE') !== '1' || env('SNY_DIFFUSION_MODE') !== 'review')) {
+  console.log('relais social INACTIF (SNY_DIFFUSION_ACTIVE ≠ 1 ou SNY_DIFFUSION_MODE ≠ review) : rien n’est proposé, rien n’est publié, rien n’est écrit');
   process.exit(0);
 }
 
-// --- --etat : synthèse du journal (aucun contenu) -------------------------------------------------------------------------------------
+const { sql } = connecter();
+const port = portNeon(sql);
+const ledger = ledgerNeon(sql);
+const tablePresente = async () => (await sql`select to_regclass('public.diffusions_sociales') is not null as ok`)[0].ok;
+
+// --- --appliquer-migration : 025 (journal) puis 026 (relais REVIEW). Additives, idempotentes ; toute instruction destructrice est REFUSÉE avant exécution. -------------
+if (A.includes('--appliquer-migration')) {
+  for (const f of ['025_diffusions_sociales.sql', '026_relais_social_review.sql']) {
+    const instructions = decouperInstructions(readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), 'utf8'));
+    if (instructions.some(instructionDestructrice)) { console.error(`migration ${f} refusée : instruction destructrice`); process.exit(2); }
+    for (const [i, ins] of instructions.entries()) { await sql.query(ins); log(`${f} : instruction ${i + 1}/${instructions.length} appliquée`); }
+  }
+  log(`tables du relais présentes : ${await port.tablesPresentes()}`);
+  process.exit(0);
+}
+
+// --- --etat : synthèse (aucun contenu) ------------------------------------------------------------------------------------------------
 if (A.includes('--etat')) {
-  if (!(await tablePresente())) { console.log('journal absent (migration 025 non appliquée) : aucune diffusion n’a jamais eu lieu'); process.exit(0); }
-  const l = await sql`select canal, etat, type_event, count(*)::int n, min(created_at)::date premier, max(created_at)::date dernier from diffusions_sociales group by 1, 2, 3 order by 1, 2, 3`;
-  console.log(`diffusion ${ACTIVE ? 'ACTIVÉE' : 'désactivée'} · depuis ${depuisValide ? depuisValide.toISOString() : '(non datée)'} · canaux : ${CANAUX_ACTIFS.join(', ') || 'aucun'}`);
-  for (const x of l) console.log(`  ${x.canal.padEnd(9)} ${x.type_event.padEnd(11)} ${x.etat.padEnd(18)} ${String(x.n).padStart(3)}  (${x.premier} → ${x.dernier})`);
-  if (!l.length) console.log('  (aucune ligne : « prêt et testé, publication réelle non encore observée »)');
+  const now = new Date();
+  const presentes = await port.tablesPresentes();
+  const activation = verifierActivation({ env: process.env, t0Row: presentes ? await port.t0() : null, now });
+  log(`relais social : ${activation.actif ? 'ACTIF (mode REVIEW)' : 'INACTIF'} · T0 ${activation.t0 ? activation.t0.toISOString() : '(non initialisé)'} · canaux : ${CANAUX_ACTIFS.join(', ') || 'aucun'}`);
+  if (!activation.actif) for (const r of activation.raisons) log(`  - ${r}`);
+  if (!presentes) { log('tables absentes (migrations 025/026 non appliquées) : aucune diffusion n’a jamais eu lieu'); process.exit(0); }
+  const s = await port.synthese();
+  log('propositions (décision · type) :'); for (const x of s.propositions) log(`  ${String(x.etat).padEnd(12)} ${x.type_event.padEnd(12)} ${x.n}`);
+  log('résolutions :'); for (const x of s.resolutions) log(`  ${x.res.padEnd(12)} ${x.n}`);
+  log('journal de diffusion (canal · état) :'); for (const x of s.diffusions) log(`  ${x.canal.padEnd(9)} ${x.etat.padEnd(18)} ${x.n}`);
+  log(`exclusions : ${s.exclusions.length ? s.exclusions.map((x) => `${x.event_key}/${x.canal}`).join(', ') : 'aucune'}`);
+  if (!s.propositions.length && !s.diffusions.length) log('  (aucune ligne : « prêt, aucune proposition encore émise »)');
   process.exit(0);
 }
 
@@ -107,13 +115,7 @@ if (A.includes('--sonder-api')) {
   }
   try { const p = await b.lirePost(INEXISTANT); ligne(p === null, 'sonde post (identifiant inexistant) : introuvable = null', String(p)); }
   catch (e) { ligne(e instanceof ErreurBuffer && e.kind === 'refus' && !authent(e.message), 'sonde post (identifiant inexistant) : refus métier typé, pas d’échec d’authentification', e.message); }
-  try {
-    const p = await b.creerPost({ channelId: INEXISTANT, canal: 'x', texte: 'sonde sans effet', dueAt: new Date(Date.now() + 30 * 864e5).toISOString() });
-    ligne(false, 'sonde createPost : un post a été créé sur un canal inexistant (ANORMAL) — suppression tentée');
-    try { await b.supprimerPost(p.id); } catch { /* signalé ci-dessus */ }
-  } catch (e) {
-    ligne(e instanceof ErreurBuffer && e.kind === 'refus' && !authent(e.message), 'sonde createPost (canal inexistant) : chemin de création joignable, refus métier typé, rien créé', e.message);
-  }
+  // Aucune sonde de CRÉATION : le relais n'appelle createPost que depuis une proposition portant un GO social (voir relais-social.mjs, test-relais-social.mjs).
   console.log(bon ? 'schéma et permissions conformes aux hypothèses du client (aucun post créé, publié ni supprimé)' : 'ÉCART démontré : corriger les ❌ avant d’activer');
   process.exit(bon ? 0 : 1);
 }
@@ -156,119 +158,167 @@ if (A.includes('--verifier-connexion')) {
   process.exit(rap.every(Boolean) ? 0 : 1);
 }
 
-// --- données publiques et mémoire --------------------------------------------------------------------------------------------------
-if (ECRIRE && !ACTIVE) { console.log('diffusion sociale DÉSACTIVÉE (SNY_DIFFUSION_ACTIVE ≠ 1) : rien n’est publié, rien n’est écrit'); process.exit(0); }
+// --- données publiques et contexte de composition (V4.1) ------------------------------------------------------------------------------
+const now = new Date();
 const artefact = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
-const fichesApprouvees = new Set(Object.keys(lire('data/evenements.json').fiches_approuvees || {}));
-const now = new Date();
-const log = (m) => console.log(m);
-const alerter = async (texte) => { if (ECRIRE) await prevenir(texte); };
+let wording = null;
+async function composition() {
+  if (!wording) wording = await import('../web/src/lib/etat-wording.ts'); // formulation officielle du site
+  return { cases: artefact, ev: lire('data/evenements.json'), redirections: lire('data/redirections-affaires.json').redirections ?? {}, wording, dossierFiche, site: SITE, now };
+}
+// Site servi : lu une seule fois, à la demande (aucun accès réseau s'il n'y a aucun candidat).
+let htmlAccueil;
+const accueil = async () => { if (htmlAccueil === undefined) { htmlAccueil = null; try { const r = await fetch(`${SITE}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } }); if (r.ok) htmlAccueil = await r.text(); } catch { /* injoignable : rien n'est servi */ } } return htmlAccueil; };
+async function ficheServie(id) {
+  try {
+    const r = await fetch(`${SITE}/affaires/${id.toLowerCase()}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } });
+    const html = r.ok ? await r.text() : '';
+    return { status: r.status, hash: /data-dossier="([0-9a-f]+)"/.exec(html)?.[1] ?? null };
+  } catch { return null; }
+}
+async function envoyerTelegram(texte, markup) {
+  const token = env('TELEGRAM_BOT_TOKEN'), chat = Number(env('TELEGRAM_ALLOWED_USER_ID'));
+  if (!token || !Number.isInteger(chat)) throw new Error('Telegram non configuré');
+  if (process.env.SNY_DRY) { log(texte); return null; }
+  const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: chat, text: texte, parse_mode: 'HTML', disable_web_page_preview: true, reply_markup: markup }) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) throw new Error(`Telegram : ${String(j.description || r.status).slice(0, 80)}`);
+  return j.result?.message_id ?? null;
+}
 
-let wording;
-try { wording = await import('../web/src/lib/etat-wording.ts'); } catch { console.error('formulation officielle du site illisible : silence'); process.exit(ECRIRE ? 1 : 0); }
-const phraseDe = (entree) => {
-  const p = (entree.sources || [])[0];
-  const src = wording.sourceAffichee(entree.etat ?? null, p ? { media: p.media, date: p.publication_date, url: p.url } : null);
-  const lignes = wording.phrasesEtat(entree.statut_judiciaire, entree.etat ?? null, src);
-  // Phrase d'état + (si le site la porte) mention de présomption / non-définitivité : les mêmes mots que la fiche.
-  return { phrase: lignes[0], mention: lignes.slice(1).join(' ') || null };
-};
-
-const journalPresent = await tablePresente();
-if (ECRIRE && !journalPresent) { console.log('journal absent (migration 025 non appliquée) : diffusion DÉSACTIVÉE'); process.exit(0); }
-
-// --- 1. événements candidats (depuis Neon) ---------------------------------------------------------------------------------------------
-const evenements = [];
-if (depuisValide) {
-  const dep = depuisValide.toISOString();
-  // Nouvelles affaires : GO publication explicite postérieur à l'activation + message d'approbation envoyé après l'activation (donc porteur de la portée « relais social »).
-  const ids = (await sql`select distinct case_id from reviews where reviewed_at >= ${dep}::timestamptz and decision = 'validé'`).map((r) => r.case_id);
-  if (ids.length) {
-    const cases = await sql`select case_id, publication_status::text ps from cases where case_id = any(${ids}::text[])`;
-    const revues = await sql`select case_id, reviewed_by, decision::text decision, comment, reviewed_at from reviews where case_id = any(${ids}::text[]) order by reviewed_at`;
-    for (const c of cases) {
-      const rv = revues.filter((r) => r.case_id === c.case_id);
-      const go = goPublication(rv, depuisValide);
-      if (!go) continue;
-      const id8 = /Telegram (?:VALIDER ET )?PUBLIER ([0-9a-f]{8})/.exec(go.comment || '')?.[1];
-      const [envoi] = id8 ? await sql`select sent_at from telegram_envois where kind = 'decision' and cle like ${id8 + '%'} order by sent_at limit 1` : [];
-      const entree = artefact.get(c.case_id) || null;
-      evenements.push({ type: 'new_case', case_id: c.case_id, event_key: cleEvenement('new_case', c.case_id), go_at: new Date(go.reviewed_at), envoi_at: envoi ? new Date(envoi.sent_at) : null,
-        source_date: dateSourceNouvelleAffaire(entree), ps: c.ps, retire: rv.some((r) => r.decision === 'retirer') });
+// --- --inventaire-buffer : LECTURE SEULE -----------------------------------------------------------------------------------------------
+async function inventaireBuffer(depuisIso) {
+  if (!env('BUFFER_API_KEY') || !env('BUFFER_ORGANIZATION_ID')) throw new Error('BUFFER_API_KEY / BUFFER_ORGANIZATION_ID absents');
+  const b = clientBuffer({ cle: env('BUFFER_API_KEY'), organisationId: env('BUFFER_ORGANIZATION_ID') });
+  const sortie = {};
+  for (const c of CANAUX_RELAIS) {
+    if (!CANAL_ID[c]) { log(`➖ ${c} : canal non configuré`); sortie[c] = []; continue; }
+    sortie[c] = await b.listerPosts({ channelId: CANAL_ID[c], depuis: depuisIso });
+  }
+  return sortie;
+}
+const idUtm = (t) => /utm_content=([a-z0-9-]+)/.exec(String(t))?.[1] ?? '(sans identifiant SNY)';
+if (A.includes('--inventaire-buffer')) {
+  const inv = await inventaireBuffer(new Date(Date.now() - 45 * 864e5).toISOString());
+  let enAttente = 0;
+  for (const c of CANAUX_RELAIS) {
+    log(`canal ${c} : ${inv[c].length} post(s) depuis 45 jours`);
+    for (const p of inv[c]) {
+      const attente = ['scheduled', 'sending', 'draft', 'needs_approval'].includes(p.status);
+      if (attente) enAttente++;
+      log(`  ${attente ? '⏳' : '·'} ${p.status.padEnd(14)} ${idUtm(p.text).padEnd(28)} prévu ${p.dueAt ?? '—'} · envoyé ${p.sentAt ?? '—'} · ${p.externalLink ?? 'sans permalien'} · empreinte ${empreinteTexte(p.text).slice(0, 12)}`);
     }
   }
-  // Évolutions : clic Telegram VALIDATE sur une proposition d'état, appliquée, postérieure à l'activation.
-  const evo = await sql`
-    select p.proposal_id::text pid, p.case_id, p.statut_avant::text avant, p.statut_propose::text apres, p.decided_at, a.publication_date::text pd,
-           c.publication_status::text ps, t.sent_at,
-           exists (select 1 from reviews r where r.case_id = p.case_id and r.decision = 'retirer') retire
-      from state_proposals p join cases c using (case_id) left join articles a on a.article_id = p.article_id
-      left join telegram_envois t on t.kind = 'decision' and t.cle = p.proposal_id::text
-     where p.decision = 'ACCEPT' and p.decided_by ilike '%Telegram%' and p.applied_event_id is not null and p.decided_at >= ${dep}::timestamptz
-       and p.statut_propose is not null and p.statut_avant is distinct from p.statut_propose`;
-  for (const p of evo) {
-    evenements.push({ type: 'case_update', case_id: p.case_id, event_key: cleEvenement('case_update', p.case_id, p.apres), go_at: new Date(p.decided_at), envoi_at: p.sent_at ? new Date(p.sent_at) : null,
-      statut_avant: p.avant, statut_apres: p.apres, source_date: p.pd, ps: p.ps, retire: p.retire });
-  }
+  log(enAttente ? `⚠️ ${enAttente} post(s) EN ATTENTE dans Buffer (programmés / brouillons) : à examiner avant l’activation` : '✅ aucun post en attente dans Buffer (ni programmé, ni brouillon, ni en approbation)');
+  process.exit(0);
 }
 
-// --- 2. site servi (une lecture) ------------------------------------------------------------------------------------------------------
-let htmlAccueil = null;
-try { const r = await fetch(`${SITE}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } }); if (r.ok) htmlAccueil = await r.text(); } catch { /* site injoignable : rien n'est servi */ }
-const serviA = (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0;
-async function ficheServie(id) {
-  if (!fichesApprouvees.has(id)) return false;
-  try { return (await fetch(`${SITE}/affaires/${id.toLowerCase()}/?v=${Date.now()}`, { headers: { 'cache-control': 'no-cache' } })).ok; } catch { return false; }
+// --- --exclure-montpellier : les deux publications manuelles du 12/11/2026 (FR-2026-0146) ne seront JAMAIS réémises ---------------------------------------------
+if (A.includes('--exclure-montpellier')) {
+  const EVT = 'new_case|FR-2026-0146', UTM = 'fr-2026-0146';
+  let inv = null;
+  try { inv = await inventaireBuffer(new Date(Date.now() - 45 * 864e5).toISOString()); } catch (e) { log(`inventaire Buffer impossible (${String(e.message).slice(0, 80)}) : exclusion par événement seulement`); }
+  for (const c of CANAUX_RELAIS) {
+    const trouves = (inv?.[c] || []).filter((p) => idUtm(p.text) === UTM && p.status !== 'error');
+    const p = trouves.find((x) => x.status === 'sent') ?? trouves[0] ?? null;
+    log(`${c} : ${p ? `publication retrouvée dans Buffer (statut ${p.status}, ${p.externalLink ?? 'sans permalien'}, empreinte ${empreinteTexte(p.text).slice(0, 12)})` : 'AUCUN post FR-2026-0146 retrouvé dans Buffer (publication hors Buffer ou hors fenêtre) : exclusion par événement'}`);
+    const neuf = await port.exclure({ event_key: EVT, canal: c, motif: 'publié à la main le 12/11/2026 (déclaré par l’éditeur) : hors circuit, jamais réémis', empreinte_texte: p ? empreinteTexte(p.text) : null, permalien: p?.externalLink ?? null });
+    log(`  exclusion ${c} : ${neuf ? 'enregistrée' : 'déjà présente'}`);
+  }
+  process.exit(0);
 }
 
-// --- 3. éligibilité + diffusion ---------------------------------------------------------------------------------------------------------
-const buffer = ECRIRE && env('BUFFER_API_KEY') && env('BUFFER_ORGANIZATION_ID') ? clientBuffer({ cle: env('BUFFER_API_KEY'), organisationId: env('BUFFER_ORGANIZATION_ID') }) : null;
-const canaux = CANAUX_ACTIFS.filter((c) => CANAL_ID[c]);
-if (ECRIRE && !buffer) { console.error('BUFFER_API_KEY ou BUFFER_ORGANIZATION_ID absent : diffusion impossible'); process.exit(1); }
-let erreurs = 0;
-const traites = new Set(); // (événement|canal) déjà réconciliés ou créés par diffuserCanal pendant ce passage
-let eligibles = 0;
-for (const ev of evenements) {
-  const entree = artefact.get(ev.case_id) || null;
-  const verdict = evaluerEvenement(ev, { now, depuis: depuisValide, holds, publication_status: ev.ps, retire: ev.retire, entree, servi: serviA(ev.case_id) });
-  if (!verdict.ok) { log(`· ${ev.type} ${ev.case_id} : SILENCE — ${verdict.raisons.join(' ; ')}`); continue; }
-  eligibles++;
-  const fiche = await ficheServie(ev.case_id);
-  const ph = phraseDe(entree);
-  for (const canal of canaux) {
-    const lien = canal === 'instagram' ? null : lienDiffusion({ site: SITE, case_id: ev.case_id, type: ev.type, statut: ev.statut_apres, canal, fiche });
-    const m = composerMessage({ type: ev.type, canal, entree, ph, lien });
-    if (m.erreur) { log(`· ${ev.type} ${ev.case_id} [${canal}] : SILENCE — ${m.erreur}`); continue; }
-    if (!ECRIRE) { log(`· ${ev.type} ${ev.case_id} [${canal}] : ÉLIGIBLE (plan, rien envoyé)${CI ? '' : `\n${m.texte}\n`}`); continue; }
-    try {
-      const r = await diffuserCanal({ ev, canal, texte: m.texte, channelId: CANAL_ID[canal], imageUrl: IMAGE_INSTAGRAM, lien, ledger, buffer, now, delaiMin: DELAI_MIN, alerter });
-      traites.add(`${ev.event_key}|${canal}`);
-      log(`· ${ev.type} ${ev.case_id} [${canal}] : ${r.action}${r.etat ? ` (${r.etat})` : ''}`);
-      if (r.action === 'echec') { erreurs++; await alerter(`⚠️ <b>Diffusion sociale refusée</b> (${canal}, ${ev.case_id}) : ${r.erreur}`); }
-    } catch (e) { erreurs++; log(`· ${ev.type} ${ev.case_id} [${canal}] : erreur technique isolée (${String(e.message).slice(0, 80)})`); }
-  }
+// --- --autotest-ecriture : les requêtes d'ÉCRITURE du port s'exécutent bien en production, sur une ligne jetable supprimée aussitôt ---------------------------------
+if (A.includes('--autotest-ecriture')) {
+  const ev = `autotest|${Date.now()}`;
+  let ok = true;
+  const verif = (nom, c) => { if (!c) ok = false; log(`${c ? '✅' : '❌'} ${nom}`); };
+  try {
+    const cree = await port.creerProposition({ event_key: ev, case_id: 'AUTOTEST', type_event: 'new_case', identite: { autotest: true }, texte_x: 'x', texte_facebook: 'f', canaux_proposes: ['x', 'facebook'], empreinte_x: 'a', empreinte_facebook: 'b', expire_at: new Date(Date.now() + 36e5) });
+    verif('création de proposition', !!cree?.proposal_id);
+    verif('doublon refusé (event_key unique)', (await port.creerProposition({ event_key: ev, case_id: 'AUTOTEST', type_event: 'new_case', identite: {}, texte_x: null, texte_facebook: null, canaux_proposes: ['x'], empreinte_x: null, empreinte_facebook: null, expire_at: new Date() })) === null);
+    const cle = String(cree.proposal_id).slice(0, 8);
+    verif('lecture par clé de 8 caractères', (await port.propositionParCle(cle))?.event_key === ev);
+    verif('réclamation d’envoi unique', (await port.reclamerEnvoi(cree.proposal_id)) === true && (await port.reclamerEnvoi(cree.proposal_id)) === false);
+    await port.noterEnvoi(cree.proposal_id, 1);
+    verif('décision enregistrée une seule fois', (await port.decider(cree.proposal_id, { decision: 'GO_F', canaux: ['facebook'], now: new Date(), resolution: null })) === true && (await port.decider(cree.proposal_id, { decision: 'GO_XF', canaux: ['x', 'facebook'], now: new Date(), resolution: null })) === false);
+    const relue = await port.propositionParCle(cle);
+    verif('décision et canaux autorisés relus', relue.decision === 'GO_F' && relue.canaux_autorises?.join() === 'facebook');
+    verif('listée parmi les GO à publier', (await port.propositionsAvecGo()).some((p) => p.event_key === ev));
+    await port.resoudre(cree.proposal_id, 'autotest');
+    verif('listes de suivi et exclusions lisibles', Array.isArray(await port.lignesOuvertes()) && (await port.exclusionsDe(ev)) instanceof Set && (await port.empreinteTexteExclue('x', 'zz')) === false && (await port.ledgerDe(ev)) === false);
+    // Immuabilité de T0 : les triggers existent ; si T0 est posé, une mise à jour NEUTRE (t0 = t0) doit être REFUSÉE (le trigger se déclenche même sans changement de valeur).
+    const trig = (await sql`select tgname from pg_trigger where tgrelid = 'relais_social_config'::regclass and not tgisinternal`).map((r) => r.tgname);
+    verif('triggers d’immuabilité de T0 présents (UPDATE/DELETE et TRUNCATE)', trig.includes('relais_social_config_no_update') && trig.includes('relais_social_config_no_truncate'));
+    if ((await sql`select 1 x from relais_social_config where id = 1`).length) {
+      let refuse = false;
+      try { await sql`update relais_social_config set t0 = t0 where id = 1`; } catch { refuse = true; }
+      verif('T0 posé : toute mise à jour est refusée par la base', refuse);
+    } else log('➖ T0 non encore posé : refus d’UPDATE à revérifier après l’initialisation');
+  } finally { await sql`delete from relais_social_propositions where event_key like 'autotest|%'`; }
+  log(ok ? 'requêtes d’écriture conformes (ligne jetable supprimée)' : 'ÉCART : corriger avant d’activer');
+  process.exit(ok ? 0 : 1);
 }
-log(`${evenements.length} événement(s) candidat(s) depuis l’activation, ${eligibles} éligible(s)`);
 
-// --- 4. retraits puis suivi des lignes ouvertes --------------------------------------------------------------------------------------------
-if (ECRIRE) {
-  const ouvertes = await sql`select * from diffusions_sociales where etat in ('reserve', 'soumis', 'programme', 'envoye', 'verifie') and created_at > now() - interval '30 days'`;
-  const ids = [...new Set(ouvertes.map((r) => r.case_id))];
-  const etats = ids.length ? await sql`select c.case_id, c.publication_status::text ps, exists (select 1 from reviews r where r.case_id = c.case_id and r.decision = 'retirer') retire from cases c where c.case_id = any(${ids}::text[])` : [];
-  const parId = new Map(etats.map((e) => [e.case_id, e]));
-  for (const row of ouvertes) {
-    try {
-      const e = parId.get(row.case_id);
-      const motif = !e || e.ps !== 'publiée' ? 'affaire retirée' : e.retire ? 'revue « retirer »' : holds.has(row.case_id) ? 'HOLD de publication' : !artefact.has(row.case_id) ? 'absente de l’artefact public' : null;
-      if (motif) { const r = await retirerLigne({ row, motif, channelId: CANAL_ID[row.canal], ledger, buffer, alerter }); log(`· retrait ${row.case_id} [${row.canal}] : ${r.action}`); continue; }
-      if (row.etat === 'reserve') {
-        // Réservation non résolue : si l'événement est encore éligible, diffuserCanal l'a déjà réconciliée ci-dessus ; sinon on retrouve le post sans jamais en créer un.
-        if (!traites.has(`${row.event_key}|${row.canal}`)) { const r = await reconcilierSansCreer({ row, channelId: CANAL_ID[row.canal], ledger, buffer, now, alerter }); log(`· réconciliation ${row.case_id} [${row.canal}] : ${r.action}`); }
-        continue;
-      }
-      if (row.etat !== 'verifie') { const r = await suivreLigne({ row, ledger, buffer, now, alerter }); if (r.action !== 'inchange' && r.action !== 'rien') log(`· suivi ${row.case_id} [${row.canal}] : ${r.action}${r.etat ? ` (${r.etat})` : ''}`); }
-    } catch (e) { erreurs++; log(`· suivi/retrait ${row.case_id} [${row.canal}] : erreur technique isolée (${String(e.message).slice(0, 80)})`); }
+// --- --controle-stock : l'HISTORIQUE de production, jugé avec un T0 = maintenant, ne doit produire AUCUNE proposition (lecture seule) -------------------------------
+// La sélection SQL filtre déjà sur T0 : pour que le contrôle ne soit pas une tautologie, on charge TOUS les candidats depuis l'origine (T0 = 1970), puis on les juge avec
+// le vrai évaluateur sous un T0 posé à l'instant de la base. Chacun doit être refusé, et le plan complet (composition comprise) ne doit trouver aucun éligible.
+async function controleStock() {
+  if (!(await port.tablesPresentes())) { log('tables du relais absentes : appliquer les migrations d’abord'); return false; }
+  const t0 = await port.maintenantBase();
+  const histo = await port.candidats(new Date(0));
+  const compo = await composition();
+  const sansProposition = { ...port, candidats: async () => histo };
+  let eligibles = 0, bloques = 0;
+  const motifs = new Map();
+  for (const c of histo) {
+    const v = evaluerCandidat(c, { t0, now: compo.now, holds, entree: artefact.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null, servi: true, ficheServie: { status: 200, hash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null }, proposition: false, ledger: false, exclusions: new Set() });
+    if (v.ok) eligibles++; else { bloques++; for (const r of v.raisons) motifs.set(r.replace(/\(.*/, '').trim(), (motifs.get(r.replace(/\(.*/, '').trim()) || 0) + 1); }
   }
+  log(`stock : ${histo.length} événement(s) candidat(s) depuis l’origine · ${bloques} refusé(s) avec T0 = ${t0.toISOString()} · ${eligibles} éligible(s) au niveau de l’évaluateur`);
+  for (const [m, n] of [...motifs].sort((a, b) => b[1] - a[1]).slice(0, 8)) log(`    ${String(n).padStart(3)} × ${m}`);
+  // Plan complet (composition, exclusions) sous le même T0, avec servi/ficheServie forcés à « vrai » : on cherche à PRENDRE EN DÉFAUT le filtre T0, pas la page servie.
+  const sortiePlan = [];
+  const b = await proposerNouveautes({ port: sansProposition, compo, activation: { actif: true, t0, raisons: [] }, holds, canauxConfigures: CANAUX_RELAIS, envoyer: async () => { throw new Error('envoi interdit en contrôle'); }, log: (m) => sortiePlan.push(m), ecrire: false, servi: () => true, ficheServie: async (id) => ({ status: 200, hash: compo.ev.fiches_approuvees?.[id]?.hash ?? null }) });
+  const eligiblesPlan = sortiePlan.filter((l) => /ÉLIGIBLE/.test(l)).length;
+  const [prop] = await sql`select count(*)::int n from relais_social_propositions`;
+  const [go] = await sql`select count(*)::int n from relais_social_propositions where decision in ('GO_XF', 'GO_F', 'GO_X') and resolution is null`;
+  log(`plan complet : ${b.candidats} candidat(s), ${eligiblesPlan} éligible(s) · propositions déjà en base : ${prop.n} · GO en attente d’exécution : ${go.n}`);
+  const bon = eligibles === 0 && eligiblesPlan === 0 && go.n === 0;
+  log(bon ? '✅ ZÉRO événement historique susceptible de générer une proposition sociale' : '❌ des événements passent le filtre T0 : NE PAS ACTIVER, corriger la cause');
+  return bon;
 }
-process.exitCode = erreurs ? 1 : 0;
+if (A.includes('--controle-stock')) process.exit((await controleStock()) ? 0 : 1);
+
+// --- --initialiser-t0 : UNE seule fois, horloge de la base, immuable ; seulement si le contrôle du stock est au vert -------------------------------------------------
+if (A.includes('--initialiser-t0')) {
+  if (!A.includes('--confirmer')) { console.error('refusé : --confirmer requis (GO de mise en service)'); process.exit(2); }
+  if (!(await port.tablesPresentes())) { console.error('tables absentes : appliquer les migrations d’abord'); process.exit(1); }
+  const deja = await port.t0();
+  if (deja) { log(`T0 déjà initialisé (${new Date(deja.t0).toISOString()}, ${deja.provenance}) : INCHANGÉ — il ne se modifie jamais`); process.exit(0); }
+  if (!(await controleStock())) { console.error('contrôle du stock en échec : T0 NON initialisé'); process.exit(1); }
+  const provenance = `horloge de la base Neon · ${process.env.GITHUB_RUN_ID ? `run GitHub ${process.env.GITHUB_RUN_ID}` : 'exécution locale'} · ${String(process.env.GITHUB_SHA || '').slice(0, 7)}`;
+  const t0 = await port.initialiserT0(provenance);
+  if (!t0) { log('T0 initialisé entre-temps par un autre passage : INCHANGÉ'); process.exit(0); }
+  log(`T0 = ${t0.toISOString()} (${provenance})`);
+  log(`TEMOIN_T0=${t0.toISOString().replace(/\.\d+Z$/, 'Z')}`);
+  process.exit(0);
+}
+
+// --- PLAN (défaut) et --ecrire : un passage complet du relais -------------------------------------------------------------------------------
+if (!(await port.tablesPresentes())) { log('tables du relais absentes (migrations 025/026 non appliquées) : relais DÉSACTIVÉ, rien n’est proposé ni publié'); process.exit(0); }
+const activation = verifierActivation({ env: process.env, t0Row: await port.t0(), now });
+const compo = await composition();
+const buffer = ECRIRE && activation.actif && env('BUFFER_API_KEY') && env('BUFFER_ORGANIZATION_ID') ? clientBuffer({ cle: env('BUFFER_API_KEY'), organisationId: env('BUFFER_ORGANIZATION_ID') }) : null;
+if (ECRIRE && activation.actif && !buffer) { console.error('BUFFER_API_KEY ou BUFFER_ORGANIZATION_ID absent : relais impossible'); process.exit(1); }
+const alerter = async (texte) => { if (ECRIRE) await prevenir(texte); };
+// servi() est synchrone dans l'évaluateur : la page d'accueil est lue avant la boucle (une seule requête), seulement s'il y a un candidat potentiel.
+if (activation.actif) await accueil();
+const resultat = await executerCycle({
+  port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger,
+  canauxConfigures: CANAUX_ACTIFS.filter((c) => CANAL_ID[c]), channelIds: CANAL_ID, delaiMin: DELAI_MIN,
+  envoyer: envoyerTelegram, servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,
+});
+if (CI && !ECRIRE) log('plan : aucune écriture, aucun message, aucun appel Buffer');
+process.exitCode = resultat.erreurs ? 1 : 0;

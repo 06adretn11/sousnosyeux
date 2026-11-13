@@ -106,6 +106,13 @@ export function clientBuffer({ cle, organisationId = null, fetchImpl = globalThi
       return noeuds.find((n) => n.channelId === channelId && motif.test(norm(n.text))) || null;
     },
 
+    /** LECTURE SEULE : posts d'un canal créés depuis `depuis` (inventaire avant activation : « aucun post SNY inattendu n'attend dans Buffer »). Une lecture qui échoue LÈVE. */
+    async listerPosts({ channelId, depuis }) {
+      const d = await requete(`query($input: PostsInput!){ posts(first: 100, input: $input){ edges { node { ${SORTIE_POST} } } } }`,
+        { input: { organizationId: organisationId, filter: { channelIds: [channelId], createdAt: { start: depuis } } } });
+      return (d.posts?.edges || []).map((e) => e?.node).filter((n) => n && n.channelId === channelId);
+    },
+
     /** Annule un post PAS ENCORE publié. Un post déjà envoyé ne se supprime pas du réseau : voir le journal (retire_apres_envoi) et la procédure manuelle. */
     async supprimerPost(id) {
       const d = await requete('mutation($input: DeletePostInput!){ deletePost(input:$input){ __typename ... on VoidMutationError { message } } }', { input: { id } });

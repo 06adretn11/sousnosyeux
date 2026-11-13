@@ -25,6 +25,8 @@ import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
 import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
+import { portNeon } from './lib/relais-social-db.mjs';
+import { enregistrerDecision, verifierActivation, ACTIONS_SOCIALES } from './lib/relais-social.mjs';
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
@@ -429,10 +431,38 @@ async function clic(cb, update_id = null) {
     return 'test_recu';
   }
   let issue;
-  if (t.type === 'NC') issue = await clicNouvelle(cb, t.action, t.cle);
+  if (t.type === 'SG') issue = await clicSocial(cb, t.action, t.cle);
+  else if (t.type === 'NC') issue = await clicNouvelle(cb, t.action, t.cle);
   else issue = await clicEtat(cb, t.action, t.cle);
   await journaliser(sql, { kind: 'clic', update_id, cle: t.cle, action: t.action, resultat: issue });
   return issue;
+}
+
+/**
+ * Clic du RELAIS SOCIAL (mode REVIEW) : enregistre la décision humaine sur la proposition — rien d'autre. Aucune publication ici : elle est exécutée par
+ * `diffuser-social.mjs --ecrire`, qui recontrôle l'éligibilité et l'identité (texte, sources, version approuvée) avant tout appel à Buffer.
+ * @returns {Promise<string>} issue : enregistree | double_clic | introuvable | bouton_invalide | expiree | inactif
+ */
+async function clicSocial(cb, action, cle) {
+  const port = portNeon(sql);
+  const now = new Date();
+  const activation = verifierActivation({ env: process.env, t0Row: await port.t0(), now });
+  const r = await enregistrerDecision({ port, action, cle, now, actif: activation.actif });
+  const rep = (texte) => tg('answerCallbackQuery', { callback_query_id: cb.id, text: texte }).catch(() => {});
+  const dit = (texte) => tg('sendMessage', { chat_id: ALLOWED, text: texte, parse_mode: 'HTML', disable_web_page_preview: true }).catch(() => {});
+  const canaux = (ACTIONS_SOCIALES[action]?.canaux || []).map((k) => (k === 'x' ? 'X' : 'Facebook')).join(' + ');
+  if (r.issue === 'enregistree') {
+    console.log(`relais social : décision ${r.decision} enregistrée sur ${cle}`);
+    await rep('Décision enregistrée.');
+    await dit(r.decision === 'REFUS'
+      ? `⛔ <b>Refusé</b> (${cle}). Aucune publication, ni maintenant ni plus tard.`
+      : `✅ <b>GO social enregistré : ${canaux}</b> (${cle})\nRecontrôle (éligibilité, source, texte, version approuvée) puis programmation avec délai d’annulation : tu recevras la confirmation, ou le motif si le recontrôle bloque. Rien n’a encore été envoyé à Buffer.`);
+  } else if (r.issue === 'double_clic') { console.log(`relais social : double clic sur ${cle} : aucune écriture`); await rep(`Déjà enregistrée (${r.decision ?? r.proposition?.decision}).`); }
+  else if (r.issue === 'expiree') { await rep('Proposition expirée.'); await dit(`⌛ <b>Proposition expirée</b> (${cle}) : le GO arrive trop tard, rien n’est publié. Une nouvelle proposition sera faite si l’événement reste éligible.`); }
+  else if (r.issue === 'inactif') { await rep('Relais social désactivé.'); await dit(`🔒 <b>Relais social désactivé</b> (coupe-circuit ou T0 non vérifié) : ton GO (${cle}) n’est PAS enregistré, rien n’est publié.`); }
+  else if (r.issue === 'introuvable') await rep('Proposition introuvable.');
+  else await rep('Action non valable pour ce message.');
+  return r.issue;
 }
 
 /** Clic Maintenance (state_proposals). */

@@ -1,5 +1,7 @@
 # SNY — Diffusion sociale & mesure d'audience (10/11/2026)
 
+> **13/11/2026 — la publication automatique décrite ci-dessous (« GO de publication ⇒ post automatique ») n'existe plus.** Le relais fonctionne désormais en mode REVIEW : proposition Telegram distincte, GO social, T0 verrouillé, composeur V4.1. Voir `RELAIS_SOCIAL_REVIEW.md`. Les sections Buffer, journal, retraits et mesure restent valables.
+
 Chaîne livrée : `Événement documenté → GO Telegram → page publique vérifiée → publication sociale automatique (Buffer) → mesure`.
 **État : code livré, testé en simulation, DÉSACTIVÉ.** Aucune publication réelle n'a eu lieu ni n'a été simulée sur un compte public.
 « Code livré » ≠ « dispositif activé » ≠ « trafic démontré » : seul le premier est vrai à ce jour.
