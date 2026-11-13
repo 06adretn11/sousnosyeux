@@ -199,6 +199,18 @@
     ],
     "FR-2026-0144": [
       {
+        "event_id": "917f7259-127e-4233-8952-f23bbf4d30de",
+        "date": "2026-11-12",
+        "type": "mise_en_examen",
+        "statut": "mise en examen",
+        "libelle": "Une source publique rapporte une mise en examen. La mise en examen ne vaut pas culpabilité.",
+        "source": {
+          "media": "sweetfm",
+          "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+          "publie_le": "2026-11-12"
+        }
+      },
+      {
         "event_id": "b82c873c-90d5-4302-94c1-cd88f34dc7d2",
         "date": null,
         "type": "suspension",
