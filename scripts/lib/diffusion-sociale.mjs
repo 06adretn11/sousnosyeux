@@ -164,13 +164,11 @@ export function signatureTexte(texte) {
 export const GRACE_REESSAI_MIN = 15;
 
 // ---------------------------------------------------------------------
-// PORTÉE DU GO (B4) : un seul GO éditorial — le clic Telegram — couvre la publication SUR SNY et le relais social strictement factuel. Cette ligne est ajoutée au
-// message d'approbation UNIQUEMENT quand la diffusion est activée (SNY_DIFFUSION_ACTIVE=1) : elle dit la vérité du moment. L'éligibilité exige que le message envoyé
-// APRÈS l'activation (donc porteur de cette ligne) soit celui qui a reçu le GO : les approbations antérieures ne valent jamais autorisation rétroactive.
+// PORTÉE DU GO (mode REVIEW) : le GO éditorial de PUBLICATION sur SNY ne vaut JAMAIS relais social. Chaque relais fait l'objet d'une proposition Telegram distincte
+// (textes exacts X / Facebook) et d'un GO social propre. Cette ligne, ajoutée au message d'approbation seulement quand le relais est activé, dit la vérité du moment.
 // ---------------------------------------------------------------------
 export function porteeRelais(type, env = process.env) {
-  if (env.SNY_DIFFUSION_ACTIVE !== '1') return null;
+  if (env.SNY_DIFFUSION_ACTIVE !== '1' || env.SNY_DIFFUSION_MODE !== 'review') return null;
   const quoi = type === 'case_update' ? 'cette évolution' : 'cette nouvelle affaire';
-  const bouton = type === 'case_update' ? 'VALIDATE' : 'Ce GO';
-  return `📣 ${bouton} vaut aussi relais social strictement factuel de ${quoi} (X, Facebook), sans autre validation : seulement si la page est servie, la source a moins de 7 jours et rien n’est retiré. Annulable quelques minutes avant l’envoi ; pas de second GO par canal.`;
+  return `📣 Ce clic ne vaut PAS relais social : si ${quoi} remplit les conditions (page servie, source de moins de 7 jours, nouveauté après la mise en service), une proposition distincte avec les textes exacts X / Facebook te sera envoyée, avec son propre GO.`;
 }

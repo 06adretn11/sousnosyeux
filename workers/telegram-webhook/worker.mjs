@@ -20,7 +20,7 @@
 // Exclusivité Telegram : une fois le webhook posé, getUpdates ne fonctionne plus ; `telegram-v0.mjs recevoir` le détecte et ne lit rien.
 // =====================================================================
 
-export const DATA_RE = /^sny:(?:NC:(?:VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT)|(?:VALIDATE|REVIEW|REJECT)|TEST):[0-9a-f]{8}$/;
+export const DATA_RE = /^sny:(?:NC:(?:VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT)|SG:(?:XF|F|X|R)|(?:VALIDATE|REVIEW|REJECT)|TEST):[0-9a-f]{8}$/;
 const TAILLE_MAX = 8192;
 
 /** Comparaison en temps constant (longueurs égales exigées). */
@@ -74,7 +74,7 @@ export default {
     try { await post('answerCallbackQuery', { callback_query_id: cb.id, text: texte }); } catch { /* l'accusé ne doit pas faire échouer la réponse au webhook */ }
     // Trace persistante dans le chat (le toast disparaît) : action et clé seulement, aucun contenu éditorial.
     if (ok) {
-      const [, action, cle] = /^sny:(?:NC:)?([A-Z]+):([0-9a-f]{8})$/.exec(cb.data) || [];
+      const [, action, cle] = /^sny:(?:NC:|SG:)?([A-Z]+):([0-9a-f]{8})$/.exec(cb.data) || [];
       try { await post('sendMessage', { chat_id: editeur, text: `📥 Clic reçu : ${action} (${cle}). Enregistrement en cours — tu recevras la confirmation une fois la décision écrite.` }); } catch { /* idem */ }
     }
     return new Response(ok ? 'transmis' : 'échec de transmission', { status: ok ? 200 : 500 });

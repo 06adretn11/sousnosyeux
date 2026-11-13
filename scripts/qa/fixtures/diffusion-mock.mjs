@@ -37,6 +37,7 @@ function neon(corps) {
   const e = etat();
   const L = e.ledger;
   if (/to_regclass/.test(q)) return reponse([{ ok: !SCEN.sansJournal }]);
+  if (/from relais_social_config/.test(q)) return reponse(SCEN.t0 ? [{ t0: SCEN.t0, mode: 'review', provenance: 'test' }] : []);
   if (/select distinct case_id from reviews/.test(q)) return reponse((SCEN.revues || []).map((r) => ({ case_id: r.case_id })).filter((v, i, a) => a.findIndex((x) => x.case_id === v.case_id) === i));
   if (/from cases where case_id = any/.test(q) && /select case_id, publication_status/.test(q)) return reponse((SCEN.cases || []).map((c) => ({ case_id: c.case_id, ps: SCEN.statutNeon?.[c.case_id] || c.ps })));
   if (/select case_id, reviewed_by/.test(q)) return reponse(SCEN.revues || []);

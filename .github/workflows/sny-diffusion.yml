@@ -1,13 +1,18 @@
-# SNY — diagnostics MANUELS de la diffusion sociale (Buffer → X / Facebook / Instagram). Aucun de ces modes ne publie quoi que ce soit (appliquer-migration ne crée qu'une table de journal).
+# SNY — opérations MANUELLES du relais social, mode REVIEW (Buffer → X / Facebook). AUCUNE de ces actions ne publie quoi que ce soit.
 #
-#   action = appliquer-migration  applique la migration 025 (journal de diffusion : une table, additive, idempotente) — UNE fois, avant l'activation
+#   action = appliquer-migration  applique 025 + 026 (journal, T0 verrouillé, propositions, exclusions : additives, idempotentes)
+#   action = autotest-ecriture   exerce les requêtes d'écriture du relais sur une ligne jetable (supprimée) : ni Telegram, ni Buffer
+#   action = inventaire-buffer   LECTURE SEULE : posts SNY présents dans Buffer (X, Facebook) et posts en attente
+#   action = exclure-montpellier enregistre l'exclusion définitive des deux publications manuelles de FR-2026-0146
+#   action = controle-stock      LECTURE SEULE : l'historique de production, jugé avec T0 = maintenant, ne produit AUCUNE proposition
+#   action = initialiser-t0      fixe T0 (horloge de la base, UNE fois, immuable) après le contrôle du stock — confirmation = GO-T0
 #   action = verifier-connexion  LECTURE SEULE : clé, organisation, canaux (service, connexion, verrouillage, file), requête de réconciliation. À lancer AVANT l'activation.
 #   action = sonder-api          LECTURE SEULE : confronte le client Buffer au schéma réel (introspection) ; sondes sur identifiants inexistants (rien créé/publié/supprimé)
 #   action = plan                événements éligibles et raisons de silence, sans appel Buffer ni écriture
 #   action = etat                synthèse du journal de diffusion (compteurs par canal et par état) — base des relevés J0 / J+7 / J+28
 #
-# La diffusion elle-même s'exécute dans les workflows existants (sny-telegram après vérification du site, sny-clics en filet) et reste INERTE tant que la variable
-# SNY_DIFFUSION_ACTIVE n'est pas à « 1 » (Settings → Secrets and variables → Actions → Variables).
+# Le relais lui-même s'exécute dans les workflows existants (sny-telegram après vérification du site, sny-clics en filet) et reste INERTE tant que SNY_DIFFUSION_ACTIVE ≠ 1,
+# SNY_DIFFUSION_MODE ≠ review, ou que T0 (base) et son témoin SNY_DIFFUSION_DEPUIS ne concordent pas. COUPE-CIRCUIT : SNY_DIFFUSION_ACTIVE=0.
 # Secret : BUFFER_API_KEY. Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, BUFFER_CHANNEL_INSTAGRAM, SNY_DIFFUSION_CANAUX, SNY_DIFFUSION_DEPUIS.
 # Dépôt public ⇒ logs publics : booléens, identifiants d'affaire et compteurs seulement (aucune clé, aucun texte).
 name: sny-diffusion
@@ -19,7 +24,11 @@ on:
         description: "appliquer-migration | verifier-connexion | sonder-api | plan | etat"
         required: true
         type: choice
-        options: [appliquer-migration, verifier-connexion, sonder-api, plan, etat]
+        options: [appliquer-migration, autotest-ecriture, inventaire-buffer, exclure-montpellier, controle-stock, initialiser-t0, verifier-connexion, sonder-api, plan, etat]
+      confirmation:
+        description: "Pour initialiser-t0 uniquement : saisir GO-T0"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -41,6 +50,9 @@ jobs:
       BUFFER_CHANNEL_INSTAGRAM: ${{ vars.BUFFER_CHANNEL_INSTAGRAM }}
       SNY_DIFFUSION_CANAUX: ${{ vars.SNY_DIFFUSION_CANAUX }}
       SNY_DIFFUSION_ACTIVE: ${{ vars.SNY_DIFFUSION_ACTIVE }}
+      SNY_DIFFUSION_MODE: ${{ vars.SNY_DIFFUSION_MODE }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
       SNY_DIFFUSION_DEPUIS: ${{ vars.SNY_DIFFUSION_DEPUIS }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -52,9 +64,15 @@ jobs:
       - name: Exécuter l'action demandée (aucune publication)
         env:
           ACTION: ${{ inputs.action }}
+          CONFIRMATION: ${{ inputs.confirmation }}
         run: |
           case "$ACTION" in
             appliquer-migration) node scripts/diffuser-social.mjs --appliquer-migration ;;
+            autotest-ecriture)  node scripts/diffuser-social.mjs --autotest-ecriture ;;
+            inventaire-buffer)  node scripts/diffuser-social.mjs --inventaire-buffer ;;
+            exclure-montpellier) node scripts/diffuser-social.mjs --exclure-montpellier ;;
+            controle-stock)     node scripts/diffuser-social.mjs --controle-stock ;;
+            initialiser-t0)     if [ "$CONFIRMATION" = "GO-T0" ]; then node scripts/diffuser-social.mjs --initialiser-t0 --confirmer; else echo "refusé : confirmation GO-T0 absente"; exit 2; fi ;;
             verifier-connexion) node scripts/diffuser-social.mjs --verifier-connexion ;;
             sonder-api)         node scripts/diffuser-social.mjs --sonder-api ;;
             plan)               node scripts/diffuser-social.mjs ;;

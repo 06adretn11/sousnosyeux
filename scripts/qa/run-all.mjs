@@ -194,7 +194,12 @@ const ETAPES = [
     bloquant: true,
   },
   {
-    nom: 'Diffusion sociale — le vrai script de bout en bout (base, Buffer, site, Telegram simulés : désactivé par défaut, GO postérieur, rejeu, panne, retrait)',
+    nom: 'Relais social REVIEW — anti-backfill (T0, fraîcheur, exclusions), GO social un clic, identité immuable, retraits, timeouts, coupe-circuit, aucun contournement (mocks : aucune publication)',
+    script: 'scripts/qa/test-relais-social.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Diffusion sociale — le vrai script en processus (coupe-circuit : aucun appel sortant sans mode REVIEW, T0 vérifié, tables présentes)',
     script: 'scripts/qa/test-diffuser-script.mjs',
     bloquant: true,
   },

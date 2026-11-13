@@ -34,6 +34,8 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
       SNY_DIFFUSION_ACTIVE: ${{ vars.SNY_DIFFUSION_ACTIVE }}
+
+      SNY_DIFFUSION_MODE: ${{ vars.SNY_DIFFUSION_MODE }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

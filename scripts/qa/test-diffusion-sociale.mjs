@@ -254,8 +254,8 @@ section('11. Aucune publication historique lors de l’activation');
   const d = JSON.parse(readFileSync(new URL('../../data/cases.json', import.meta.url), 'utf8')).cases;
   const eligiblesStock = d.filter((c) => evaluerEvenement({ type: 'new_case', case_id: c.case_id, event_key: 'k', go_at: new Date('2026-10-01'), envoi_at: new Date('2026-10-01'), source_date: dateSourceNouvelleAffaire(c) }, ctx({ entree: c, depuis: new Date() })).ok);
   verifie(`stock réel (${d.length} affaires) : AUCUNE n’est éligible une fois l’activation datée de maintenant`, eligiblesStock.length === 0, `${eligiblesStock.length} éligibles`);
-  verifie('le script exige SNY_DIFFUSION_ACTIVE=1 ET SNY_DIFFUSION_DEPUIS (désactivé par défaut)', /ECRIRE && !ACTIVE/.test(readFileSync(new URL('../diffuser-social.mjs', import.meta.url), 'utf8')) && !porteeRelais('new_case', {}));
-  verifie('le texte du GO ne parle de relais social que si la diffusion est activée', !porteeRelais('new_case', { SNY_DIFFUSION_ACTIVE: '0' }) && /relais social strictement factuel/.test(porteeRelais('new_case', { SNY_DIFFUSION_ACTIVE: '1' })) && /VALIDATE vaut/.test(porteeRelais('case_update', { SNY_DIFFUSION_ACTIVE: '1' })));
+  verifie('le script exige SNY_DIFFUSION_ACTIVE=1 ET SNY_DIFFUSION_MODE=review (désactivé par défaut) ; aucune promesse de relais sinon', /ECRIRE && (env('SNY_DIFFUSION_ACTIVE') !== '1' || env('SNY_DIFFUSION_MODE') !== 'review')/.test(readFileSync(new URL('../diffuser-social.mjs', import.meta.url), 'utf8')) && !porteeRelais('new_case', {}) && !porteeRelais('new_case', { SNY_DIFFUSION_ACTIVE: '1' }));
+  verifie('le texte du GO dit la vérité : le clic de publication NE VAUT PAS relais social (proposition et GO distincts), seulement si le mode REVIEW est actif', !porteeRelais('new_case', { SNY_DIFFUSION_ACTIVE: '0', SNY_DIFFUSION_MODE: 'review' }) && /ne vaut PAS relais social/.test(porteeRelais('new_case', { SNY_DIFFUSION_ACTIVE: '1', SNY_DIFFUSION_MODE: 'review' })) && /propre GO/.test(porteeRelais('case_update', { SNY_DIFFUSION_ACTIVE: '1', SNY_DIFFUSION_MODE: 'review' })));
 }
 
 section('B4. Portée du GO unique — libellé de l’approbation Telegram');
@@ -266,11 +266,13 @@ section('B4. Portée du GO unique — libellé de l’approbation Telegram');
   delete process.env.SNY_DIFFUSION_ACTIVE;
   const sans = messagePublication(p);
   process.env.SNY_DIFFUSION_ACTIVE = '1';
+  process.env.SNY_DIFFUSION_MODE = 'review';
   const avec = messagePublication(p);
   const bloque = messagePublication({ ...p, publication: { ...p.publication, publiable: false, bloque: 'x' } });
   if (avant === undefined) delete process.env.SNY_DIFFUSION_ACTIVE; else process.env.SNY_DIFFUSION_ACTIVE = avant;
+  delete process.env.SNY_DIFFUSION_MODE;
   verifie('diffusion désactivée : le message d’approbation est inchangé (aucune promesse de relais)', !/relais social/.test(sans));
-  verifie('diffusion activée : la proposition « PUBLIER » dit que le GO couvre aussi le relais social factuel, sans second GO', /relais social strictement factuel/.test(avec) && /pas de second GO/.test(avec));
+  verifie('diffusion activée : le message « PUBLIER » ne promet PAS de relais social (proposition et GO distincts)', !/relais social strictement factuel/.test(avec) && /ne vaut PAS relais social/.test(avec));
   verifie('proposition non publiable : aucune mention de relais', !/relais social/.test(bloque));
 }
 
@@ -291,7 +293,7 @@ section('12. Aucune fuite de secrets');
   const dossier = new URL('../', import.meta.url);
   const fichiers = ['diffuser-social.mjs', 'lib/buffer.mjs', 'lib/diffusion-flux.mjs', 'lib/diffusion-sociale.mjs'].map((f) => readFileSync(new URL(f, dossier), 'utf8')).join('\n') + readFileSync(new URL('../.github/workflows/sny-diffusion.yml', dossier), 'utf8');
   verifie('aucun secret en dur dans les fichiers de la diffusion (clés, jetons, identifiants de canal)', !/(Bearer\s+[A-Za-z0-9_\-]{20,}|1\/[A-Za-z0-9_\-]{30,}|api[_-]?key\s*[:=]\s*['"][^'"]{12,})/i.test(fichiers));
-  verifie('le script n’affiche ni texte, ni lieu, ni clé en CI (le texte n’est imprimé qu’hors CI, en plan)', /CI \? '' : `\\n\$\{m\.texte\}/.test(readFileSync(new URL('../diffuser-social.mjs', import.meta.url), 'utf8')));
+  verifie('le script et le relais n’impriment jamais le texte d’un post, ni un lieu, ni une clé (journaux publics : identifiants et issues seulement)', !/log\([^;]*\.texte/.test(readFileSync(new URL('../lib/relais-social.mjs', import.meta.url), 'utf8')) && !/log\([^;]*\.texte/.test(readFileSync(new URL('../diffuser-social.mjs', import.meta.url), 'utf8')));
 }
 
 section('Client Buffer — forme des requêtes (mocks)');
