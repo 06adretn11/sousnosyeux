@@ -32,6 +32,7 @@ const ECRIRE = A.includes('--ecrire');
 const val = (f) => (A.includes(f) ? A[A.indexOf(f) + 1] : null);
 const SEUL = val('--case');
 const LIMITE = Number(val('--limite') || 2);
+const SANS_DELAI = A.includes('--sans-delai'); // relance explicite d'une affaire (--case) : ignore le délai de retentative
 const RETENTE_H = 24; // une fiche non proposable n'est regénérée qu'une fois par jour (nouvelles sources possibles), jamais en boucle
 const racine = (f) => new URL(`../${f}`, import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(racine(f), 'utf8'));
@@ -66,7 +67,7 @@ for (const c of candidats) {
   if (age === null || age >= FENETRE_SOURCE_JOURS) { ecarte(c.case_id, `source de plus de ${FENETRE_SOURCE_JOURS} jours ou non datée : le relais ne la relaierait plus`); continue; }
   if ((await sql`select 1 x from reviews where case_id = ${c.case_id} and comment like '[Fiche approuvée %' limit 1`).length) { ecarte(c.case_id, 'fiche approuvée, promotion en cours'); continue; }
   if ((await sql`select 1 x from new_case_proposals where payload->'page'->>'case_id' = ${c.case_id} and decision is null limit 1`).length) { ecarte(c.case_id, 'proposition de fiche déjà en attente de clic'); continue; }
-  if ((await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${'premiere-fiche:' + c.case_id} and resultat in ('bloquee', 'erreur') and at > now() - ${RETENTE_H + ' hours'}::interval limit 1`).length) { ecarte(c.case_id, `déjà tentée il y a moins de ${RETENTE_H} h`); continue; }
+  if (!SANS_DELAI && (await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${'premiere-fiche:' + c.case_id} and resultat in ('bloquee', 'erreur') and at > now() - ${RETENTE_H + ' hours'}::interval limit 1`).length) { ecarte(c.case_id, `déjà tentée il y a moins de ${RETENTE_H} h`); continue; }
   retenues.push({ case_id: c.case_id, type: c.type, restant: FENETRE_SOURCE_JOURS - age });
 }
 retenues.sort((a, b) => a.restant - b.restant); // la fenêtre qui se referme le plus tôt d'abord
@@ -86,9 +87,11 @@ for (const r of retenues.slice(0, LIMITE)) {
   const cand = gen.ok ? dossierGeneree(r.case_id) : null;
   if (!cand?.proposable) {
     const q = cand?.generation?.qualification ?? (gen.ok ? 'ABSENTE' : 'ERREUR DE GÉNÉRATION');
-    console.log(`  ⚠ ${r.case_id} : fiche non proposable (${q})`);
-    await prevenirUneFois(sql, { cle: `premiere-fiche-bloquee:${r.case_id}`, resultat: 'bloquee', texte: `⚠️ <b>Première fiche non proposée</b> — ${r.case_id}\nLe relais social attend la fiche de cette nouveauté, mais la génération n’a pas abouti à une fiche publiable (${q}). Aucune publication ; la génération sera retentée dans ${RETENTE_H} h si de nouvelles sources apparaissent.` });
-    await note(r.case_id, 'bloquee', { qualification: q });
+    // Codes de blocage (liste fermée, sans texte d'article) : l'éditeur n'a pas à les chercher dans un fichier ignoré par Git.
+    const codes = (cand?.generation?.blocages || []).map((b) => b.code).filter((x) => /^[A-Z0-9_]{3,60}$/.test(String(x)));
+    console.log(`  ⚠ ${r.case_id} : fiche non proposable (${q}${codes.length ? ` : ${[...new Set(codes)].join(', ')}` : ''})${gen.ok ? '' : ' — erreur du générateur'}`);
+    await prevenirUneFois(sql, { cle: `premiere-fiche-bloquee:${r.case_id}`, resultat: 'bloquee', texte: `⚠️ <b>Première fiche non proposée</b> — ${r.case_id}\nLe relais social attend la fiche de cette nouveauté, mais la génération n’a pas abouti à une fiche publiable (${q}${codes.length ? ` : ${[...new Set(codes)].join(', ')}` : ''}). Aucune publication ; la génération sera retentée dans ${RETENTE_H} h si de nouvelles sources apparaissent.` });
+    await note(r.case_id, 'bloquee', { qualification: q, codes });
     continue;
   }
   const prop = exec('proposer-fiche.mjs', [r.case_id, '--generee', '--ecrire']);
