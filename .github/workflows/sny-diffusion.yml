@@ -1,6 +1,7 @@
 # SNY — opérations MANUELLES du relais social, mode REVIEW (Buffer → X / Facebook). AUCUNE de ces actions ne publie quoi que ce soit.
 #
 #   action = appliquer-migration  applique 025 + 026 (journal, T0 verrouillé, propositions, exclusions : additives, idempotentes)
+#   action = reconstituer        LECTURE SEULE : tout ce qui s'est passé depuis T0 (affaires, Discovery, revues, Maintenance, événements, Telegram, relais), sans passer par candidats()
 #   action = autotest-ecriture   exerce les requêtes d'écriture du relais sur une ligne jetable (supprimée) : ni Telegram, ni Buffer
 #   action = inventaire-buffer   LECTURE SEULE : posts SNY présents dans Buffer (X, Facebook) et posts en attente
 #   action = exclure-montpellier enregistre l'exclusion définitive des deux publications manuelles de FR-2026-0146
@@ -24,7 +25,7 @@ on:
         description: "appliquer-migration | verifier-connexion | sonder-api | plan | etat"
         required: true
         type: choice
-        options: [appliquer-migration, autotest-ecriture, inventaire-buffer, exclure-montpellier, controle-stock, initialiser-t0, verifier-connexion, sonder-api, plan, etat]
+        options: [reconstituer, appliquer-migration, autotest-ecriture, inventaire-buffer, exclure-montpellier, controle-stock, initialiser-t0, verifier-connexion, sonder-api, plan, etat]
       confirmation:
         description: "Pour initialiser-t0 uniquement : saisir GO-T0"
         required: false
@@ -68,6 +69,7 @@ jobs:
         run: |
           case "$ACTION" in
             appliquer-migration) node scripts/diffuser-social.mjs --appliquer-migration ;;
+            reconstituer)       node scripts/diffuser-social.mjs --reconstituer ;;
             autotest-ecriture)  node scripts/diffuser-social.mjs --autotest-ecriture ;;
             inventaire-buffer)  node scripts/diffuser-social.mjs --inventaire-buffer ;;
             exclure-montpellier) node scripts/diffuser-social.mjs --exclure-montpellier ;;
