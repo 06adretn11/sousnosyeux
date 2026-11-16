@@ -8,7 +8,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { dossierFiche } from '../lib/fiche-page.mjs';
+import { dossierFiche as dossierFicheVivant, hashDossier } from '../lib/fiche-page.mjs';
 import { ErreurBuffer } from '../lib/buffer.mjs';
 import { signatureTexte } from '../lib/diffusion-sociale.mjs';
 import { decoderCallback } from '../lib/telegram-clics.mjs';
@@ -23,6 +23,13 @@ const lire = (f) => JSON.parse(readFileSync(join(racine, f), 'utf8'));
 const wording = await import('../../web/src/lib/etat-wording.ts');
 const casesPubliques = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
 const ev = lire('data/evenements.json');
+// FR-2026-0146 sert de « nouvelle affaire » aux scénarios du relais. Son dossier VIVANT est un texte éditorial qui change (nouvelle version approuvée, phrases que le
+// garde-fou social refuse à bon droit : fonction unique de l'établissement). La mécanique du relais ne doit pas dépendre de ce texte : on la rejoue sur la version
+// approuvée FIGÉE (scripts/qa/fixtures/fiche-0146-8b38c2d4b2470bf8.json, empreinte recalculée à chaque exécution). Les autres affaires restent lues en direct.
+const FICHE_0146_FIGEE = lire('scripts/qa/fixtures/fiche-0146-8b38c2d4b2470bf8.json');
+const dossierFiche = (id) => (id === 'FR-2026-0146' ? { hub: FICHE_0146_FIGEE._meta.hub, d: FICHE_0146_FIGEE.dossier, verifie_le: FICHE_0146_FIGEE.dossier.verifie_le } : dossierFicheVivant(id));
+ev.fiches_approuvees = { ...(ev.fiches_approuvees ?? {}), 'FR-2026-0146': { ...(ev.fiches_approuvees?.['FR-2026-0146'] ?? {}), hash: hashDossier(FICHE_0146_FIGEE.dossier) } };
+if (hashDossier(FICHE_0146_FIGEE.dossier) !== FICHE_0146_FIGEE._meta.hash) { console.error('❌ fixture fiche-0146 altérée : empreinte ≠ _meta.hash'); process.exit(1); }
 const redirections = lire('data/redirections-affaires.json').redirections ?? {};
 const SITE = 'https://sousnosyeux.org';
 const H = 36e5;

@@ -40,11 +40,15 @@ const R = Object.fromEntries(banc.resultats.map((r) => [r.id, r]));
 // Adrien). Fiche approuvée = empreinte de evenements.json ÉGALE à celle du dossier servi ; sinon S13 doit rester bloqué.
 const D13 = dossierFiche('FR-2026-0146');
 const S13_APPROUVEE = !!(D13 && EV.fiches_approuvees?.['FR-2026-0146']?.hash && hashDossier(D13.d) === EV.fiches_approuvees['FR-2026-0146'].hash);
+// Une fiche approuvée n'est pas forcément diffusable en post : si sa première phrase d'état désigne une fonction unique de l'établissement (« le directeur de l'école… »),
+// le garde-fou social la refuse À BON DROIT (décision éditoriale de la page, pas une défaillance). S13 attend alors BLOQUE + ce motif, jamais CONFORME.
+const S13_GARDE = S13_APPROUVEE ? gardes(D13.d.etat_actuel?.[0] ?? '', cases.get('FR-2026-0146')).bloquants : [];
+const S13_COMPOSABLE = S13_APPROUVEE && S13_GARDE.length === 0;
 const attendu = {
   // V4.1 : S01 Facebook lie aussi Le Figaro (nommé par le fait, lu en partie) ⇒ revue humaine ; S13 (Montpellier) selon l'approbation réelle ; S14 identifiant retiré.
   S01: ['CONFORME', 'REVUE_HUMAINE'], S02: ['CONFORME', 'CONFORME'], S03: ['CONFORME', 'CONFORME'], S04: ['BLOQUE', 'CONFORME'], S05: ['BLOQUE', 'BLOQUE'], S06: ['BLOQUE', 'BLOQUE'],
   S07: ['BLOQUE', 'BLOQUE'], S08: ['BLOQUE', 'BLOQUE'], S09: ['BLOQUE', 'BLOQUE'], S10: ['BLOQUE', 'BLOQUE'], S11: ['BLOQUE', 'CONFORME'], S12: ['BLOQUE', 'BLOQUE'],
-  S13: S13_APPROUVEE ? ['CONFORME', 'CONFORME'] : ['BLOQUE', 'BLOQUE'], S14: ['BLOQUE', 'BLOQUE'],
+  S13: S13_COMPOSABLE ? ['CONFORME', 'CONFORME'] : ['BLOQUE', 'BLOQUE'], S14: ['BLOQUE', 'BLOQUE'],
 };
 for (const [id, [x, fb]] of Object.entries(attendu)) verifie(`${id} : X ${x} · Facebook ${fb}`, R[id]?.canaux.x.etat === x && R[id]?.canaux.facebook.etat === fb, `${R[id]?.canaux.x.etat} / ${R[id]?.canaux.facebook.etat}`);
 const publies = banc.resultats.flatMap((r) => ['x', 'facebook'].map((c) => ({ r, c, k: r.canaux[c] }))).filter(({ k }) => k.texte);
@@ -226,7 +230,8 @@ verifie('chaque post produit passe le contrôle de concordance média ↔ preuve
 const redir = lire('data/redirections-affaires.json').redirections;
 verifie('S13 : une seule carte publique pour l’école Goethe de Montpellier (FR-2026-0146), FR-2026-0147 absente', [...cases.values()].filter((c) => /goethe/i.test(c.etablissement) && c.commune === 'Montpellier').map((c) => c.case_id).join() === 'FR-2026-0146' && !cases.has('FR-2026-0147'));
 verifie('S13 : alias de l’ancien identifiant vers l’affaire conservée', redir['fr-2026-0147'] === 'fr-2026-0146');
-if (S13_APPROUVEE) verifie('S13 : fiche approuvée ⇒ composée avec l’empreinte APPROUVÉE, contrôles verts sur les deux réseaux', R.S13.fiche_approuvee === EV.fiches_approuvees['FR-2026-0146'].hash && ['x', 'facebook'].every((c) => R.S13.canaux[c].controles?.every((k) => k.ok)));
+if (S13_APPROUVEE && !S13_COMPOSABLE) verifie('S13 : fiche approuvée mais première phrase d’état à fonction unique ⇒ aucun post (X et Facebook bloqués, motif nommé) ; la page de fiche n’est pas concernée', R.S13.canaux.x.etat === 'BLOQUE' && R.S13.canaux.facebook.etat === 'BLOQUE' && /fonction unique/.test(R.S13.motifs.join(' ')), R.S13.motifs.join(' | '));
+else if (S13_COMPOSABLE) verifie('S13 : fiche approuvée ⇒ composée avec l’empreinte APPROUVÉE, contrôles verts sur les deux réseaux', R.S13.fiche_approuvee === EV.fiches_approuvees['FR-2026-0146'].hash && ['x', 'facebook'].every((c) => R.S13.canaux[c].controles?.every((k) => k.ok)));
 else verifie('S13 : aucune fiche approuvée ⇒ X et Facebook bloqués (pas de rédaction à partir des titres)', R.S13.canaux.x.etat === 'BLOQUE' && R.S13.canaux.facebook.etat === 'BLOQUE' && /aucune fiche approuvée/.test(R.S13.motifs.join(' ')));
 // Le GO Discovery (« valider et publier » la carte) n'est jamais une approbation de fiche ni un GO social : sans empreinte approuvée, le composeur refuse.
 { const M0 = matiereApprouvee({ entree: cases.get('FR-2026-0146'), dossier: D13, empreinteApprouvee: null, evenements: [], matiere: [], wording });
