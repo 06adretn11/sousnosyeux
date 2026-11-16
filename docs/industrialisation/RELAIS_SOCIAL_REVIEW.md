@@ -35,6 +35,16 @@ Le relais s'exécute à la fin de `sny-telegram` (après vérification du site, 
 Chaque proposition enregistre, par canal, l'empreinte sha256 de `affaire + événement + empreinte de la fiche approuvée + source + texte + URLs + canal`. Avant l'envoi, tout est recalculé depuis les données courantes : la moindre différence (fiche modifiée, texte différent, source changée, page plus servie, fiche retirée, source devenue trop ancienne) ⇒ **zéro publication**, résolution `obsolete` ou `bloque`, alerte Telegram. Le GO ne vaut que pour l'ensemble validé ; il ne s'étend ni à l'autre canal ni à une version ultérieure.
 Silence, expiration (48 h), bouton obsolète ou callback rejoué ⇒ rien. Un GO donné alors que le relais est désactivé n'est pas enregistré.
 
+### GO partiel et complément (16/11/2026)
+
+Un GO « X seul » (ou « Facebook seul ») ne ferme pas l'autre canal : la proposition est résolue pour le canal autorisé, l'autre reste sans décision. Quand la rédaction de ce canal est **retravaillée** (le texte recomposé diffère de tout ce qui a déjà été proposé pour lui), une proposition **complémentaire, limitée à ce canal**, part sur Telegram (« 🔁 Complément Facebook »). Mêmes contrôles qu'une proposition ordinaire (T0, fraîcheur de la source, fiche servie, exclusions, V4.1 + vérificateur). Clé : `<événement>#<canal>:<empreinte du texte>` ; le canal déjà publié n'est jamais republié. Un GO, un refus explicite ou un complément encore ouvert ferme la voie ; un texte inchangé n'est jamais reproposé.
+
+### Rédaction Facebook : attribution factorisée et sources multiples (16/11/2026)
+
+- Des phrases approuvées consécutives qui commencent par la même attribution (« Selon sweetfm, … ») sont regroupées dans un paragraphe ; seule la première porte l'attribution, les suivantes en sont la **fin exacte** (initiale en majuscule). Le vérificateur refuse toute suite qui n'est pas la fin exacte d'une phrase approuvée, ou qui ne suit pas, dans son paragraphe, une phrase portant la même attribution.
+- Une phrase approuvée d'**un autre média** peut s'ajouter (au plus une) si elle le nomme, rapporte les faits ou la procédure eux-mêmes (signalement, plainte, enquête, garde à vue, mise en examen) et provient d'un article contemporain de la source du fait (≤ 14 jours). Sa ligne « Source » est ajoutée ; rien n'est inventé quand le dossier n'a qu'une source.
+- X n'est pas modifié.
+
 ## 4. Périmètre éditorial
 
 - **Proposables** : nouvelle affaire factuelle ; évolution judiciaire substantielle non ambiguë (statut qui avance vers enquête / mise en examen / procès / condamnation).

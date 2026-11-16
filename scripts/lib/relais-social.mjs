@@ -26,6 +26,12 @@ export const VALIDITE_PROPOSITION_H = 48;
 const HEURE = 36e5;
 
 export const sha256 = (s) => createHash('sha256').update(s).digest('hex');
+/**
+ * GO PARTIEL → COMPLÉMENT. Un GO « X seul » (ou « Facebook seul ») laisse l'autre canal ouvert : si sa rédaction est ensuite retravaillée, une proposition COMPLÉMENTAIRE à ce seul
+ * canal est faite. Sa clé est `<clé de l'événement>#<canal>:<empreinte du texte>` : l'événement, lui, reste UN (exclusions, éligibilité, recontrôle partent de la clé de base).
+ */
+export const cleBase = (k) => String(k ?? '').split('#')[0];
+export const cleComplement = (base, canal, texte) => `${base}#${canal}:${sha256(String(texte ?? '').replace(/\s+/g, ' ').trim()).slice(0, 8)}`;
 /** Dépôt PUBLIC ⇒ journaux publics : un motif de blocage peut citer un extrait de texte ou une adresse (« valeur », URL) ; on n'en garde que la nature, abrégée. */
 export const motifsPublics = (m) => String(m ?? '').replace(/«[^»]*»/g, '«…»').replace(/https?:\/\/\S+/g, '<url>').slice(0, 220);
 /** Empreinte d'un texte publié, insensible aux espaces (Buffer normalise parfois les sauts de ligne) : sert aux exclusions. */
@@ -211,9 +217,12 @@ export function messageProposition({ id8, c, comp, ident, expire_at, site, now }
   const fb = ident.canaux.facebook, x = ident.canaux.x;
   const src = (fb ?? x).source;
   const age = ageJours(src.publie_le, now);
-  const evenement = c.type === 'new_case' ? 'Nouvelle affaire' : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`;
-  const reserves = [...new Set([...(comp.canaux.facebook?.reserves ?? []), ...(comp.canaux.x?.reserves ?? [])])];
-  const bloques = CANAUX_RELAIS.filter((k) => !comp.canaux[k]?.ok).map((k) => `${k === 'x' ? 'X' : 'Facebook'} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
+  const complement = ident.complement?.canal ?? null; // GO partiel : seule la rédaction de CE canal est proposée
+  const concernes = complement ? [complement] : CANAUX_RELAIS;
+  const evenement = (complement ? `🔁 <b>Complément ${complement === 'x' ? 'X' : 'Facebook'}</b> — l’autre canal a déjà reçu son GO ; seule la rédaction de celui-ci a été retravaillée\n` : '')
+    + (c.type === 'new_case' ? 'Nouvelle affaire' : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
+  const reserves = [...new Set((complement ? [complement] : ['facebook', 'x']).flatMap((k) => comp.canaux[k]?.reserves ?? []))];
+  const bloques = concernes.filter((k) => !comp.canaux[k]?.ok).map((k) => `${k === 'x' ? 'X' : 'Facebook'} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
   let t = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`
     + `Source : ${esc(src.media)}, ${jourFr(src.publie_le)}${age != null ? ` (il y a ${Math.max(0, Math.floor(age))} j)` : ''} — ${esc(src.url)}\n`
     + `Fiche SNY : ${site}/affaires/${esc(c.case_id.toLowerCase())}/\n`
@@ -269,7 +278,7 @@ export async function enregistrerDecision({ port, action, cle, now, actif }) {
  */
 export async function proposerNouveautes(deps) {
   const { port, compo, activation, holds, canauxConfigures, envoyer, log, ecrire } = deps;
-  const bilan = { candidats: 0, proposees: 0, bloquees: 0, envoyees: 0 };
+  const bilan = { candidats: 0, proposees: 0, bloquees: 0, envoyees: 0, complements: 0 };
   if (!activation.actif) { log(`relais social inactif : ${activation.raisons.join(' ; ')}`); return bilan; }
   const now = compo.now;
   const candidats = await port.candidats(activation.t0);
@@ -280,6 +289,7 @@ export async function proposerNouveautes(deps) {
     // Proposition déjà créée : on ne la recrée jamais ; on ne fait qu'envoyer le message si l'envoi n'a pas eu lieu (reprise après panne).
     if (prop) {
       if (ecrire && !prop.decision && prop.telegram_message_id == null && new Date(prop.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop, deps, c }) ? 1 : 0;
+      else if (ecrire && ['GO_X', 'GO_F'].includes(prop.decision)) bilan.complements += await proposerComplements({ c, base: prop, deps });
       continue;
     }
     const exclus = await port.exclusionsDe(c.event_key);
@@ -305,8 +315,52 @@ export async function proposerNouveautes(deps) {
     bilan.proposees++;
     bilan.envoyees += await envoyerProposition({ prop: cree, deps, c, comp, ident }) ? 1 : 0;
   }
-  log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)`);
+  log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)${bilan.complements ? `, ${bilan.complements} complément(s) envoyé(s)` : ''}`);
   return bilan;
+}
+
+/**
+ * GO PARTIEL : le canal laissé sans GO reste ouvert. Une proposition COMPLÉMENTAIRE à ce seul canal est faite quand — et seulement quand — sa rédaction a CHANGÉ depuis
+ * tout ce qui a déjà été proposé pour ce canal (le même texte n'est jamais reproposé). Mêmes contrôles qu'une proposition ordinaire (T0, fraîcheur, fiche servie, exclusions,
+ * V4.1 + vérificateur). Un GO, un refus, ou une proposition complémentaire encore ouverte sur ce canal ferme la voie. Retourne le nombre de messages envoyés.
+ */
+async function proposerComplements({ c, base, deps }) {
+  const { port, compo, activation, holds, canauxConfigures, log } = deps;
+  const now = compo.now;
+  const restants = (base.canaux_proposes || []).filter((k) => CANAUX_RELAIS.includes(k) && !(base.canaux_autorises || []).includes(k));
+  if (!restants.length) return 0;
+  const toutes = await port.propositionsDeEvenement(base.event_key);
+  let envoyes = 0;
+  for (const k of restants) {
+    const duCanal = toutes.filter((p) => p.event_key !== base.event_key && (p.canaux_proposes || []).includes(k));
+    if (duCanal.some((p) => (p.canaux_autorises || []).includes(k) || p.decision === 'REFUS')) continue; // canal déjà décidé (GO ou refus explicite)
+    const ouverte = duCanal.find((p) => !p.decision && new Date(p.expire_at) > now);
+    if (ouverte) { // un complément attend déjà un clic : on ne fait que renvoyer son message s'il n'est pas parti
+      if (ouverte.telegram_message_id == null) envoyes += await envoyerProposition({ prop: ouverte, deps, c: { ...c, event_key: ouverte.event_key } }) ? 1 : 0;
+      continue;
+    }
+    const cc = { ...c, event_key: base.event_key };
+    const exclus = await port.exclusionsDe(base.event_key);
+    const v = evaluerCandidat(cc, { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
+      servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false, exclusions: exclus });
+    if (!v.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics(v.raisons.join(' ; '))}`); continue; }
+    const comp = composerEvenement(cc, compo);
+    const canal = comp.canaux[k];
+    if (!canal?.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics((canal?.motifs || []).join(' ; '))}`); continue; }
+    if (exclus.has(k) || !canauxConfigures.includes(k) || await port.empreinteTexteExclue(k, empreinteTexte(canal.texte))) { log(`· complément ${c.case_id} [${k}] : SILENCE — canal exclu ou non configuré`); continue; }
+    const deja = new Set([base, ...duCanal].map((p) => (k === 'x' ? p.texte_x : p.texte_facebook)).filter(Boolean).map(empreinteTexte));
+    if (deja.has(empreinteTexte(canal.texte))) continue; // rédaction inchangée : rien de nouveau à proposer (le GO partiel vaut décision sur ce texte)
+    const cle = cleComplement(base.event_key, k, canal.texte);
+    const ident = identiteDe({ ...c, event_key: cle }, comp);
+    ident.canaux = { [k]: ident.canaux[k] };
+    ident.complement = { de: base.event_key, canal: k };
+    log(`· complément ${c.case_id} [${k}] : rédaction retravaillée ⇒ nouvelle proposition (ce canal seul)`);
+    const cree = await port.creerProposition({ event_key: cle, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: k === 'x' ? canal.texte : null, texte_facebook: k === 'facebook' ? canal.texte : null,
+      canaux_proposes: [k], empreinte_x: k === 'x' ? ident.canaux[k].empreinte : null, empreinte_facebook: k === 'facebook' ? ident.canaux[k].empreinte : null, expire_at: new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE) });
+    if (!cree) continue;
+    envoyes += await envoyerProposition({ prop: cree, deps, c: { ...c, event_key: cle }, comp, ident }) ? 1 : 0;
+  }
+  return envoyes;
 }
 
 async function envoyerProposition({ prop, deps, c, comp = null, ident = null }) {
@@ -355,17 +409,17 @@ export async function publierDecisions(deps) {
     let bloque = null;
     if (aCreer.length) {
       // Recontrôle COMPLET : même événement, mêmes horodatages, page servie, source récente, composition et empreinte identiques.
-      const c = candidats.find((x) => (x.type === 'new_case' ? cleEvenement('new_case', x.case_id) : cleEvenement('case_update', x.case_id, x.statut_apres)) === p.event_key);
+      const c = candidats.find((x) => (x.type === 'new_case' ? cleEvenement('new_case', x.case_id) : cleEvenement('case_update', x.case_id, x.statut_apres)) === cleBase(p.event_key));
       if (!c) bloque = 'obsolete: événement introuvable ou modifié depuis la proposition';
       else {
-        c.event_key = p.event_key;
+        c.event_key = p.event_key; // clé de la PROPOSITION (celle d'un complément porte son suffixe : elle entre dans l'empreinte)
         const v = evaluerCandidat(c, { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
-          servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false, exclusions: await port.exclusionsDe(p.event_key) });
+          servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false, exclusions: await port.exclusionsDe(cleBase(p.event_key)) });
         if (!v.ok) bloque = `bloque: ${v.raisons.join(' ; ')}`;
         else {
           const comp = composerEvenement(c, compo);
           const ident = identiteDe(c, comp);
-          const exclus = await port.exclusionsDe(p.event_key);
+          const exclus = await port.exclusionsDe(cleBase(p.event_key));
           for (const k of aCreer) {
             if (exclus.has(k)) bloque = `bloque: publication déjà faite hors circuit sur ${k}`;
             else if (!canauxConfigures.includes(k) || !channelIds[k]) bloque = `bloque: canal ${k} non configuré`;

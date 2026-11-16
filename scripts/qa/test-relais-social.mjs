@@ -65,6 +65,7 @@ function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, fich
     t0: async () => w.t0Row,
     candidats: async (t0) => w.candidats.filter((c) => !c.apresSql || true).map((c) => ({ ...c, ps: w.ps[c.case_id] ?? c.ps, retire: !!(w.retire[c.case_id] ?? c.retire) })),
     propositionParEvenement: async (k) => clone(w.props.find((p) => p.event_key === k)) ?? null,
+    propositionsDeEvenement: async (k) => w.props.filter((p) => p.event_key === k || p.event_key.startsWith(`${k}#`)).map(clone),
     propositionParCle: async (cle) => { const r = w.props.filter((p) => p.proposal_id.startsWith(cle)); return r.length === 1 ? clone(r[0]) : null; },
     creerProposition: async (p) => { if (w.props.some((x) => x.event_key === p.event_key)) return null; const row = { ...clone(p), proposal_id: sha256(p.event_key).slice(0, 8) + '-0000-4000-8000-000000000000', decision: null, canaux_autorises: null, resolution: null, telegram_message_id: null, notif_programme_at: null, notif_publie_at: null, created_at: new Date() }; w.props.push(row); return clone(row); },
     reclamerEnvoi: async (id) => { const p = parId(id); if (p && p.telegram_message_id == null && !p.decision) { p.telegram_message_id = -1; return true; } return false; },
@@ -334,6 +335,78 @@ async function aveGo(action, { pre = null, post = null, ficheHashServi = undefin
   const r4 = await enregistrerDecision({ port: w4.port, action: 'XF', cle: cleDe(w4), now, actif: false });
   verifie('clic GO pendant le coupe-circuit → non enregistré', r4.issue === 'inactif' && !w4.props[0].decision);
   verifie('clé inconnue / forme invalide → rien', (await enregistrerDecision({ port: w4.port, action: 'XF', cle: 'deadbeef', now, actif: true })).issue === 'introuvable' && (await enregistrerDecision({ port: w4.port, action: 'ZZ', cle: 'deadbeef', now, actif: true })).issue === 'bouton_invalide');
+}
+
+// =====================================================================
+console.log('\nD2. GO partiel : le canal laissé sans GO reste ouvert, une rédaction retravaillée est reproposée à ce seul canal');
+// =====================================================================
+{
+  const now = NOUVELLE.now, t0 = T0_DEFAUT(now);
+  const apres = (min) => new Date(now.getTime() + min * 6e4);
+  // Rédaction retravaillée (simulée) : le libellé de l'établissement change, donc le texte Facebook ; le dossier approuvé, lui, est inchangé.
+  const retravaille = (compo) => { const e = casesPubliques.get(NOUVELLE.id); compo.cases = new Map(casesPubliques); compo.cases.set(NOUVELLE.id, { ...e, etablissement: `${e.etablissement} (rédaction retravaillée)` }); };
+  const depart = async (action) => {
+    const w = monde({ t0, candidats: [candNouvelle(t0)] });
+    await executerCycle(deps(w, now));
+    await enregistrerDecision({ port: w.port, action, cle: cleDe(w), now: apres(10), actif: true });
+    await executerCycle(deps(w, apres(15)));
+    return w;
+  };
+  // 1. GO X seul puis cycles à rédaction inchangée : rien de nouveau (le GO partiel vaut décision sur ce texte)
+  let w = await depart('X');
+  for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(15 + i)));
+  verifie('GO X seul, rédaction Facebook inchangée → aucune proposition complémentaire, un seul message', w.props.length === 1 && propositions(w).length === 1 && w.creations() === 1);
+  // 2. rédaction retravaillée → UNE proposition Facebook seul
+  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  const comp = w.props.find((p) => p.event_key.includes('#'));
+  verifie('rédaction Facebook retravaillée → UNE proposition complémentaire, limitée à Facebook', w.props.length === 2 && comp?.canaux_proposes.join() === 'facebook' && comp.texte_x === null && comp.texte_facebook && comp.texte_facebook !== w.props[0].texte_facebook, JSON.stringify(w.props.map((p) => [p.event_key, p.canaux_proposes])));
+  verifie('la clé du complément garde la clé de l’événement (exclusions et recontrôle partent de la base)', comp.event_key.startsWith(`${w.props[0].event_key}#facebook:`));
+  const msg = propositions(w)[1];
+  const bt = msg?.markup.inline_keyboard.flat().map((b) => b.callback_data) ?? [];
+  verifie('message Telegram du complément : texte Facebook intégral, mention « Complément Facebook », seuls « GO Facebook seul » et « Refuser » proposés', !!msg && /Complément Facebook/.test(msg.texte) && !/<b>X<\/b>/.test(msg.texte) && bt.length === 2 && bt.some((d) => /:SG:F:/.test(d)) && bt.some((d) => /:SG:R:/.test(d)), JSON.stringify(bt));
+  verifie('aucun envoi Buffer tant que le complément n’a pas son GO', w.creations() === 1);
+  for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(30 + i), { compoMod: retravaille }));
+  verifie('cycles répétés : le complément n’est ni recréé ni renvoyé', w.props.length === 2 && propositions(w).length === 2);
+  // 3. GO Facebook sur le complément → UN post Facebook, texte retravaillé exact ; X n'est jamais republié
+  const idc = comp.proposal_id.slice(0, 8);
+  const rc = await enregistrerDecision({ port: w.port, action: 'F', cle: idc, now: apres(40), actif: true });
+  await executerCycle(deps(w, apres(45), { compoMod: retravaille }));
+  const fb = w.posts.filter((p) => p.channelId === 'chF'), xs = w.posts.filter((p) => p.channelId === 'chX');
+  verifie('GO sur le complément → UN post Facebook, EXACTEMENT le texte retravaillé proposé ; X inchangé (un seul post)', rc.issue === 'enregistree' && fb.length === 1 && fb[0].text === comp.texte_facebook && xs.length === 1 && w.creations() === 2, JSON.stringify([rc.issue, fb.length, xs.length]));
+  verifie('journal : X sous la clé de l’événement, Facebook sous celle du complément ; les deux propositions résolues « publie »', w.ledger.length === 2 && w.ledger.some((l) => l.canal === 'x' && l.event_key === w.props[0].event_key) && w.ledger.some((l) => l.canal === 'facebook' && l.event_key === comp.event_key) && w.props.every((p) => p.resolution === 'publie'));
+  const avant = w.props.length; for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(45 + i), { compoMod: retravaille }));
+  verifie('après publication : plus aucune proposition, aucun post de plus', w.props.length === avant && w.creations() === 2);
+  // 4. refus du complément : la voie se ferme, même si la rédaction change encore
+  w = await depart('X');
+  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  const c4 = w.props.find((p) => p.event_key.includes('#'));
+  await enregistrerDecision({ port: w.port, action: 'R', cle: c4.proposal_id.slice(0, 8), now: apres(40), actif: true });
+  const retravaille2 = (compo) => { const e = casesPubliques.get(NOUVELLE.id); compo.cases = new Map(casesPubliques); compo.cases.set(NOUVELLE.id, { ...e, etablissement: `${e.etablissement} (encore retravaillée)` }); };
+  await executerCycle(deps(w, apres(50), { compoMod: retravaille2 }));
+  verifie('refus du complément → aucun post Facebook, aucune nouvelle proposition (le refus explicite ferme le canal)', w.props.length === 2 && w.creations() === 1 && w.props.every((p) => p.event_key.includes('#') ? p.decision === 'REFUS' : true));
+  // 5. GO X + Facebook : aucun canal ouvert, aucun complément
+  w = await depart('XF');
+  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  verifie('GO X + Facebook → aucun complément même si la rédaction change', w.props.length === 1 && w.creations() === 2);
+  // 6. refus de la proposition de base : pas de complément
+  const w6 = monde({ t0, candidats: [candNouvelle(t0)] });
+  await executerCycle(deps(w6, now)); await enregistrerDecision({ port: w6.port, action: 'R', cle: cleDe(w6), now: apres(10), actif: true });
+  await executerCycle(deps(w6, apres(30), { compoMod: retravaille }));
+  verifie('refus de la proposition de base → aucun complément', w6.props.length === 1 && w6.creations() === 0);
+  // 7. GO sur le complément puis rédaction changée avant l'envoi : GO périmé, rien ne part (identité)
+  w = await depart('X');
+  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  const c7 = w.props.find((p) => p.event_key.includes('#'));
+  await enregistrerDecision({ port: w.port, action: 'F', cle: c7.proposal_id.slice(0, 8), now: apres(40), actif: true });
+  await executerCycle(deps(w, apres(45), { compoMod: retravaille2 }));
+  verifie('GO donné sur une rédaction, puis rédaction modifiée avant l’envoi → GO périmé, zéro post Facebook, alerte', w.creations() === 1 && /^obsolete/.test(w.props.find((p) => p.proposal_id === c7.proposal_id).resolution ?? '') && w.telegram.some((m) => m.alerte && /GO social non exécuté/.test(m.alerte)), JSON.stringify(w.props.map((p) => p.resolution)));
+  // 8. exclusion définitive de la base (publication manuelle antérieure) : s'applique aussi au complément
+  w = monde({ t0, candidats: [candNouvelle(t0)], exclusions: [] });
+  await executerCycle(deps(w, now)); await enregistrerDecision({ port: w.port, action: 'X', cle: cleDe(w), now: apres(10), actif: true });
+  await executerCycle(deps(w, apres(15)));
+  w.exclusions.add(`${w.props[0].event_key}|facebook`);
+  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  verifie('canal Facebook exclu (publié hors circuit) → aucun complément', w.props.length === 1);
 }
 
 // =====================================================================

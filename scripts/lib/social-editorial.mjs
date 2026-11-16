@@ -21,6 +21,8 @@ export const FAMILLES = Object.freeze(['nouvelle_affaire', 'evolution', 'declara
 // Au-delà, le contexte facultatif est retiré (jamais coupé).
 const LIMITE_FB_LISIBLE = 1400;
 const MAX_CONTEXTE_FB = 2;
+// Crédibilité : en plus du contexte tiré du média du fait, UNE phrase approuvée d'un AUTRE média (déjà rattaché à l'affaire, lu par SNY) quand il en existe une.
+const MAX_CONTEXTE_AUTRE_MEDIA = 1;
 
 export const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -189,6 +191,34 @@ export function sourceALier(candidates) {
 const seg = (gabarit, champs, role, preuve = null) => ({ gabarit, champs, role, preuve, texte: GABARITS[gabarit].replace(/\{(\w+)\}/g, (_, k) => String(champs[k]?.valeur ?? '')) });
 const champ = (valeur, origine) => ({ valeur, origine });
 const phrase = (texte, origine, role, preuve) => seg('phrase', { phrase: champ(texte, origine) }, role, preuve);
+
+/**
+ * ATTRIBUTION FACTORISÉE (Facebook) : quand des phrases approuvées consécutives commencent par la MÊME attribution (« Selon sweetfm, … »), seule la première la
+ * porte ; les suivantes, rattachées au même paragraphe, perdent ce début EXACT (« Selon sweetfm, ») et leur initiale passe en majuscule. Rien d'autre n'est modifié :
+ * la phrase restante est la fin exacte de la phrase approuvée. Le contrôleur (`verifierPost`) refuse toute suite dont le début attribué ne figure pas plus haut dans le paragraphe.
+ */
+export function decomposerAttribution(t) {
+  const m = /^(Selon [^,]{2,80}), (\p{Ll}[\s\S]*)$/u.exec(String(t ?? ''));
+  return m ? { prefixe: m[1], suite: m[2][0].toUpperCase() + m[2].slice(1) } : null;
+}
+export function factoriserAttribution(paras) {
+  const out = []; let cur = null, pref = null;
+  for (const p of paras) {
+    if (!p.length || !p.every((s) => s.gabarit === 'phrase' && ['fait', 'contexte'].includes(s.role))) { out.push(p); cur = null; pref = null; continue; }
+    let neuf = null;
+    for (const s of p) {
+      const dec = String(s.champs?.phrase?.origine || '').startsWith('extrait:') ? null : decomposerAttribution(s.texte);
+      const cle = dec ? plat(dec.prefixe) : null;
+      if (dec && cur && pref === cle) {
+        cur.push(seg('phrase', { phrase: champ(dec.suite, `suite:${s.champs.phrase.origine}`) }, s.role, s.preuve));
+        continue;
+      }
+      if (!neuf) { neuf = []; out.push(neuf); }
+      neuf.push(s); cur = neuf; pref = cle;
+    }
+  }
+  return out;
+}
 
 /** Rend un post : paragraphes (séparés par une ligne vide), segments d'un paragraphe séparés par une espace. */
 export const rendre = (paragraphes) => paragraphes.filter((p) => p.length).map((p) => p.map((s) => s.texte).join(' ')).join('\n\n');
@@ -508,6 +538,7 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
   // attribution, à source rattachée d'accès constaté, n'apportant pas un doublon de fond (recouvrement < 1/2), et désignant la fonction si une procédure sœur existe.
   const dits = [...principal.map((p) => p.texte ?? p.citation), situationDecl?.texte ?? '', ...contexte.map((c) => c.texte)].filter(Boolean);
   const choisis = [];
+  const mediasFait = new Set(sourcesFait.map((x) => plat(x.media)));
   if (d && ['nouvelle_affaire', 'evolution'].includes(scenario.famille)) {
     const cands = [];
     // Évolution : d'abord les autres passages du MÊME article sur le MÊME jour (rattachement documentaire le plus fort : ils parlent de la décision annoncée).
@@ -518,13 +549,16 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
     const RANG_ETAPE = { enquete: 1, garde_a_vue: 1, mise_en_examen: 2, renvoi: 3, audience: 3, decision: 4, appel: 5 };
     const RANG_STATUT = { 'enquête': 1, 'mise en examen': 2, 'procès': 3, 'condamnation non définitive': 4, 'condamnation définitive': 4 };
     const depassee = (x) => RANG_ETAPE[x.type] != null && RANG_STATUT[statutQ] != null && RANG_ETAPE[x.type] < RANG_STATUT[statutQ];
-    for (const [i, x] of (d.deroule || []).entries()) if (!depassee(x)) cands.push({ texte: x.texte, origine: `dossier.deroule[${i}]` });
+    for (const [i, x] of (d.deroule || []).entries()) if (!depassee(x)) cands.push({ texte: x.texte, origine: `dossier.deroule[${i}]`, etape: x.type });
     // Passages de l'article de l'événement d'abord (ordre du dossier) ; ensuite le plus NOUVEAU (moindre recouvrement avec ce qui est déjà dit).
     // Défaut V4.1 : trier aussi l'article de l'événement par nouveauté faisait passer d'anciennes mesures disciplinaires avant la suite immédiate (S03).
-    const nouveaute = (c) => (c.memeArticle ? -1 : recouvrement(c.texte, dits));
+    // Crédibilité : la phrase d'un AUTRE média qui rapporte les faits eux-mêmes (signalement, enquête, plainte, garde à vue…) passe avant une mesure annexe (cellule d'écoute, courrier aux parents).
+    const CORROBORE = new Set(['signalement', 'plainte', 'enquete', 'garde_a_vue', 'mise_en_examen']);
+    const autreMedia = (c) => { const n = sourcesNommees(c.texte, M.sources); return n.length > 0 && !n.some((s) => mediasFait.has(plat(s.media))); };
+    const nouveaute = (c) => (c.memeArticle ? -1 : recouvrement(c.texte, dits) - (autreMedia(c) && CORROBORE.has(c.etape) ? 10 : 0));
     const ordonnes = cands.map((c, i) => ({ c, i, n: nouveaute(c) })).sort((a, b) => a.n - b.n || a.i - b.i).map((x) => x.c);
     for (const c0 of ordonnes) {
-      if (choisis.length >= MAX_CONTEXTE_FB) break;
+      if (choisis.filter((x) => !x.autre).length >= MAX_CONTEXTE_FB && choisis.filter((x) => x.autre).length >= MAX_CONTEXTE_AUTRE_MEDIA) break;
       const em = sansRegistreEmotionnel(c0.texte);
       if (!em) continue;
       // Les sources se lisent sur la phrase approuvée ENTIÈRE (étape du dossier) ; le texte publié peut en être le début exact (D3).
@@ -550,8 +584,17 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
       const nommes = sourcesNommees(t, new Map(lisibles.map((s) => [s.url, s])));
       const src = sourceALier(nommes.length ? nommes : lisibles);
       if (!src) continue;
-      choisis.push({ ...c, src });
+      const autre = !mediasFait.has(plat(src.media));
+      // Un autre média ne crédibilise que s'il (1) est NOMMÉ par sa phrase (« Selon Actu.fr, … » : le lecteur voit qui rapporte quoi), (2) rapporte les faits ou la procédure eux-mêmes
+      // (CORROBORE : pas une mesure annexe), (3) est contemporain de la source du fait (≤ 14 jours : jamais un vieil article sans rapport de date avec l'étape annoncée).
+      if (autre) {
+        const ecart = srcLien?.publie_le && src.publie_le ? Math.abs(Date.parse(`${String(srcLien.publie_le).slice(0, 10)}T00:00:00Z`) - Date.parse(`${String(src.publie_le).slice(0, 10)}T00:00:00Z`)) / 864e5 : null;
+        if (!nommes.length || !CORROBORE.has(c.etape) || ecart === null || ecart > 14) continue;
+      }
+      if (choisis.filter((x) => !!x.autre === autre).length >= (autre ? MAX_CONTEXTE_AUTRE_MEDIA : MAX_CONTEXTE_FB)) continue;
+      choisis.push({ ...c, src, autre });
     }
+    choisis.sort((a, b) => (a.autre ? 1 : 0) - (b.autre ? 1 : 0)); // lecture : le média du fait d'abord (un bloc), l'autre média ensuite
   }
 
   // RÉSERVES — une par THÈME (présomption, caractère définitif, prise de parole, confirmation). V4 : la réserve de la fiche n'est préférée que si elle dit
@@ -589,7 +632,7 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
     }
     return l;
   };
-  const assembler = () => [...fbBase, ...fbCtx.map((x) => [x]), [...fbReserves], ...sourcesFb(), [seg('suivi_fb', { lien: champ(lien('facebook'), 'lien') }, 'renvoi')]];
+  const assembler = () => [...factoriserAttribution([...fbBase, ...fbCtx.map((x) => [x])]), [...fbReserves], ...sourcesFb(), [seg('suivi_fb', { lien: champ(lien('facebook'), 'lien') }, 'renvoi')]];
   let fbParas = assembler();
   while (longueurX(rendre(fbParas)) > LIMITE_FB_LISIBLE && fbCtx.length > garde) { fbCtx = fbCtx.slice(0, -1); fbParas = assembler(); }
   // V4.1 : CHAQUE article lié est contrôlé (pas seulement le premier) — un article lu en partie reste lié s'il est nommé, mais part en revue humaine.
@@ -686,8 +729,20 @@ export function verifierPost(post, canal, M, site, redirections = {}) {
   const admis = (k, v) => autorise.has(String(v.valeur)) || (String(v.origine || '').startsWith('extrait:') && (k === 'qualif'
     ? approuvees.some((t) => t.includes(String(v.valeur)))
     : k === 'phrase' && sansPointFinal(String(v.valeur)).length >= 40 && approuvees.some((t) => phrasesDe(t).some((p) => p.startsWith(sansPointFinal(String(v.valeur)) + ' ')))));
-  const hors = segs.flatMap((s) => Object.entries(s.champs).filter(([k, v]) => !admis(k, v)).map(([k, v]) => `${s.gabarit}.${k} = « ${String(v.valeur).slice(0, 60)} »`));
+  const estSuite = (k, v) => k === 'phrase' && String(v.origine || '').startsWith('suite:');
+  const admisSuite = (v) => approuvees.some((t) => decomposerAttribution(t)?.suite === String(v.valeur));
+  const admisVal = (k, v) => admis(k, v) || (estSuite(k, v) && admisSuite(v));
+  const hors = segs.flatMap((s) => Object.entries(s.champs).filter(([k, v]) => !admisVal(k, v)).map(([k, v]) => `${s.gabarit}.${k} = « ${String(v.valeur).slice(0, 60)} »`));
   ok('100 % des valeurs proviennent de la matière approuvée de CETTE affaire (extraits : sous-chaîne exacte d’une phrase approuvée)', !hors.length, hors.join(' | '));
+  // Attribution factorisée : une phrase sans « Selon X » n'est admise que si elle est la fin exacte d'une phrase approuvée qui commence par « Selon X, » ET si une phrase
+  // plus haut DANS LE MÊME PARAGRAPHE porte cette même attribution (sinon un fait se retrouverait sans source nommée).
+  const orphelines = post.paragraphes.flatMap((para) => para.flatMap((s, i) => {
+    if (!estSuite('phrase', s.champs.phrase ?? {})) return [];
+    const t = approuvees.find((x) => decomposerAttribution(x)?.suite === s.texte);
+    const pref = t ? decomposerAttribution(t).prefixe : null;
+    return pref && para.slice(0, i).some((q) => String(q.texte).startsWith(`${pref}, `)) ? [] : [`« ${s.texte.slice(0, 50)}… »`];
+  }));
+  ok('attribution factorisée : chaque phrase sans « Selon X » suit, dans le même paragraphe, une phrase qui l’attribue à X', !orphelines.length, orphelines.join(' | '));
   const g = gardes(post.texte.replace(/https?:\/\/\S+/g, ''), M.entree);
   ok('gardes de sécurité des personnes (texte final)', !g.bloquants.length, g.bloquants.join(', '));
   const urls = post.texte.match(/https?:\/\/\S+/g) || [];

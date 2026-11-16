@@ -68,6 +68,8 @@ export function portNeon(sql) {
     },
 
     async propositionParEvenement(k) { return prop((await sql`select * from relais_social_propositions where event_key = ${k}`)[0]); },
+    /** La proposition de base d'un événement ET ses compléments (clé `<base>#<canal>:<empreinte>`), de la plus ancienne à la plus récente. */
+    async propositionsDeEvenement(k) { return (await sql`select * from relais_social_propositions where event_key = ${k} or starts_with(event_key, ${k + '#'}) order by created_at, event_key`).map(prop); },
     async propositionParCle(cle) { const r = await sql`select * from relais_social_propositions where proposal_id::text like ${cle + '%'}`; return r.length === 1 ? prop(r[0]) : null; },
     async creerProposition(p) {
       const r = await sql`insert into relais_social_propositions (event_key, case_id, type_event, identite, texte_x, texte_facebook, canaux_proposes, empreinte_x, empreinte_facebook, expire_at)
