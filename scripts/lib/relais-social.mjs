@@ -19,7 +19,9 @@ import { matiereApprouvee, composerPilote, verifierPost, longueurX } from './soc
 import { cleEvenement, evolutionSignificative, ageJours, FENETRE_SOURCE_JOURS, STATUTS_DIFFUSABLES, lienDiffusion } from './diffusion-sociale.mjs';
 import { diffuserCanal } from './diffusion-flux.mjs';
 
-export const CANAUX_RELAIS = Object.freeze(['x', 'facebook']); // JAMAIS Instagram
+// X et Facebook : propositions jumelées. Instagram a SA proposition indépendante (scripts/lib/relais-instagram.mjs) : il n'entre jamais dans cette liste, donc jamais dans
+// les GO, empreintes, textes ni boutons X / Facebook.
+export const CANAUX_RELAIS = Object.freeze(['x', 'facebook']);
 export const MODE_REVIEW = 'review';
 export const T0_PLANCHER = '2026-11-13T00:00:00Z';              // aucune mise en service ne peut être antérieure à la mission
 export const VALIDITE_PROPOSITION_H = 48;
@@ -58,7 +60,10 @@ export function decouperInstructions(texte) {
   return out;
 }
 /** Une migration additive ne contient ni DROP, ni TRUNCATE, ni DELETE FROM, ni UPDATE, ni ALTER … DROP en tête d'instruction. */
-export const instructionDestructrice = (ins) => /^\s*(drop\b|truncate\b|delete\s+from\b|update\b|alter\s+table\s+\S+\s+drop\b)/i.test(ins);
+export const instructionDestructrice = (ins) => /^\s*(drop\b|truncate\b|delete\s+from\b|update\b|alter\s+table\s+\S+\s+drop\b)/i.test(ins) && !CONTRAINTE_ELARGIE.test(ins);
+// SEULE exception, nominative : lever la contrainte CHECK qu'une migration additive ÉLARGIT aussitôt (027 : décision « GO_I », ligne de configuration n° 2). Une contrainte CHECK ne porte
+// aucune donnée ; nulle autre instruction « alter table … drop » n'est tolérée.
+const CONTRAINTE_ELARGIE = /^\s*alter\s+table\s+relais_social_(?:propositions|config)\s+drop\s+constraint\s+if\s+exists\s+relais_social_(?:propositions_decision|config_id)_check\s*$/i;
 
 // ---------------------------------------------------------------------
 // ACTIVATION : coupe-circuit, T0 verrouillé en base, témoin de configuration. Tout doute ⇒ inactif (échec fermé).
@@ -190,7 +195,7 @@ export function composerEvenement(c, compo) {
     canaux[canal] = { ok: false, motifs: [...new Set(motifs)] };
   }
   const lienSny = (canal) => lienDiffusion({ site: compo.site, case_id: c.case_id, type: c.type, statut: evt?.statut ?? c.statut_apres ?? null, canal, fiche: !!M.empreinte });
-  return { famille, M, canaux, evt, entree, fiche_hash: M.empreinte, lien: { x: lienSny('x'), facebook: lienSny('facebook') } };
+  return { famille, M, canaux, evt, entree, fiche_hash: M.empreinte, lien: { x: lienSny('x'), facebook: lienSny('facebook') }, pilote: r, dateFait };
 }
 
 // ---------------------------------------------------------------------
@@ -249,7 +254,9 @@ export function boutonsProposition(id8, canaux) {
 // ---------------------------------------------------------------------
 // DÉCISION HUMAINE (clic Telegram) : enregistrée UNE fois, jamais plus large que ce qui a été proposé.
 // ---------------------------------------------------------------------
-export const ACTIONS_SOCIALES = Object.freeze({ XF: { decision: 'GO_XF', canaux: ['x', 'facebook'] }, F: { decision: 'GO_F', canaux: ['facebook'] }, X: { decision: 'GO_X', canaux: ['x'] }, R: { decision: 'REFUS', canaux: [] } });
+// `I` (GO Instagram) n'est valable QUE sur une proposition qui a proposé Instagram (relais-instagram.mjs) : le contrôle « canaux autorisés ⊂ canaux proposés » ci-dessous
+// rend un GO X / Facebook sans effet sur Instagram et inversement. `R` (refuser) vaut pour la proposition cliquée, quel que soit son canal.
+export const ACTIONS_SOCIALES = Object.freeze({ XF: { decision: 'GO_XF', canaux: ['x', 'facebook'] }, F: { decision: 'GO_F', canaux: ['facebook'] }, X: { decision: 'GO_X', canaux: ['x'] }, I: { decision: 'GO_I', canaux: ['instagram'] }, R: { decision: 'REFUS', canaux: [] } });
 /**
  * @param {{port:object, action:string, cle:string, now:Date, actif:boolean}} a
  * @returns {Promise<{issue:'enregistree'|'double_clic'|'introuvable'|'bouton_invalide'|'expiree'|'inactif', proposition?:object, decision?:string}>}

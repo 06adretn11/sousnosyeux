@@ -204,6 +204,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Relais social REVIEW — canal Instagram : légende et visuel dérivés de la matière approuvée, GO Instagram indépendant, image à empreinte immuable, anti-backfill, un seul post, retraits (mocks : aucun navigateur, aucune publication)',
+    script: 'scripts/qa/test-relais-instagram.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Diffusion sociale — le vrai script en processus (coupe-circuit : aucun appel sortant sans mode REVIEW, T0 vérifié, tables présentes)',
     script: 'scripts/qa/test-diffuser-script.mjs',
     bloquant: true,

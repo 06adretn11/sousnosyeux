@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // =====================================================================
-// scripts/diffuser-social.mjs — RELAIS SOCIAL, MODE REVIEW (Buffer → X, Facebook). Aucun appel de modèle. JAMAIS Instagram.
+// scripts/diffuser-social.mjs — RELAIS SOCIAL, MODE REVIEW (Buffer → X, Facebook, Instagram). Aucun appel de modèle.
+// Instagram a SA proposition (visuel + légende exacts, GO Instagram) et son point de départ propre : voir scripts/lib/relais-instagram.mjs.
+//   node scripts/diffuser-social.mjs --initialiser-t0-instagram --confirmer   pose le point de départ d'Instagram (ligne 2, horloge de la base, UNE fois, immuable)
 //
 //   node scripts/diffuser-social.mjs                        PLAN (défaut) : événements éligibles et raisons de silence ; AUCUNE écriture, AUCUN Telegram, AUCUN Buffer
 //   node scripts/diffuser-social.mjs --ecrire               passage du relais : propositions Telegram → GO social recontrôlés → Buffer → suivi / retraits (idempotent, rejouable)
@@ -15,7 +17,9 @@
 //
 // ACTIVATION (réversible) : variables GitHub SNY_DIFFUSION_ACTIVE=1 ET SNY_DIFFUSION_MODE=review ET SNY_DIFFUSION_DEPUIS = témoin égal au T0 de la base.
 // COUPE-CIRCUIT : SNY_DIFFUSION_ACTIVE=0 (ou toute autre valeur) ⇒ rien n'est proposé ni publié. Il n'existe AUCUN mode automatique dans ce code : tout post exige un GO social Telegram.
-// Secrets : BUFFER_API_KEY, TELEGRAM_BOT_TOKEN. Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, SNY_DIFFUSION_CANAUX (défaut « x,facebook »).
+// Secrets : BUFFER_API_KEY, TELEGRAM_BOT_TOKEN (+ GITHUB_TOKEN, fourni par le workflow, pour héberger le visuel Instagram sur la branche instagram-media).
+// Variables : BUFFER_ORGANIZATION_ID, BUFFER_CHANNEL_X, BUFFER_CHANNEL_FACEBOOK, BUFFER_CHANNEL_INSTAGRAM, SNY_DIFFUSION_CANAUX (défaut « x,facebook » ; Instagram n'est actif que s'il y est NOMMÉ),
+// SNY_INSTAGRAM_AMORCAGE (facultatif : clé d'UN événement admis hors point de départ d'Instagram, ex. « case_update|FR-2026-0144|mise-en-examen »).
 // Dépôt public ⇒ logs publics : identifiants d'affaire, canaux et issues seulement — ni nom, ni lieu, ni texte, ni clé.
 // Code de sortie 1 seulement sur erreur technique (l'étape est `continue-on-error` : jamais bloquante pour la publication sur SNY).
 // =====================================================================
@@ -29,6 +33,9 @@ import { dossierFiche } from './lib/fiche-page.mjs';
 import { CANAUX } from './lib/diffusion-sociale.mjs';
 import { portNeon, ledgerNeon } from './lib/relais-social-db.mjs';
 import { verifierActivation, executerCycle, proposerNouveautes, evaluerCandidat, decouperInstructions, instructionDestructrice, empreinteTexte, CANAUX_RELAIS } from './lib/relais-social.mjs';
+import { cycleInstagram, verifierActivationInstagram, apresPointDepart, cleEvenementDe } from './lib/relais-instagram.mjs';
+import { rendreVisuel } from './lib/instagram-visuel.mjs';
+import { mediaGithub } from './lib/media-github.mjs';
 
 const A = process.argv.slice(2);
 const ECRIRE = A.includes('--ecrire');
@@ -39,9 +46,13 @@ const env = (k) => (process.env[k] || '').trim();
 const log = (m) => console.log(m);
 
 const CANAUX_ACTIFS = (env('SNY_DIFFUSION_CANAUX') || 'x,facebook').split(',').map((c) => c.trim()).filter((c) => CANAUX_RELAIS.includes(c));
-const CANAL_ID = { x: env('BUFFER_CHANNEL_X'), facebook: env('BUFFER_CHANNEL_FACEBOOK') };
+const CANAL_ID = { x: env('BUFFER_CHANNEL_X'), facebook: env('BUFFER_CHANNEL_FACEBOOK'), instagram: env('BUFFER_CHANNEL_INSTAGRAM') };
+// Instagram : sa propre porte. Actif seulement si le canal est NOMMÉ dans SNY_DIFFUSION_CANAUX (défaut « x,facebook » : jamais d'activation implicite) ET configuré dans Buffer.
+// Il n'entre pas dans CANAUX_ACTIFS / CANAUX_RELAIS : les propositions, GO et empreintes X / Facebook sont inchangés.
+const INSTAGRAM_CONFIGURE = (env('SNY_DIFFUSION_CANAUX') || '').split(',').map((c) => c.trim()).includes('instagram') && !!CANAL_ID.instagram;
+const AMORCAGE_INSTAGRAM = env('SNY_INSTAGRAM_AMORCAGE') || null; // UN événement nommé (clé d'événement), exception d'amorçage du canal ; vide = aucune exception
 const DELAI_MIN = Math.min(120, Math.max(5, Number(env('SNY_DIFFUSION_DELAI_MIN')) || 15));
-const MODES_ECRITURE = ['--ecrire', '--initialiser-t0', '--exclure-montpellier', '--autotest-ecriture', '--appliquer-migration'];
+const MODES_ECRITURE = ['--ecrire', '--initialiser-t0', '--initialiser-t0-instagram', '--exclure-montpellier', '--autotest-ecriture', '--appliquer-migration'];
 
 // COUPE-CIRCUIT AVANT TOUT ACCÈS : une passe d'écriture du cycle ne touche ni la base, ni Buffer, ni Telegram si le relais n'est pas explicitement en mode REVIEW.
 if (ECRIRE && (env('SNY_DIFFUSION_ACTIVE') !== '1' || env('SNY_DIFFUSION_MODE') !== 'review')) {
@@ -56,7 +67,7 @@ const tablePresente = async () => (await sql`select to_regclass('public.diffusio
 
 // --- --appliquer-migration : 025 (journal) puis 026 (relais REVIEW). Additives, idempotentes ; toute instruction destructrice est REFUSÉE avant exécution. -------------
 if (A.includes('--appliquer-migration')) {
-  for (const f of ['025_diffusions_sociales.sql', '026_relais_social_review.sql']) {
+  for (const f of ['025_diffusions_sociales.sql', '026_relais_social_review.sql', '027_relais_social_instagram.sql']) {
     const instructions = decouperInstructions(readFileSync(new URL(`../supabase/migrations/${f}`, import.meta.url), 'utf8'));
     if (instructions.some(instructionDestructrice)) { console.error(`migration ${f} refusée : instruction destructrice`); process.exit(2); }
     for (const [i, ins] of instructions.entries()) { await sql.query(ins); log(`${f} : instruction ${i + 1}/${instructions.length} appliquée`); }
@@ -102,6 +113,11 @@ if (A.includes('--etat')) {
   const activation = verifierActivation({ env: process.env, t0Row: presentes ? await port.t0() : null, now });
   log(`relais social : ${activation.actif ? 'ACTIF (mode REVIEW)' : 'INACTIF'} · T0 ${activation.t0 ? activation.t0.toISOString() : '(non initialisé)'} · canaux : ${CANAUX_ACTIFS.join(', ') || 'aucun'}`);
   if (!activation.actif) for (const r of activation.raisons) log(`  - ${r}`);
+  if (presentes) {
+    const ig = verifierActivationInstagram({ activation, igRow: await port.t0Canal('instagram').catch(() => null), now, canalConfigure: INSTAGRAM_CONFIGURE });
+    log(`instagram : ${ig.actif ? 'ACTIF (mode REVIEW)' : 'INACTIF'} · point de départ ${ig.t0 ? ig.t0.toISOString() : '(non initialisé)'} · amorçage : ${AMORCAGE_INSTAGRAM ?? 'aucun'}`);
+    if (!ig.actif) for (const r of ig.raisons) log(`  - ${r}`);
+  }
   if (!presentes) { log('tables absentes (migrations 025/026 non appliquées) : aucune diffusion n’a jamais eu lieu'); process.exit(0); }
   const s = await port.synthese();
   log('propositions (décision · type) :'); for (const x of s.propositions) log(`  ${String(x.etat).padEnd(12)} ${x.type_event.padEnd(12)} ${x.n}`);
@@ -170,6 +186,9 @@ if (A.includes('--verifier-connexion')) {
     try {
       const canaux = await b.canaux();
       ok('API Buffer joignable, canaux listés', true, `${canaux.length} canal(aux) dans l’organisation`);
+      // Aide à la configuration (lecture seule) : identifiants opaques + état de connexion de CHAQUE canal de l'organisation. Le nom d'affichage n'est donné que pour Instagram
+      // (identifiant public du compte : permet de reconnaître @sousnosyeux_org parmi plusieurs canaux).
+      for (const k of canaux) console.log(`ℹ️ canal ${k.service} id=${k.id}${k.service === 'instagram' ? ` nom=${k.displayName}` : ''} · déconnecté=${k.isDisconnected} verrouillé=${k.isLocked} file en pause=${k.isQueuePaused}`);
       const SERVICE = { x: 'twitter', facebook: 'facebook', instagram: 'instagram' };
       for (const c of CANAUX) {
         if (!CANAL_ID[c]) { console.log(`➖ ${c} : non configuré (désactivé)`); continue; }
@@ -177,6 +196,16 @@ if (A.includes('--verifier-connexion')) {
         ok(`canal ${c} : connu`, !!k);
         if (k) { ok(`canal ${c} : service ${SERVICE[c]}`, k.service === SERVICE[c], k.service); ok(`canal ${c} : connecté, non verrouillé, file active`, !k.isDisconnected && !k.isLocked && !k.isQueuePaused, `isDisconnected=${k.isDisconnected} isLocked=${k.isLocked} isQueuePaused=${k.isQueuePaused}`); }
       }
+      // Instagram : la connexion doit être PROFESSIONNELLE et autoriser la publication automatique (pas une simple notification mobile). Lecture seule.
+      try {
+        for (const k of await b.detailCanauxInstagram()) {
+          const cible = CANAL_ID.instagram ? k.id === CANAL_ID.instagram : true;
+          if (!cible) continue;
+          console.log(`ℹ️ instagram ${k.id} nom=${k.displayName} type=${k.type} · droits accordés : ${(k.scopes || []).join(', ') || '(aucun listé)'} · actions permises : ${(k.allowedActions || []).join(', ')}`);
+          ok(`instagram ${k.id} : action « scheduleUpdates » permise (publication programmée par l’API)`, (k.allowedActions || []).includes('scheduleUpdates'));
+          console.log(`ℹ️ instagram ${k.id} : defaultToReminders=${k.metadata?.defaultToReminders} (true = Buffer enverrait un rappel mobile par défaut ; le client SNY impose schedulingType=automatic)`);
+        }
+      } catch (e) { console.log(`ℹ️ détail du canal Instagram illisible : ${e.message}`); }
       const premier = CANAUX.find((c) => CANAL_ID[c]);
       if (premier) {
         try { await b.trouverPost({ channelId: CANAL_ID[premier], signature: 'utm_content=verification-sans-effet', depuis: new Date(Date.now() - 864e5).toISOString() }); ok('requête de réconciliation (posts) acceptée par Buffer', true); }
@@ -215,6 +244,27 @@ async function envoyerTelegram(texte, markup) {
   const j = await r.json().catch(() => ({}));
   if (!j.ok) throw new Error(`Telegram : ${String(j.description || r.status).slice(0, 80)}`);
   return j.result?.message_id ?? null;
+}
+
+/** Le VISUEL exact de la proposition Instagram : Telegram le télécharge lui-même à l'adresse publique (donc preuve supplémentaire qu'elle est servie à des tiers). */
+async function envoyerPhotoTelegram(urlImage, legende) {
+  const token = env('TELEGRAM_BOT_TOKEN'), chat = Number(env('TELEGRAM_ALLOWED_USER_ID'));
+  if (!token || !Number.isInteger(chat)) throw new Error('Telegram non configuré');
+  if (process.env.SNY_DRY) { log(`[photo] ${urlImage}`); return null; }
+  const r = await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: chat, photo: urlImage, caption: legende }) });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) throw new Error(`Telegram (photo) : ${String(j.description || r.status).slice(0, 80)}`);
+  return j.result?.message_id ?? null;
+}
+/** Rendu, hébergement et relecture distante du visuel (injectés dans relais-instagram.mjs ; les tests les remplacent par des mocks). */
+function imageInstagram() {
+  const token = env('GITHUB_TOKEN'), depot = env('GITHUB_REPOSITORY');
+  return {
+    rendre: ({ html }) => rendreVisuel({ html }),
+    publier: async (a) => { if (!token || !depot) throw new Error('GITHUB_TOKEN / GITHUB_REPOSITORY absents : hébergement du visuel impossible'); return mediaGithub({ token, depot }).publier(a); },
+    // redirect:'manual' : Buffer exige une URL directe ; une redirection est un échec, pas un succès.
+    lire: async (url) => { const r = await fetch(url, { redirect: 'manual', headers: { 'cache-control': 'no-cache' }, signal: AbortSignal.timeout(30000) }); return { status: r.status, contentType: r.headers.get('content-type'), png: r.status === 200 ? Buffer.from(await r.arrayBuffer()) : Buffer.alloc(0) }; },
+  };
 }
 
 // --- --inventaire-buffer : LECTURE SEULE -----------------------------------------------------------------------------------------------
@@ -336,6 +386,25 @@ if (A.includes('--initialiser-t0')) {
   process.exit(0);
 }
 
+// --- --initialiser-t0-instagram : le point de départ PROPRE à Instagram (ligne 2 de relais_social_config, horloge de la base, UNE fois, immuable) -------------------------------
+// Le T0 global (ligne 1) n'est pas touché. À partir de cet instant, seules les nouveautés dont le dernier geste humain (approbation de la fiche / décision de l'événement) le suit
+// peuvent être proposées sur Instagram — sauf l'unique événement nommé par SNY_INSTAGRAM_AMORCAGE.
+if (A.includes('--initialiser-t0-instagram')) {
+  if (!A.includes('--confirmer')) { console.error('refusé : --confirmer requis (GO de mise en service d’Instagram)'); process.exit(2); }
+  if (!(await port.tablesPresentes())) { console.error('tables absentes : appliquer les migrations d’abord'); process.exit(1); }
+  const global = verifierActivation({ env: process.env, t0Row: await port.t0(), now: new Date() });
+  if (!global.actif) { console.error(`relais global inactif : ${global.raisons.join(' ; ')}`); process.exit(1); }
+  const deja = await port.t0Canal('instagram');
+  if (deja) { log(`point de départ Instagram déjà posé (${new Date(deja.t0).toISOString()}, ${deja.provenance}) : INCHANGÉ — il ne se modifie jamais`); process.exit(0); }
+  const provenance = `instagram · horloge de la base Neon · ${process.env.GITHUB_RUN_ID ? `run GitHub ${process.env.GITHUB_RUN_ID}` : 'exécution locale'} · ${String(process.env.GITHUB_SHA || '').slice(0, 7)}`;
+  let t0;
+  try { t0 = await port.initialiserT0Canal('instagram', provenance); }
+  catch (e) { console.error(`pose impossible (migration 027 appliquée ?) : ${String(e.message).slice(0, 160)}`); process.exit(1); }
+  if (!t0) { log('point de départ Instagram posé entre-temps par un autre passage : INCHANGÉ'); process.exit(0); }
+  log(`POINT DE DÉPART INSTAGRAM = ${t0.toISOString()} (${provenance})`);
+  process.exit(0);
+}
+
 // --- PLAN (défaut) et --ecrire : un passage complet du relais -------------------------------------------------------------------------------
 if (!(await port.tablesPresentes())) { log('tables du relais absentes (migrations 025/026 non appliquées) : relais DÉSACTIVÉ, rien n’est proposé ni publié'); process.exit(0); }
 const activation = verifierActivation({ env: process.env, t0Row: await port.t0(), now });
@@ -350,5 +419,17 @@ const resultat = await executerCycle({
   canauxConfigures: CANAUX_ACTIFS.filter((c) => CANAL_ID[c]), channelIds: CANAL_ID, delaiMin: DELAI_MIN,
   envoyer: envoyerTelegram, servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,
 });
+// INSTAGRAM : après X / Facebook (qui ont déjà suivi, annulé ou confirmé les lignes ouvertes du journal, Instagram compris). Une panne ici n'arrête jamais le reste : le canal est isolé.
+let erreursInstagram = 0;
+if (resultat.actif && INSTAGRAM_CONFIGURE) {
+  try {
+    const rIg = await cycleInstagram({
+      port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger, igRow: await port.t0Canal('instagram'), canalConfigure: INSTAGRAM_CONFIGURE, amorcage: AMORCAGE_INSTAGRAM,
+      channelId: CANAL_ID.instagram, delaiMin: DELAI_MIN, envoyer: envoyerTelegram, envoyerPhoto: envoyerPhotoTelegram, image: imageInstagram(),
+      servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,
+    });
+    if (!ECRIRE) log(`plan instagram : ${rIg.propositions.candidats} candidat(s), aucune écriture, aucun rendu, aucun message, aucun appel Buffer`);
+  } catch (e) { erreursInstagram++; log(`instagram : erreur technique isolée (${String(e.message).slice(0, 100)})`); }
+}
 if (CI && !ECRIRE) log('plan : aucune écriture, aucun message, aucun appel Buffer');
-process.exitCode = resultat.erreurs ? 1 : 0;
+process.exitCode = resultat.erreurs || erreursInstagram ? 1 : 0;

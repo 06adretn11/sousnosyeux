@@ -20,7 +20,7 @@
 // Exclusivité Telegram : une fois le webhook posé, getUpdates ne fonctionne plus ; `telegram-v0.mjs recevoir` le détecte et ne lit rien.
 // =====================================================================
 
-export const DATA_RE = /^sny:(?:NC:(?:VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT)|SG:(?:XF|F|X|R)|(?:VALIDATE|REVIEW|REJECT)|TEST):[0-9a-f]{8}$/;
+export const DATA_RE = /^sny:(?:NC:(?:VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT)|SG:(?:XF|F|X|I|R)|(?:VALIDATE|REVIEW|REJECT)|TEST):[0-9a-f]{8}$/;
 const TAILLE_MAX = 8192;
 
 /** Comparaison en temps constant (longueurs égales exigées). */

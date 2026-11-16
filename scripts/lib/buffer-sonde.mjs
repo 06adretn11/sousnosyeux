@@ -111,7 +111,12 @@ export function informations(introspection) {
   const { par } = indexer(introspection);
   const noms = (n) => champs(par.get(n)).map((f) => `${f.name}:${typeEnTexte(f.type)}`).join(', ');
   const lignes = [];
-  for (const n of ['PostsInput', 'PostsFiltersInput', 'PostsResults', 'OrganizationLimits', 'PostPublishingError', 'LimitReachedError', 'InvalidInputError', 'MutationError']) lignes.push(`${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
+  for (const n of ['Channel', 'PostsInput', 'PostsFiltersInput', 'PostsResults', 'OrganizationLimits', 'PostPublishingError', 'LimitReachedError', 'InvalidInputError', 'MutationError']) lignes.push(`${n} → ${par.has(n) ? noms(n) : 'type absent'}`);
+  // Canal Instagram : métadonnées du canal (compte professionnel ou personnel), actions permises, types propres à Instagram.
+  for (const n of [...par.keys()].filter((k) => /^(ChannelMetadata|ChannelAction|ChannelScope)$|instagram/i.test(k) && !/Input$/.test(k)).sort()) {
+    const t = par.get(n);
+    lignes.push(`${n} (${t.kind}) → ${t.kind === 'ENUM' ? (t.enumValues || []).map((v) => v.name).join(', ') : t.kind === 'UNION' ? (t.possibleTypes || []).map((p) => p.name).join(' | ') : noms(n)}`);
+  }
   // Types de comparaison des filtres de date / statut, résolus dynamiquement.
   for (const f of ['createdAt', 'dueAt', 'status']) {
     const t = par.get(nomNu(champDe(par.get('PostsFiltersInput'), f)?.type));

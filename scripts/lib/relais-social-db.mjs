@@ -28,6 +28,25 @@ export function portNeon(sql) {
       const [r] = await sql`select to_regclass('public.relais_social_config') is not null and to_regclass('public.relais_social_propositions') is not null and to_regclass('public.relais_social_exclusions') is not null and to_regclass('public.diffusions_sociales') is not null as ok`;
       return !!r.ok;
     },
+    /**
+     * T0 PROPRE À UN CANAL (Instagram = ligne 2 de relais_social_config, migration 027). null si absent. Le T0 global (ligne 1) n'est jamais lu ni modifié ici.
+     */
+    async t0Canal(canal) {
+      if (canal !== 'instagram') return null;
+      const [ok] = await sql`select to_regclass('public.relais_social_config') is not null as ok`;
+      if (!ok.ok) return null;
+      return (await sql`select t0, mode, provenance from relais_social_config where id = 2`)[0] || null;
+    },
+    /** Pose le T0 d'Instagram (horloge de la base, UNE fois ; immuable ensuite par trigger). null = déjà posé : inchangé. Échoue si la migration 027 n'est pas appliquée. */
+    async initialiserT0Canal(canal, provenance) {
+      if (canal !== 'instagram') throw new Error('canal inconnu');
+      const r = await sql`insert into relais_social_config (id, mode, provenance) values (2, 'review', ${provenance}) on conflict (id) do nothing returning t0`;
+      return r.length ? new Date(r[0].t0) : null;
+    },
+    /** Propositions Instagram d'un événement (clé `<base>#instagram:<empreinte>`), de la plus ancienne à la plus récente. */
+    async propositionsInstagramDeEvenement(k) { return (await sql`select * from relais_social_propositions where starts_with(event_key, ${k + '#instagram:'}) order by created_at, event_key`).map(prop); },
+    /** GO Instagram à exécuter : décision GO_I, pas encore résolue. (Les GO X / Facebook ont leur propre lecture : propositionsAvecGo ne renvoie JAMAIS un GO_I.) */
+    async propositionsInstagramAvecGo() { return (await sql`select * from relais_social_propositions where decision = 'GO_I' and resolution is null order by decided_at`).map(prop); },
     /** Horloge de la base : seule source de T0. */
     async maintenantBase() { return new Date((await sql`select now() as n`)[0].n); },
     async initialiserT0(provenance) {

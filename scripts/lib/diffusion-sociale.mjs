@@ -59,7 +59,7 @@ export function lienDiffusion({ site, case_id, type, statut = null, canal, fiche
 // ---------------------------------------------------------------------
 // MESSAGES : déterministes, factuels, sans modèle. `ph` = { phrase, mention } issus de la formulation officielle du site.
 // ---------------------------------------------------------------------
-const ENTETE = { new_case: 'Nouvelle affaire documentée par la presse', case_update: 'Évolution documentée par la presse' };
+export const ENTETE = { new_case: 'Nouvelle affaire documentée par la presse', case_update: 'Évolution documentée par la presse' };
 
 /** Contrôle de contenu : aucun champ interne ni donnée interdite ne doit avoir fuité dans le texte. */
 export function controleContenu(texte, entree) {

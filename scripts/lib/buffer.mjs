@@ -65,6 +65,15 @@ export function clientBuffer({ cle, organisationId = null, fetchImpl = globalThi
     },
 
     /**
+     * Lecture seule : détail d'un canal Instagram (type de compte, droits accordés à Buffer, actions permises, mode « rappel »). Sert à prouver que la connexion est
+     * professionnelle ET autorise la publication automatique (et non l'envoi d'une notification mobile). Aucune donnée personnelle conservée.
+     */
+    async detailCanauxInstagram() {
+      const d = await requete('query($input: ChannelsInput!){ channels(input:$input){ id service displayName type scopes allowedActions isDisconnected isLocked isQueuePaused metadata { __typename ... on InstagramMetadata { defaultToReminders } } } }', { input: { organizationId: organisationId } });
+      return (d.channels || []).filter((c) => c.service === 'instagram');
+    },
+
+    /**
      * Crée UNE publication AUTOMATIQUE (schedulingType 'automatic', jamais 'notification') programmée à `dueAt` (marge d'annulation B7).
      * @returns {{id:string, status:string, dueAt:string|null}}   throws ErreurBuffer
      */

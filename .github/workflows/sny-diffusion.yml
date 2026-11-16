@@ -6,6 +6,7 @@
 #   action = inventaire-buffer   LECTURE SEULE : posts SNY présents dans Buffer (X, Facebook) et posts en attente
 #   action = exclure-montpellier enregistre l'exclusion définitive des deux publications manuelles de FR-2026-0146
 #   action = controle-stock      LECTURE SEULE : l'historique de production, jugé avec T0 = maintenant, ne produit AUCUNE proposition
+#   action = initialiser-t0-instagram  fixe le point de départ PROPRE à Instagram (ligne 2, horloge de la base, UNE fois, immuable) — confirmation = GO-INSTAGRAM ; ne touche pas au T0 global
 #   action = initialiser-t0      fixe T0 (horloge de la base, UNE fois, immuable) après le contrôle du stock — confirmation = GO-T0
 #   action = verifier-connexion  LECTURE SEULE : clé, organisation, canaux (service, connexion, verrouillage, file), requête de réconciliation. À lancer AVANT l'activation.
 #   action = sonder-api          LECTURE SEULE : confronte le client Buffer au schéma réel (introspection) ; sondes sur identifiants inexistants (rien créé/publié/supprimé)
@@ -25,9 +26,9 @@ on:
         description: "appliquer-migration | verifier-connexion | sonder-api | plan | etat"
         required: true
         type: choice
-        options: [reconstituer, appliquer-migration, autotest-ecriture, inventaire-buffer, exclure-montpellier, controle-stock, initialiser-t0, verifier-connexion, sonder-api, plan, etat]
+        options: [reconstituer, appliquer-migration, autotest-ecriture, inventaire-buffer, exclure-montpellier, controle-stock, initialiser-t0, initialiser-t0-instagram, essai-instagram, verifier-connexion, sonder-api, plan, etat]
       confirmation:
-        description: "Pour initialiser-t0 uniquement : saisir GO-T0"
+        description: "Pour initialiser-t0 : saisir GO-T0 · pour initialiser-t0-instagram : saisir GO-INSTAGRAM"
         required: false
         type: string
 
@@ -75,9 +76,32 @@ jobs:
             exclure-montpellier) node scripts/diffuser-social.mjs --exclure-montpellier ;;
             controle-stock)     node scripts/diffuser-social.mjs --controle-stock ;;
             initialiser-t0)     if [ "$CONFIRMATION" = "GO-T0" ]; then node scripts/diffuser-social.mjs --initialiser-t0 --confirmer; else echo "refusé : confirmation GO-T0 absente"; exit 2; fi ;;
+            initialiser-t0-instagram) if [ "$CONFIRMATION" = "GO-INSTAGRAM" ]; then node scripts/diffuser-social.mjs --initialiser-t0-instagram --confirmer; else echo "refusé : confirmation GO-INSTAGRAM absente"; exit 2; fi ;;
             verifier-connexion) node scripts/diffuser-social.mjs --verifier-connexion ;;
             sonder-api)         node scripts/diffuser-social.mjs --sonder-api ;;
             plan)               node scripts/diffuser-social.mjs ;;
             etat)               node scripts/diffuser-social.mjs --etat ;;
             *) echo "action inconnue"; exit 2 ;;
           esac
+
+  # ESSAI TECHNIQUE d'Instagram sur l'exécuteur réel : rendu d'une carte SYNTHÉTIQUE (aucune affaire) par le Chrome de l'exécuteur, refus d'un texte trop long, dépôt sur la branche
+  # `instagram-media` puis relecture à l'adresse publique. Ni Buffer, ni Telegram, ni base, aucun secret autre que le jeton du workflow. `contents: write` : ce job SEUL (le job ci-dessus reste en lecture).
+  essai-instagram:
+    if: ${{ inputs.action == 'essai-instagram' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+      - name: Texte trop long refusé (jamais coupé)
+        run: node scripts/essai-rendu-instagram.mjs --debordement
+      - name: Rendu, dépôt sur la branche instagram-media, relecture publique
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/essai-rendu-instagram.mjs --heberger
