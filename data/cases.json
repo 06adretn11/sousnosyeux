@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-13"
+    "generated_at": "2026-11-16"
   },
   "cases": [
     {
@@ -260,6 +260,20 @@
           "is_primary": false
         },
         {
+          "url": "https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787",
+          "media": "Le Journal du Dimanche",
+          "publication_date": "2026-10-11",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lejdd.fr/Societe/periscolaire-a-paris-la-mairie-accusee-davoir-maintenu-un-animateur-malgre-une-plainte-pour-agressions-sexuelles-174609",
+          "media": "Le Journal du Dimanche",
+          "publication_date": "2026-05-23",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
           "media": "Le Journal du Dimanche",
           "publication_date": "2026-05-20",
@@ -281,9 +295,30 @@
           "is_primary": false
         },
         {
+          "url": "https://www.sudouest.fr/ile-de-france/paris/periscolaire-a-paris-plainte-contre-cash-investigation-pour-non-denonciation-d-agressions-28698788.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-04-15",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
           "media": "franceinfo",
           "publication_date": "2026-05-22",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315",
+          "media": "ici",
+          "publication_date": "2026-10-11",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lanouvellerepublique.fr/a-la-une/periscolaire-a-paris-seize-personnes-en-garde-a-vue-dans-le-cadre-de-l-affaire-de-l-ecole-saint-dominique-1779279883",
+          "media": "la Nouvelle République",
+          "publication_date": "2026-05-20",
           "source_type": "presse",
           "is_primary": false
         }
