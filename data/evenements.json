@@ -547,6 +547,9 @@
     },
     "FR-2026-0146": {
       "hash": "3596b3e0616498c0"
+    },
+    "FR-2026-0148": {
+      "hash": "2475039d967d01bb"
     }
   },
   "matiere": [
@@ -591,6 +594,29 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "108115613bf9",
+      "nature": "mobilisation",
+      "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
+      "realisation": "réalisée",
+      "portee": "établissement",
+      "acteur": "parents",
+      "territoire": null,
+      "date": "2026-11-12",
+      "periode": null,
+      "source": {
+        "media": "Actu.fr",
+        "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+        "publie_le": "2026-11-13"
+      },
+      "etablissement": "Germaine-Sablon",
+      "case_id": "FR-2026-0148",
+      "event_id": "c9c79ff6-13f9-4c35-a335-4c85ee6b93a5",
+      "destinations": {
+        "fiche": "FR-2026-0148",
+        "hubs": []
       }
     },
     {

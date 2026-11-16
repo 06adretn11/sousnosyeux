@@ -12070,6 +12070,261 @@
         "Selon Actu.fr, une procédure visant le directeur est ouverte au Service Local de Police Judiciaire depuis le lundi 9 novembre 2026, sans mesure de garde à vue pour l'heure."
       ],
       "statut_affiche": "enquête"
+    },
+    "FR-2026-0148": {
+      "appel": false,
+      "faits": "Selon Ouest-France, des parents accusent d'agressions sexuelles un animateur périscolaire de l'école Germaine-Sablon, au Perreux-sur-Marne (Val-de-Marne), et plusieurs plaintes ont été déposées depuis le 6 octobre 2026. Selon Ouest-France, plusieurs enfants auraient rapporté à leurs parents avoir été victimes d'agressions sexuelles, et même de viols.",
+      "deroule": [
+        {
+          "date": "2026-10-06",
+          "type": "plainte",
+          "texte": "Selon Ouest-France, plusieurs parents ont porté plainte depuis le 6 octobre 2026 contre l'animateur périscolaire de l'école Germaine-Sablon.",
+          "acteur": "parents",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-13"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-12",
+          "type": "fait_rapporte",
+          "texte": "Selon Ouest-France, un rassemblement d'une centaine de parents a eu lieu jeudi 12 novembre devant l'établissement pour réclamer à la mairie la mise en place de mesures immédiates.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-13"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-12",
+          "type": "fait_rapporte",
+          "texte": "Selon Actu.fr, le mis en cause a effectué son droit de retrait le jeudi 12 novembre 2026.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-11-13"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Ouest-France, lors du rassemblement, les familles ont demandé la suspension à titre conservatoire de l'animateur ainsi que la création d'une cellule psychologique et d'une permanence en mairie.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Ouest-France, les familles ont été reçues en mairie.",
+          "acteur": "mairie",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon Actu.fr, deux autres plaintes auraient été déposées ensuite.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon le parquet de Créteil, une enquête est en cours au sein de la Brigade territoriale de la protection et de la famille.",
+          "acteur": "parquet de Créteil",
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-11-13"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Le Parisien, la maire a indiqué qu'une aide psychologique allait être mise en place.",
+          "acteur": "mairie du Perreux-sur-Marne",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-14",
+          "type": "fait_rapporte",
+          "texte": "Selon Ouest-France, les parents ont prévu un nouveau rassemblement samedi 14 novembre.",
+          "acteur": "parents",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "evenement"
+        }
+      ],
+      "synthese": {
+        "decision": "Selon le parquet de Créteil, une enquête est en cours au sein de la Brigade territoriale de la protection et de la famille."
+      },
+      "inconnues": [
+        "Le dossier ne repose que sur 2 articles lus (Ouest-France, Actu.fr)."
+      ],
+      "reactions": [
+        {
+          "date": "2026-11-13",
+          "acteur": "Christel Royer, maire du Perreux-sur-Marne",
+          "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-13"
+          },
+          "qualite": "propos rapportés par Ouest-France",
+          "a_propos": "la prise au sérieux de la situation et la sécurité des enfants de la ville",
+          "citations": [
+            {
+              "pour": "la prise au sérieux de la situation et la sécurité des enfants de la ville",
+              "texte": "Il est hors de question qu’un petit ou une petite de notre ville se retrouve en danger"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-13",
+          "acteur": "association autonome des parents d'élèves (UNAAPE) du Perreux",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "réaction de l'association de parents d'élèves à l'affaire",
+          "citations": [
+            {
+              "pour": "réaction de l'association de parents d'élèves à l'affaire",
+              "texte": "Nous sommes profondément bouleversés par la situation. Nos premières pensées vont aux enfants concernés et à leur famille"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-13",
+          "acteur": "Christel Royer, maire",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "absence d'auteur identifié et circonstances des faits à établir",
+          "citations": [
+            {
+              "pour": "absence d'auteur identifié et circonstances des faits à établir",
+              "texte": "aucun auteur n'a été identifié à notre connaissance et les circonstances précises des faits restent à établir"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        }
+      ],
+      "situation": {
+        "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
+          "label": "Suite",
+          "titre": "Issue de la procédure à documenter",
+          "lignes": [
+            "La personne mise en cause est présumée innocente.",
+            "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Le Parisien, la maire a indiqué qu'une aide psychologique allait être mise en place."
+          ]
+        },
+        "decision": {
+          "cat": "blue",
+          "meta": "Parquet de Créteil",
+          "label": "Situation judiciaire",
+          "texte": "Selon le parquet de Créteil, une enquête est en cours au sein de la Brigade territoriale de la protection et de la famille.",
+          "titre": "Enquête"
+        }
+      },
+      "etat_actuel": [
+        "Selon le parquet de Créteil, une enquête est en cours au sein de la Brigade territoriale de la protection et de la famille."
+      ],
+      "statut_affiche": "enquête"
     }
   }
 }
