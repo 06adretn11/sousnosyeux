@@ -58,6 +58,19 @@
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
           "publie_le": "2026-05-22"
         }
+      },
+      {
+        "event_id": "75f344cd-ccd6-4967-82a0-496b5f10e7e0",
+        "date": null,
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, un contrôle ou une inspection a été annoncé.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "Le Figaro",
+          "url": "https://www.lefigaro.fr/actualite-france/cela-a-t-il-pu-perturber-l-enquete-judiciaire-a-paris-le-grand-fiasco-des-plannings-d-animateurs-du-periscolaire-20261106",
+          "publie_le": "2026-11-06"
+        }
       }
     ],
     "FR-2026-0027": [
@@ -140,6 +153,21 @@
           "media": "La Provence",
           "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
           "publie_le": "2026-03-30"
+        }
+      }
+    ],
+    "FR-2026-0114": [
+      {
+        "event_id": "7b09ffe8-67e9-40a0-8b72-fdfbd0f1118d",
+        "date": "2026-09-29",
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "Sud Ouest",
+          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+          "publie_le": "2026-09-29"
         }
       }
     ],
@@ -232,6 +260,21 @@
           "media": "france3-regions.franceinfo",
           "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/maine-et-loire/angers/suspicion-de-violences-sexuelles-en-milieu-periscolaire-l-animateur-denonce-par-des-parents-a-ete-place-sous-le-statut-de-temoin-assiste-3447522.html",
           "publie_le": "2026-11-10"
+        }
+      }
+    ],
+    "FR-2026-0148": [
+      {
+        "event_id": "c9c79ff6-13f9-4c35-a335-4c85ee6b93a5",
+        "date": "2026-11-12",
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "Actu.fr",
+          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+          "publie_le": "2026-11-13"
         }
       }
     ],
@@ -503,7 +546,7 @@
       "hash": "a9a3088b7ed0dfbf"
     },
     "FR-2026-0146": {
-      "hash": "8b38c2d4b2470bf8"
+      "hash": "3596b3e0616498c0"
     }
   },
   "matiere": [
@@ -596,6 +639,34 @@
           {
             "hub": "paris-11e",
             "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
+    },
+    {
+      "id": "4c8a74090faa",
+      "nature": "mesure",
+      "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
+      "realisation": "annoncée",
+      "portee": "établissement",
+      "acteur": "maire",
+      "territoire": "Cenon",
+      "date": "2026-09-29",
+      "periode": null,
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+        "publie_le": "2026-09-29"
+      },
+      "etablissement": "Centre de loisirs de Cenon (école Michelet)",
+      "case_id": "FR-2026-0114",
+      "event_id": "7b09ffe8-67e9-40a0-8b72-fdfbd0f1118d",
+      "destinations": {
+        "fiche": "FR-2026-0114",
+        "hubs": [
+          {
+            "hub": "bordeaux-gironde",
+            "groupe": "Ville de Bordeaux et Éducation nationale"
           }
         ]
       }

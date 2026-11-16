@@ -11673,10 +11673,98 @@
       "faits": "Selon Actu.fr, des soupçons d'agressions sexuelles sur plusieurs enfants dans une école maternelle de la cité Astruc, à Montpellier, font l'objet d'une enquête préliminaire du Service local de police judiciaire, au commissariat central.",
       "deroule": [
         {
+          "date": "2026-11",
+          "type": "mesure_etat",
+          "texte": "Selon Midi Libre, le directeur de l'école maternelle Johann-Wolfgang-Von-Goethe, également enseignant, a été suspendu de ses fonctions à titre conservatoire, le Directeur académique des services de l'Éducation nationale ayant pris la décision de le suspendre de façon préventive.",
+          "acteur": "Directeur académique des services de l'Éducation nationale",
+          "source": {
+            "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+            "acces": "libre",
+            "media": "Midi Libre",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+              "acces": "libre",
+              "media": "ToutMontpellier.fr",
+              "publie_le": "2026-11-11"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-04",
+          "type": "signalement",
+          "texte": "Selon ToutMontpellier.fr, le personnel soignant aurait transmis un signalement, le soir même, au directeur académique des services de l'Éducation nationale de l'Hérault, à la suite de l'examen de l'enfant d'une mère de famille.",
+          "acteur": "personnel soignant",
+          "source": {
+            "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+            "acces": "libre",
+            "media": "ToutMontpellier.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+              "acces": "libre",
+              "media": "Midi Libre",
+              "publie_le": "2026-11-10"
+            }
+          ]
+        },
+        {
           "date": "2026-11-05",
           "type": "mesure_etat",
           "texte": "Selon Midi Libre, la personne mise en cause a été suspendue de ses fonctions à titre conservatoire, décision prise par le directeur académique des services de l'Éducation nationale.",
           "acteur": "Directeur académique des services de l'Éducation nationale",
+          "source": {
+            "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+            "acces": "libre",
+            "media": "Midi Libre",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+              "acces": "libre",
+              "media": "ToutMontpellier.fr",
+              "publie_le": "2026-11-11"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-05",
+          "type": "mesure_etat",
+          "texte": "L'Académie de Montpellier a suspendu le directeur de cette école le jeudi 5 novembre 2026, à titre conservatoire et jusqu'à nouvel ordre.",
+          "acteur": "Académie de Montpellier",
+          "source": {
+            "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "evenement"
+        },
+        {
+          "date": "2026-11-06",
+          "type": "fait_rapporte",
+          "texte": "Selon Midi Libre, le directeur de l'école maternelle a été remplacé dès le vendredi 6 novembre.",
+          "acteur": null,
           "source": {
             "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
             "acces": "libre",
@@ -11696,7 +11784,61 @@
             "media": "Actu.fr",
             "publie_le": "2026-11-11"
           },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+              "acces": "libre",
+              "media": "Midi Libre",
+              "publie_le": "2026-11-10"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-09",
+          "type": "fait_rapporte",
+          "texte": "Selon ToutMontpellier.fr, l'interpellation du directeur, intervenue quatre jours après sa suspension, a été menée par les policiers du Service local de police judiciaire de Montpellier.",
+          "acteur": "policiers du Service local de police judiciaire de Montpellier",
+          "source": {
+            "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+            "acces": "libre",
+            "media": "ToutMontpellier.fr",
+            "publie_le": "2026-11-11"
+          },
           "date_nature": "evenement"
+        },
+        {
+          "date": "2026-11-09",
+          "type": "enquete",
+          "texte": "Selon Actu.fr, une procédure visant le directeur est ouverte au Service Local de Police Judiciaire depuis le lundi 9 novembre 2026, sans mesure de garde à vue pour l'heure.",
+          "acteur": "Service Local de Police Judiciaire -SLPJ-",
+          "source": {
+            "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+              "acces": "libre",
+              "media": "ToutMontpellier.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+              "acces": "libre",
+              "media": "Midi Libre",
+              "publie_le": "2026-11-10"
+            }
+          ]
         },
         {
           "date": "2026-11-09",
@@ -11710,6 +11852,19 @@
             "publie_le": "2026-11-11"
           },
           "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon ToutMontpellier.fr, des parents d'élèves se seraient rassemblés devant l'école dès le vendredi matin pour obtenir des explications sur la situation, devant le manque d'informations officielles.",
+          "acteur": null,
+          "source": {
+            "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+            "acces": "libre",
+            "media": "ToutMontpellier.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "article"
         },
         {
           "date": null,
@@ -11727,7 +11882,53 @@
         {
           "date": null,
           "type": "signalement",
-          "texte": "Selon le Rectorat, un signalement a été adressé au procureur de la République sur des faits de violences possiblement survenus au sein d'une école de Montpellier.",
+          "texte": "Selon le Rectorat de Montpellier, un signalement a été adressé au procureur de la République sur des faits de violences, possiblement survenus au sein d'une école de Montpellier ; le document ne précise pas qui en est l'auteur.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-09",
+          "type": "enquete",
+          "texte": "Selon Actu.fr, une enquête préliminaire du Service local de police judiciaire a été ouverte à Montpellier sur les soupçons d'agressions sexuelles, les investigations ayant été lancées le lundi 9 novembre 2026.",
+          "acteur": "Service local de police judiciaire (SLPJ), commissariat central de Montpellier",
+          "source": {
+            "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+              "acces": "libre",
+              "media": "ToutMontpellier.fr",
+              "publie_le": "2026-11-11"
+            },
+            {
+              "url": "https://www.midilibre.fr/2026/11/10/suspicions-dagressions-sexuelles-le-directeur-dune-ecole-maternelle-de-montpellier-interpelle-et-place-en-garde-a-vue-13646276.php",
+              "acces": "libre",
+              "media": "Midi Libre",
+              "publie_le": "2026-11-10"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon Actu.fr, un premier signalement visant le directeur et enseignant de l'école a été effectué par une mère d'élève de maternelle.",
           "acteur": null,
           "source": {
             "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
@@ -11739,13 +11940,26 @@
         },
         {
           "date": null,
-          "type": "enquete",
-          "texte": "Selon Actu.fr, une enquête préliminaire du Service local de police judiciaire a été ouverte à Montpellier sur les soupçons d'agressions sexuelles, les investigations ayant été lancées le lundi 9 novembre 2026.",
-          "acteur": "Service local de police judiciaire (SLPJ), commissariat central de Montpellier",
+          "type": "signalement",
+          "texte": "Selon Actu.fr, un signalement récent a été fait par des parents réunis en collectif, qui ont alerté la Ligue Féminine 34 et le syndicat FO de la Ville et de la Métropole de Montpellier.",
+          "acteur": "parents réunis en collectif",
           "source": {
-            "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+            "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
             "acces": "libre",
             "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "garde_a_vue",
+          "texte": "Selon ToutMontpellier.fr, l'homme mis en cause a été placé en garde à vue au commissariat central de la ville.",
+          "acteur": "commissariat central de Montpellier",
+          "source": {
+            "url": "https://toutmontpellier.fr/news/montpellier-le-directeur-d-une-ecole-maternelle-interpelle-pour-soupco",
+            "acces": "libre",
+            "media": "ToutMontpellier.fr",
             "publie_le": "2026-11-11"
           },
           "date_nature": "article"
@@ -11778,7 +11992,7 @@
         }
       ],
       "synthese": {
-        "decision": "Selon Actu.fr, une enquête préliminaire du Service local de police judiciaire a été ouverte à Montpellier sur les soupçons d'agressions sexuelles, les investigations ayant été lancées le lundi 9 novembre 2026."
+        "decision": "Selon Actu.fr, une procédure visant le directeur est ouverte au Service Local de Police Judiciaire depuis le lundi 9 novembre 2026, sans mesure de garde à vue pour l'heure."
       },
       "inconnues": [
         "Le dossier ne repose que sur 3 articles lus (Actu.fr, Midi Libre, ToutMontpellier.fr).",
@@ -11807,6 +12021,29 @@
           "validation": "POSITION_ATTRIBUEE",
           "attribution": "POSITION_ATTRIBUEE",
           "date_nature": "article"
+        },
+        {
+          "date": "2026-11-11",
+          "acteur": "Rectorat de Montpellier (Académie de Montpellier)",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-a-montpellier-le-rectorat-prend-des-mesures_65043937.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-11"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "mesure conservatoire prise à l'égard du directeur de l'école dans l'attente des conclusions de l'enquête",
+          "citations": [
+            {
+              "pour": "mesure conservatoire prise à l'égard du directeur de l'école dans l'attente des conclusions de l'enquête",
+              "texte": "dans l'attente des conclusions de l'enquête, Aymeric Meiss, directeur académique des services de l'Education nationale de l'Hérault, a pris une mesure conservatoire à l'égard du directeur de l'école"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
       "situation": {
@@ -11817,20 +12054,20 @@
           "titre": "Issue de la procédure à documenter",
           "lignes": [
             "La personne mise en cause est présumée innocente.",
-            "Mesure institutionnelle (distincte de la décision judiciaire) : selon Midi Libre, la personne mise en cause a été suspendue de ses fonctions à titre conservatoire, décision prise par le directeur académique des services de l’Éducation nationale.",
-            "Mesure institutionnelle (distincte de la décision judiciaire) : selon l'Académie, un remplacement a été mis en place dès vendredi 6 novembre afin d'assurer la continuité des apprentissages."
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon Midi Libre, le directeur de l'école maternelle Johann-Wolfgang-Von-Goethe, également enseignant, a été suspendu de ses fonctions à titre conservatoire, le Directeur académique des services de l'Éducation nationale ayant pris la décision de le suspendre de façon préventive.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : l'Académie de Montpellier a suspendu le directeur de cette école le jeudi 5 novembre 2026, à titre conservatoire et jusqu'à nouvel ordre."
           ]
         },
         "decision": {
           "cat": "blue",
-          "meta": "Service local de police judiciaire (SLPJ), commissariat central de Montpellier",
+          "meta": "9 novembre 2026 · Service Local de Police Judiciaire -SLPJ-",
           "label": "Situation judiciaire",
-          "texte": "Selon Actu.fr, une enquête préliminaire du Service local de police judiciaire a été ouverte à Montpellier sur les soupçons d'agressions sexuelles, les investigations ayant été lancées le lundi 9 novembre 2026.",
+          "texte": "Selon Actu.fr, une procédure visant le directeur est ouverte au Service Local de Police Judiciaire depuis le lundi 9 novembre 2026, sans mesure de garde à vue pour l'heure.",
           "titre": "Enquête"
         }
       },
       "etat_actuel": [
-        "Selon Actu.fr, une enquête préliminaire du Service local de police judiciaire a été ouverte à Montpellier sur les soupçons d'agressions sexuelles, les investigations ayant été lancées le lundi 9 novembre 2026."
+        "Selon Actu.fr, une procédure visant le directeur est ouverte au Service Local de Police Judiciaire depuis le lundi 9 novembre 2026, sans mesure de garde à vue pour l'heure."
       ],
       "statut_affiche": "enquête"
     }
