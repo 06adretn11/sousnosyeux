@@ -35,7 +35,7 @@ export async function genererBanc({ corpus = lire('scripts/qa/fixtures/banc-soci
   for (const sc of corpus.scenarios) {
     const entree = cases.get(sc.case_id) ?? null;
     const dossier = dossierFiche(sc.case_id);
-    const M = matiereApprouvee({ entree, dossier, empreinteApprouvee: ev.fiches_approuvees?.[sc.case_id]?.hash ?? null,
+    const M = matiereApprouvee({ entree, dossier, empreinteApprouvee: sc.sans_fiche ? null : ev.fiches_approuvees?.[sc.case_id]?.hash ?? null,
       evenements: ev.affaires?.[sc.case_id] ?? [], matiere: (ev.matiere || []).filter((m) => m.case_id === sc.case_id), wording });
     const r = composerPilote({ scenario: sc, M, publiques: cases, site: SITE, redirections });
     const canaux = {};
