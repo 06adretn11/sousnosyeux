@@ -61,7 +61,7 @@ export function portNeon(sql) {
                exists (select 1 from reviews r where r.case_id = p.case_id and r.decision = 'retirer') retire
           from state_proposals p join cases c using (case_id) join case_events e on e.event_id = p.applied_event_id
          where p.decision = 'ACCEPT' and p.decided_by ilike '%Telegram%' and p.applied_event_id is not null
-           and p.decided_at >= ${T}::timestamptz and p.created_at >= ${T}::timestamptz and e.recorded_at >= ${T}::timestamptz
+           and p.decided_at >= ${T}::timestamptz and e.recorded_at >= ${T}::timestamptz
            and p.statut_propose is not null and p.statut_avant is distinct from p.statut_propose`;
       for (const m of maj) sortie.push({ type: 'case_update', case_id: m.case_id, event_id: m.event_id, statut_avant: m.avant, statut_apres: m.apres, propose_at: iso8(m.propose_at), decide_at: iso8(m.decided_at), evenement_enregistre_at: iso8(m.enregistre_at), ps: m.ps, retire: !!m.retire });
       return sortie;

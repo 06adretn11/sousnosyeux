@@ -99,7 +99,8 @@ export function evaluerCandidat(c, ctx) {
     apresT0('création de l’affaire', c.cree_at, ctx.t0, r);
     apresT0('approbation de la fiche', c.fiche_approuvee_at, ctx.t0, r);
   } else {
-    apresT0('proposition de maintenance', c.propose_at, ctx.t0, r);
+    // La NOUVEAUTÉ est l'événement approuvé et enregistré après T0 ; l'analyse qui l'a proposé peut lui être antérieure (une proposition restée sans décision avant T0 n'a rien relayé).
+    // Ce qui interdit le rattrapage : la DÉCISION (une seule par proposition) et l'enregistrement de l'événement sont postérieurs à T0, et la source a moins de 7 jours.
     apresT0('approbation de l’événement', c.decide_at, ctx.t0, r);
     apresT0('enregistrement de l’événement', c.evenement_enregistre_at, ctx.t0, r);
     if (!evolutionSignificative(c.statut_avant, c.statut_apres)) r.push('évolution non significative (statut inchangé, en recul ou ambigu)');

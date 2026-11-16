@@ -65,6 +65,36 @@ if (A.includes('--appliquer-migration')) {
   process.exit(0);
 }
 
+// --- --reconstituer : RECONSTITUTION EXHAUSTIVE (lecture seule) de tout ce qui s'est passé depuis T0, SANS passer par candidats() -----------------------------------
+// Dépôt public ⇒ journaux publics : identifiants d'affaire, états, horodatages, préfixes de revue entre crochets. Jamais de texte, de nom, de lieu ni d'adresse.
+if (A.includes('--reconstituer')) {
+  const t0r = (await sql`select t0 from relais_social_config where id = 1`)[0]?.t0;
+  if (!t0r) { log('T0 absent'); process.exit(1); }
+  const T = new Date(t0r).toISOString();
+  const z = (d) => (d ? new Date(d).toISOString().slice(0, 19) + 'Z' : '—');
+  const t = (title, rows, f) => { log(`\n## ${title} (${rows.length})`); for (const r of rows) log(f(r)); };
+  log(`T0 en base = ${T} · variables : ACTIVE=${env('SNY_DIFFUSION_ACTIVE')} MODE=${env('SNY_DIFFUSION_MODE')} DEPUIS=${env('SNY_DIFFUSION_DEPUIS')}`);
+  t('affaires créées ou modifiées depuis T0', await sql`select case_id, created_at, updated_at, publication_status::text ps, statut_judiciaire::text st, fiabilite_info_10 fi from cases where created_at >= ${T}::timestamptz or updated_at >= ${T}::timestamptz order by created_at`,
+    (r) => `${r.case_id} créée ${z(r.created_at)} modifiée ${z(r.updated_at)} · ${r.ps} · ${r.st} · fiabilité ${r.fi}`);
+  t('propositions Discovery (new_case_proposals) depuis T0', await sql`select proposal_id::text pid, recommendation, attach_case_id, created_case_id, decision::text d, action, decided_by, created_at, decided_at, applied_at, (select string_agg(k, ',') from jsonb_object_keys(payload) k) cles from new_case_proposals where created_at >= ${T}::timestamptz or decided_at >= ${T}::timestamptz or applied_at >= ${T}::timestamptz order by created_at`,
+    (r) => `${r.pid.slice(0, 8)} ${r.recommendation} → ${r.created_case_id ?? r.attach_case_id ?? '—'} · créée ${z(r.created_at)} · décision ${r.d ?? 'aucune'}${r.action ? `/${r.action}` : ''} ${z(r.decided_at)} · appliquée ${z(r.applied_at)} · payload [${r.cles}]`);
+  t('revues (reviews) depuis T0', await sql`select case_id, reviewed_at, split_part(reviewed_by, ' ', 1) par, decision::text d, coalesce(substring(comment from '^\\[[^\\]]{0,40}\\]'), '(sans préfixe)') pref from reviews where reviewed_at >= ${T}::timestamptz order by reviewed_at`,
+    (r) => `${r.case_id} ${z(r.reviewed_at)} ${r.par} ${r.d} ${r.pref}`);
+  t('propositions Maintenance (state_proposals) depuis T0', await sql`select proposal_id::text pid, case_id, statut_avant::text av, statut_propose::text ap, analysis_action aa, event_date::text ed, source_date::text sd, decision::text d, decided_by, decided_at, applied_event_id::text ev, created_at, (payload ? 'declaration') decl from state_proposals where created_at >= ${T}::timestamptz or decided_at >= ${T}::timestamptz order by created_at`,
+    (r) => `${r.pid.slice(0, 8)} ${r.case_id} ${r.aa} ${r.av ?? '—'} → ${r.ap ?? '—'} · fait ${r.ed ?? '—'} · source ${r.sd ?? '—'} · créée ${z(r.created_at)} · décision ${r.d ?? 'aucune'} ${z(r.decided_at)} · événement ${r.ev ? r.ev.slice(0, 8) : '—'}${r.decl ? ' · déclaration' : ''}`);
+  t('événements enregistrés (case_events) depuis T0', await sql`select event_id::text id, case_id, event_type::text ty, event_date::text ed, statut_apres::text st, recorded_at from case_events where recorded_at >= ${T}::timestamptz order by recorded_at`,
+    (r) => `${r.id.slice(0, 8)} ${r.case_id} ${r.ty} fait ${r.ed ?? '—'} → ${r.st ?? '—'} · enregistré ${z(r.recorded_at)}`);
+  t('envois Telegram depuis T0', await sql`select kind, cle, sent_at from telegram_envois where sent_at >= ${T}::timestamptz order by sent_at`, (r) => `${r.kind} ${String(r.cle).slice(0, 12)} ${z(r.sent_at)}`);
+  t('relais : propositions sociales', await sql`select proposal_id::text pid, event_key, case_id, canaux_proposes, decision, canaux_autorises, resolution, created_at, decided_at, telegram_message_id from relais_social_propositions order by created_at`,
+    (r) => `${r.pid.slice(0, 8)} ${r.event_key} · canaux ${r.canaux_proposes} · décision ${r.decision ?? '—'} · résolution ${r.resolution ?? '—'} · créée ${z(r.created_at)} · message ${r.telegram_message_id ?? '—'}`);
+  t('relais : journal de diffusion', await sql`select event_key, canal, etat, buffer_post_id, created_at from diffusions_sociales order by created_at`, (r) => `${r.event_key} ${r.canal} ${r.etat} ${z(r.created_at)}`);
+  // Nature des faits des analyses non tranchées ou à enrichissement (champs d'une liste blanche, valeurs courtes : jamais de texte d'article).
+  t('faits des analyses Maintenance depuis T0 (nature seulement)', await sql`select proposal_id::text pid, case_id, analysis_action aa, decision::text d, facts from state_proposals where created_at >= ${T}::timestamptz and analysis_action in ('ENRICHMENT', 'STATE_CHANGE') order by created_at`,
+    (r) => `${r.pid.slice(0, 8)} ${r.case_id} ${r.aa} ${r.d ?? 'aucune'} · ${(Array.isArray(r.facts) ? r.facts : []).map((f) => ['type', 'nature', 'portee', 'resulting_state', 'realisation', 'categorie'].filter((k) => typeof f?.[k] === 'string' && f[k].length <= 40).map((k) => `${k}=${f[k]}`).join('/') + (f?.libelle_public ? '/libelle_public' : '') + (f?.evidence?.length ? `/citations=${f.evidence.length}` : '')).join(' ; ') || '(aucun fait)'}`);
+  t('journal Telegram (20 derniers passages)', await sql`select at, kind, left(coalesce(action, ''), 12) a, left(coalesce(resultat, ''), 40) r from telegram_journal order by id desc limit 20`, (r) => `${z(r.at)} ${r.kind} ${r.a} ${r.r}`);
+  process.exit(0);
+}
+
 // --- --etat : synthèse (aucun contenu) ------------------------------------------------------------------------------------------------
 if (A.includes('--etat')) {
   const now = new Date();
