@@ -41,6 +41,7 @@ concurrency:
 
 jobs:
   diffusion:
+    if: ${{ inputs.action != 'essai-instagram' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
