@@ -180,6 +180,16 @@ if (A.includes('--verifier-connexion')) {
         ok(`canal ${c} : connu`, !!k);
         if (k) { ok(`canal ${c} : service ${SERVICE[c]}`, k.service === SERVICE[c], k.service); ok(`canal ${c} : connecté, non verrouillé, file active`, !k.isDisconnected && !k.isLocked && !k.isQueuePaused, `isDisconnected=${k.isDisconnected} isLocked=${k.isLocked} isQueuePaused=${k.isQueuePaused}`); }
       }
+      // Instagram : la connexion doit être PROFESSIONNELLE et autoriser la publication automatique (pas une simple notification mobile). Lecture seule.
+      try {
+        for (const k of await b.detailCanauxInstagram()) {
+          const cible = CANAL_ID.instagram ? k.id === CANAL_ID.instagram : true;
+          if (!cible) continue;
+          console.log(`ℹ️ instagram ${k.id} nom=${k.displayName} type=${k.type} · droits accordés : ${(k.scopes || []).join(', ') || '(aucun listé)'} · actions permises : ${(k.allowedActions || []).join(', ')}`);
+          ok(`instagram ${k.id} : action « scheduleUpdates » permise (publication programmée par l’API)`, (k.allowedActions || []).includes('scheduleUpdates'));
+          console.log(`ℹ️ instagram ${k.id} : defaultToReminders=${k.metadata?.defaultToReminders} (true = Buffer enverrait un rappel mobile par défaut ; le client SNY impose schedulingType=automatic)`);
+        }
+      } catch (e) { console.log(`ℹ️ détail du canal Instagram illisible : ${e.message}`); }
       const premier = CANAUX.find((c) => CANAL_ID[c]);
       if (premier) {
         try { await b.trouverPost({ channelId: CANAL_ID[premier], signature: 'utm_content=verification-sans-effet', depuis: new Date(Date.now() - 864e5).toISOString() }); ok('requête de réconciliation (posts) acceptée par Buffer', true); }
