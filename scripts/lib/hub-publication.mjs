@@ -69,10 +69,10 @@ export function composerMatiereHub({ territoire, cases, evenements = [], holds =
 }
 
 /** Proposition « PUBLIER LE HUB » (new_case_proposals.payload) : une par (Hub, empreinte de la matière) ; un rejeu ne crée rien. */
-export function payloadPublication({ slug, titre, hash, ids }) {
+export function payloadPublication({ slug, titre, hash, ids, miseAJour = null }) {
   return {
     payload: { version: 'proposition-hub-publication-1', commune: titre, etablissement: null,
-      hub_publication: { slug, titre, hash, publiques: [...ids].sort(), apercu: urlBrouillon(slug), page: `/territoires/${slug}/` } },
+      hub_publication: { slug, titre, hash, publiques: [...ids].sort(), apercu: urlBrouillon(slug), page: `/territoires/${slug}/`, ...(miseAJour ? { mise_a_jour: miseAJour } : {}) } },
     cle: `hubpub|${slug}|${hash}`,
   };
 }

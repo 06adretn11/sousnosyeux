@@ -1,7 +1,37 @@
 // Étape « Alerter » de sny-telegram : lit les `outcome` des étapes (env OUTCOME_<clé>) et prévient l'éditeur avec la bonne classification.
+// Contexte (best-effort, jamais une condition) : les clics enregistrés pendant ce run (objet = fiche / proposition), les contrôles QA en échec et les écarts du site servi
+// (journaux des étapes, fichiers QA_LOG / CONTROLE_LOG). Aucune donnée personnelle : identifiants d'affaire et empreintes seulement.
+import { readFileSync } from 'node:fs';
 import { classerEchecClic } from './lib/alerte-clic.mjs';
 import { prevenir } from './lib/prevenir.mjs';
 
 const cles = ['enregistrer', 'simples', 'discovery', 'projection', 'qa', 'publier', 'verifier', 'reconcile', 'controle'];
 const outcomes = Object.fromEntries(cles.map((k) => [k, process.env['OUTCOME_' + k]]));
-await prevenir(classerEchecClic(outcomes).texte);
+
+const lignes = (f) => { try { return readFileSync(f, 'utf8').split(/\r?\n/); } catch { return []; } };
+const nettoie = (s) => s.replace(/\u001b\[[0-9;]*m/g, '').replace(/^\s*(?:[❌✗·]\s*)+/u, '').trim();
+const ctx = { objets: [], controles: [], ecartsSite: [], enregistreA: null };
+
+if (process.env.QA_LOG) ctx.controles = lignes(process.env.QA_LOG).filter((l) => /❌|✗/u.test(l)).map(nettoie).slice(0, 3);
+if (process.env.CONTROLE_LOG) ctx.ecartsSite = lignes(process.env.CONTROLE_LOG).filter((l) => /FICHE_PENDING_DEPLOYMENT\s{2,}|^· fiche \S+\s+HTTP|MISMATCH|NOT_SERVED/.test(l)).map(nettoie).slice(0, 3);
+
+try {
+  if (process.env.NEON_DATABASE_URL) {
+    const { connecter } = await import('./lib/neon.mjs');
+    const { sql } = connecter();
+    // Clics enregistrés pendant les 30 dernières minutes (un run dure < 20 min) : l'objet de l'alerte est ce que CE clic a décidé.
+    const clics = await sql`select cle, action, at from telegram_journal where kind = 'clic' and resultat = 'enregistree' and at > now() - interval '30 minutes' order by at desc limit 3`;
+    for (const c of clics) {
+      const [p] = await sql`select payload, decision::text decision from new_case_proposals where proposal_id::text like ${c.cle + '%'} limit 1`;
+      let o = null;
+      if (p?.payload?.page) o = { id: p.payload.page.case_id, nature: p.payload.page.mise_a_jour ? 'approbation de la mise à jour de la page' : 'approbation de la page', cle: c.cle, decision: p.decision };
+      else if (p?.payload?.hub_publication) o = { id: `Hub ${p.payload.hub_publication.titre}`, nature: 'publication du Hub', cle: c.cle, decision: p.decision };
+      else if (p?.payload) o = { id: p.payload.etablissement ? `${p.payload.etablissement} (${p.payload.commune})` : String(p.payload.commune || c.cle), nature: 'proposition', cle: c.cle, decision: p.decision };
+      else { const [s] = await sql`select case_id, decision::text decision from state_proposals where proposal_id::text like ${c.cle + '%'} limit 1`; if (s) o = { id: s.case_id, nature: 'proposition d’état', cle: c.cle, decision: s.decision }; }
+      if (o) ctx.objets.push(o);
+    }
+    if (clics[0]) ctx.enregistreA = `enregistrée à ${new Date(clics[0].at).toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' })}`;
+  }
+} catch { /* le contexte est une aide : sans lui, l'alerte garde sa classification */ }
+
+await prevenir(classerEchecClic(outcomes, ctx).texte);

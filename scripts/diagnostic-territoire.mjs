@@ -96,6 +96,10 @@ if (process.argv[1]?.endsWith('diagnostic-territoire.mjs')) {
           notifies++;
         }
       } catch (err) { console.log(`  ⚠ proposition de Hub non écrite (${String(err.message).slice(0, 100)}) : signal conservé en interne, aucun message envoyé`); continue; }
+    } else if (d.significatif && ['INTEGRER_HUB', 'ENRICHIR_HUB'].includes(d.decision) && HUBS_PERIMETRES[nom]?.compose) {
+      // Hub COMPOSÉ déjà publié : jamais une demande de décision sans proposition. La matière est recomposée par `preparer-hub.mjs --maj` ; s'il y a un changement,
+      // l'éditeur reçoit UNE proposition de mise à jour (changement, aperçu, Approuver / À revoir / Écarter) ; sinon rien ne lui est demandé.
+      console.log(`  ${nom} : ${d.decision} traité par la mise à jour de Hub (proposition décidable ou aucune) — aucun message d'information sans bouton`);
     } else if (d.significatif && d.decision !== 'PROPOSER_NOUVEAU_HUB') { await prevenir(messageDiagnostic(nom, e, d)); notifies++; }
     if (!prev || bouge) await journaliser(sql, { kind: 'application', cle: 'diag:' + nom, resultat: 'diagnostic', details: { instantane: instantane(e), decision: d.decision } });
   }

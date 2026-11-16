@@ -6,14 +6,14 @@
       "departement": "Seine-Maritime"
     },
     "genere_auto": true,
-    "redige_le": "2026-11-10",
+    "redige_le": "2026-11-16",
     "statut": "matière COMPOSÉE automatiquement : publiable seulement après le GO « PUBLIER LE HUB » portant sur son empreinte.",
     "methode": "composée sans rédaction depuis les affaires publiques non gelées (data/cases.json) et les événements validés (Neon) ; aucune phrase n’est écrite à la main ; ce qui manque est dit dans « Limites »."
   },
   "reperes": {
     "titre": "Seine-Maritime : 3 affaires rapportées par la presse",
-    "chapeau": "3 affaires publiques dans 3 communes (Rouen, Saint-Valéry-en-Caux, Saint-Aubin-lès-Elbeuf) : 2 × condamnation non définitive · 1 × enquête. Rien, dans les sources lues, ne relie ces affaires ; elles ne sont réunies ici que par le territoire. Les personnes mises en cause bénéficient de la présomption d’innocence.",
-    "limite": "Page composée automatiquement depuis les fiches publiques et les événements validés, sans rédaction éditoriale : le déroulé détaillé n’est repris que pour 2 affaire(s) sur 3. Les informations non validées ne figurent pas ici."
+    "chapeau": "3 affaires publiques dans 3 communes (Rouen, Saint-Valéry-en-Caux, Saint-Aubin-lès-Elbeuf) : 2 × condamnation non définitive · 1 × mise en examen. Rien, dans les sources lues, ne relie ces affaires ; elles ne sont réunies ici que par le territoire. Les personnes mises en cause bénéficient de la présomption d’innocence.",
+    "limite": "Page composée automatiquement depuis les fiches publiques et les événements validés, sans rédaction éditoriale. Les informations non validées ne figurent pas ici."
   },
   "ordre": [
     "FR-2026-0041",
@@ -48,7 +48,7 @@
   "recherches": [
     {
       "question": "Dossier éditorial détaillé (déroulé daté et sourcé)",
-      "resultat": "absent pour 1 affaire(s) sur 3 (FR-2026-0144) : seuls l’état, les sources et les événements validés sont affichés"
+      "resultat": "disponible pour les 3 affaires"
     },
     {
       "question": "Réponses institutionnelles et mobilisations validées",

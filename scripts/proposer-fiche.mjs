@@ -41,7 +41,9 @@ for (const id of ids) {
   // Fiche DÉJÀ publiée : la candidate est une MISE À JOUR (changements affichés depuis la dernière version publique) ; sans changement substantiel, rien n'est proposé.
   const precedent = GENEREE ? dossierFiche(id) : null;
   if (precedent && hashDossier(precedent.d) === hashDossier(dossier.d)) { console.log(`· ${id} : identique à la version publique — rien à proposer`); continue; }
-  if (precedent && !changementsFiche(precedent.d, dossier.d).substantiel) { console.log(`· ${id} : aucun changement substantiel depuis la version publique (reformulations seules) — rien à proposer`); continue; }
+  // --correction : rectification ciblée d'une formulation de « Ce que l'on ne sait pas » (restitution, sans matière nouvelle) — la seule différence admise hors « substantiel » ; jamais pour un changement d'étapes, de sources ou d'état.
+  const CORRECTION = A.includes('--correction') && precedent && changementsFiche(precedent.d, dossier.d).inconnues_changees;
+  if (precedent && !CORRECTION && !changementsFiche(precedent.d, dossier.d).substantiel) { console.log(`· ${id} : aucun changement substantiel depuis la version publique (reformulations seules) — rien à proposer`); continue; }
   const payload = payloadFiche({ c, dossier, precedent, sourcesNeon, nbEvenements: (evenements[id] || []).length, previewBase: PREVIEW, hubTitre: HUBS[dossier.hub], generation: GENEREE ? dossier.generation : null });
   const cle = `${cleDedupFiche(id)}|${hashDossier(dossier.d)}`;
   const [deja] = sql ? await sql`select proposal_id::text pid, decision::text d from new_case_proposals where dedup_key = ${cle}` : [];

@@ -28,5 +28,19 @@ test('vérification échouée → publication faite, à contrôler', /publicatio
 
 const r = classerEchecClic({ enregistrer: 'success', simples: 'success', discovery: 'success', projection: 'success', reconcile: 'failure' });
 test('… réconciliation : décision appliquée, réessai automatique annoncé', r.decisionAppliquee === true && /réconciliation de la publication/.test(r.texte) && /prochain passage/.test(r.texte) && !/ÉCHOUÉ/.test(r.texte));
+// 16/11/2026 (FR-2026-0148 / FR-2026-0144) : QA en échec puis site servi non conforme. L'alerte nomme l'objet, le contrôle, l'état de la décision, la portée de « rien publié », la reprise.
+const CTX = { objets: [{ id: 'FR-2026-0144', nature: 'approbation de la page', cle: 'fe3f3ae8', decision: 'ACCEPT' }], controles: ['S07 : X BLOQUE · Facebook BLOQUE — CONFORME / BLOQUE'], ecartsSite: ['fiche FR-2026-0144  FICHE_PENDING_DEPLOYMENT  fiche FR-2026-0144 : HTTP 404'], enregistreA: 'enregistrée à 11:16' };
+const RUN_1611 = { enregistrer: 'success', simples: 'success', discovery: 'success', projection: 'success', reconcile: 'success', qa: 'failure', publier: 'skipped', verifier: 'skipped', controle: 'failure' };
+const q = classerEchecClic(RUN_1611, CTX);
+test('alerte du 16/11 : la fiche et la proposition sont nommées', /FR-2026-0144/.test(q.texte) && /fe3f3ae8/.test(q.texte) && /approbation de la page/.test(q.texte));
+test('… l’étape en échec ET le contrôle en cause sont nommés', /QA avant publication/.test(q.texte) && /S07/.test(q.texte) && /HTTP 404/.test(q.texte));
+test('… blocage présenté comme tel (pas « étape secondaire » seule)', /Publication BLOQUÉE/.test(q.texte));
+test('… décision déjà enregistrée : état dit, jamais « à refaire »', /enregistrée et appliquée \(enregistrée à 11:16\)/.test(q.texte) && /ne re-clique pas/.test(q.texte));
+test('… « rien publié » est borné à CE passage, les pages en ligne restent', /ce passage n’a rien publié/.test(q.texte) && /pages déjà en ligne restent telles quelles/.test(q.texte));
+test('… reprise annoncée parce qu’elle existe (sny-clics), avec sa limite', /Reprise : le prochain passage planifié de sny-clics/.test(q.texte) && /échouera de nouveau tant que la cause n’est pas corrigée/.test(q.texte));
+const v = classerEchecClic({ enregistrer: 'success', simples: 'success', discovery: 'success', publier: 'success', controle: 'failure' }, CTX);
+test('contrôle du site servi seul en échec → « NON VÉRIFIÉE », jamais « Publié et vérifié » annoncé', /Publication NON VÉRIFIÉE/.test(v.texte) && !/Publication BLOQUÉE/.test(v.texte) && /aucun « Publié et vérifié » n’est annoncé/.test(v.texte));
+test('contexte HTML sûr : un contrôle contenant < ou & est échappé', /a &lt; b &amp; c/.test(classerEchecClic(RUN_1611, { ...CTX, controles: ['a < b & c'] }).texte));
+test('sans contexte : message toujours valide (aucun « undefined »)', !/undefined/.test(classerEchecClic(RUN_1611).texte));
 console.log(ko ? `\n  ❌ ${ko} échec(s)\n` : '\n  ✅ tous les tests passent\n');
 process.exit(ko ? 1 : 0);

@@ -26,7 +26,7 @@ export const HUBS_PERIMETRES = {
  */
 export function enregistrerHub(slug, titre, departement) {
   if (!/^[a-z0-9-]+$/.test(slug || '') || !departement || HUBS_PERIMETRES[slug]) return;
-  HUBS_PERIMETRES[slug] = { titre, test: (c) => c.departement === departement, zone: { departement } };
+  HUBS_PERIMETRES[slug] = { titre, test: (c) => c.departement === departement, zone: { departement }, compose: true };
 }
 try {
   const ev = JSON.parse(readFileSync(new URL('../../data/evenements.json', import.meta.url), 'utf8'));

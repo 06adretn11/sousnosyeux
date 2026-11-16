@@ -129,6 +129,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Lot 16/11 — accusé d’une approbation de page d’affaire publique, mise à jour décidable d’un Hub publié, câblage des workflows',
+    script: 'scripts/qa/test-lot-16-11.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Projection des évolutions — affaire absente de l’artefact ≠ échec ; non projetable sur le site = conflit à arbitrer',
     script: 'scripts/qa/test-classer-projection.mjs',
     bloquant: true,
