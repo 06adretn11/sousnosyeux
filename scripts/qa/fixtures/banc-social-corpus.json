@@ -10,7 +10,7 @@
     { "id": "S04", "titre": "Évolution — condamnation, recours non documentés", "famille": "evolution", "case_id": "FR-2026-0001", "event_id": "a85574bb-c8c9-47fa-b5fe-70f688b3441b" },
     { "id": "S05", "titre": "Déclaration associative — L'Enfant Bleu", "famille": "declaration_association", "case_id": "POC-05", "matiere_id": "0eca8e5246d4" },
     { "id": "S06", "titre": "Prise de parole côté victime — avocat de la famille", "famille": "declaration_victime", "case_id": "FR-2026-0001", "reaction": 0, "citation": 0 },
-    { "id": "S07", "titre": "Contrôle — affaire insuffisamment documentée (aucune fiche approuvée)", "famille": "nouvelle_affaire", "case_id": "FR-2026-0144", "controle": true },
+    { "id": "S07", "titre": "Contrôle — affaire insuffisamment documentée (aucune fiche approuvée)", "famille": "nouvelle_affaire", "case_id": "FR-2026-0144", "controle": true, "sans_fiche": true },
     { "id": "S08", "titre": "Contrôle — information judiciaire ambiguë (événement « condamnation », carte « enquête »)", "famille": "evolution", "case_id": "FR-2026-0004", "event_id": "deefe35b-ca3b-4823-99c0-59e594a947f4", "controle": true },
     { "id": "S09", "titre": "Contrôle — événement étiqueté « mise en examen » qui est une remise en liberté", "famille": "evolution", "case_id": "FR-2026-0027", "event_id": "46766808-26d3-4f0b-bf28-7018fb43110f", "controle": true },
     { "id": "S10", "titre": "Contrôle — relaxe frappée d'appel (finalité)", "famille": "evolution", "case_id": "POC-09", "event_id": "40822595-4ee6-49a9-90ed-f00625514e9d", "controle": true },
