@@ -27,9 +27,21 @@ const ev = lire('data/evenements.json');
 // garde-fou social refuse à bon droit : fonction unique de l'établissement). La mécanique du relais ne doit pas dépendre de ce texte : on la rejoue sur la version
 // approuvée FIGÉE (scripts/qa/fixtures/fiche-0146-8b38c2d4b2470bf8.json, empreinte recalculée à chaque exécution). Les autres affaires restent lues en direct.
 const FICHE_0146_FIGEE = lire('scripts/qa/fixtures/fiche-0146-8b38c2d4b2470bf8.json');
-const dossierFiche = (id) => (id === 'FR-2026-0146' ? { hub: FICHE_0146_FIGEE._meta.hub, d: FICHE_0146_FIGEE.dossier, verifie_le: FICHE_0146_FIGEE.dossier.verifie_le } : dossierFicheVivant(id));
 ev.fiches_approuvees = { ...(ev.fiches_approuvees ?? {}), 'FR-2026-0146': { ...(ev.fiches_approuvees?.['FR-2026-0146'] ?? {}), hash: hashDossier(FICHE_0146_FIGEE.dossier) } };
 if (hashDossier(FICHE_0146_FIGEE.dossier) !== FICHE_0146_FIGEE._meta.hash) { console.error('❌ fixture fiche-0146 altérée : empreinte ≠ _meta.hash'); process.exit(1); }
+// Les trois affaires-scénarios sont FIGÉES en entier (carte publique, événements, informations validées, dossier) : un texte éditorial qui change en production
+// (nouvelle version de fiche, nouvel événement) ne doit plus jamais bloquer la QA de la chaîne de publication (incident du 13 au 16/11 : ~63 h de projection perdues).
+const FIGES = lire('scripts/qa/fixtures/relais-scenarios-figes.json');
+const dossiersFiges = { 'FR-2026-0146': { hub: FICHE_0146_FIGEE._meta.hub, d: FICHE_0146_FIGEE.dossier, verifie_le: FICHE_0146_FIGEE.dossier.verifie_le } };
+for (const id of ['FR-2026-0005', 'FR-2026-0113', 'FR-2026-0146']) {
+  const f = FIGES[id];
+  casesPubliques.set(id, f.entree);
+  ev.affaires = { ...ev.affaires, [id]: f.evenements };
+  ev.matiere = [...(ev.matiere || []).filter((m) => m.case_id !== id), ...f.matiere];
+  if (f.dossier) dossiersFiges[id] = f.dossier;
+  ev.fiches_approuvees[id] = { hash: hashDossier(dossiersFiges[id].d) };
+}
+const dossierFiche = (id) => dossiersFiges[id] ?? dossierFicheVivant(id);
 const redirections = lire('data/redirections-affaires.json').redirections ?? {};
 const SITE = 'https://sousnosyeux.org';
 const H = 36e5;
@@ -123,8 +135,11 @@ console.log('A. Anti-backfill : zéro historique');
   await executerCycle(deps(w, now));
   verifie('2. affaire créée avant T0, fiche modifiée / réapprouvée après T0 → jamais « nouvelle affaire »', w.props.length === 0 && propositions(w).length === 0);
   // 3. ancienne proposition de maintenance réapprouvée après T0
-  w = monde({ t0, candidats: [{ ...candEvolution(t0), propose_at: new Date(t0.getTime() - 30 * H) }] });
-  await executerCycle(deps(w, EVOLUTION.now.getTime() > 0 ? now : now));
+  {
+    const t0b = T0_DEFAUT(EVOLUTION.now);
+    w = monde({ t0: t0b, candidats: [{ ...candEvolution(t0b), decide_at: new Date(t0b.getTime() - 3 * H), evenement_enregistre_at: new Date(t0b.getTime() - 3 * H) }] });
+    await executerCycle(deps(w, EVOLUTION.now));
+  }
   verifie('3. ancienne proposition Telegram réapprouvée après T0 → aucun nouveau post', w.props.length === 0 && propositions(w).length === 0);
   // 4. article récent ajouté à une ancienne affaire, sans événement nouveau : aucun candidat n'existe → silence total
   w = monde({ t0, candidats: [] });
@@ -139,8 +154,10 @@ console.log('A. Anti-backfill : zéro historique');
     const ctxE = { ...ctx, t0: t0E2, now: EVOLUTION.now, entree: casesPubliques.get(EVOLUTION.id), ficheHash: hE, ficheServie: { status: 200, hash: hE } };
     const a = raisons({ ...candNouvelle(t0), event_key: 'k', fiche_approuvee_at: new Date(t0.getTime() - 5 * H) });
     const b = raisons({ ...candNouvelle(t0), event_key: 'k', cree_at: new Date(t0.getTime() - 48 * H) });
-    const c = raisons({ ...candEvolution(t0E2), event_key: 'k', propose_at: new Date(t0E2.getTime() - 30 * H) }, ctxE);
-    verifie('1-3 : chaque refus cite T0 et AUCUNE autre cause (fiche, création, proposition de maintenance antérieures)', [a, b, c].every((r) => r.length === 1 && /antérieur\(e\) à T0/.test(r[0])), JSON.stringify([a, b, c]));
+    const c = raisons({ ...candEvolution(t0E2), event_key: 'k', decide_at: new Date(t0E2.getTime() - 3 * H), evenement_enregistre_at: new Date(t0E2.getTime() - 3 * H) }, ctxE);
+    verifie('1-3 : chaque refus cite T0 et AUCUNE autre cause (fiche approuvée, création, décision de maintenance antérieures)', [a, b].every((r) => r.length === 1 && /antérieur\(e\) à T0/.test(r[0])) && c.length === 2 && c.every((x) => /antérieur\(e\) à T0/.test(x)), JSON.stringify([a, b, c]));
+    // Cas réel FR-2026-0144 (16/11) : analyse proposée AVANT T0, décidée et enregistrée APRÈS ⇒ c'est une nouveauté (l'événement approuvé), pas un rattrapage.
+    verifie('proposition de maintenance créée avant T0 mais DÉCIDÉE et enregistrée après T0 ⇒ éligible (la nouveauté est l’événement approuvé)', evaluerCandidat({ ...candEvolution(t0E2), event_key: 'k', propose_at: new Date(t0E2.getTime() - 30 * H) }, ctxE).ok);
     verifie('contrôle témoin : le même candidat, daté après T0, est éligible à ce niveau', evaluerCandidat({ ...candNouvelle(t0), event_key: 'k' }, ctx).ok && evaluerCandidat({ ...candEvolution(t0E2), event_key: 'k' }, ctxE).ok);
   }
   // 5. événement de maintenance réellement nouveau, approuvé après T0 → proposition éligible
@@ -400,6 +417,12 @@ console.log('\nF. Aucun contournement : seuls les chemins protégés atteignent 
   const wf = ['sny-telegram', 'sny-clics', 'sny-cycle', 'sny-discovery', 'sny-maj-fiches', 'sny-reprise', 'sny-diffusion'].map((f) => readFileSync(join(racine, `.github/workflows/${f}.yml`), 'utf8'));
   verifie('tous les workflows qui lisent la configuration reçoivent SNY_DIFFUSION_MODE', wf.every((t) => /SNY_DIFFUSION_MODE: \$\{\{ vars\.SNY_DIFFUSION_MODE \}\}/.test(t)));
   verifie('aucun workflow n’écrit SNY_DIFFUSION_ACTIVE ni ne force un mode automatique', wf.every((t) => !/SNY_DIFFUSION_ACTIVE: ['"]?1/.test(t) && !/SNY_DIFFUSION_MODE: ['"]?(auto|automatique)/.test(t)));
+  // Première fiche automatique : elle ne publie rien et n'atteint jamais Buffer.
+  const pf = readFileSync(join(racine, 'scripts/proposer-premieres-fiches.mjs'), 'utf8');
+  const maj = readFileSync(join(racine, '.github/workflows/sny-maj-fiches.yml'), 'utf8');
+  verifie('premières fiches : aucun accès à Buffer, aucune publication ; seule issue = une proposition « APPROUVER LA FICHE » (clic humain)', !/buffer|creerPost|diffuserCanal|publier-affaire|sendMessage/i.test(pf.replace(/^\/\/.*$/gm, '')) && /proposer-fiche\.mjs/.test(pf));
+  verifie('premières fiches : réservées aux événements que le relais jugerait nouveaux (≥ T0), sans fiche, source < 7 j, relais REVIEW actif', /port\.candidats\(activation\.t0\)/.test(pf) && /verifierActivation/.test(pf) && /FENETRE_SOURCE_JOURS/.test(pf) && /fiches_approuvees/.test(pf));
+  verifie('premières fiches : branchées dans le workflow existant sny-maj-fiches (aperçu déposé puis proposition envoyée), avec la configuration du relais', /proposer-premieres-fiches\.mjs --ecrire/.test(maj) && /steps\.premieres\.outputs\.change/.test(maj) && /SNY_DIFFUSION_DEPUIS/.test(maj));
   const dm = readFileSync(join(racine, 'scripts/lib/discovery-messages.mjs'), 'utf8');
   verifie('le message du GO de publication ne promet plus de relais social', !/relais social strictement factuel/.test(dm) && /pas son relais social/.test(dm));
 }
