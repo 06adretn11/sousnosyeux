@@ -88,6 +88,9 @@ if (A.includes('--reconstituer')) {
   t('relais : propositions sociales', await sql`select proposal_id::text pid, event_key, case_id, canaux_proposes, decision, canaux_autorises, resolution, created_at, decided_at, telegram_message_id from relais_social_propositions order by created_at`,
     (r) => `${r.pid.slice(0, 8)} ${r.event_key} · canaux ${r.canaux_proposes} · décision ${r.decision ?? '—'} · résolution ${r.resolution ?? '—'} · créée ${z(r.created_at)} · message ${r.telegram_message_id ?? '—'}`);
   t('relais : journal de diffusion', await sql`select event_key, canal, etat, buffer_post_id, created_at from diffusions_sociales order by created_at`, (r) => `${r.event_key} ${r.canal} ${r.etat} ${z(r.created_at)}`);
+  // Nature des faits des analyses non tranchées ou à enrichissement (champs d'une liste blanche, valeurs courtes : jamais de texte d'article).
+  t('faits des analyses Maintenance depuis T0 (nature seulement)', await sql`select proposal_id::text pid, case_id, analysis_action aa, decision::text d, facts from state_proposals where created_at >= ${T}::timestamptz and analysis_action in ('ENRICHMENT', 'STATE_CHANGE') order by created_at`,
+    (r) => `${r.pid.slice(0, 8)} ${r.case_id} ${r.aa} ${r.d ?? 'aucune'} · ${(Array.isArray(r.facts) ? r.facts : []).map((f) => ['type', 'nature', 'portee', 'resulting_state', 'realisation', 'categorie'].filter((k) => typeof f?.[k] === 'string' && f[k].length <= 40).map((k) => `${k}=${f[k]}`).join('/') + (f?.libelle_public ? '/libelle_public' : '') + (f?.evidence?.length ? `/citations=${f.evidence.length}` : '')).join(' ; ') || '(aucun fait)'}`);
   t('journal Telegram (20 derniers passages)', await sql`select at, kind, left(coalesce(action, ''), 12) a, left(coalesce(resultat, ''), 40) r from telegram_journal order by id desc limit 20`, (r) => `${z(r.at)} ${r.kind} ${r.a} ${r.r}`);
   process.exit(0);
 }
