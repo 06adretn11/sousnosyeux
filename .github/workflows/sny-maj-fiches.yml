@@ -11,6 +11,11 @@ on:
   schedule:
     - cron: '47 6-18 * * *'
   workflow_dispatch:
+    inputs:
+      case:
+        description: "Relancer UNE première fiche (ex. FR-2026-0144), sans le délai de retentative — facultatif"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -43,7 +48,14 @@ jobs:
       # Inerte si le relais n'est pas en mode REVIEW. Aucune publication : la proposition « APPROUVER LA FICHE » attend le clic de l'éditeur.
       - name: Proposer les premières fiches des nouveautés du relais (aucune publication)
         id: premieres
-        run: node scripts/proposer-premieres-fiches.mjs --ecrire
+        env:
+          CAS: ${{ inputs.case }}
+        run: |
+          if [ -n "$CAS" ]; then
+            case "$CAS" in FR-2026-[0-9][0-9][0-9][0-9]|POC-[0-9][0-9]) node scripts/proposer-premieres-fiches.mjs --ecrire --case "$CAS" --sans-delai ;; *) echo "identifiant refusé"; exit 2 ;; esac
+          else
+            node scripts/proposer-premieres-fiches.mjs --ecrire
+          fi
       - name: Proposer les mises à jour de fiches (événement judiciaire nouveau, aucune publication)
         id: maj
         run: node scripts/proposer-mises-a-jour-fiches.mjs --ecrire
