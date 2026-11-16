@@ -170,6 +170,9 @@ if (A.includes('--verifier-connexion')) {
     try {
       const canaux = await b.canaux();
       ok('API Buffer joignable, canaux listés', true, `${canaux.length} canal(aux) dans l’organisation`);
+      // Aide à la configuration (lecture seule) : identifiants opaques + état de connexion de CHAQUE canal de l'organisation. Le nom d'affichage n'est donné que pour Instagram
+      // (identifiant public du compte : permet de reconnaître @sousnosyeux_org parmi plusieurs canaux).
+      for (const k of canaux) console.log(`ℹ️ canal ${k.service} id=${k.id}${k.service === 'instagram' ? ` nom=${k.displayName}` : ''} · déconnecté=${k.isDisconnected} verrouillé=${k.isLocked} file en pause=${k.isQueuePaused}`);
       const SERVICE = { x: 'twitter', facebook: 'facebook', instagram: 'instagram' };
       for (const c of CANAUX) {
         if (!CANAL_ID[c]) { console.log(`➖ ${c} : non configuré (désactivé)`); continue; }
