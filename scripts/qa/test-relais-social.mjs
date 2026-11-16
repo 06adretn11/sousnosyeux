@@ -249,6 +249,9 @@ console.log('\nC. Proposition Telegram : textes V4.1 intégraux, boutons, canal 
   const sansHtml = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
   verifie('la proposition contient le texte Facebook ET le texte X INTÉGRAUX, la source, la fiche SNY, les contrôles', sansHtml(msg.texte).includes(p.texte_facebook) && sansHtml(msg.texte).includes(p.texte_x) && /Source : /.test(msg.texte) && msg.texte.includes(`${SITE}/affaires/fr-2026-0146/`) && /Contrôles : /.test(msg.texte));
   verifie('un seul message Telegram par événement', propositions(w).length === 1);
+  // Telegram (parse_mode HTML) refuse un « < » ou un « & » nus : première proposition réelle (FR-2026-0144) restée sans envoi pour « source < 7 j ». Toute proposition doit être du HTML valide.
+  const htmlTg = msg.texte.replace(/<\/?(?:b|pre)>/g, '');
+  verifie('proposition Telegram = HTML valide (aucun « < », « > » ni « & » nus) et ≤ 4096 caractères', !/[<>]/.test(htmlTg) && !/&(?!amp;|lt;|gt;|quot;)/.test(htmlTg) && msg.texte.length <= 4096, String(msg.texte.length));
   const cb = msg.markup.inline_keyboard.flat().map((b) => b.callback_data);
   verifie('boutons : GO X + Facebook, GO Facebook seul, GO X seul, Refuser (callbacks ≤ 64 octets, décodables)', cb.length === 4 && cb.every((d) => d.length <= 64 && decoderCallback(d)?.type === 'SG' && DATA_RE.test(d)), cb.join(' '));
   verifie('le worker n’accepte pas une action sociale inventée', !DATA_RE.test('sny:SG:Z:abcdef12') && !DATA_RE.test('sny:SG:XF:ZZZZZZZZ') && DATA_RE.test('sny:SG:R:abcdef12'));

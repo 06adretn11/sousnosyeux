@@ -217,7 +217,7 @@ export function messageProposition({ id8, c, comp, ident, expire_at, site, now }
   let t = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`
     + `Source : ${esc(src.media)}, ${jourFr(src.publie_le)}${age != null ? ` (il y a ${Math.max(0, Math.floor(age))} j)` : ''} — ${esc(src.url)}\n`
     + `Fiche SNY : ${site}/affaires/${esc(c.case_id.toLowerCase())}/\n`
-    + `Contrôles : T0 ✓ · fiche approuvée et servie (empreinte ${esc(comp.fiche_hash)}) ✓ · composeur ${esc('V4.1')} + vérificateur ✓ · source < ${FENETRE_SOURCE_JOURS} j lue ✓`
+    + `Contrôles : T0 ✓ · fiche approuvée et servie (empreinte ${esc(comp.fiche_hash)}) ✓ · composeur ${esc('V4.1')} + vérificateur ✓ · source &lt; ${FENETRE_SOURCE_JOURS} j lue ✓`
     + (reserves.length ? `\n⚠️ Réserves : ${esc(reserves.join(' ; ').slice(0, 500))}` : '') + (bloques.length ? `\n🚫 ${bloques.join('\n🚫 ')}` : '') + '\n';
   if (fb) t += `\n<b>Facebook</b> (${[...fb.texte].length} car.)\n<pre>${esc(fb.texte)}</pre>\n`;
   if (x) t += `\n<b>X</b> (${longueurX(x.texte)}/280 car., URL = 23)\n<pre>${esc(x.texte)}</pre>\n`;
