@@ -126,7 +126,7 @@ jobs:
         id: hubs
         if: ${{ !cancelled() }}
         continue-on-error: true
-        run: node scripts/preparer-hub.mjs --ecrire
+        run: node scripts/preparer-hub.mjs --ecrire --maj
       - name: Déposer l'aperçu de Hub sur main (dossier de revue + matière composée ; aucune page tant que PUBLIER LE HUB n'a pas son GO)
         if: ${{ !cancelled() && steps.hubs.outputs.change == 'true' }}
         continue-on-error: true
@@ -143,7 +143,7 @@ jobs:
       - name: Annoncer les brouillons de Hub prêts (lien vérifié sur main)
         if: ${{ !cancelled() }}
         continue-on-error: true
-        run: node scripts/preparer-hub.mjs --annoncer
+        run: node scripts/preparer-hub.mjs --annoncer --maj
       # Diagnostic territorial : la mémoire a changé → un Hub est-il à intégrer, enrichir ou proposer ? Notifie SEULEMENT si les compteurs ont bougé ;
       # ne publie jamais rien ; une panne du diagnostic ne bloque jamais la publication.
       - name: Diagnostic territorial (réévaluation des Hubs)

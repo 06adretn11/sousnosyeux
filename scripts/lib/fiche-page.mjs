@@ -75,6 +75,7 @@ export function changementsFiche(precedent, nouveau) {
     ambigus: cmp.ambigus.map((x) => ({ avant: vue(A[x.i]), apres: vue(C[x.j]) })),
     reactions_ajoutees: rx.ajoutees.length, reactions_retirees: rx.retirees.length, etat_change,
     inconnues_changees: JSON.stringify(precedent?.inconnues || []) !== JSON.stringify(nouveau?.inconnues || []),
+    inconnues_modifiees: { avant: (precedent?.inconnues || []).filter((x) => !(nouveau?.inconnues || []).includes(x)), apres: (nouveau?.inconnues || []).filter((x) => !(precedent?.inconnues || []).includes(x)) },
     // Seule une MATIÈRE nouvelle ou perdue justifie une décision : un changement de disponibilité technique (source relue ou non, reformulation équivalente) n'en est pas un.
     substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length || rx.ajoutees.length || rx.retirees.length || etat_change || cmp.ambigus.length) };
 }
@@ -126,6 +127,7 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
           ...(generation?.acquis?.retirees || []).filter((r) => !ch.retirees.some((e) => String(e.texte).slice(0, 120) === String(r.texte).slice(0, 120))).map((r) => ({ texte: r.texte, media: r.media ?? null, url: null, date: null, publie_le: null, motif: r.motif }))].slice(0, 6),
         reformulees: ch.reformulees, devenues_secondaires: ch.devenues_secondaires.slice(0, 4), sources_nouvelles: ch.sources_nouvelles.slice(0, 4), sources_retirees: ch.sources_retirees.slice(0, 4),
         reactions_ajoutees: ch.reactions_ajoutees, reactions_retirees: ch.reactions_retirees, etat_change: ch.etat_change,
+        inconnues_modifiees: { avant: ch.inconnues_modifiees.avant.slice(0, 4), apres: ch.inconnues_modifiees.apres.slice(0, 4) },
         references_ajoutees: (generation?.acquis?.references_ajoutees || []).slice(0, 6), conservees: generation?.acquis?.conservees?.length ?? 0, non_relues: (generation?.acquis?.non_relues || []).slice(0, 6),
         // Effet CONCRET d'une approbation : la fiche d'un Hub n'est pas promue automatiquement (le Hub se modifie par `appliquer-hubs`, empreinte exacte) ; une fiche isolée l'est (promouvoir-fiche).
         effet: precedent.hub

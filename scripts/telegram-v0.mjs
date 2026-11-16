@@ -20,7 +20,7 @@ import { connecter } from './lib/neon.mjs';
 import { hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
 import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
-import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer, suiteClicNouvelle } from './lib/telegram-clics.mjs';
+import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer, suiteClicNouvelle, accuseVersion } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
@@ -391,6 +391,9 @@ async function clicNouvelle(cb, d, cle) {
     console.log(`nouvelle affaire : décision ${d} → ${NC_VERS_DB[d]} enregistrée sur ${cle}`);
     const quoi = pr.payload?.etablissement ? `${esc(pr.payload.etablissement)} — ${esc(pr.payload.commune)}` : esc(pr.payload?.commune || cle);
     const pub = !!pr.payload?.publication, hub = !!pr.payload?.hub, hubPub = !!pr.payload?.hub_publication;
+    // Page d'une affaire DÉJÀ publique (fiche, mise à jour) ou mise à jour d'un Hub déjà publié : accusé propre (ce clic est le GO de cette version, jamais « nouvelle affaire »).
+    const ver = accuseVersion(pr.payload, d);
+    if (ver) { await accuser(cb, `✅ <b>Décision enregistrée : ${ver.libelle}</b>\n${quoi} (${cle})${NC_VERS_DB[d] === 'ACCEPT' ? ver.suite : ver.ecriture}`); return 'enregistree'; }
     await accuser(cb, `✅ <b>Décision enregistrée : ${(hubPub ? LIBELLE_HUB_PUB : hub ? LIBELLE_HUB : pub ? LIBELLE_PUBLICATION : LIBELLE_ACTION)[d]}</b>\n${quoi} (${cle})` + (NC_VERS_DB[d] === 'ACCEPT' ? (hubPub ? SUITE_HUB_PUB : hub ? SUITE_HUB : pub ? SUITE_PUBLICATION : suiteClicNouvelle({ action, directe: !!pr.payload?.publication_directe, webhook: WEBHOOK })) : '\nAucune écriture sur les fiches.'));
     return 'enregistree';
   }

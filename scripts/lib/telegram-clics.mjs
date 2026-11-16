@@ -38,6 +38,28 @@ export function suiteClicNouvelle({ action, directe, webhook }) {
   return `${application} Nouvelle affaire : sa publication exige un GO explicite.`;
 }
 
+/**
+ * Accusé d'un clic sur une proposition de PAGE (fiche individuelle ou mise à jour de fiche) ou de MISE À JOUR d'un Hub déjà publié — l'affaire / le Hub est DÉJÀ public :
+ * jamais « nouvelle affaire », jamais « sa publication exige un GO » (ce clic EST le GO de CETTE version), « rien publié » dit ce qui reste en ligne.
+ * @returns {{libelle:string, suite:string, ecriture:string}|null}  null = autre type de proposition (accusé historique)
+ */
+export function accuseVersion(payload, d) {
+  const page = payload?.page, hub = payload?.hub_publication;
+  const maj = !!(page?.mise_a_jour || hub?.mise_a_jour);
+  if (!page && !(hub && maj)) return null;
+  const objet = page ? (maj ? 'mise à jour de la page' : 'fiche') : 'Hub';
+  const empreinte = (page || hub).hash;
+  const libelle = {
+    VALIDATE: page ? (maj ? 'MISE À JOUR APPROUVÉE' : 'FICHE APPROUVÉE') + ' (GO pour cette version)' : 'VERSION DU HUB APPROUVÉE (GO pour cette version)',
+    REVIEW: `À REVOIR (rien publié : ${page ? (maj ? 'la version en ligne ne change pas' : 'la page n’existe pas encore') : 'le Hub en ligne ne change pas'})`,
+    REJECT: `${page ? 'PAGE ÉCARTÉE' : 'PROPOSITION ÉCARTÉE'} (rien publié : ${page ? (maj ? 'la version en ligne ne change pas' : 'l’affaire reste publique, sans fiche') : 'le Hub et ses affaires ne changent pas'})`,
+  }[d];
+  const suite = `\nCe clic vaut GO pour CETTE version (${objet}, empreinte ${empreinte}) et aucune autre : ${page ? 'l’affaire est déjà publique, sa carte ne change pas' : 'le Hub est déjà publié, les affaires ne changent pas'}. ` +
+    'Projection, QA, déploiement puis vérification du CONTENU servi suivent : « Publié et vérifié » ne t’est annoncé qu’après cette lecture. ' +
+    'Si une étape bloque, tu reçois l’objet, l’étape et la conséquence ; ta décision reste enregistrée (aucun nouveau clic) et le passage suivant reprend.';
+  return { libelle, suite, ecriture: '\nAucune écriture sur les pages : la version actuellement en ligne reste en place.' };
+}
+
 const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_ETAT = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_TEST = /^sny:TEST:([0-9a-f]{8})$/;

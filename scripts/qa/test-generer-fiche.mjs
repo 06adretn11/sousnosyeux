@@ -631,6 +631,23 @@ t('chronologie qui rapporte un classement/verdict sans issue établie → point 
   const sans = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', texte: 'Selon CNEWS, l’animateur a été mis en examen.', date: '2026-01-10', citation: 'x' })] })] });
   assert.ok(sans.dossier.inconnues.some((i) => /Aucun jugement sur le fond n’est rapporté/.test(i)) && !JSON.stringify(sans.dossier).includes('Aucune décision rendue'));
 });
+t('prochaine étape ANNONCÉE ≠ issue inconnue : une audience annoncée (FR-2026-0144 : « jugé le lundi 7 décembre ») n’est jamais dite « suite inconnue » ; sans audience, la phrase historique reste', () => {
+  const mee = E({ type: 'mise_en_examen', texte: 'Selon sweetfm, le mis en cause a été mis en examen le 12 novembre.', date: '2026-11-12', citation: 'x' });
+  const audience = E({ type: 'audience', acteur: 'tribunal', texte: 'Selon sweetfm, le mis en cause sera jugé le lundi 7 décembre.', date: null, date_nature: 'article', citation: 'y' });
+  const avec = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [mee, audience] })], aujourdhui: '2026-11-16' });
+  assert.ok(avec.dossier.inconnues.some((i) => /une audience est annoncée \(voir le déroulé\) ; son issue est inconnue/.test(i)), JSON.stringify(avec.dossier.inconnues));
+  assert.ok(!avec.dossier.inconnues.some((i) => /la suite de la procédure est inconnue/.test(i)));
+  // Audience passée sans résultat connu : l'étape annoncée n'est plus « à venir » ; la formulation historique reste exacte.
+  const passee = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [mee, E({ type: 'audience', texte: 'Selon sweetfm, l’audience s’est tenue le 3 novembre.', date: '2026-11-03', citation: 'z' })] })], aujourdhui: '2026-11-16' });
+  assert.ok(passee.dossier.inconnues.some((i) => /la suite de la procédure est inconnue/.test(i)));
+  const sansAudience = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [mee] })], aujourdhui: '2026-11-16' });
+  assert.ok(sansAudience.dossier.inconnues.some((i) => /la suite de la procédure est inconnue/.test(i)));
+});
+t('dates : le signalement « sans date d’événement » dit « Date non établie » + référence de la source, jamais « affichées avec la date de parution »', () => {
+  const r = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mesure_etablissement', acteur: 'Rectorat', texte: 'Le rectorat suspend l’enseignant.', date: null, date_nature: 'article', realisation: 'realisee', citation: 's' })] })] });
+  const a = r.attention.find((x) => x.code === 'DATES_NON_ECRITES');
+  assert.ok(a && /Date non établie/.test(a.texte) && /référence de la source/.test(a.texte) && !/affichées avec la date de parution/.test(a.texte), JSON.stringify(a));
+});
 t('aperçu de revue : fidèle à la page — blocs `situation` rendus, jamais de fausse absence de faits ni de mesures, réaction sans citation (paraphrase seule) acceptée', () => {
   const d = { situation: { decision: { label: 'Décision', titre: 'Relaxe', texte: 'Le tribunal a relaxé.' }, suite: { label: 'Suite', titre: 'Jugement sur le fond non documenté', lignes: ['Appel annoncé.'] } },
     deroule: [{ date: '2026-03-01', date_nature: 'evenement', type: 'suspension', texte: 'Selon X, l’agent est suspendu.', source: { media: 'X', url: 'https://x/a' } }],

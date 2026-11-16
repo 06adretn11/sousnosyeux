@@ -87,7 +87,9 @@ jobs:
       - name: 6. QA avant toute publication
         id: qa
         if: ${{ steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true' }}
-        run: node scripts/qa/run-all.mjs
+        run: |
+          set -o pipefail
+          node scripts/qa/run-all.mjs 2>&1 | tee "$RUNNER_TEMP/qa.log"
       # Relecture finale : les dossiers de fiche que CE passage vient d'écrire sont-ils TOUJOURS autorisés dans Neon (dernière approbation, retrait, HOLD, statut) ?
       # Sinon : isoles.json et evenements.json reviennent à l'état déjà validé, rien n'est annoncé pour ces fiches, recalcul au prochain passage.
       - name: 6b. Relecture finale des autorisations de fiche (au plus près du commit)
@@ -123,7 +125,9 @@ jobs:
       - name: 9. Contrôler le site réellement servi
         id: controle
         if: ${{ !cancelled() }}
-        run: node scripts/reconcilier-publication.mjs --site
+        run: |
+          set -o pipefail
+          node scripts/reconcilier-publication.mjs --site 2>&1 | tee "$RUNNER_TEMP/controle.log"
       # Hub : le clic « PRÉPARER LE HUB » produit un DOSSIER DE REVUE (docs/industrialisation/hub-drafts), jamais une page du site. Écrit → déposé sur main →
       # annoncé avec le lien, une seule fois, seulement après lecture du dossier sur main. Une erreur est dite sur Telegram ; elle ne bloque rien.
       # (Après la publication des pages : ce dépôt ne touche que docs/, jamais l'artefact public ni le build.)
@@ -131,7 +135,7 @@ jobs:
         id: hubs
         if: ${{ !cancelled() }}
         continue-on-error: true
-        run: node scripts/preparer-hub.mjs --ecrire
+        run: node scripts/preparer-hub.mjs --ecrire --maj
       - name: 9c. Déposer l'aperçu de Hub sur main (dossier de revue + matière composée ; aucune page tant que PUBLIER LE HUB n'a pas son GO)
         if: ${{ !cancelled() && steps.hubs.outputs.change == 'true' }}
         continue-on-error: true
@@ -148,7 +152,7 @@ jobs:
       - name: 9d. Annoncer les brouillons de Hub prêts (lien vérifié sur main)
         if: ${{ !cancelled() }}
         continue-on-error: true
-        run: node scripts/preparer-hub.mjs --annoncer
+        run: node scripts/preparer-hub.mjs --annoncer --maj
       # Diagnostic territorial : la mémoire a changé → un Hub est-il à intégrer, enrichir ou proposer ? Notifie SEULEMENT si les compteurs ont bougé ;
       # ne publie jamais rien ; une panne du diagnostic ne bloque jamais la publication.
       - name: 10. Diagnostic territorial (réévaluation des Hubs)
@@ -174,4 +178,6 @@ jobs:
           OUTCOME_verifier: ${{ steps.verifier.outcome }}
           OUTCOME_reconcile: ${{ steps.reconcile.outcome }}
           OUTCOME_controle: ${{ steps.controle.outcome }}
+          QA_LOG: ${{ runner.temp }}/qa.log
+          CONTROLE_LOG: ${{ runner.temp }}/controle.log
         run: node scripts/alerte-clic.mjs

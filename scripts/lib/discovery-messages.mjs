@@ -12,6 +12,7 @@ import { preuvesDe } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 import { stadeCite } from './stade-judiciaire.mjs';
 import { comparerEtablissements } from './rapprochement-garde.mjs';
+import { diffCourt } from './hub-maj.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 /** Coupe à une limite de MOTS (jamais « … le 9 novemb ») : pour les réserves et avertissements, dont la fin porte souvent ce qui est contesté. */
@@ -264,6 +265,10 @@ function messageFicheMiseAJour(p) {
     seco.length ? `🔁 Devenue référence secondaire (non retirée) : ${seco.slice(0, 3).map((s) => esc(s.media || '')).join(', ')}` : '',
     m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) ou regroupée(s), même fait, sans perte de fond` : '',
     m.etat_change ? '⚖️ Le bloc de situation judiciaire change (voir l’aperçu).' : '',
+    ...((m.inconnues_modifiees?.avant || []).length || (m.inconnues_modifiees?.apres || []).length ? [
+      '<b>Inconnues modifiées</b> (page : « Ce que l’on ne sait pas »)',
+      ...(m.inconnues_modifiees.avant || []).map((i) => `➖ ${esc(cut(i, 230))}`),
+      ...(m.inconnues_modifiees.apres || []).map((i) => `➕ ${esc(cut(i, 330))}`)] : []),
     '<b>Inconnues</b> : ' + (x.inconnues || []).slice(0, 2).map((i) => esc(cut(i, 110))).join(' · '),
     '',
     '<b>Effet de l’approbation</b>',
@@ -301,6 +306,7 @@ export function messageHub(p) {
 /** HUB À PUBLIER : l'aperçu a été préparé ; PUBLIER LE HUB = GO éditorial de CETTE matière (empreinte) puis chaîne autonome jusqu'au front vérifié. */
 export function messageHubPublication(p) {
   const h = p.hub_publication;
+  if (h.mise_a_jour) return messageHubMiseAJour(h);
   return [
     `🗺 <b>HUB À PUBLIER</b> · ${esc(h.titre)}`,
     '',
@@ -312,6 +318,37 @@ export function messageHubPublication(p) {
     `🗺 PUBLIER LE HUB : GO éditorial de CETTE page (empreinte ci-dessus). Ensuite, sans autre intervention : projection, contrôles, déploiement, vérification du site servi, puis confirmation avec le lien public (${esc(h.page)}). Si la page change avant, elle ne sera pas publiée sans nouveau GO.`,
     '🟡 REVIEW : rien publié · ⛔ REJECT : ce Hub n’est pas publié.',
   ].join('\n');
+}
+
+/**
+ * MISE À JOUR d'un Hub DÉJÀ publié : la proposition concrète derrière une demande « ENRICHIR_HUB ». Affaire et source nouvelles, information étayée,
+ * ce que cela change dans le dossier territorial (avant → après), aperçu consultable, et ce que fait chaque bouton. Le Hub en ligne ne change pas avant le GO.
+ */
+export function messageHubMiseAJour(h) {
+  const m = h.mise_a_jour;
+  const affaires = (m.affaires || []).length ? m.affaires.map((a) => `${esc(a.case_id)}${a.etablissement ? ` — ${esc(a.etablissement)}` : ''}${a.commune ? ` (${esc(a.commune)})` : ''}`).join(' ; ') : 'aucune affaire nouvelle : le dossier territorial se met à jour d’après des fiches déjà publiées';
+  const construire = ({ nc, ns }) => [
+    `🗺 <b>MISE À JOUR DU HUB · ${esc(h.titre)}</b> (Hub déjà publié)`,
+    'Fait suite à la demande « ENRICHIR_HUB » : voici le changement proposé, pas seulement des compteurs.',
+    '',
+    `<b>Affaire concernée</b> : ${affaires}`,
+    ...((m.sources || []).length ? ['<b>Source nouvelle</b> :', ...m.sources.slice(0, ns).map((s) => `• ${esc(s.media)}${s.publie_le ? `, ${esc(s.publie_le)}` : ''} (${esc(s.case_id)}) → ${esc(s.url)}`)] : []),
+    ...((m.informations || []).length ? ['<b>Information nouvelle étayée</b> :', ...m.informations.slice(0, 3).map((i) => `• ${esc(cut(i, 220))}`)] : []),
+    '',
+    '<b>Ce que cela change dans le dossier territorial</b> (version en ligne → version proposée)',
+    ...m.changements.slice(0, nc).map((c) => `• <b>${esc(c.rubrique)}</b> : ${esc(diffCourt(c.avant, c.apres))}`),
+    ...(m.changements.length > nc ? [`• … et ${m.changements.length - nc} autre(s) rubrique(s) (voir l’aperçu)`] : []),
+    '',
+    `<b>Empreinte proposée</b> <code>${esc(h.hash)}</code> · version en ligne <code>${esc(m.hash_publie)}</code> · ${h.publiques.length} affaire(s) publique(s)`,
+    `👁 <b>Voir la proposition</b> (dossier de revue complet) : ${esc(h.apercu)}`,
+    '',
+    '<b>Ce que fait chaque bouton</b>',
+    '✅ Approuver cette version : GO éditorial de CETTE version (empreinte ci-dessus, et aucune autre) ; ensuite, sans autre intervention : projection, contrôles, déploiement, vérification du contenu servi, puis confirmation avec le lien public.',
+    '🟡 À revoir : rien publié, le Hub en ligne ne change pas. · ⛔ Écarter la proposition : cette version n’est pas publiée ; le Hub et les affaires ne sont pas supprimés.',
+  ].join('\n');
+  let msg = '';
+  for (const niveau of [{ nc: 6, ns: 3 }, { nc: 4, ns: 2 }, { nc: 3, ns: 1 }, { nc: 2, ns: 1 }]) { msg = construire(niveau); if (msg.length <= 3900) break; }
+  return msg;
 }
 
 export function messageDecision(p, recommendation) {
@@ -420,6 +457,10 @@ export function modeCreation(recommendation, payload) {
  * REVIEW = HOLD : n'écrit rien. Jamais toutes les actions à la fois.
  */
 export function boutons(recommendation, cle, payload = null) {
+  // Mise à jour d'un Hub DÉJÀ publié : voir (lien), approuver CETTE version, à revoir, écarter — mêmes callbacks (VALIDATE / REVIEW / REJECT), libellés explicites.
+  if (payload?.hub_publication?.mise_a_jour) return { inline_keyboard: [
+    [{ text: '👁 Voir la proposition', url: payload.hub_publication.apercu }],
+    [{ text: '✅ Approuver cette version', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 À revoir', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ Écarter la proposition', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.hub_publication) return { inline_keyboard: [[{ text: '🗺 PUBLIER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.hub) return { inline_keyboard: [[{ text: '🗺 PRÉPARER LE HUB', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };
   if (payload?.page) return { inline_keyboard: [[{ text: payload.page.mise_a_jour ? '✅ APPROUVER LA MISE À JOUR' : '✅ APPROUVER LA FICHE', callback_data: `sny:NC:VALIDATE:${cle}` }, { text: '🟡 REVIEW', callback_data: `sny:NC:REVIEW:${cle}` }, { text: '⛔ REJECT', callback_data: `sny:NC:REJECT:${cle}` }]] };

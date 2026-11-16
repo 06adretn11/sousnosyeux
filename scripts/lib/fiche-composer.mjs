@@ -307,7 +307,9 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   else if (issue && issue.appel !== 'OUI' && issue.definitive !== 'OUI') inconnues.push(issue.nature === 'condamnation' ? 'Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.' : 'Recours éventuels : aucun article consulté n’en mentionne ; la suite de la procédure est inconnue.');
   // Une condamnation / un classement déjà sourcé dans la chronologie ne s'écrit pas « aucune décision rapportée » : on dit que l'issue est à documenter.
   const decisionSourcee = deroule.find((d) => d.type === 'decision' && /class[ée]e? sans suite|non-lieu|relax[ée]|acquitt[ée]|condamn[ée]/i.test(d.texte));
-  if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push(decisionSourcee ? 'Issue de la procédure à documenter : la chronologie rapporte une décision que les sources lues ne permettent pas d’établir plus précisément (nature, appel, caractère définitif).' : 'Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.');
+  // Prochaine étape ANNONCÉE (audience, renvoi) ≠ issue inconnue : l'étape à venir est connue, c'est son résultat qui ne l'est pas (FR-2026-0144 : jugement annoncé au 7 décembre).
+  const etapeAnnoncee = deroule.find((d) => /^(audience|renvoi)$/.test(d.type) && (!d.date || d.date >= aujourdhui));
+  if (!issue && pertinentes.length && RANG[carte] >= 3) inconnues.push(decisionSourcee ? 'Issue de la procédure à documenter : la chronologie rapporte une décision que les sources lues ne permettent pas d’établir plus précisément (nature, appel, caractère définitif).' : etapeAnnoncee ? 'Aucun jugement sur le fond n’est rapporté par les sources lues : une audience est annoncée (voir le déroulé) ; son issue est inconnue.' : 'Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.');
   if (pertinentes.length && !deroule.some((d) => /^mesure_/.test(d.type))) inconnues.push('Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.');
   // Les lacunes que déclarent les articles (« une 7e plainte pourrait être déposée… ») sont datées par nature : conservées dans la trace, pas publiées comme inconnues durables.
   for (const cc of contradictions) inconnues.push(`Divergence entre sources — ${cc}.`);
@@ -325,7 +327,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   if (verdict) signale('majeur', 'DECISION_SANS_ISSUE_ETABLIE', `La chronologie rapporte une décision de fond (« ${verdict.texte.slice(0, 120)} ») que la synthèse n'établit pas : à vérifier avant toute proposition.`);
   if (contribuent.length === 1) signale('mineur', 'SOURCE_UNIQUE', 'Le dossier repose sur un seul article lu.');
   const partielles = deroule.filter((d) => d.date_nature === 'article').length;
-  if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées avec la date de parution.`);
+  if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées « Date non établie » (la date de parution reste dans la référence de la source, jamais présentée comme celle de l’événement).`);
 
   // Une FONCTION UNIQUE au sein d'un établissement (« le chef des animateurs », « le directeur ») rattachée à une accusation ou à une mesure disciplinaire identifie
   // la personne sans la nommer : pas un blocage (une direction peut aussi agir ou parler), mais jamais READY sans regard humain.
