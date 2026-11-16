@@ -16,7 +16,9 @@
 // Rien n'est publié par ce script ; une fiche non proposable est dite UNE fois sur Telegram (jamais de silence technique).
 // Sortie GitHub Actions : `change=true` si un aperçu a été écrit (à déposer sur main AVANT l'envoi de la proposition).
 // =====================================================================
-import { readFileSync, appendFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, appendFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { connecter } from './lib/neon.mjs';
@@ -68,7 +70,7 @@ for (const c of candidats) {
   if ((await sql`select 1 x from reviews where case_id = ${c.case_id} and comment like '[Fiche approuvée %' limit 1`).length) { ecarte(c.case_id, 'fiche approuvée, promotion en cours'); continue; }
   if ((await sql`select 1 x from new_case_proposals where payload->'page'->>'case_id' = ${c.case_id} and decision is null limit 1`).length) { ecarte(c.case_id, 'proposition de fiche déjà en attente de clic'); continue; }
   if (!SANS_DELAI && (await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${'premiere-fiche:' + c.case_id} and resultat in ('bloquee', 'erreur') and at > now() - ${RETENTE_H + ' hours'}::interval limit 1`).length) { ecarte(c.case_id, `déjà tentée il y a moins de ${RETENTE_H} h`); continue; }
-  retenues.push({ case_id: c.case_id, type: c.type, restant: FENETRE_SOURCE_JOURS - age });
+  retenues.push({ case_id: c.case_id, type: c.type, event_id: c.event_id ?? null, restant: FENETRE_SOURCE_JOURS - age });
 }
 retenues.sort((a, b) => a.restant - b.restant); // la fenêtre qui se referme le plus tôt d'abord
 const motifs = [...ecartees.values()].reduce((m, x) => m.set(x, (m.get(x) || 0) + 1), new Map());
@@ -83,7 +85,16 @@ const exec = (f, args) => { try { return { ok: true, out: execFileSync(node, [sc
 const note = (id, resultat, details = {}) => journaliser(sql, { kind: 'application', cle: `premiere-fiche:${id}`, resultat, details });
 let ecrites = 0;
 for (const r of retenues.slice(0, LIMITE)) {
-  const gen = exec('generer-fiche.mjs', [r.case_id, '--docs']);
+  // Une ÉVOLUTION s'appuie sur l'article de l'événement approuvé (case_events.article_id) : il n'est pas dans les sources de l'affaire. Sans lui, le générateur ne lit que
+  // l'état antérieur et refuse la fiche (ETAT_NON_ETAYE : la carte affiche l'état nouveau, les sources lues n'établissent que l'ancien). Même mécanisme que les mises à jour de fiche.
+  const args = [r.case_id, '--docs'];
+  let dir = null;
+  if (r.event_id) {
+    const art = (await sql`select a.url, a.media, a.publication_date::text pd from case_events e join articles a using (article_id) where e.event_id = ${r.event_id}::uuid`)[0];
+    if (art?.url) { dir = mkdtempSync(join(tmpdir(), 'sny-extra-')); const extra = join(dir, 'extra.json'); writeFileSync(extra, JSON.stringify({ [r.case_id]: [{ url: art.url, media: art.media, publication_date: art.pd }] })); args.push('--sources-extra', extra); }
+  }
+  const gen = exec('generer-fiche.mjs', args);
+  if (dir) rmSync(dir, { recursive: true, force: true });
   const cand = gen.ok ? dossierGeneree(r.case_id) : null;
   if (!cand?.proposable) {
     const q = cand?.generation?.qualification ?? (gen.ok ? 'ABSENTE' : 'ERREUR DE GÉNÉRATION');
