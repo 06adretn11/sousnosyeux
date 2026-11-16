@@ -63,8 +63,8 @@ export function accuseVersion(payload, d) {
 const RE_NC = /^sny:NC:(VALIDATE|CREATE|ATTACH|PENDING|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_ETAT = /^sny:(VALIDATE|REVIEW|REJECT):([0-9a-f]{8})$/;
 const RE_TEST = /^sny:TEST:([0-9a-f]{8})$/;
-// Relais social (mode REVIEW) : GO X + Facebook (XF), GO Facebook seul (F), GO X seul (X), Refuser (R). Une proposition = une clé de 8 caractères.
-const RE_SG = /^sny:SG:(XF|F|X|R):([0-9a-f]{8})$/;
+// Relais social (mode REVIEW) : GO X + Facebook (XF), GO Facebook seul (F), GO X seul (X), GO Instagram (I, proposition Instagram indépendante), Refuser (R). Une proposition = une clé de 8 caractères.
+const RE_SG = /^sny:SG:(XF|F|X|I|R):([0-9a-f]{8})$/;
 
 /** @returns {{type:'NC'|'ETAT'|'TEST'|'SG', action:string|null, cle:string} | null} */
 export function decoderCallback(data) {

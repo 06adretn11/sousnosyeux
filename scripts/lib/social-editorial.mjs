@@ -46,6 +46,10 @@ export const GABARITS = Object.freeze({
   source_x_compact: '{url}', // V4.1 : pied X compact (étiquette retirée, jamais le contenu) — seulement si aucune option fidèle ne tient avec « Source : »
   suivi_fb: 'Contexte, sources et suivi de l’affaire sur Sous nos yeux : {lien}',
   suivi_x: 'Suivi : {lien}',
+  // INSTAGRAM : une légende n'est pas cliquable. La source reste NOMMÉE et DATÉE (l'adresse reste portée par le champ `url`, qui prouve le rattachement mais n'est pas rendue) ;
+  // le renvoi est le nom du site en clair, jamais un lien présenté comme cliquable ni une mention « lien en bio » tant que la bio du compte ne porte pas ce lien.
+  source_ig: 'Source : {media}, {date}.',
+  suivi_ig: 'Contexte, sources et suivi de l’affaire sur Sous nos yeux : sousnosyeux.org',
 });
 /** Fait principal de l'accroche : une table FIXE indexée par le statut public / le type d'événement validé. Jamais un texte libre. */
 export const LIBELLES = Object.freeze({
@@ -216,6 +220,22 @@ export function factoriserAttribution(paras) {
       if (!neuf) { neuf = []; out.push(neuf); }
       neuf.push(s); cur = neuf; pref = cle;
     }
+  }
+  return out;
+}
+
+/**
+ * INSTAGRAM — légende dérivée du post Facebook déjà composé et contrôlé : MÊMES phrases approuvées, MÊMES sources, rien d'ajouté. Seuls changent les segments dont le support
+ * diffère : la ligne « Source » perd son adresse (non cliquable sur Instagram) mais garde le média et la date ; le renvoi SNY devient le nom du site en clair.
+ * @param {object[][]} paragraphesFb  `facebook.paragraphes` de composerPilote
+ * @returns {object[][]}
+ */
+export function versInstagram(paragraphesFb) {
+  const out = [];
+  for (const para of paragraphesFb) {
+    const segs = para.map((s) => (s.gabarit === 'source_fb' ? seg('source_ig', { media: s.champs.media, date: s.champs.date, url: s.champs.url }, 'attribution', s.preuve)
+      : s.gabarit === 'suivi_fb' ? seg('suivi_ig', {}, 'renvoi') : s));
+    out.push(segs);
   }
   return out;
 }
@@ -762,7 +782,7 @@ export function verifierPost(post, canal, M, site, redirections = {}) {
   });
   ok('concordance : chaque affirmation qui nomme un média est prouvée par l’article de ce média', !discord.length, discord.map((s) => `« ${s.texte.slice(0, 50)}… » → ${s.preuve.source.media}`).join(' | '));
   // V4.1 (S01) : Facebook — chaque média liable (adresse n’annonçant pas une autre étape) nommé dans le texte a sa ligne « Source » (« Selon France 3 et Le Figaro » sans lien Le Figaro : défaut V4).
-  if (canal === 'facebook') {
+  if (canal === 'facebook' || canal === 'instagram') {
     const lignes = new Set(lies.map((s) => plat(s.media)));
     const manquants = [...new Set(sourcesNommees(corps, M.sources).filter((s) => sourceALier([s]) && !adresseTrompeuse(s.url, M)).map((s) => s.media))].filter((m) => !lignes.has(plat(m)));
     ok('chaque média nommé (et liable) a sa ligne « Source »', !manquants.length, manquants.join(', '));

@@ -453,7 +453,7 @@ async function clicSocial(cb, action, cle) {
   const r = await enregistrerDecision({ port, action, cle, now, actif: activation.actif });
   const rep = (texte) => tg('answerCallbackQuery', { callback_query_id: cb.id, text: texte }).catch(() => {});
   const dit = (texte) => tg('sendMessage', { chat_id: ALLOWED, text: texte, parse_mode: 'HTML', disable_web_page_preview: true }).catch(() => {});
-  const canaux = (ACTIONS_SOCIALES[action]?.canaux || []).map((k) => (k === 'x' ? 'X' : 'Facebook')).join(' + ');
+  const canaux = (ACTIONS_SOCIALES[action]?.canaux || []).map((k) => (k === 'x' ? 'X' : k === 'instagram' ? 'Instagram' : 'Facebook')).join(' + ');
   if (r.issue === 'enregistree') {
     console.log(`relais social : décision ${r.decision} enregistrée sur ${cle}`);
     await rep('Décision enregistrée.');

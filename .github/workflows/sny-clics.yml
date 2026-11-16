@@ -155,4 +155,7 @@ jobs:
       - name: Relais social factuel (réconciliation, diffusion, retraits) — inerte si désactivé
         if: ${{ !cancelled() }}
         continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNY_INSTAGRAM_AMORCAGE: ${{ vars.SNY_INSTAGRAM_AMORCAGE }}
         run: node scripts/diffuser-social.mjs --ecrire
