@@ -1,0 +1,442 @@
+{
+ "_meta": {
+  "id": "FR-2026-0144",
+  "figee_le": "2026-11-16",
+  "raison": "Fixture figée (copie des données publiques de FR-2026-0144 au 16/11/2026) : teste l'attribution factorisée et les sources multiples du Facebook sans dépendre d'un texte éditorial qui évolue.",
+  "hash": "e47dda459e3b6ea2"
+ },
+ "entree": {
+  "case_id": "FR-2026-0144",
+  "etablissement": "école Marcel-Touchard",
+  "commune": "Saint-Aubin-lès-Elbeuf",
+  "departement": "Seine-Maritime",
+  "type_structure": "élémentaire",
+  "role_mis_en_cause": "animateur périscolaire",
+  "type_affaire": "à qualifier",
+  "statut_judiciaire": "mise en examen",
+  "statut_des_faits": "allégué",
+  "enfants_concernes_public": "plusieurs enfants",
+  "lat": 49.302552,
+  "lng": 1.020026,
+  "geocode_source": "ban-commune",
+  "etat": {
+   "statut": "mise en examen",
+   "date": "2026-11-12",
+   "type_evenement": "mise_en_examen",
+   "finalite": "non_definitive",
+   "suites": [],
+   "sources": [
+    {
+     "media": "sweetfm",
+     "date": "2026-11-12",
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge"
+    }
+   ]
+  },
+  "sources": [
+   {
+    "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+    "media": "Actu.fr",
+    "publication_date": "2026-11-06",
+    "source_type": "presse",
+    "is_primary": true
+   },
+   {
+    "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+    "media": "Actu.fr",
+    "publication_date": "2026-11-06",
+    "source_type": "presse",
+    "is_primary": false
+   },
+   {
+    "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+    "media": "Tendance Ouest",
+    "publication_date": "2026-11-10",
+    "source_type": "presse",
+    "is_primary": false
+   },
+   {
+    "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+    "media": "sweetfm",
+    "publication_date": "2026-11-12",
+    "source_type": "presse",
+    "is_primary": false
+   }
+  ]
+ },
+ "evenements": [
+  {
+   "event_id": "917f7259-127e-4233-8952-f23bbf4d30de",
+   "date": "2026-11-12",
+   "type": "mise_en_examen",
+   "statut": "mise en examen",
+   "libelle": "Une source publique rapporte une mise en examen. La mise en examen ne vaut pas culpabilité.",
+   "source": {
+    "media": "sweetfm",
+    "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+    "publie_le": "2026-11-12"
+   }
+  },
+  {
+   "event_id": "b82c873c-90d5-4302-94c1-cd88f34dc7d2",
+   "date": null,
+   "type": "suspension",
+   "statut": null,
+   "libelle": "Selon la presse, l’agent concerné a été suspendu de ses fonctions.",
+   "realisation": "réalisée",
+   "source": null
+  }
+ ],
+ "dossier": {
+  "appel": false,
+  "faits": "Selon sweetfm, un animateur périscolaire de l'école Marcel-Touchard, à Saint-Aubin-lès-Elbeuf, a été placé en garde à vue le 21 octobre à la suite d'un signalement de l'Ofmin pour détention d'images pédopornographiques. Selon sweetfm, l'animateur a été mis en examen le 12 novembre à l'issue de sa garde à vue.",
+  "deroule": [
+   {
+    "date": "2026-09",
+    "type": "fait_rapporte",
+    "texte": "Selon Actu.fr, la commune indique dans le mail transmis aux parents que les faits sont survenus au sein de l'école « au cours du mois de septembre 2026 ».",
+    "acteur": null,
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "approximative"
+   },
+   {
+    "date": "2026-10-21",
+    "type": "garde_a_vue",
+    "texte": "Selon sweetfm, l'animateur périscolaire de l'école Marcel-Touchard a été placé en garde à vue le 21 octobre.",
+    "acteur": null,
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "date_nature": "evenement"
+   },
+   {
+    "date": "2026-11-05",
+    "type": "signalement",
+    "texte": "Selon Actu.fr, des signalements ont révélé, le jeudi 5 novembre 2026, qu'une enquête est en cours contre un animateur soupçonné d'une conduite inappropriée dans une école de Saint-Aubin-lès-Elbeuf.",
+    "acteur": null,
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "evenement"
+   },
+   {
+    "date": null,
+    "type": "plainte",
+    "texte": "La mairie de Saint-Aubin-lès-Elbeuf s'est constituée partie civile dans cette enquête en déposant une plainte, ce qui lui permettra d'avoir accès au dossier.",
+    "acteur": "mairie de Saint-Aubin-lès-Elbeuf",
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "article",
+    "sources_complementaires": [
+     {
+      "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+      "acces": "libre",
+      "media": "Tendance Ouest",
+      "publie_le": "2026-11-10"
+     }
+    ]
+   },
+   {
+    "date": null,
+    "type": "mesure_collectivite",
+    "texte": "Selon Actu.fr, la commune a envoyé un mail aux parents pour leur faire connaître les graves faits reprochés à l'animateur.",
+    "acteur": "commune de Saint-Aubin-lès-Elbeuf",
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "article"
+   },
+   {
+    "date": null,
+    "type": "mesure_collectivite",
+    "texte": "Selon Actu.fr, une cellule psychologique a été ouverte auprès de l'Avede ACJE et de la police nationale.",
+    "acteur": null,
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "article"
+   },
+   {
+    "date": null,
+    "type": "mesure_collectivite",
+    "texte": "La mairie de Saint-Aubin-lès-Elbeuf a suspendu de ses fonctions cet agent dès qu'elle a été informée de ces faits.",
+    "acteur": "mairie de Saint-Aubin-lès-Elbeuf",
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "date_nature": "article",
+    "sources_complementaires": [
+     {
+      "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+      "acces": "libre",
+      "media": "sweetfm",
+      "publie_le": "2026-11-12"
+     }
+    ]
+   },
+   {
+    "date": null,
+    "type": "enquete",
+    "texte": "Selon Tendance Ouest, une enquête menée par la police nationale est en cours à Saint-Aubin-lès-Elbeuf ; elle concerne un agent municipal pour des faits survenus sur le temps périscolaire de l'école primaire Marcel Touchard.",
+    "acteur": "police nationale",
+    "source": {
+     "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+     "acces": "libre",
+     "media": "Tendance Ouest",
+     "publie_le": "2026-11-10"
+    },
+    "date_nature": "article",
+    "sources_complementaires": [
+     {
+      "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+      "acces": "libre",
+      "media": "Actu.fr",
+      "publie_le": "2026-11-06"
+     },
+     {
+      "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+      "acces": "libre",
+      "media": "Actu.fr",
+      "publie_le": "2026-11-06"
+     }
+    ]
+   },
+   {
+    "date": null,
+    "type": "mesure_etablissement",
+    "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : la Ville de Saint-Aubin-lès-Elbeuf indique qu'une écoute psychologique est possible pour les familles concernées qui le souhaitent, via l'association Avede Acje ou un psychologue de la police nationale.",
+    "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+    "source": {
+     "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+     "acces": "libre",
+     "media": "Tendance Ouest",
+     "publie_le": "2026-11-10"
+    },
+    "date_nature": "article"
+   },
+   {
+    "date": null,
+    "type": "mesure_collectivite",
+    "texte": "La Ville de Saint-Aubin-lès-Elbeuf indique avoir suspendu à titre conservatoire l'agent concerné.",
+    "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+    "source": {
+     "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+     "acces": "libre",
+     "media": "Tendance Ouest",
+     "publie_le": "2026-11-10"
+    },
+    "date_nature": "article",
+    "sources_complementaires": [
+     {
+      "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+      "acces": "libre",
+      "media": "Actu.fr",
+      "publie_le": "2026-11-06"
+     }
+    ]
+   },
+   {
+    "date": null,
+    "type": "signalement",
+    "texte": "Selon sweetfm, un signalement de l'Ofmin pour détention d'images pédopornographiques est à l'origine de la garde à vue de l'animateur.",
+    "acteur": "Ofmin",
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "date_nature": "article"
+   },
+   {
+    "date": "2026-11-12",
+    "type": "mise_en_examen",
+    "texte": "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue.",
+    "acteur": null,
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "date_nature": "evenement"
+   },
+   {
+    "date": null,
+    "type": "audience",
+    "texte": "Selon sweetfm, un délai ayant été demandé par les avocats du mis en cause pour préparer sa défense, le mis en cause, placé en détention provisoire, sera finalement jugé le lundi 7 décembre.",
+    "acteur": "tribunal",
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "date_nature": "article"
+   },
+   {
+    "date": null,
+    "type": "decision",
+    "texte": "Selon sweetfm, le mis en cause a été placé en détention provisoire.",
+    "acteur": null,
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "date_nature": "article"
+   }
+  ],
+  "synthese": {
+   "decision": "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue."
+  },
+  "inconnues": [
+   "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+   "Le dossier ne repose que sur 4 articles lus (Actu.fr, Tendance Ouest, sweetfm)."
+  ],
+  "reactions": [
+   {
+    "date": "2026-11-06",
+    "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+    "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+    "portee": "affaire",
+    "source": {
+     "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+     "acces": "libre",
+     "media": "Actu.fr",
+     "publie_le": "2026-11-06"
+    },
+    "qualite": "propos rapportés par Actu.fr",
+    "a_propos": "position de la commune sur la procédure en cours",
+    "citations": [
+     {
+      "pour": "position de la commune sur la procédure en cours",
+      "texte": "laisser la justice finaliser son instruction"
+     }
+    ],
+    "paraphrase": "Contexte dans l’article (Actu.fr) : Suite à ces révélations, la Ville de Saint-Aubin-lès-Elbeuf a réagi en rappelant la nécessité de « laisser la justice finaliser son instruction ».",
+    "validation": "POSITION_ATTRIBUEE",
+    "attribution": "POSITION_ATTRIBUEE",
+    "date_nature": "article"
+   },
+   {
+    "date": "2026-11-10",
+    "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+    "etabli": "Établi : propos rapportés par Tendance Ouest. Une prise de parole n’établit pas son contenu.",
+    "portee": "affaire",
+    "source": {
+     "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+     "acces": "libre",
+     "media": "Tendance Ouest",
+     "publie_le": "2026-11-10"
+    },
+    "qualite": "propos rapportés par Tendance Ouest",
+    "a_propos": "des mesures prises par la municipalité (suspension de l'agent et dépôt de plainte)",
+    "citations": [
+     {
+      "pour": "des mesures prises par la municipalité (suspension de l'agent et dépôt de plainte)",
+      "texte": "Nous avons pris toutes les mesures qui relevaient de notre responsabilité, avec la suspension à titre conservatoire de l'agent concerné et le dépôt immédiat d'une plainte auprès des autorités judiciaires"
+     }
+    ],
+    "validation": "POSITION_ATTRIBUEE",
+    "attribution": "POSITION_ATTRIBUEE",
+    "date_nature": "article"
+   },
+   {
+    "date": "2026-11-12",
+    "acteur": "Sébastien Gallois, procureur de la République de Rouen",
+    "etabli": "Établi : propos rapportés par sweetfm. Une prise de parole n’établit pas son contenu.",
+    "portee": "affaire",
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "qualite": "propos rapportés par sweetfm",
+    "a_propos": "l'interruption de la garde à vue et l'hospitalisation du mis en cause",
+    "citations": [
+     {
+      "pour": "l'interruption de la garde à vue et l'hospitalisation du mis en cause",
+      "texte": "interrompue à deux reprises pour incompatibilité en raison de l'état de santé et hospitalisation au centre hospitalier du Rouvray"
+     }
+    ],
+    "validation": "POSITION_ATTRIBUEE",
+    "attribution": "POSITION_ATTRIBUEE",
+    "date_nature": "article"
+   },
+   {
+    "date": "2026-11-12",
+    "acteur": "Sébastien Gallois, procureur de la République de Rouen",
+    "etabli": "Établi : propos rapportés par sweetfm. Une prise de parole n’établit pas son contenu.",
+    "portee": "affaire",
+    "source": {
+     "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+     "acces": "libre",
+     "media": "sweetfm",
+     "publie_le": "2026-11-12"
+    },
+    "qualite": "propos rapportés par sweetfm",
+    "a_propos": "les vidéos trouvées, tournées dans les toilettes de l'école",
+    "citations": [
+     {
+      "pour": "les vidéos trouvées, tournées dans les toilettes de l'école",
+      "texte": "Ces vidéos ont été tournées dans les toilettes à leur insu"
+     }
+    ],
+    "validation": "POSITION_ATTRIBUEE",
+    "attribution": "POSITION_ATTRIBUEE",
+    "date_nature": "article"
+   }
+  ],
+  "situation": {
+   "suite": {
+    "cat": "blue",
+    "meta": "dans les sources consultées",
+    "label": "Suite",
+    "titre": "Issue de la procédure à documenter",
+    "lignes": [
+     "La personne mise en cause est présumée innocente.",
+     "Mesure institutionnelle (distincte de la décision judiciaire) : selon Actu.fr, la commune a envoyé un mail aux parents pour leur faire connaître les graves faits reprochés à l'animateur.",
+     "Mesure institutionnelle (distincte de la décision judiciaire) : selon Actu.fr, une cellule psychologique a été ouverte auprès de l'Avede ACJE et de la police nationale."
+    ]
+   },
+   "decision": {
+    "cat": "blue",
+    "meta": "12 novembre 2026",
+    "label": "Situation judiciaire",
+    "texte": "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue.",
+    "titre": "Mise en examen"
+   }
+  },
+  "etat_actuel": [
+   "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue."
+  ],
+  "statut_affiche": "mise en examen"
+ }
+}

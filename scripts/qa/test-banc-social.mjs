@@ -4,7 +4,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, valeursAutorisees, decomposerAttribution, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
 import { genererBanc, htmlBanc, mdBanc } from '../banc-social.mjs';
@@ -241,6 +241,38 @@ verifie('S14 : l’identifiant retiré est refusé par le composeur, même avec 
   s.champs.lien.valeur = s.champs.lien.valeur.replace(/fr-2026-0025/g, 'fr-2026-0147'); s.texte = GABARITS[s.gabarit].replace('{lien}', s.champs.lien.valeur); p.texte = p.paragraphes.map((x) => x.map((y) => y.texte).join(' ')).join('\n\n');
   verifie('lien SNY vers l’identifiant retiré ⇒ contrôle en échec', !verifierPost(p, 'facebook', M_de('FR-2026-0025'), SITE, redir).ok); }
 verifie('aucune source indépendante inventée : une ligne Source par article réellement rattaché, jamais deux fois le même', publies.every(({ k }) => { const u = (k.texte.match(/^Source : .* — (https?:\/\/\S+)$/gm) || []); return new Set(u).size === u.length; }));
+
+// ---------------------------------------------------------------------
+section('2. Facebook : attribution factorisée, une source citée une fois, plusieurs sources quand le dossier en offre (fixture FIGÉE de FR-2026-0144)');
+{
+  const F = lire('scripts/qa/fixtures/facebook-sources-0144.json');
+  if (hashDossier(F.dossier) !== F._meta.hash) { console.error('❌ fixture facebook-sources-0144 altérée'); process.exit(1); }
+  const id = F._meta.id, evt = F.evenements.find((x) => x.type === 'mise_en_examen');
+  const M = matiereApprouvee({ entree: F.entree, dossier: { hub: null, d: F.dossier }, empreinteApprouvee: F._meta.hash, evenements: F.evenements, matiere: [], wording });
+  const compose = (Mx = M) => composerPilote({ scenario: { famille: 'evolution', case_id: id, event_id: evt.event_id }, M: Mx, publiques: new Map([[id, F.entree]]), site: SITE, redirections: {} });
+  const r = compose(), fb = r.facebook, texte = fb.texte, corps = texte.split('\n\n').filter((b) => !/^Source : |^Contexte, sources/.test(b));
+  verifie('Facebook composé et conforme (tous les contrôles du vérificateur passent)', fb.etat === 'OK' && verifierPost(fb, 'facebook', M, SITE).ok, texte);
+  verifie('« Selon sweetfm » n’apparaît qu’UNE fois (média du fait cité une fois pour tout son bloc)', corps.join('\n').split('Selon sweetfm').length === 2, corps.join(' | '));
+  verifie('les phrases suivantes du bloc restent dans le même paragraphe, sans attribution répétée, initiale en majuscule', corps.some((b) => /^Selon sweetfm, .*\. Un signalement .*\. Un délai /s.test(b)), corps.join(' | '));
+  verifie('un second média (Actu.fr) est cité par sa propre phrase et crédité par sa propre ligne « Source »', /(^|\n\n)Selon Actu\.fr, /.test(texte) && /\nSource : Actu\.fr, [^\n]* — https:\/\/actu\.fr\//.test(texte) && /Source : sweetfm, /.test(texte));
+  verifie('une ligne « Source » par média, jamais deux fois le même média', (() => { const l = [...texte.matchAll(/^Source : ([^,]+),/gm)].map((m) => m[1]); return l.length === 2 && new Set(l).size === 2; })());
+  verifie('chaque phrase publiée est une phrase approuvée, ou la FIN exacte d’une phrase approuvée', (() => { const autorise = [...valeursAutorisees(M, SITE)]; return fb.paragraphes.flat().filter((s) => s.gabarit === 'phrase').every((s) => autorise.includes(s.texte) || autorise.some((t) => decomposerAttribution(t)?.suite === s.texte)); })());
+  verifie('le texte tient dans la limite de lisibilité Facebook', longueurX(texte) <= 1400, String(longueurX(texte)));
+  // Falsifications : le contrôleur doit refuser.
+  { const p = clone(fb); const estSuite = (s) => String(s.champs?.phrase?.origine || '').startsWith('suite:');
+    const para = p.paragraphes.find((x) => x.length > 1 && x.some(estSuite)); const [suite] = para.splice(para.findIndex(estSuite), 1); p.paragraphes.push([suite]);
+    p.texte = p.paragraphes.map((x) => x.map((y) => y.texte).join(' ')).join('\n\n');
+    verifie('une phrase sans attribution détachée de son paragraphe (fait sans source nommée) ⇒ contrôle en échec', !verifierPost(p, 'facebook', M, SITE).ok); }
+  { const p = clone(fb); const s = p.paragraphes.flat().find((x) => String(x.champs?.phrase?.origine || '').startsWith('suite:'));
+    s.champs.phrase.valeur = 'Un délai a été demandé par la défense, qui sera jugée prochainement.'; s.texte = s.champs.phrase.valeur;
+    p.texte = p.paragraphes.map((x) => x.map((y) => y.texte).join(' ')).join('\n\n');
+    verifie('une « suite » qui n’est pas la fin exacte d’une phrase approuvée ⇒ contrôle en échec', !verifierPost(p, 'facebook', M, SITE).ok); }
+  // Une seule source dans le dossier : rien n'est inventé, un seul média cité.
+  { const M1 = { ...M, sources: new Map([...M.sources].filter(([, s]) => /sweetfm/i.test(s.media))), d: { ...M.d, deroule: (M.d.deroule || []).filter((x) => /sweetfm/i.test(x.source?.media)) } };
+    const r1 = compose(M1);
+    verifie('dossier à une seule source : aucun second média inventé, une seule ligne « Source », conforme', r1.facebook.etat === 'OK' && (r1.facebook.texte.match(/^Source : /gm) || []).length === 1 && !/Actu\.fr|Tendance Ouest/.test(r1.facebook.texte) && verifierPost(r1.facebook, 'facebook', M1, SITE).ok, r1.facebook.texte); }
+  verifie('X inchangé : une seule attribution, sous la limite', r.x.etat === 'OK' && longueurX(r.x.texte) <= LIMITE_X && (r.x.texte.match(/Selon sweetfm/g) || []).length === 1);
+}
 
 console.log(ko ? `\n❌ ${ko} échec(s)` : '\n✅ banc social : tous les contrôles passent (aucune publication, aucun appel Buffer)');
 process.exit(ko ? 1 : 0);
