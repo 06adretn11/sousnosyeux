@@ -125,6 +125,38 @@ if (draftHubs.length) {
   notes.push('web/dist — aucun brouillon de hub');
 }
 
+// ── 5) archives de fiches générées suivies par Git (dépôt PUBLIC) ───
+// docs/industrialisation/fiches-generees/ est destiné au dépôt : rendus SANS extraits littéraux (rendreMarkdown { complet: false }).
+// La version complète (traçabilité littérale, éléments écartés) reste dans data/fiches-generees/, ignoré par Git. On refuse ici
+// tout ce qui trahit un rendu complet ou une sortie brute (.json, .revue.md), et un champ interne en position de clé.
+const ARCHIVES = resolve(ROOT, 'docs/industrialisation/fiches-generees');
+const MARQUEURS_RENDU_COMPLET = [
+  /<details/i,
+  /Traçabilité — extrait littéral soutenant chaque ligne/,
+  /Éléments proposés par le modèle puis écartés/,
+];
+let archivesLues = 0;
+for (const f of await walk(ARCHIVES)) {
+  const rel = relative(ROOT, f).replace(/\\/g, '/');
+  if (/\.(json|revue\.md|regression\.json)$/i.test(f)) {
+    add('bloquant', 'sortie brute de génération dans les archives publiques de fiches (destinée à data/fiches-generees/, ignoré par Git)', rel);
+    continue;
+  }
+  if (!/\.md$/i.test(f)) continue;
+  archivesLues++;
+  const content = await readFile(f, 'utf8');
+  if (MARQUEURS_RENDU_COMPLET.some((re) => re.test(content))) {
+    add('bloquant', 'rendu complet (traçabilité littérale ou éléments écartés) dans les archives publiques de fiches', rel);
+  }
+  for (const field of INTERNAL_FIELDS) {
+    if (new RegExp(`["']${field}["']\\s*[:=]`).test(content)) add('bloquant', `champ interne « ${field} » dans les archives publiques de fiches`, rel);
+  }
+  for (const p of SECRET_PATTERNS) {
+    if (p.re.test(content)) add('bloquant', `secret probable (${p.id}) dans les archives publiques de fiches`, rel);
+  }
+}
+notes.push(`docs/industrialisation/fiches-generees — ${archivesLues} rendu(s) Markdown, aucun rendu complet ni sortie brute`);
+
 // ── Verdict ────────────────────────────────────────────────────────
 console.log('G10 — surface publique\n');
 for (const n of notes) console.log(`  ✅ ${n}`);

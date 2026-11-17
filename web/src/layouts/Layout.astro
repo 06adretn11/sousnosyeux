@@ -27,6 +27,8 @@ import '@fontsource/playfair-display/latin-ext-700.css';
 import '@fontsource/playfair-display/latin-400-italic.css';
 import '@fontsource/playfair-display/latin-ext-400-italic.css';
 
+import { jsonPourScript } from '../../../scripts/lib/json-script.mjs';
+
 const { title, description, variant = 'page', noindex = false, jsonld } = Astro.props;
 const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const SITE = Astro.site ?? 'https://sousnosyeux.org';
@@ -36,7 +38,7 @@ const canonical = new URL(path === '/' ? '/' : path + '/', SITE).href;
 // Aperçu de partage : image GÉNÉRIQUE de marque (aucun contenu d'affaire), mêmes titre et description que la page.
 const ogImage = new URL('/og-sousnosyeux.png', SITE).href;
 // JSON-LD sérialisé sans possibilité de fermer la balise <script>.
-const ld = jsonld ? JSON.stringify(jsonld).replace(/</g, '\\u003c') : null;
+const ld = jsonld ? jsonPourScript(jsonld) : null;
 
 // Liens internes sous leur forme canonique (barre finale) : aucune redirection 307 depuis le menu.
 const nav = [

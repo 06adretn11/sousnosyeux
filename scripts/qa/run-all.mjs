@@ -174,6 +174,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'JSON dans le HTML — une donnée ne ferme jamais la balise <script> (échappement commun), JSON.parse la restitue à l’identique',
+    script: 'scripts/qa/test-json-script.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Sitemap et canonicals — population = pages générées indexables (jamais le catalogue), exclusions motivées, canonical propre à chaque page, déclaration dans robots.txt',
     script: 'scripts/qa/test-sitemap-canonical.mjs',
     bloquant: true,
