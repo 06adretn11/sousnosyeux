@@ -97,7 +97,8 @@ for (const id of ids) {
       const vs = [];
       for (const sel of PASSES) {
         let rep = null;
-        try { rep = await extraire({ fiche: c, soeurs, doc, cout, sel }); } catch (e) { console.log(`  ⚠ modèle : ${e.message.slice(0, 120)}`); }
+        // Une erreur technique (réseau, quota) est retentée UNE fois : elle ne doit pas se transformer en verdict « ambigu » sur une source déjà approuvée.
+        for (const essai of [1, 2]) { try { rep = await extraire({ fiche: c, soeurs, doc, cout, sel }); break; } catch (e) { console.log(`  ⚠ modèle (essai ${essai}) : ${e.message.slice(0, 120)}`); } }
         if (rep) vs.push(verifier(rep, { corps: doc.corps, publieLe: doc.publication_date }));
       }
       const v = vs.length ? fusionnerPasses(vs) : vide('extraction indisponible');

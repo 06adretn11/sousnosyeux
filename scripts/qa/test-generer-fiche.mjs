@@ -113,10 +113,19 @@ t('appel / caractère définitif : un acte écrit, jamais un nom de juridiction 
 t('déclarations : institution nommée conservée ; parent / témoin / citation inventée écartés', () => {
   const r = v(base({ declarations: [
     { acteur: 'La rectrice', type_acteur: 'education_nationale', a_propos: 'suspension', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
-    { acteur: 'Une mère', type_acteur: 'parent', a_propos: 'ressenti', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
+    { acteur: 'Une voisine', type_acteur: 'temoin', a_propos: 'ressenti', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
     { acteur: 'Le maire', type_acteur: 'collectivite', a_propos: 'x', portee: 'affaire', citation: 'Nous allons tout faire pour que cela ne se reproduise jamais plus à Rouen' },
   ] }));
   assert.equal(r.declarations.length, 1); assert.deepEqual(r.ecartes.map((e) => e.raison.replace(/\(.*\)/, '')), ['ACTEUR_NON_PUBLIABLE', 'CITATION_ABSENTE_DU_CORPS']);
+});
+t('déclarations de PARENTS : propos exact entre guillemets, attribution générique (jamais de prénom), courts ; accusation nominative, gestes reprochés (proche de victime), nombre de plaintes et témoin non parent écartés ; jamais un fait établi', () => {
+  const corps = 'Une mère d’élève, Julie*, dit : « Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier ». Un père lâche : « Qu’est-ce qu’ils attendent ? Que ce type recommence ? ». Elle ajoute : « nous sommes arrivés à une dizaine de plaintes dans cette affaire ». Un père déclare : « Nos enfants n’ont pas été protégés par l’institution ». Un autre dit : « ma fille m’a raconté des choses graves ».';
+  const dp = (acteur, citation, type_acteur = 'parent') => ({ acteur, type_acteur, a_propos: 'x', portee: 'affaire', citation });
+  const r = verifier(base({ declarations: [dp('Julie*, mère d’une élève', 'Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier'), dp('Un père', 'Qu’est-ce qu’ils attendent ? Que ce type recommence ?'), dp('Une mère', 'nous sommes arrivés à une dizaine de plaintes dans cette affaire'),
+    dp('Un père d’élève', 'Nos enfants n’ont pas été protégés par l’institution'), dp('Un parent', 'ma fille m’a raconté des choses graves'), dp('Un voisin', 'Avant cette plainte, il y a eu des signalements de familles', 'temoin')] }), { corps, publieLe: PUB });
+  assert.deepEqual(r.declarations.map((x) => [x.acteur, x.citation]), [['Une mère d’enfant concerné', 'Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier'], ['Un père d’enfant concerné', 'Nos enfants n’ont pas été protégés par l’institution']]);
+  assert.ok(!/Julie/.test(JSON.stringify(r.declarations)), 'aucun prénom, même d’emprunt');
+  assert.deepEqual(r.ecartes.map((e) => e.raison.replace(/\(.*\)/, '')), ['PAROLE_PARENT_ACCUSATOIRE', 'NOMBRE_EXACT_ENFANTS', 'PROCHE_DE_VICTIME', 'ACTEUR_NON_PUBLIABLE']);
 });
 t('portée : une autre affaire ou un territoire sont classés à part (pas dans la fiche) ; une portée absente est écartée (échec fermé)', () => {
   const cit = "condamné mardi l'enseignant à quatre ans de prison dont un an avec sursis";

@@ -114,7 +114,13 @@ export function evaluerCandidat(c, ctx) {
     // Ce qui interdit le rattrapage : la DÉCISION (une seule par proposition) et l'enregistrement de l'événement sont postérieurs à T0, et la source a moins de 7 jours.
     apresT0('approbation de l’événement', c.decide_at, ctx.t0, r);
     apresT0('enregistrement de l’événement', c.evenement_enregistre_at, ctx.t0, r);
-    if (!evolutionSignificative(c.statut_avant, c.statut_apres)) r.push('évolution non significative (statut inchangé, en recul ou ambigu)');
+    if (c.sous_type) {
+      // Évolution tirée d'une MISE À JOUR DE FICHE approuvée (procès/appel annoncés, parole de parent) : même rigueur qu'un événement — l'approbation (revue d'empreinte) et la décision sont postérieures à T0,
+      // et la version approuvée est celle que le site sert. Aucun changement de statut n'est exigé, mais la matière doit être dans la version approuvée.
+      apresT0('approbation de la version de fiche', c.fiche_approuvee_at, ctx.t0, r);
+      if (!c.fiche_hash) r.push('version de fiche approuvée non identifiée');
+      else if (ctx.ficheHash && c.fiche_hash !== ctx.ficheHash) r.push('la version approuvée contenant cette matière n’est plus la version courante de la fiche');
+    } else if (!evolutionSignificative(c.statut_avant, c.statut_apres)) r.push('évolution non significative (statut inchangé, en recul ou ambigu)');
     if (!c.event_id) r.push('événement non identifié');
   }
   if (c.ps !== 'publiée') r.push('affaire non publiée ou retirée');
@@ -124,7 +130,7 @@ export function evaluerCandidat(c, ctx) {
   if (!e) r.push('absente de l’artefact public');
   else {
     if (!STATUTS_DIFFUSABLES.has(e.statut_judiciaire)) r.push('statut judiciaire ambigu ou non diffusable (relaxe, classement, non précisé : décision éditoriale spécifique requise)');
-    if (c.type === 'case_update' && e.statut_judiciaire !== c.statut_apres) r.push('le statut public n’est pas celui de l’évolution approuvée');
+    if (c.type === 'case_update' && !c.sous_type && e.statut_judiciaire !== c.statut_apres) r.push('le statut public n’est pas celui de l’évolution approuvée');
   }
   if (!ctx.ficheHash) r.push('aucune fiche individuelle approuvée pour cette affaire');
   if (ctx.servi !== true) r.push('page d’accueil non servie à l’identique de la projection');
@@ -164,17 +170,28 @@ export function controlerFraicheur({ source, dateFait, now }) {
 /** compo = { cases:Map, ev:object (evenements.json), redirections:object, wording:object, dossierFiche:(id)=>…, site:string, now:Date } */
 export function composerEvenement(c, compo) {
   const entree = compo.cases.get(c.case_id) ?? null;
-  const famille = c.type === 'new_case' ? 'nouvelle_affaire' : 'evolution';
-  const scenario = { famille, case_id: c.case_id, ...(c.type === 'case_update' ? { event_id: c.event_id } : {}) };
+  // Évolutions tirées d'une MISE À JOUR DE FICHE approuvée : une étape judiciaire (famille « evolution », événement SYNTHÉTIQUE bâti sur l'étape approuvée, jamais sur autre chose)
+  // ou une parole de parent de la fiche approuvée (famille « declaration_victime » du composeur V4.1, REVUE_HUMAINE obligatoire).
+  const sous = c.sous_type ?? null;
+  const famille = sous === 'fiche_temoignage' ? 'declaration_victime' : c.type === 'new_case' ? 'nouvelle_affaire' : 'evolution';
+  const scenario = { famille, case_id: c.case_id, ...(sous === 'fiche_temoignage' ? { reaction: c.reaction, citation: 0 } : c.type === 'case_update' ? { event_id: c.event_id } : {}) };
   const M = matiereApprouvee({ entree, dossier: compo.dossierFiche(c.case_id), empreinteApprouvee: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
     evenements: compo.ev.affaires?.[c.case_id] ?? [], matiere: (compo.ev.matiere || []).filter((m) => m.case_id === c.case_id), wording: compo.wording });
+  if (sous === 'fiche_evolution' && c.etape) {
+    const type = c.etape.type === 'audience' && /appel/i.test(c.etape.texte || '') ? 'audience_appel' : c.etape.type;
+    M.evenements = [...(M.evenements || []), { event_id: c.event_id, type, statut: entree?.statut_judiciaire ?? null, date: c.etape.date ?? null, libelle: c.etape.texte, source: { media: c.etape.media, url: c.etape.url, publie_le: c.etape.publie_le } }];
+  }
   const r = composerPilote({ scenario, M, publiques: compo.cases, site: compo.site, redirections: compo.redirections });
   const evt = c.type === 'case_update' ? (M.evenements || []).find((x) => x.event_id === c.event_id) ?? null : null;
+  // Une audience ANNONCÉE dont la date est atteinte : « est programmé » est périmé et le déroulement n'est pas rapporté — ni « à venir » ni « tenu » ne peut être dit : aucune rédaction automatique.
+  const aujourdhui = compo.now.toISOString().slice(0, 10);
+  const perime = sous === 'fiche_evolution' && evt?.date && String(evt.date) <= aujourdhui && ['audience_appel', 'audience', 'renvoi'].includes(evt.type);
   const dateFait = c.type === 'case_update' ? evt?.date : entree?.etat?.date ?? null;
   const canaux = {};
   for (const canal of CANAUX_RELAIS) {
     const p = r[canal];
     const motifs = [];
+    if (perime) motifs.push('date annoncée atteinte : la formulation « programmé / prévu » est périmée et aucune source lue ne rapporte le déroulement ni l’issue — ni « à venir » ni « tenu » ne peut être dit (brouillon manuel, source à jour requise)');
     if (r.etat === 'BLOQUE') motifs.push(...r.motifs);
     else if (p.etat !== 'OK') motifs.push(...(p.motifs || ['composition impossible']));
     else {
@@ -225,7 +242,7 @@ export function messageProposition({ id8, c, comp, ident, expire_at, site, now }
   const complement = ident.complement?.canal ?? null; // GO partiel : seule la rédaction de CE canal est proposée
   const concernes = complement ? [complement] : CANAUX_RELAIS;
   const evenement = (complement ? `🔁 <b>Complément ${complement === 'x' ? 'X' : 'Facebook'}</b> — l’autre canal a déjà reçu son GO ; seule la rédaction de celui-ci a été retravaillée\n` : '')
-    + (c.type === 'new_case' ? 'Nouvelle affaire' : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
+    + (c.type === 'new_case' ? 'Nouvelle affaire' : c.sous_type === 'fiche_temoignage' ? 'Parole d’un parent (mise à jour de fiche approuvée) — statut judiciaire inchangé' : c.sous_type === 'fiche_evolution' ? `Évolution de procédure (mise à jour de fiche approuvée) — statut judiciaire inchangé${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}` : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
   const reserves = [...new Set((complement ? [complement] : ['facebook', 'x']).flatMap((k) => comp.canaux[k]?.reserves ?? []))];
   const bloques = concernes.filter((k) => !comp.canaux[k]?.ok).map((k) => `${k === 'x' ? 'X' : 'Facebook'} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
   let t = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`

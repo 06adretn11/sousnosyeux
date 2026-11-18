@@ -83,6 +83,21 @@ export function portNeon(sql) {
            and p.decided_at >= ${T}::timestamptz and e.recorded_at >= ${T}::timestamptz
            and p.statut_propose is not null and p.statut_avant is distinct from p.statut_propose`;
       for (const m of maj) sortie.push({ type: 'case_update', case_id: m.case_id, event_id: m.event_id, statut_avant: m.avant, statut_apres: m.apres, propose_at: iso8(m.propose_at), decide_at: iso8(m.decided_at), evenement_enregistre_at: iso8(m.enregistre_at), ps: m.ps, retire: !!m.retire });
+      // MISES À JOUR DE FICHE approuvées après T0 (même circuit de validation : proposition « APPROUVER CETTE VERSION » acceptée par l'éditeur + revue d'empreinte) : étapes judiciaires nouvelles sans changement de statut
+      // (audience / appel annoncés, renvoi) et paroles de parents nouvelles. Elles restent des « case_update » (aucune migration) ; la clé d'événement porte l'empreinte de la version et l'élément.
+      const fiches = await sql`
+        select p.proposal_id::text pid, p.payload->'page'->>'case_id' case_id, p.payload->'page'->>'hash' hash, p.decided_at, p.payload->'page'->'mise_a_jour' maj, p.payload->'page'->'dossier' dossier,
+               c.publication_status::text ps, exists (select 1 from reviews r where r.case_id = c.case_id and r.decision = 'retirer') retire,
+               (select min(r.reviewed_at) from reviews r where r.case_id = p.payload->'page'->>'case_id' and r.decision = 'validé' and r.reviewed_by ilike 'Adrien%'
+                   and r.comment like '[Fiche approuvée %' and r.comment like '%hash=' || (p.payload->'page'->>'hash') || '%') approuvee_at
+          from new_case_proposals p join cases c on c.case_id = p.payload->'page'->>'case_id'
+         where p.decision = 'ACCEPT' and p.decided_by ilike '%Telegram%' and p.payload->'page' ? 'mise_a_jour' and p.decided_at >= ${T}::timestamptz`;
+      for (const f of fiches) {
+        const base = { type: 'case_update', case_id: f.case_id, statut_avant: null, propose_at: iso8(f.decided_at), decide_at: iso8(f.decided_at), evenement_enregistre_at: iso8(f.approuvee_at), fiche_approuvee_at: iso8(f.approuvee_at), fiche_hash: f.hash, ps: f.ps, retire: !!f.retire };
+        const h8 = String(f.hash).slice(0, 8);
+        (f.maj?.ajoutees || []).filter((e) => ['audience', 'appel', 'renvoi'].includes(e.type)).forEach((e, k) => sortie.push({ ...base, sous_type: 'fiche_evolution', event_id: `fiche:${h8}:etape${k}`, statut_apres: `etape-${h8}-${k}`, etape: e }));
+        if ((f.maj?.reactions_ajoutees || 0) > 0) [...(f.dossier?.reactions || []), ...(f.dossier?.paroles || [])].forEach((r, i) => { if (/d’enfant concerné/.test(r.acteur || '')) sortie.push({ ...base, sous_type: 'fiche_temoignage', event_id: `fiche:${h8}:parole${i}`, statut_apres: `parole-${h8}-${i}`, reaction: i }); });
+      }
       return sortie;
     },
 

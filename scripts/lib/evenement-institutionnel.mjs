@@ -125,6 +125,14 @@ const NOMS_MOIS = Object.keys(MOIS).join('|');
 const JOURS = { dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6 };
 // Présent d'ANNONCE d'une mobilisation (« se mobilisent ce lundi soir », « appellent à un rassemblement ce lundi ») : le jour de semaine est à venir, pas passé. « était organisé ce samedi » reste un passé.
 const PRESENT_ANNONCE = /\b(?:se mobilisent|se rassemblent|se reunissent|se retrouvent|appellent? a|sont appele(?:e)?s? a|appel a)\b/;
+/** Date de parution ÉCRITE dans le corps (« Publié le dimanche 15 novembre 2026 », « Diffusé le lundi 16 novembre 2026 ») ; la première citée ; ignorée si elle s'écarte de plus de 7 jours de la métadonnée. */
+export function dateDuCorps(corps, meta = null) {
+  const m = new RegExp(`\\b(?:diffuse|publie)e?\\s+le\\s+(?:(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche)\\s+)?(\\d{1,2})(?:er)?\\s+(${NOMS_MOIS})\\s+(\\d{4})\\b`).exec(norm(String(corps || '').slice(0, 6000)));
+  if (!m) return null;
+  const d = `${m[3]}-${MOIS[m[2]]}-${String(Number(m[1])).padStart(2, '0')}`;
+  if (!meta || !parseRef(meta)?.d) return d;
+  return Math.abs(Date.parse(d) - Date.parse(String(meta).slice(0, 10))) <= 7 * 864e5 ? d : null;
+}
 const FUTUR = /\b(prochain\w*|sera|seront|va|vont|prevu\w*|a venir)\b/; // « a annoncé » est un passé : ce n'est pas une marque d'avenir
 const parseRef = (r) => { const m = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?/.exec(String(r || '')); return m ? { y: Number(m[1]), m: m[2] ? Number(m[2]) : null, d: m[3] ? Number(m[3]) : null } : null; };
 const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -152,9 +160,10 @@ export function dateEcrite(texte, ref = null, { avenir = false } = {}) {
     const pub = new Date(Date.UTC(R.y, R.m - 1, R.d));
     let ecart = (pub.getUTCDay() - JOURS[w[1]] + 7) % 7;
     if (w[2] && ecart === 0) ecart = 7;
-    // Un fait ANNONCÉ (« se mobilisent ce lundi soir », publié un dimanche) a lieu LE PROCHAIN lundi, pas le précédent : sinon un rassemblement annoncé est daté six jours AVANT la parution
-    // (défaut Rots : 9 novembre au lieu du 16). Seule la mention explicite d'un passé (« dernier ») ramène en arrière.
-    const dt = (avenir || futur) && !w[2] ? new Date(pub.getTime() + ((JOURS[w[1]] - pub.getUTCDay() + 7) % 7) * 864e5) : new Date(pub.getTime() - ecart * 864e5);
+    // Fait ANNONCÉ ou à venir (« se mobilisent ce lundi soir », « sera organisée ce jeudi ») : le jour de semaine ne se déduit PAS d'un recul depuis la parution (défaut Rots : 9 novembre au lieu du 16).
+    // Si le jour cité n'est pas celui de la référence, la date est AMBIGUË : elle reste inconnue plutôt qu'inventée. Même jour que la référence : cette date.
+    if ((avenir || futur) && !w[2] && ecart !== 0) return { date: null, periode: null };
+    const dt = new Date(pub.getTime() - ecart * 864e5);
     return { date: iso(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate()), periode: null };
   }
   const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|du mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?(\\s+(?:dernier|passe))?\\b`).exec(n);
@@ -275,7 +284,9 @@ const territoireDe = (phrase) => {
  * @returns {Array<{event_type:string, mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement'|'territoire', acteur:string,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function extraireReactions(corps, { etablissement = '', anneeRef = null, autres = [], titre = '', lieAffaire = false, commune = '', soeursMemeEtablissement = false } = {}) {
+export function extraireReactions(corps, { etablissement = '', anneeRef: anneeRefMeta = null, autres = [], titre = '', lieAffaire = false, commune = '', soeursMemeEtablissement = false } = {}) {
+  // Date de référence : celle que l'article ÉCRIT (« Diffusé le lundi 16 novembre 2026 ») prime sur la métadonnée de parution quand elles diffèrent de moins d'une semaine.
+  const anneeRef = dateDuCorps(corps, anneeRefMeta) ?? anneeRefMeta;
   const jetons = jetonsEtab(etablissement);
   // `titre` : titre de la page. Il repère l'article mais ne l'étaye pas : un fait dont TOUTES les citations sont ce titre n'est pas retenu.
   const estTitre = (e) => !!titre && norm(e) === norm(titre);

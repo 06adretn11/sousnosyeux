@@ -55,7 +55,7 @@ export const GABARITS = Object.freeze({
 export const LIBELLES = Object.freeze({
   // « enquête ouverte » et non « enquête en cours » : que l'enquête se poursuive aujourd'hui n'est établi par aucune source (V4, S01 : aucun développement après juillet).
   nouvelle_affaire: { 'enquête': 'enquête ouverte', 'mise en examen': 'mise en examen', 'procès': 'affaire au stade du procès', 'condamnation non définitive': 'condamnation prononcée', 'condamnation définitive': 'condamnation définitive' },
-  evolution: { mise_en_examen: 'mise en examen le {date}', 'décision|condamnation non définitive': 'condamnation prononcée le {date}', 'décision|condamnation définitive': 'condamnation définitive le {date}', enquête: 'enquête ouverte le {date}', audience: 'procès le {date}' },
+  evolution: { mise_en_examen: 'mise en examen le {date}', 'décision|condamnation non définitive': 'condamnation prononcée le {date}', 'décision|condamnation définitive': 'condamnation définitive le {date}', enquête: 'enquête ouverte le {date}', audience: 'procès le {date}', audience_appel: 'procès en appel annoncé le {date}', appel: 'appel interjeté', renvoi: 'renvoi devant la juridiction le {date}' },
   declaration_association: 'déclaration de {acteur}',
   declaration_victime: 'prise de parole de {acteur}',
 });
