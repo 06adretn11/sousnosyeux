@@ -528,6 +528,9 @@ async function notifier(max = 10) {
         : r.aa === 'ENRICHMENT' ? await decisionInstitutionnelle(r.k) // décision si une mesure d'institution est établie, sinon information
         : await info(r.k);
     } catch (e) {
+      // ERREUR D'ENVOI (réseau, Telegram) : ce n'est PAS un jugement sur la proposition — rien n'est mémorisé, elle sera retentée au prochain cycle
+      // (avant : la proposition était marquée « écartée » pour toujours et ne partait jamais ; constaté le 18/11/2026 sur une proposition de correction de date).
+      if (/^Telegram /.test(String(e.message))) { console.log(`échec d'envoi ${r.k} : ${e.message} — retentée au prochain cycle`); continue; }
       // périmée / ambiguë : on le note pour ne plus la reconsidérer, sans message
       console.log(`écartée ${r.k} : ${e.message}`);
       await sql`insert into telegram_envois (kind, cle) values ('info', ${r.pid}) on conflict do nothing`;
