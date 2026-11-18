@@ -317,6 +317,10 @@ t('source LUE et jugée « autre affaire » mais citée par une étape approuvé
   assert.match(ligne, /RELUE ET jugée « autre affaire » par la lecture automatique/);
   assert.match(ligne, /CONSERVÉE ; rattachement à trancher par l’éditeur \(indices : commune présente, rôle présent, structure NON nommée, aucune autre affaire proche dans la commune\)/);
   assert.doesNotMatch(ligne, /non relue/);
+  // Une ERREUR du modèle (réseau, quota) n'est pas un jugement : la source n'est jamais dite « jugée » ni « rattachée ».
+  const generation2 = { ...generation, sources: [generation.sources[0], { url: U2, media: 'Autre média', acces: 'libre', origine: 'memoire', pertinence: 'AMBIGU', raison: 'extraction indisponible' }] };
+  const ligne2 = rendreMarkdown({ c, dossier, generation: generation2 }, { complet: false }).split('\n').find((l) => l.includes(U2) && l.startsWith('|'));
+  assert.match(ligne2, /lecture automatique INDISPONIBLE à ce passage \(erreur du modèle, aucun jugement sur la source\)/); assert.doesNotMatch(ligne2, /RELUE ET jugée/);
 });
 
 t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une déclaration qui répète le déroulé est écartée ; deux déclarations par acteur au plus', () => {
