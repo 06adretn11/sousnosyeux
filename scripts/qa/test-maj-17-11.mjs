@@ -13,6 +13,7 @@ import { readFileSync } from 'node:fs';
 import { dateEcrite, dateDuCorps, extraireReactions } from '../lib/evenement-institutionnel.mjs';
 import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
 import { messageEnrichissement } from '../lib/discovery-messages.mjs';
+import { libelleParole } from '../lib/social-editorial.mjs';
 import { portNeon } from '../lib/relais-social-db.mjs';
 import { evaluerCandidat } from '../lib/relais-social.mjs';
 import { cleEvenement } from '../lib/diffusion-sociale.mjs';
@@ -87,6 +88,9 @@ const pc = { etablissement: 'centre de loisirs', commune: 'Ville-Test', courant:
 const msgc = messageEnrichissement(pc, [fc], false).replace(/<\/?[bc][a-z]*>/g, '');
 test('proposition de correction : l’avant, l’après et l’extrait justificatif sont dits avant la décision ; une information sans correction ne les porte pas', /CORRECTION DE DATE d’une information déjà publiée : avant « 09\/11\/2026 » → après « 16\/11\/2026 »/.test(msgc) && /Justification : « Diffusé le lundi 16 novembre 2026 à 6h32 »/.test(msgc)
   && !/CORRECTION DE DATE/.test(messageEnrichissement(pc, [{ ...fc, correction: undefined }], false)));
+
+// ---- libellé d'une prise de parole à attribution générique ----------------------------------------------------------------------------------------
+test('libellé : « prise de parole d’une mère… » — jamais « de Une mère » ; un nom propre reste intact', libelleParole('Une mère d’enfant concerné') === 'prise de parole d’une mère d’enfant concerné' && libelleParole('Un père d’enfant concerné') === 'prise de parole d’un père d’enfant concerné' && libelleParole('Dorothée Pitois') === 'prise de parole de Dorothée Pitois');
 
 if (ko) { console.error(`\n✗ ${ko} contrôle(s) en échec`); process.exit(1); }
 console.log('\nContrôles retours « À revoir » 17/11 : OK');
