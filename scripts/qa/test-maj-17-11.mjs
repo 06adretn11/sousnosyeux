@@ -92,5 +92,8 @@ test('proposition de correction : l’avant, l’après et l’extrait justifica
 // ---- libellé d'une prise de parole à attribution générique ----------------------------------------------------------------------------------------
 test('libellé : « prise de parole d’une mère… » — jamais « de Une mère » ; un nom propre reste intact', libelleParole('Une mère d’enfant concerné') === 'prise de parole d’une mère d’enfant concerné' && libelleParole('Un père d’enfant concerné') === 'prise de parole d’un père d’enfant concerné' && libelleParole('Dorothée Pitois') === 'prise de parole de Dorothée Pitois');
 
+// ---- notifier : une erreur d'envoi n'écarte jamais une proposition ----------------------------------------------------------------------------------
+test('notifier : une erreur d’envoi (« Telegram … erreur réseau ») est retentée au cycle suivant, sans marqueur « écartée » ; une proposition périmée ou ambiguë reste écartée', /if \(\/\^Telegram \/\.test\(String\(e\.message\)\)\) \{[\s\S]*?continue; \}\s*\n\s*\/\/ périmée \/ ambiguë/.test(tel) && /insert into telegram_envois \(kind, cle\) values \('info', \$\{r\.pid\}\)/.test(tel));
+
 if (ko) { console.error(`\n✗ ${ko} contrôle(s) en échec`); process.exit(1); }
 console.log('\nContrôles retours « À revoir » 17/11 : OK');
