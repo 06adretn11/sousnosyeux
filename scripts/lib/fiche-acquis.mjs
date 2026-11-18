@@ -28,6 +28,11 @@ const UNIQUES = new Set(['garde_a_vue', 'mise_en_examen', 'enquete', 'renvoi']);
 const ORDRE_TYPE = ['fait_rapporte', 'signalement', 'plainte', 'enquete', 'garde_a_vue', 'mise_en_examen', 'mesure_etablissement', 'mesure_collectivite', 'mesure_etat', 'communication_parquet', 'renvoi', 'audience', 'decision', 'appel', 'contexte'];
 
 const url = (s) => canonique(s?.url || '');
+/**
+ * Indices DÉTERMINISTES de rattachement d'une source à l'affaire (calculés à la lecture, jamais une conclusion) : pour l'éditeur qui doit trancher quand la lecture automatique
+ * juge d'une AUTRE affaire une source déjà liée à des étapes approuvées. `r` = { commune, role, structure, soeurs } (booléens et nombre d'affaires proches dans la commune).
+ */
+export const libelleIndices = (r) => `commune ${r.commune ? 'présente' : 'absente'}, rôle ${r.role ? 'présent' : 'absent'}, structure ${r.structure ? 'nommée' : 'NON nommée'}, ${r.soeurs ? `${r.soeurs} autre(s) affaire(s) proche(s)` : 'aucune autre affaire proche dans la commune'}`;
 export const refsEtape = (e) => [e?.source, ...(e?.sources_complementaires || [])].filter((s) => s?.url);
 /** Toutes les références (principale + complémentaires) d'un ensemble d'étapes, dédoublonnées par URL canonique. */
 export const urlsReferences = (etapes) => [...new Set((etapes || []).flatMap((e) => refsEtape(e).map(url)))];
@@ -204,7 +209,7 @@ export function conserverAcquis({ precedent, candidat, sources = [], noms = [] }
   const A = precedent || {}, C = candidat || {};
   const attention = [];
   const J = { conservees: [], enrichies: [], retirees: [], references_ajoutees: [], devenues_secondaires: [], non_relues: [], dates_corrigees: [], divergences: [], ambigues: [], reactions_conservees: 0, reactions_ajoutees: 0 };
-  const lecture = (u) => { const s = sources.find((x) => canonique(x.url) === canonique(u)); return s ? { lue: s.acces === 'libre' && !s.ecarte, motif: s.acces !== 'libre' ? (s.motif || 'inaccessible') : s.ecarte ? 'écartée avant lecture' : null, pertinence: s.pertinence } : { lue: false, motif: 'absente de la sélection de ce passage', pertinence: undefined }; };
+  const lecture = (u) => { const s = sources.find((x) => canonique(x.url) === canonique(u)); return s ? { lue: s.acces === 'libre' && !s.ecarte, motif: s.acces !== 'libre' ? (s.motif || 'inaccessible') : s.ecarte ? 'écartée avant lecture' : null, pertinence: s.pertinence, rattachement: s.rattachement } : { lue: false, motif: 'absente de la sélection de ce passage', pertinence: undefined }; };
   const EA = A.deroule || [], EC = C.deroule || [];
   const cmp = comparerEtapes(EA, EC);
   const sortie = EA.map((e) => ({ ...e }));          // base : la version approuvée, dans son ordre
@@ -256,7 +261,8 @@ export function conserverAcquis({ precedent, candidat, sources = [], noms = [] }
     const relues = refs.filter((r) => r.lue);
     const autreAffaire = refs.filter((r) => r.lue && ['AFFAIRE_SOEUR', 'AUTRE_AFFAIRE', 'HORS_SUJET'].includes(r.pertinence));
     J.conservees.push({ texte: a.texte, type: a.type, date: a.date ?? null, source: a.source?.media, raison: relues.length ? 'RELUE_SANS_REPRISE' : 'NON_RELUE' });
-    if (autreAffaire.length === refs.length && refs.length) { J.ambigues.push({ code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: a.texte }); attention.push({ niveau: 'majeur', code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: `Toutes les sources d’une étape approuvée ont été relues et jugées d’une autre affaire (« ${String(a.texte).slice(0, 80)} ») : étape conservée, à trancher par l’éditeur (un rattachement ne se retire pas sur une seule lecture).` }); }
+    if (autreAffaire.length === refs.length && refs.length) { J.ambigues.push({ code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: a.texte }); const indices = [...new Set(refs.map((r) => r.rattachement).filter(Boolean).map(libelleIndices))];
+      attention.push({ niveau: 'majeur', code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: `Source(s) d’une étape approuvée relue(s) et jugée(s) d’une autre affaire par la lecture automatique (« ${String(a.texte).slice(0, 70)} ») : étape conservée, à trancher par l’éditeur (un rattachement ne se retire pas sur une seule lecture).${indices.length ? ` Indices : ${indices.join(' ; ')}.` : ''}` }); }
   }
   for (const x of cmp.ambigus) { J.ambigues.push({ code: 'APPARIEMENT_AMBIGU', avant: EA[x.i].texte, apres: EC[x.j].texte }); attention.push({ niveau: 'majeur', code: 'APPARIEMENT_AMBIGU', texte: `Une étape de la relecture (« ${String(EC[x.j].texte).slice(0, 70)} ») ressemble à plusieurs étapes approuvées : aucune fusion, tout est conservé.` }); }
   // 4. étapes nouvelles de la candidate (même absorbées-ambiguës) : ajoutées

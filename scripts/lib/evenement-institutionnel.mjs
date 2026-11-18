@@ -123,6 +123,8 @@ const MOIS = { janvier: '01', fevrier: '02', mars: '03', avril: '04', mai: '05',
 const NOMS_MOIS = Object.keys(MOIS).join('|');
 
 const JOURS = { dimanche: 0, lundi: 1, mardi: 2, mercredi: 3, jeudi: 4, vendredi: 5, samedi: 6 };
+// Présent d'ANNONCE d'une mobilisation (« se mobilisent ce lundi soir », « appellent à un rassemblement ce lundi ») : le jour de semaine est à venir, pas passé. « était organisé ce samedi » reste un passé.
+const PRESENT_ANNONCE = /\b(?:se mobilisent|se rassemblent|se reunissent|se retrouvent|appellent? a|sont appele(?:e)?s? a|appel a)\b/;
 const FUTUR = /\b(prochain\w*|sera|seront|va|vont|prevu\w*|a venir)\b/; // « a annoncé » est un passé : ce n'est pas une marque d'avenir
 const parseRef = (r) => { const m = /^(\d{4})(?:-(\d{2})(?:-(\d{2}))?)?/.exec(String(r || '')); return m ? { y: Number(m[1]), m: m[2] ? Number(m[2]) : null, d: m[3] ? Number(m[3]) : null } : null; };
 const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
@@ -136,7 +138,7 @@ const iso = (y, m, d) => `${y}-${String(m).padStart(2, '0')}-${String(d).padStar
  * publication est ramenée à l'année précédente. Sans référence suffisante : null, jamais deviné.
  * @returns {{date:string|null, periode:string|null}}
  */
-export function dateEcrite(texte, ref = null) {
+export function dateEcrite(texte, ref = null, { avenir = false } = {}) {
   const n = norm(texte), R = parseRef(ref), futur = FUTUR.test(n);
   const apresRef = (y, m, d) => !!(R?.m && R?.d) && iso(y, m, d) > iso(R.y, R.m, R.d);
   const j = new RegExp(`\\b(\\d{1,2})(?:er)?\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?\\b`).exec(n);
@@ -150,7 +152,9 @@ export function dateEcrite(texte, ref = null) {
     const pub = new Date(Date.UTC(R.y, R.m - 1, R.d));
     let ecart = (pub.getUTCDay() - JOURS[w[1]] + 7) % 7;
     if (w[2] && ecart === 0) ecart = 7;
-    const dt = new Date(pub.getTime() - ecart * 864e5);
+    // Un fait ANNONCÉ (« se mobilisent ce lundi soir », publié un dimanche) a lieu LE PROCHAIN lundi, pas le précédent : sinon un rassemblement annoncé est daté six jours AVANT la parution
+    // (défaut Rots : 9 novembre au lieu du 16). Seule la mention explicite d'un passé (« dernier ») ramène en arrière.
+    const dt = (avenir || futur) && !w[2] ? new Date(pub.getTime() + ((JOURS[w[1]] - pub.getUTCDay() + 7) % 7) * 864e5) : new Date(pub.getTime() - ecart * 864e5);
     return { date: iso(dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate()), periode: null };
   }
   const m = new RegExp(`\\b(?:en|depuis|durant|courant|au mois de|du mois de|fin|debut)\\s+(${NOMS_MOIS})(?:\\s+(\\d{4}))?(\\s+(?:dernier|passe))?\\b`).exec(n);
@@ -226,7 +230,10 @@ const acteurNomme = (phrase) => { const m = ACTEUR_NOMME.exec(phrase); return m 
 const jetonsEtab = (e) => norm(e).split(/[^a-z0-9]+/).filter((w) => w.length > 3 && !['ecole', 'maternelle', 'elementaire', 'college', 'lycee', 'creche', 'periscolaire', 'centre', 'loisirs'].includes(w));
 // Coupe aux fins de phrase seulement : les guillemets à espaces de la presse (« " texte " ») ne sont pas des frontières.
 // Les crédits photo (« © Radio France – Prénom Nom ») collés à une phrase sont retirés : jamais un nom de journaliste dans une citation.
-const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => s.replace(/\s*©.*$/, '').replace(/\s+/g, ' ').trim())
+// Bandeau d'alerte + bouton « fermer » + fil d'Ariane collés au titre (Actu.fr : « …orages en France fermer Actu Normandie Calvados Rots <titre> <chapeau> ») : ce qui précède le fil d'Ariane n'est pas
+// l'article. Sans cela le bouton « fermer » devant « centre de loisirs » était lu comme « la structure a été fermée » (fait faux proposé à la validation, 17/11/2026).
+const sansChromeDePage = (s) => s.replace(/^.*?\bfermer\s+(?=Actu\b|Accueil\b)/, '');
+const decoupe = (corps) => String(corps || '').split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý"«])|\n+/).map((s) => sansChromeDePage(s.replace(/\s*©.*$/, '').replace(/\s+/g, ' ').trim()))
   // Un « À lire aussi » est le titre d'un AUTRE article : jamais une phrase de celui-ci, donc jamais une preuve (même sur un corps déjà mémorisé).
   .filter((s) => s.length >= 25 && !estPisteDeNavigation(s));
 
@@ -301,7 +308,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef = null, 
       // Plusieurs affaires au même établissement (ex. deux procédures distinctes à Aqueduc) : « cette procédure » ne désigne plus une affaire — aucun lien automatique.
       const lieeProcedure = lieAffaire && !multi && !soeursMemeEtablissement && /\b(?:cette|ce)\s+(?:procedure|proces|audience)\b/.test(n);
       const origine = !lieeProcedure && /\bcette\s+affaire\b/.test(n);
-      const d = dateEcrite(phrase, anneeRef);
+      const d = dateEcrite(phrase, anneeRef, { avenir: realisation === 'annoncée' && PRESENT_ANNONCE.test(n) });
       // UN fait par (type, jour) : deux rassemblements de jours différents ne fusionnent pas ; une phrase sans date rejoint le fait déjà vu.
       const cle = [...parMesure.keys()].find((k) => k.startsWith(`mob:${mesure}|`) && (!d.date || !parMesure.get(k).event_date || parMesure.get(k).event_date === d.date)) ?? `mob:${mesure}|${d.date ?? d.periode ?? parMesure.size}`;
       const f = parMesure.get(cle);

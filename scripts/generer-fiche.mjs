@@ -126,7 +126,9 @@ for (const id of ids) {
     } catch (e) { console.log(`  ⚠ regroupement : ${e.message.slice(0, 100)}`); }
   }
   const r = composer({ c, extractions, holds, fusionsModele });
-  const sourcesLues = extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined }));
+  const sourcesLues = extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined,
+    // Indices déterministes (jamais une conclusion) pour trancher une source jugée « autre affaire » mais liée à une étape approuvée.
+    rattachement: doc.rattachement ? { statut: doc.rattachement.statut, commune: doc.rattachement.signaux.some((x) => x.startsWith('commune')), role: doc.rattachement.signaux.some((x) => x.startsWith('rôle')), structure: doc.rattachement.signaux.some((x) => x.startsWith('établissement')), soeurs: soeurs.length } : undefined }));
   // UNE RELECTURE ENRICHIT LES ACQUIS, ELLE NE LES REMPLACE PAS : si une version approuvée existe, la candidate = cette version + ce que la relecture apporte (lib/fiche-acquis.mjs).
   // Sans elle, une source payante (402), bloquée (403) ou simplement absente de la sortie du modèle faisait proposer l'effacement d'étapes, de sources et de positions validées.
   // --sans-acquis : correction éditoriale délibérée (consolidation, retrait demandé) où l'ancienne rédaction ne doit PAS être reprise.

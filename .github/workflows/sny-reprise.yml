@@ -2,6 +2,8 @@
 # Déclenchement MANUEL uniquement (workflow_dispatch) : plan par défaut (aucune écriture), puis --ecrire. Aucune publication : les propositions corrigées partent sur Telegram
 # et attendent la décision de l'éditeur ; les anciennes propositions sans décision reçoivent une décision MACHINE « SUPERSEDED » (jamais ACCEPT à la place de l'éditeur).
 # Même groupe de concurrence que sny-maj-fiches (jamais deux générations en parallèle). contents: write — uniquement docs/industrialisation/fiches-generees (aperçus de candidates).
+# REPRISE APRÈS « À REVOIR » (17/11/2026) : `apres_revue` + `affaires` (identifiants séparés par des virgules) régénèrent, depuis la version APPROUVÉE, les mises à jour de fiches
+# que l'éditeur a renvoyées en revue. L'ancienne proposition reste décidée (bouton inerte) ; la nouvelle porte une nouvelle empreinte et attend un nouveau clic.
 # À SUPPRIMER (ou laisser inerte) une fois la reprise faite : il n'a aucun déclencheur automatique.
 name: sny-reprise
 
@@ -12,6 +14,14 @@ on:
         description: 'Appliquer la reprise (sinon : plan, lecture seule)'
         type: boolean
         default: false
+      apres_revue:
+        description: 'Reprise ciblée après un « À revoir » de l’éditeur (exige « affaires »)'
+        type: boolean
+        default: false
+      affaires:
+        description: 'Affaires visées par la reprise ciblée (ex. FR-2026-0046,FR-2026-0133)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -39,12 +49,30 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
+      # Saisie validée : seuls des identifiants FR-2026-NNNN séparés par des virgules sont acceptés (jamais interpolés dans une commande : variable d'environnement).
+      - name: Valider la saisie de la reprise ciblée
+        if: ${{ inputs.apres_revue }}
+        env:
+          AFFAIRES: ${{ inputs.affaires }}
+        run: |
+          case "$AFFAIRES" in
+            FR-2026-[0-9][0-9][0-9][0-9]|FR-2026-[0-9][0-9][0-9][0-9],FR-2026-[0-9][0-9][0-9][0-9]) ;;
+            *) echo "saisie refusée : un ou deux identifiants FR-2026-NNNN attendus"; exit 2 ;;
+          esac
       - name: Plan (lecture seule, compteurs et identifiants techniques seulement)
         if: ${{ !inputs.ecrire }}
-        run: node scripts/reprendre-sans-perte.mjs
+        env:
+          AFFAIRES: ${{ inputs.affaires }}
+          APRES_REVUE: ${{ inputs.apres_revue }}
+        run: |
+          if [ "$APRES_REVUE" = "true" ]; then node scripts/reprendre-sans-perte.mjs --apres-revue --case "$AFFAIRES"; else node scripts/reprendre-sans-perte.mjs; fi
       - name: Reprise (régénération avec la version approuvée, requalification des faits territoriaux)
         if: ${{ inputs.ecrire }}
-        run: node scripts/reprendre-sans-perte.mjs --ecrire
+        env:
+          AFFAIRES: ${{ inputs.affaires }}
+          APRES_REVUE: ${{ inputs.apres_revue }}
+        run: |
+          if [ "$APRES_REVUE" = "true" ]; then node scripts/reprendre-sans-perte.mjs --ecrire --apres-revue --case "$AFFAIRES"; else node scripts/reprendre-sans-perte.mjs --ecrire; fi
       - name: Déposer les aperçus sur main (docs seulement ; AVANT l'envoi des propositions)
         if: ${{ inputs.ecrire }}
         run: |

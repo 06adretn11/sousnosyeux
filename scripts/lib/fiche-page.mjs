@@ -53,6 +53,15 @@ export const urlsDe = (d) => {
 };
 
 /**
+ * Importance d'une étape AJOUTÉE pour la lecture d'une demande d'approbation : l'essentiel d'une évolution judiciaire (décision, appel, renvoi, mise en examen) passe
+ * avant une audience, qui passe avant le contexte et les signalements. À importance égale, la plus RÉCENTE d'abord (date de l'événement, à défaut parution).
+ * Sans cela l'aperçu d'un message tronqué à quatre lignes montrait les étapes de 2018-2019 et cachait la condamnation, l'appel et le procès annoncé (Rezé, 17/11/2026).
+ */
+const RANG_IMPORTANCE = { decision: 4, appel: 4, renvoi: 4, mise_en_examen: 4, audience: 3, requisitions: 3, garde_a_vue: 2, enquete: 2, communication_parquet: 2 };
+export const importanceEtape = (e) => RANG_IMPORTANCE[e?.type] ?? 1;
+export const parImportance = (a, b) => importanceEtape(b) - importanceEtape(a) || String(b.date ?? b.publie_le ?? '').localeCompare(String(a.date ?? a.publie_le ?? ''));
+
+/**
  * Ce que change une VERSION CANDIDATE par rapport à la dernière version publique. Une étape est un FAIT (comparerEtapes : même type de fait, dates
  * compatibles, texte proche ou acte procédural du même jour — jamais « même source, même date » seul), pas un triplet (source, type, date) :
  *   · même fait, formulation ou source principale différente  → « reformulée » (jamais un ajout ET un retrait) ; une source devenue secondaire est « conservée » ;
@@ -63,7 +72,7 @@ export const urlsDe = (d) => {
 export function changementsFiche(precedent, nouveau) {
   const A = precedent?.deroule || [], C = nouveau?.deroule || [];
   const cmp = comparerEtapes(A, C);
-  const vue = (e) => ({ texte: e.texte, media: e.source?.media ?? null, url: e.source?.url ?? null, date: e.date ?? null, publie_le: e.source?.publie_le ?? null });
+  const vue = (e) => ({ texte: e.texte, type: e.type ?? null, media: e.source?.media ?? null, url: e.source?.url ?? null, date: e.date ?? null, publie_le: e.source?.publie_le ?? null });
   const ajoutees = cmp.ajoutees.map((j) => vue(C[j])), retirees = cmp.retirees.map((i) => vue(A[i]));
   const reformulees = cmp.paires.filter((p) => A[p.i].texte !== C[p.j].texte).length;
   const devenues_secondaires = cmp.paires.filter((p) => A[p.i].source?.url !== C[p.j].source?.url && refsEtape(C[p.j]).some((r) => r.url === A[p.i].source?.url)).map((p) => ({ media: A[p.i].source?.media ?? null, url: A[p.i].source?.url }));
@@ -121,7 +130,9 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
       // Mise à jour d'une page déjà publiée : ce qui change réellement depuis la dernière version publique (jamais tout l'historique comme nouveau).
       // Les retraits portent leur MOTIF (ceux que la fusion avec la version approuvée a écartés pour une cause établie) ; un retrait sans motif est dit tel quel.
       ...(ch ? { mise_a_jour: {
-        precedent_hash: hashDossier(precedent.d), ajoutees: ch.ajoutees.slice(0, 6),
+        precedent_hash: hashDossier(precedent.d), ajoutees: [...ch.ajoutees].sort(parImportance).slice(0, 6), ajoutees_total: ch.ajoutees.length,
+        // La situation judiciaire AVANT / APRÈS (lignes du bloc « état actuel ») : un message qui dit seulement « le bloc change » ne dit pas ce qui a changé.
+        etat_avant: (precedent.d.etat_actuel || []).slice(0, 3), etat_apres: (d.etat_actuel || []).slice(0, 3),
         // Retraits = ce que la comparaison des deux versions ne retrouve pas + les retraits MOTIVÉS de la fusion (étape ou position écartée par une garde : elle n'est plus dans la version, donc invisible au diff).
         retirees: [...ch.retirees.map((e) => ({ ...e, motif: generation?.acquis?.retirees?.find((r) => String(r.texte).slice(0, 120) === String(e.texte).slice(0, 120))?.motif ?? null })),
           ...(generation?.acquis?.retirees || []).filter((r) => !ch.retirees.some((e) => String(e.texte).slice(0, 120) === String(r.texte).slice(0, 120))).map((r) => ({ texte: r.texte, media: r.media ?? null, url: null, date: null, publie_le: null, motif: r.motif }))].slice(0, 6),
@@ -172,6 +183,6 @@ export function resumeGeneration(g) {
     sources_lues: g.sources.filter((s) => s.acces === 'libre' && s.pertinence === 'CETTE_AFFAIRE').length, sources_total: g.sources.length,
     elements_ecartes: g.ecartes.length,
     ...(g.acquis ? { acquis: { conservees: g.acquis.conservees.length, references_ajoutees: g.acquis.references_ajoutees.length, retirees: g.acquis.retirees.length, non_relues: g.acquis.non_relues.length, inchange: g.acquis.inchange } } : {}),
-    attention: g.attention.filter((a) => a.niveau !== 'mineur').concat(g.attention.filter((a) => a.niveau === 'mineur')).slice(0, 6).map((a) => ({ niveau: a.niveau, texte: a.texte.slice(0, 240) })),
+    attention: g.attention.filter((a) => a.niveau !== 'mineur').concat(g.attention.filter((a) => a.niveau === 'mineur')).slice(0, 6).map((a) => ({ niveau: a.niveau, texte: a.texte.slice(0, 360) })),
   };
 }

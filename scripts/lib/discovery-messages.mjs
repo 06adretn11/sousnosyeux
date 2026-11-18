@@ -13,6 +13,7 @@ import { moisFr } from './evenement-institutionnel.mjs';
 import { stadeCite } from './stade-judiciaire.mjs';
 import { comparerEtablissements } from './rapprochement-garde.mjs';
 import { diffCourt } from './hub-maj.mjs';
+import { parImportance } from './fiche-page.mjs';
 const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const cut = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 /** Coupe à une limite de MOTS (jamais « … le 9 novemb ») : pour les réserves et avertissements, dont la fin porte souvent ce qui est contesté. */
@@ -239,6 +240,10 @@ function messageFicheMiseAJour(p) {
   const retirees = m.retirees || [], aTrancher = (x.generation?.attention || []).filter((a) => a.niveau === 'majeur');
   const nonRelues = m.non_relues || [], refs = m.references_ajoutees || [], seco = m.devenues_secondaires || [];
   const effet = m.effet || {};
+  // L'ESSENTIEL D'ABORD : la situation judiciaire de la version proposée (et ce qu'elle était), puis les ajouts classés par importance (décision, appel, audience… avant le contexte).
+  const ajoutees = [...(m.ajoutees || [])].sort(parImportance), total = m.ajoutees_total ?? ajoutees.length;
+  const etatApres = (m.etat_apres || x.resume || []).slice(0, 3), etatAvant = m.etat_avant || [];
+  const etatChange = !!m.etat_change && JSON.stringify(etatAvant) !== JSON.stringify(etatApres);
   // Telegram refuse un message de plus de 4096 caractères : on réduit le détail des AJOUTS et des mentions secondaires, jamais les retraits ni les points à trancher.
   const construire = ({ na, ca, att, ct }) => [
     `🔄 <b>MISE À JOUR DE FICHE À APPROUVER</b> · ${esc(x.case_id)}`,
@@ -247,14 +252,18 @@ function messageFicheMiseAJour(p) {
     `La page existe déjà : la version publique actuelle (empreinte <code>${esc(m.precedent_hash)}</code>) reste EN LIGNE tant que vous n’approuvez pas celle-ci (<code>${esc(x.hash)}</code>).`,
     ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT à partir de la version approuvée · qualification ${esc(x.generation.qualification)}`] : []),
     '',
+    '<b>Situation judiciaire de cette version</b>' + (etatChange ? ' (modifiée)' : ' (inchangée)'),
+    ...etatApres.map((l) => `• ${esc(cut(l, Math.max(120, ct + 60)))}`),
+    ...(etatChange ? etatAvant.slice(0, 1).map((l) => `  Avant : ${esc(cut(l, 110))}`) : []),
+    '',
     '<b>Retiré ou à trancher</b>',
     ...(retirees.length ? retirees.slice(0, 4).map((e) => `➖ Retirée : ${esc(cut(e.texte, 130))}\n   Motif : ${esc(e.motif || 'AUCUN MOTIF ÉTABLI — à refuser')}`) : ['Aucune étape, source ni position de la version approuvée n’est retirée.']),
     ...(m.sources_retirees || []).slice(0, 2).map((s) => `➖ Source retirée : ${esc(s.media || '')} → ${esc(s.url)}`),
-    ...aTrancher.slice(0, att).map((a) => `⚠ À trancher : ${esc(cut(a.texte, ct))}`),
+    ...aTrancher.slice(0, att).map((a) => `⚠ À trancher : ${esc(cut(a.texte, ct + 160))}`),
     '',
     '<b>Ajouté</b>',
-    ...(m.ajoutees || []).slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
-    ...((m.ajoutees || []).length ? plus(m.ajoutees, na) : ['Aucune étape nouvelle.']),
+    ...ajoutees.slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
+    ...(total ? plus({ length: total }, na) : ['Aucune étape nouvelle.']),
     ...(m.reactions_ajoutees ? [`💬 ${m.reactions_ajoutees} position(s) attribuée(s) ajoutée(s)`] : []),
     ...(m.sources_nouvelles || []).slice(0, 2).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
     ...(refs.length ? [`🔗 ${refs.length} référence(s) ajoutée(s) à des étapes existantes : ${refs.slice(0, 3).map((r) => esc(r.media || '')).join(', ')}`] : []),
@@ -264,7 +273,6 @@ function messageFicheMiseAJour(p) {
     nonRelues.length ? `🔒 Sources conservées, non relues à ce passage (aucune relecture n’est prétendue) : ${nonRelues.slice(0, 3).map((s) => `${esc(s.media || '')} (${esc(s.motif || 'non relue')})`).join(', ')}` : '',
     seco.length ? `🔁 Devenue référence secondaire (non retirée) : ${seco.slice(0, 3).map((s) => esc(s.media || '')).join(', ')}` : '',
     m.reformulees ? `✏️ ${m.reformulees} étape(s) reformulée(s) ou regroupée(s), même fait, sans perte de fond` : '',
-    m.etat_change ? '⚖️ Le bloc de situation judiciaire change (voir l’aperçu).' : '',
     ...((m.inconnues_modifiees?.avant || []).length || (m.inconnues_modifiees?.apres || []).length ? [
       '<b>Inconnues modifiées</b> (page : « Ce que l’on ne sait pas »)',
       ...(m.inconnues_modifiees.avant || []).map((i) => `➖ ${esc(cut(i, 230))}`),

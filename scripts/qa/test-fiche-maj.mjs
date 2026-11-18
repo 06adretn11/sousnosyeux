@@ -70,6 +70,31 @@ t('message : première publication = création (+ page, bouton Fiche) ; version 
   assert.ok(maj.includes(hashDossier(V1)) && maj.includes(hashDossier(V2)), 'les deux empreintes sont dites');
   assert.doesNotMatch(maj, /Selon le parquet, un animateur a été mis en examen/, 'une étape inchangée n’est pas présentée comme nouvelle');
 });
+t('message de mise à jour : l’ESSENTIEL JUDICIAIRE d’abord (situation avant/après, décision/appel/audience récents) — jamais cinq étapes anciennes qui masquent la condamnation, l’appel et le procès annoncé (défaut Rezé)', () => {
+  const S = (u) => ({ media: 'Média', url: u, publie_le: '2026-11-15', acces: 'libre' });
+  const e = (type, date, texte, u) => ({ ...etape(type, date, texte, u), source: S(u) });
+  const anciennes = [e('signalement', '2018-09', 'Selon Média, un premier signalement est adressé à la mairie en septembre 2018.', 'https://m.example/s1'), e('plainte', '2019-03', 'Selon Média, une plainte est déposée en mars 2019.', 'https://m.example/s2'),
+    e('garde_a_vue', '2019-03-14', 'Selon Média, l’animateur a été interpellé le 14 mars 2019.', 'https://m.example/s3'), e('plainte', '2019-06-04', 'Selon Média, une autre plainte est déposée le 4 juin 2019.', 'https://m.example/s4'),
+    e('audience', '2025-12', 'Selon Média, en décembre 2025, le procureur avait réclamé cinq ans de prison.', 'https://m.example/s5')];
+  const essentielles = [e('decision', '2026-01-22', 'Selon Média, le tribunal a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme.', 'https://m.example/d1'), e('appel', null, 'Selon Média, l’animateur a fait appel de cette condamnation.', 'https://m.example/d2'),
+    e('audience', '2026-11-16', 'Selon Média, le procès en appel est programmé du 16 au 18 novembre 2026 devant la cour d’appel de Rennes.', 'https://m.example/d3')];
+  const AV = { deroule: [e('mise_en_examen', '2019-03-20', 'Selon Média, l’animateur a été mis en examen.', 'https://m.example/m')], etat_actuel: ['Selon Média, une mise en examen est rapportée.'], inconnues: [] };
+  const AP = { deroule: [...AV.deroule, ...anciennes, ...essentielles], etat_actuel: ['Selon Média, le tribunal a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme.', 'Un appel est rapporté (Média) : la décision n’est pas définitive.', 'Procès en appel : selon Média, le procès en appel est programmé du 16 au 18 novembre 2026 devant la cour d’appel de Rennes.'], situation: { x: 1 }, inconnues: [] };
+  const gen = { qualification: 'READY', sources: [], ecartes: [], attention: [] };
+  const p = payloadFiche({ c: C, dossier: dossier(AP), precedent: dossier(AV), sourcesNeon: [], nbEvenements: 0, previewBase: null, generation: gen });
+  assert.ok(p.page.mise_a_jour.ajoutees_total >= 8 && p.page.mise_a_jour.ajoutees.length === 6);
+  const types = p.page.mise_a_jour.ajoutees.map((x) => x.type);
+  assert.deepEqual(types.slice(0, 2).sort(), ['appel', 'decision']);
+  assert.ok(types.indexOf('audience') <= 2 || types[2] === 'audience', 'le procès en appel annoncé passe avant le contexte');
+  const m = messageFiche(p).replace(/<\/?[bc][a-z]*>/g, '');
+  const ajoute = m.slice(m.indexOf('Ajouté'));
+  assert.match(m, /Situation judiciaire de cette version \(modifiée\)/); assert.match(m, /condamné l’animateur le 22 janvier 2026 à six ans/); assert.match(m, /Procès en appel : selon Média, le procès en appel est programmé du 16 au 18 novembre 2026/);
+  assert.match(m, /Avant : Selon Média, une mise en examen est rapportée/);
+  assert.match(ajoute, /➕ Selon Média, le tribunal a condamné/); assert.match(ajoute, /fait appel/); assert.match(ajoute, /16 au 18 novembre 2026/);
+  assert.doesNotMatch(ajoute.slice(0, ajoute.indexOf('Nouvelle source') >= 0 ? ajoute.indexOf('Nouvelle source') : 900), /septembre 2018/, 'le contexte ancien ne passe pas avant l’essentiel');
+  assert.match(ajoute, /\+ \d+ autre\(s\) : voir l’aperçu complet/, 'le reste est annoncé, jamais perdu en silence');
+  assert.ok(m.length <= 3900, 'sous la limite Telegram');
+});
 t('la proposition porte le dossier candidat : l’empreinte du payload est celle du dossier (aperçu = empreinte soumise)', () => {
   const p = payloadFiche({ c: C, dossier: dossier(V2), precedent: dossier(V1), sourcesNeon: [], nbEvenements: 0, previewBase: null, generation: { qualification: 'READY', sources: [], ecartes: [], attention: [] } });
   assert.equal(p.page.hash, hashDossier(p.page.dossier)); assert.equal(p.page.mise_a_jour.precedent_hash, hashDossier(V1));

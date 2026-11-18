@@ -116,6 +116,18 @@ export const citationPresente = (corps, citation) => {
 
 const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 /**
+ * Le jour figure-t-il dans une PLAGE ou une LISTE de jours écrite devant le mois (« du 16 au 18 novembre 2026 », « les 16, 17 et 18 novembre ») ?
+ * `t` est le texte normalisé (`plat`). Sans cela, un procès annoncé sur plusieurs jours restait « date non écrite » alors que la source l'écrit.
+ */
+const jourDansPlage = (t, jo, mois) => {
+  for (const m of t.matchAll(new RegExp(`\\b(\\d{1,2}(?:er)?(?:\\s+(?:et |au |a |ou )?\\d{1,2}(?:er)?)*)\\s+${mois}\\b`, 'g'))) {
+    const ns = [...m[1].matchAll(/\d{1,2}/g)].map((x) => Number(x[0]));
+    if (ns.includes(jo)) return true;
+    if (/\b(?:au|a)\s+\d/.test(m[1]) && jo > ns[0] && jo < ns[ns.length - 1]) return true;
+  }
+  return false;
+};
+/**
  * Une date n'est affichée comme celle de l'événement que si le texte cité l'ÉCRIT : jour + mois (+ année), ou mois + année, ou jj/mm/aaaa.
  * Si l'année manque, elle doit être l'année de publication ou la précédente et rendre une date antérieure à la publication.
  */
@@ -129,7 +141,7 @@ export function dateAttestee(iso, expr, publieLe = null) {
   let moisOk = t.includes(MOIS[Number(mo) - 1]);
   let jourOk = !jo;
   if (jo) {
-    jourOk = new RegExp(`\\b0?${Number(jo)}(?:er)? ${MOIS[Number(mo) - 1]}\\b`).test(t);
+    jourOk = new RegExp(`\\b0?${Number(jo)}(?:er)? ${MOIS[Number(mo) - 1]}\\b`).test(t) || jourDansPlage(t, Number(jo), MOIS[Number(mo) - 1]);
     const num = /\b(\d{1,2})\s*[\/.]\s*(\d{1,2})\s*[\/.]\s*(\d{2,4})\b/.exec(String(expr));
     if (num && Number(num[1]) === Number(jo) && Number(num[2]) === Number(mo)) { jourOk = true; moisOk = true; if (num[3].length === 4 && num[3] !== an) return false; }
   }

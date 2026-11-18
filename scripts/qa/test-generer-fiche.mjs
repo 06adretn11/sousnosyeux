@@ -35,6 +35,15 @@ t('date : écrite (jour+mois+année) acceptée ; « mardi » refusée ; année a
   assert.ok(dateAttestee('2025-12', 'en décembre 2025', PUB));
   assert.ok(dateAttestee('2025-03-04', 'le 04/03/2025', PUB));
 });
+t('date : une PLAGE ou une LISTE de jours écrite (« du 16 au 18 novembre 2026 ») atteste ses jours ; un jour hors plage ou une année contraire reste refusé (défaut Rezé : procès en appel « date non écrite »)', () => {
+  const PARU = '2026-11-15';
+  assert.ok(dateAttestee('2026-11-16', 'Du 16 au 18 novembre 2026, il sera donc rejugé à Rennes.', PARU), 'début de plage, année écrite, événement postérieur à la parution');
+  assert.ok(dateAttestee('2026-11-17', 'Du 16 au 18 novembre 2026, il sera donc rejugé', PARU), 'jour intérieur de la plage');
+  assert.ok(dateAttestee('2026-11-18', 'les 16, 17 et 18 novembre 2026', PARU), 'liste de jours');
+  assert.ok(!dateAttestee('2026-11-19', 'Du 16 au 18 novembre 2026', PARU), 'jour hors plage');
+  assert.ok(!dateAttestee('2025-11-16', 'Du 16 au 18 novembre 2026', PARU), 'année contraire');
+  assert.ok(!dateAttestee('2026-11-16', 'les 16, 17 et 18 novembre', '2026-06-09'), 'sans année et dans le futur de la parution : toujours non attestée (jamais devinée)');
+});
 t('quantités : une peine du texte doit figurer dans la citation (un an ≠ trois ans)', () => {
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont un an avec sursis', 'quatre ans de prison dont un an avec sursis'), []);
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont trois ans fermes', 'quatre ans de prison dont un an avec sursis'), ['3']);
@@ -295,6 +304,21 @@ t('sans décision : la phrase d’état est celle de l’étape qui fait l’ét
   assert.match(r.dossier.etat_actuel[0], /mis en examen/); assert.ok(r.attention.some((a) => a.code === 'CITATIONS_A_RELIRE'));
 });
 
+t('source LUE et jugée « autre affaire » mais citée par une étape approuvée : jamais « non relue » ; les indices de rattachement sont dits, l’étape est conservée (défaut Rezé : tableau et point « à trancher » se contredisaient)', () => {
+  const c = carte();
+  const U = 'https://exemple.test/a', U2 = 'https://exemple.test/b';
+  const r = composer({ c, extractions: [ext(doc('France 3', U), { issue: ISSUE(), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  const generation = { contrat: 'x', modele: 'm', genere_le: '2026-11-18', qualification: r.qualification, blocages: r.blocages, attention: r.attention, ecartes: r.ecartes, trace: r.trace, stats: r.stats, cout: { appels: 0, cache: 0, input_tokens: 0, output_tokens: 0, cout_usd: null },
+    sources: [{ url: U, media: 'France 3', acces: 'libre', origine: 'memoire', pertinence: 'CETTE_AFFAIRE' },
+      { url: U2, media: 'Autre média', acces: 'libre', origine: 'memoire', pertinence: 'AUTRE_AFFAIRE', rattachement: { statut: 'NON_RATTACHABLE', commune: true, role: true, structure: false, soeurs: 0 } }] };
+  const dossier = { ...r.dossier, deroule: r.dossier.deroule.map((e, i) => (i === 0 ? { ...e, sources_complementaires: [{ media: 'Autre média', url: U2, publie_le: '2025-12-05', acces: 'libre' }] } : e)) };
+  const pub = rendreMarkdown({ c, dossier, generation }, { complet: false });
+  const ligne = pub.split('\n').find((l) => l.includes(U2) && l.startsWith('|'));
+  assert.match(ligne, /RELUE ET jugée « autre affaire » par la lecture automatique/);
+  assert.match(ligne, /CONSERVÉE ; rattachement à trancher par l’éditeur \(indices : commune présente, rôle présent, structure NON nommée, aucune autre affaire proche dans la commune\)/);
+  assert.doesNotMatch(ligne, /non relue/);
+});
+
 t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une déclaration qui répète le déroulé est écartée ; deux déclarations par acteur au plus', () => {
   const D = (acteur, citation) => ({ acteur, type_acteur: 'parquet', a_propos: 'x', portee: 'affaire', citation });
   const r = composer({ c: carte('mise en examen'), extractions: [
@@ -328,6 +352,16 @@ t('synthèse : condamnation → bloc rouge « Condamnation » (date + autorité)
   assert.ok(SIT(rel).suite.lignes[0].includes('ne mentionne de recours') && !/non définitive/.test(JSON.stringify(SIT(rel))), 'pas de « non définitive » appliqué à une relaxe ou un classement');
   const app = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
   assert.deepEqual([SIT(app).suite.titre, SIT(app).suite.cat], ['Appel rapporté', 'orange']);
+  // Défaut Rezé (17/11/2026) : condamnation + appel + procès en appel programmé du 16 au 18 novembre — le bloc de situation disait seulement « Décision non définitive ».
+  const proces = (aujourdhui, extra = []) => composer({ c: carte(), aujourdhui, extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }),
+    evenements: [E(), E({ type: 'audience', acteur: 'cour d’appel de Rennes', texte: 'Selon France 3, le procès en appel est programmé du 16 au 18 novembre 2026 devant la cour d’appel de Rennes.', date: '2026-11-16', citation: 'p' }), ...extra] })] });
+  const avant = proces('2026-11-10'), pendant = proces('2026-11-18');
+  assert.ok(SIT(avant).suite.lignes.some((l) => /^Procès en appel : selon France 3, le procès en appel est programmé du 16 au 18 novembre 2026/i.test(l)), 'le procès en appel annoncé figure dans le bloc de situation');
+  assert.ok(!SIT(avant).suite.lignes.some((l) => /Aucun article lu ne rapporte/.test(l)), 'dates pas encore atteintes : rien à dire sur le déroulement');
+  assert.ok(SIT(pendant).suite.lignes.some((l) => /Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel/.test(l)), 'dates atteintes sans source sur le déroulement : jamais présenté comme tenu ni jugé');
+  assert.ok(!/s’est tenu|a été jugé|a été rejugé/.test(JSON.stringify(SIT(pendant))));
+  assert.match(pendant.dossier.etat_actuel[2], /^Procès en appel/);
+  assert.ok(!SIT(app).suite.lignes.some((l) => /Procès en appel/.test(l)), 'sans audience d’appel programmée : aucune ligne');
 });
 t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Issue de la procédure à documenter » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
   const mee = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', acteur: 'parquet de Rennes', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] })] });
