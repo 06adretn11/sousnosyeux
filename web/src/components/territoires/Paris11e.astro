@@ -9,6 +9,7 @@ import Limites from '../Limites.astro';
 import { casesParIds, STATUT_LABELS, statutCat, statutCourant, dossierDepasse } from '../../lib/territoires';
 import { chargerHub, libelleDate, TYPE_LABELS } from '../../lib/hub-matiere';
 import { dateLongue } from '../../lib/etat-wording';
+import { jsonPourScript } from '../../../../scripts/lib/json-script.mjs';
 
 const { matiere } = chargerHub('paris-11e');
 const cases = casesParIds(matiere.ordre);
@@ -88,7 +89,7 @@ const pins = groupes.map((g) => ({
       pas les établissements : l’absence d’un point ne signifie pas l’absence de faits.
     </p>
   </details>
-  <script type="application/json" id="pins-data" set:html={JSON.stringify(pins)} />
+  <script type="application/json" id="pins-data" set:html={jsonPourScript(pins)} />
 
   <h2>Les dossiers</h2>
   <div class="filtres" role="group" aria-label="Filtrer par état">
