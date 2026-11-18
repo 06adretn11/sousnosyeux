@@ -128,6 +128,9 @@ export function messageEnrichissement(p, neufs, territorial, pages = null, parFa
     '',
     '<b>Qui / quand</b>',
     ...neufs.slice(0, 2).map((f) => `${esc(acteurLisible(f.acteur_nomme || f.acteur))} · ${esc(quand(f))}`),
+    // CORRECTION D'UNE DATE DÉJÀ PUBLIÉE : l'avant, l'après et l'extrait qui justifie, dits avant la décision.
+    ...neufs.filter((f) => f.correction).slice(0, 1).flatMap((f) => ['', `🔧 <b>CORRECTION DE DATE</b> d’une information déjà publiée : avant « ${esc(jj(f.correction.avant))} » → après « ${esc(jj(f.correction.apres))} »`,
+      `  Justification : « ${esc(cut(f.correction.extrait, 300))} »`, `  ${esc(f.correction.suite || '')}`].filter((l) => l.trim() || l === '')),
     '',
     '<b>Source</b>',
     `${esc(p.media || 'source inconnue')} · ${jj(p.publication_date)}${lienArticle}`,

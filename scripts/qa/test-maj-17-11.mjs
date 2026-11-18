@@ -12,6 +12,7 @@
 import { readFileSync } from 'node:fs';
 import { dateEcrite, dateDuCorps, extraireReactions } from '../lib/evenement-institutionnel.mjs';
 import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
+import { messageEnrichissement } from '../lib/discovery-messages.mjs';
 import { portNeon } from '../lib/relais-social-db.mjs';
 import { evaluerCandidat } from '../lib/relais-social.mjs';
 import { cleEvenement } from '../lib/diffusion-sociale.mjs';
@@ -78,6 +79,14 @@ test('éligibilité : version approuvée AVANT T0, ou plus la version courante, 
 test('un type hors périmètre (correction, source ajoutée) reste refusé', !evaluerCandidat({ ...ev, type: 'correction' }, ctxR()).ok);
 const rg = src('scripts/lib/relais-social.mjs');
 test('composition : audience annoncée dont la date est atteinte → aucune rédaction automatique (ni « à venir » ni « tenu ») ; parole de parent → famille declaration_victime (REVUE_HUMAINE)', /audience annoncée dont la date est atteinte|date annoncée atteinte/.test(rg) && /sous === 'fiche_temoignage' \? 'declaration_victime'/.test(rg));
+
+// ---- correction de date déjà publiée : avant / après / extrait dits dans la proposition ---------------------------------------------------------------
+const fc = { event_type: 'mobilisation', nature: 'mobilisation', mesure: 'mobilisation', realisation: 'annoncée', portee: 'établissement', acteur: 'parents', libelle_public: 'Selon la presse, des parents ont annoncé une mobilisation.', event_date: '2026-11-16',
+  evidence: ['Des parents d’élèves se mobilisent ce lundi soir devant la mairie.'], correction: { avant: '2026-11-09', apres: '2026-11-16', extrait: 'Diffusé le lundi 16 novembre 2026 à 6h32', suite: 'Si VALIDATE : correction, pas ajout.' } };
+const pc = { etablissement: 'centre de loisirs', commune: 'Ville-Test', courant: 'enquête', media: 'ici', publication_date: '2026-11-15', url: 'https://m.example/x' };
+const msgc = messageEnrichissement(pc, [fc], false).replace(/<\/?[bc][a-z]*>/g, '');
+test('proposition de correction : l’avant, l’après et l’extrait justificatif sont dits avant la décision ; une information sans correction ne les porte pas', /CORRECTION DE DATE d’une information déjà publiée : avant « 09\/11\/2026 » → après « 16\/11\/2026 »/.test(msgc) && /Justification : « Diffusé le lundi 16 novembre 2026 à 6h32 »/.test(msgc)
+  && !/CORRECTION DE DATE/.test(messageEnrichissement(pc, [{ ...fc, correction: undefined }], false)));
 
 if (ko) { console.error(`\n✗ ${ko} contrôle(s) en échec`); process.exit(1); }
 console.log('\nContrôles retours « À revoir » 17/11 : OK');
