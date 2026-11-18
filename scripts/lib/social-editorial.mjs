@@ -59,6 +59,8 @@ export const LIBELLES = Object.freeze({
   declaration_association: 'déclaration de {acteur}',
   declaration_victime: 'prise de parole de {acteur}',
 });
+/** « prise de parole de une mère » serait fautif : l'article indéfini de l'attribution générique s'élide (« d’une mère », « d’un père »). */
+export const libelleParole = (acteur) => { const a = String(acteur ?? ''); return /^(Un|Une) /.test(a) ? 'prise de parole d’' + a.replace(/^(Un|Une) /, (m) => m.toLowerCase()) : LIBELLES.declaration_victime.replace('{acteur}', a); };
 
 // ---------------------------------------------------------------------
 // GARDES DE CONTENU (sécurité des personnes) — appliquées à chaque candidat ET au texte final (défense en profondeur).
@@ -480,7 +482,7 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
       principal.push({ parole: true, acteur: r.acteur, qualite: r.qualite, date: dateLongue(r.date), citation: c.texte, origine: `dossier.reactions[${scenario.reaction}]` });
       if (r.etabli) { const m = /Une prise de parole n’établit pas son contenu\./.exec(r.etabli); if (m) contexte.push({ texte: m[0], origine: `dossier.reactions[${scenario.reaction}].etabli` }); }
       sourcesFait = [M.sources.get(r.source?.url)].filter(Boolean);
-      libelle = LIBELLES.declaration_victime.replace('{acteur}', r.acteur);
+      libelle = libelleParole(r.acteur);
     }
   }
   if (declaration) {
@@ -726,7 +728,7 @@ export function valeursAutorisees(M, site) {
   for (const l of Object.values(LIBELLES.nouvelle_affaire)) add(l);
   for (const l of Object.values(LIBELLES.evolution)) for (const x of M.evenements || []) add(l.replace('{date}', dateLongue(x.date) ?? ''));
   for (const x of M.matiere || []) add(LIBELLES.declaration_association.replace('{acteur}', x.acteur));
-  if (M.d) for (const r of [...(M.d.reactions || []), ...(M.d.paroles || [])]) add(LIBELLES.declaration_victime.replace('{acteur}', r.acteur));
+  if (M.d) for (const r of [...(M.d.reactions || []), ...(M.d.paroles || [])]) add(libelleParole(r.acteur));
   if (e) for (const canal of ['x', 'facebook']) for (const fiche of [true, false]) {
     add(lienDiffusion({ site, case_id: e.case_id, type: 'new_case', canal, fiche }));
     for (const x of M.evenements || []) add(lienDiffusion({ site, case_id: e.case_id, type: 'case_update', statut: x.statut, canal, fiche }));
