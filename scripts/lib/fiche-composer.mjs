@@ -236,6 +236,14 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   }
   // Un appel ANNONCÉ (« l'avocat a annoncé qu'il ferait appel ») n'est pas un appel interjeté : la fiche le dit sans l'affirmer, et ne prétend pas « aucun appel rapporté ».
   const appelAnnonce = issue && issue.appel !== 'OUI' ? deroule.find((d) => d.type === 'appel') : null;
+  // Appel interjeté + procès en appel PROGRAMMÉ ou en cours (audience postérieure à la décision, formulée « programmé / prévu / annoncé / rejugé ») : le bloc de situation le dit, avec la phrase
+  // attribuée de l'étape (jamais « tenu » sans source), et précise que le déroulement n'est pas rapporté quand les dates sont atteintes (défaut Rezé : « Décision non définitive » seule).
+  const audienceAppel = issue && issue.appel === 'OUI'
+    ? [...deroule].reverse().find((d) => d.type === 'audience' && /appel/i.test(`${d.acteur ?? ''} ${d.texte}`) && /programm|prévu|prevu|annonc|fixé|fixe|rejug/i.test(d.texte) && (!d.date || !issue.date || d.date > issue.date)) ?? null
+    : null;
+  const ligneAppel = audienceAppel
+    ? `Procès en appel : ${String(audienceAppel.texte).replace(/^À venir : /, '')}${audienceAppel.date && audienceAppel.date <= aujourdhui && !deroule.some((d) => d.type === 'decision' && d.date && d.date >= audienceAppel.date) ? ' Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel.' : ''}`
+    : null;
   const etat_actuel = [];
   let liberation = null;
   if (issue) {
@@ -250,6 +258,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
       : issue.definitive === 'OUI' ? 'Une source indique que la décision est devenue définitive.'
         : issue.nature === 'condamnation' ? 'Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.'
           : 'Aucun des articles consultés ne mentionne de recours ni de nouvelle décision après celle-ci.');
+    if (ligneAppel) etat_actuel.push(ligneAppel);
   } else if (deroule.length) {
     // La phrase d'état est celle de l'étape qui FAIT l'état (mise en examen, enquête, plainte, procès), pas la dernière mentionnée.
     const TYPE_ETAT = { 'procès': 'audience', 'mise en examen': 'mise_en_examen', 'enquête': 'enquete', plainte: 'plainte' }[etatSources];
@@ -278,7 +287,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
       .map((d) => (/^Mesure annoncée/.test(d.texte) ? d.texte : `Mesure institutionnelle (distincte de la décision judiciaire) : ${MIN(d.texte)}`));
     const futureAudience = !issue && deroule.find((d) => d.type === 'audience' && d.date && d.date > aujourdhui);
     const suite = issue
-      ? (issue.appel === 'OUI' ? { label: 'Suite · recours', titre: 'Appel rapporté', meta: `selon ${issue.doc.media}`, cat: 'orange', lignes: ['Décision non définitive.'] }
+      ? (issue.appel === 'OUI' ? { label: 'Suite · recours', titre: 'Appel rapporté', meta: `selon ${issue.doc.media}`, cat: 'orange', lignes: ['Décision non définitive.', ...(ligneAppel ? [ligneAppel] : [])] }
         : appelAnnonce ? { label: 'Suite · recours', titre: 'Appel annoncé', meta: `selon ${appelAnnonce.source.media}`, cat: 'orange', lignes: [etat_actuel[1]] }
         : issue.definitive === 'OUI' ? { label: 'Suite · recours', titre: 'Décision devenue définitive', meta: `selon ${issue.doc.media}`, cat: 'blue', lignes: [] }
           : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })

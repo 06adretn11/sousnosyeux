@@ -24,6 +24,7 @@ import { connecter } from './lib/neon.mjs';
 import { dossierFiche, dossierGeneree, changementsFiche, empreinteApprouvee, hashDossier } from './lib/fiche-page.mjs';
 import { selectionnerMisesAJour } from './lib/fiche-miseajour.mjs';
 import { extraireReactions } from './lib/evenement-institutionnel.mjs';
+import { estDecisionMachine } from './lib/decision-machine.mjs';
 import { journaliser } from './lib/telegram-clics.mjs';
 
 const A = process.argv.slice(2);
@@ -31,6 +32,10 @@ const ECRIRE = A.includes('--ecrire');
 const val = (f) => (A.includes(f) ? A[A.indexOf(f) + 1] : null);
 const SEULS = val('--case') ? new Set(val('--case').split(',')) : null;
 const LIMITE = Number(val('--limite') || 10);
+// --apres-revue : REPRISE CIBLÉE après un « À revoir » de l'éditeur (clic REVIEW sur une mise à jour de fiche). Exige --case ; ne reprend qu'une proposition DÉCIDÉE « À revoir » par une
+// personne ; régénère depuis la version APPROUVÉE avec toutes les analyses rattachées du lot ; l'ancienne proposition reste décidée (son bouton est déjà inerte) — aucun ACCEPT/REJECT posé.
+const APRES_REVUE = A.includes('--apres-revue');
+if (APRES_REVUE && !SEULS) { console.error('--apres-revue exige --case <FR-AAAA-NNNN>[,…]'); process.exit(2); }
 const MACHINE = 'reprise sans perte 06/11/2026 (agent, non humain)';
 const racine = (f) => new URL(`../${f}`, import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(racine(f), 'utf8'));
@@ -51,7 +56,7 @@ async function superseder(table, pid, decision, commentaire) {
 // =====================================================================  A. mises à jour de fiches
 console.log('— A. mises à jour de fiches —');
 const props = await sql`
-  select p.proposal_id::text pid, p.decision::text decision, p.created_at, p.payload->'page'->>'case_id' case_id, p.payload->'page'->>'hash' hash,
+  select p.proposal_id::text pid, p.decision::text decision, p.decided_by, p.created_at, p.payload->'page'->>'case_id' case_id, p.payload->'page'->>'hash' hash,
          p.payload->'page'->'mise_a_jour' maj, p.payload->'page'->'sources_a_rattacher' srcs
     from new_case_proposals p where p.payload->'page' ? 'mise_a_jour' order by p.created_at`;
 const parAffaire = new Map();
@@ -62,7 +67,8 @@ for (const [id, l] of parAffaire) {
   const derniere = l[l.length - 1];
   const decidee = derniere.decision && derniere.decision !== 'REVIEW_REQUIRED';           // ACCEPT / REJECT : l'éditeur (ou la reprise) a tranché
   const deja = (await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${`reprise-sans-perte:${id}:${derniere.pid.slice(0, 8)}`} limit 1`).length > 0;
-  if (decidee || deja || !defectueuse(derniere)) continue;
+  const aRevoir = APRES_REVUE && derniere.decision === 'REVIEW_REQUIRED' && !estDecisionMachine(derniere.decided_by);
+  if (deja || (!aRevoir && (decidee || !defectueuse(derniere)))) continue;
   aReprendre.push({ id, derniere, enAttente: l.filter((p) => !p.decision) });
 }
 console.log(`mises à jour de fiches : ${parAffaire.size} affaire(s) avec proposition · ${aReprendre.length} défectueuse(s) à reprendre${aReprendre.length ? ` : ${aReprendre.map((x) => `${x.id} (${x.derniere.decision ?? 'en attente'})`).join(', ')}` : ''}`);
@@ -79,7 +85,7 @@ if (ECRIRE) {
     const approuvee = !!(pub && empreinteApprouvee(revues.filter((r) => r.case_id === x.id), x.id, pub));
     if (!pub || !approuvee || holds.has(x.id) || !publiques.has(x.id)) { console.log(`  · ${x.id} : version publique absente, non approuvée, sous HOLD ou affaire non publique — rien à reprendre`); continue; }
     // Sources à intégrer : celles de l'ancienne proposition + celles des analyses récentes (sélection existante, sans le filtre « déjà traitée »).
-    const sel = selectionnerMisesAJour({ lignes: lignes.filter((l) => l.case_id === x.id), publie: new Map([[x.id, pub]]), approuvee: () => true, holds, deja: new Set() });
+    const sel = selectionnerMisesAJour({ lignes: lignes.filter((l) => l.case_id === x.id), publie: new Map([[x.id, pub]]), approuvee: () => true, holds, deja: new Set(), tousTypes: APRES_REVUE });
     const extra = new Map();
     for (const s of [...(x.derniere.maj?.sources_nouvelles || []), ...(x.derniere.srcs || []), ...sel.groupes.flatMap((g) => g.sources.map((s) => ({ url: s.url, media: s.media, d: s.publication_date })))]) if (s?.url) extra.set(s.url, { url: s.url, media: s.media ?? null, publication_date: s.publication_date ?? s.d ?? null });
     const dir = mkdtempSync(join(tmpdir(), 'sny-reprise-'));
@@ -104,6 +110,7 @@ if (ECRIRE) {
 }
 
 // =====================================================================  B. faits territoriaux / mobilisations
+if (APRES_REVUE) { console.log('— B. ignorée (reprise ciblée après revue) —'); process.exit(0); }
 console.log('— B. faits territoriaux et mobilisations —');
 const enAttente = await sql`
   select p.proposal_id::text pid, p.case_id, p.primitive_version, p.facts, a.publication_date::text pd, c.etablissement, c.commune

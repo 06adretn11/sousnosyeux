@@ -28,6 +28,19 @@ const UNIQUES = new Set(['garde_a_vue', 'mise_en_examen', 'enquete', 'renvoi']);
 const ORDRE_TYPE = ['fait_rapporte', 'signalement', 'plainte', 'enquete', 'garde_a_vue', 'mise_en_examen', 'mesure_etablissement', 'mesure_collectivite', 'mesure_etat', 'communication_parquet', 'renvoi', 'audience', 'decision', 'appel', 'contexte'];
 
 const url = (s) => canonique(s?.url || '');
+/**
+ * Indices DÉTERMINISTES de rattachement d'une source à l'affaire (calculés à la lecture, jamais une conclusion) : pour l'éditeur qui doit trancher quand la lecture automatique
+ * juge d'une AUTRE affaire une source déjà liée à des étapes approuvées. `r` = { commune, role, structure, soeurs } (booléens et nombre d'affaires proches dans la commune).
+ */
+export const libelleIndices = (r) => `commune ${r.commune ? 'présente' : 'absente'}, rôle ${r.role ? 'présent' : 'absent'}, structure ${r.structure ? 'nommée' : 'NON nommée'}, ${r.soeurs ? `${r.soeurs} autre(s) affaire(s) proche(s)` : 'aucune autre affaire proche dans la commune'}`;
+/** Reporte sur `texte` l'attribution finale de `ancien` (« , selon l'avocat de la défense (information publiée le 9 juin 2026). ») quand `texte` ne la porte pas : une précision d'origine ne se perd pas dans une fusion. */
+export function avecAttributionDe(texte, ancien) {
+  const m = /,\s+(selon [^,.]{3,80}?(?:\s*\([^)]{3,80}\))?)\s*\.?\s*$/i.exec(String(ancien || ''));
+  if (!m) return texte;
+  const cle = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+  if (cle(texte).includes(cle(m[1]))) return texte;
+  return String(texte).replace(/\.?\s*$/, '') + `, ${m[1]}.`;
+}
 export const refsEtape = (e) => [e?.source, ...(e?.sources_complementaires || [])].filter((s) => s?.url);
 /** Toutes les références (principale + complémentaires) d'un ensemble d'étapes, dédoublonnées par URL canonique. */
 export const urlsReferences = (etapes) => [...new Set((etapes || []).flatMap((e) => refsEtape(e).map(url)))];
@@ -204,7 +217,7 @@ export function conserverAcquis({ precedent, candidat, sources = [], noms = [] }
   const A = precedent || {}, C = candidat || {};
   const attention = [];
   const J = { conservees: [], enrichies: [], retirees: [], references_ajoutees: [], devenues_secondaires: [], non_relues: [], dates_corrigees: [], divergences: [], ambigues: [], reactions_conservees: 0, reactions_ajoutees: 0 };
-  const lecture = (u) => { const s = sources.find((x) => canonique(x.url) === canonique(u)); return s ? { lue: s.acces === 'libre' && !s.ecarte, motif: s.acces !== 'libre' ? (s.motif || 'inaccessible') : s.ecarte ? 'écartée avant lecture' : null, pertinence: s.pertinence } : { lue: false, motif: 'absente de la sélection de ce passage', pertinence: undefined }; };
+  const lecture = (u) => { const s = sources.find((x) => canonique(x.url) === canonique(u)); return s ? { lue: s.acces === 'libre' && !s.ecarte, motif: s.acces !== 'libre' ? (s.motif || 'inaccessible') : s.ecarte ? 'écartée avant lecture' : null, pertinence: s.pertinence, rattachement: s.rattachement, erreurTechnique: s.raison === 'extraction indisponible' } : { lue: false, motif: 'absente de la sélection de ce passage', pertinence: undefined }; };
   const EA = A.deroule || [], EC = C.deroule || [];
   const cmp = comparerEtapes(EA, EC);
   const sortie = EA.map((e) => ({ ...e }));          // base : la version approuvée, dans son ordre
@@ -225,12 +238,18 @@ export function conserverAcquis({ precedent, candidat, sources = [], noms = [] }
     orig.get(out).j = j;
     if (annonce(a) !== annonce(c)) attention.push({ niveau: 'majeur', code: 'MESURE_ANNONCEE_OU_REALISEE_A_TRANCHER', texte: `Même mesure, qualifiée différemment (« ${annonce(a) ? 'annoncée' : 'non qualifiée d’annoncée'} » dans la version approuvée, « ${annonce(c) ? 'annoncée' : 'non qualifiée d’annoncée'} » dans la relecture) : « ${String(a.texte).slice(0, 80)} » — la version approuvée est conservée, à trancher par l’éditeur.` });
     const couvC = couverture(c.texte, a.texte), couvA = couverture(a.texte, c.texte);
-    const richer = a.texte !== c.texte && couvC < 0.8 && couvA >= 0.8;
-    const divergent = a.texte !== c.texte && couvC < 0.8 && couvA < 0.8;
-    const d = fusionDate(a, c);
+    // MÊME audience ANNONCÉE dite deux fois (même jour attesté, même juridiction nommée, deux articles) : UN événement — le texte de la source la plus récente, l'autre en référence, et l'attribution
+    // propre à l'ancienne formulation (« …, selon l'avocat de la défense (information publiée le 9 juin 2026) ») reportée ; jamais deux étapes pour le même procès (défaut Rezé, 16-18 novembre).
+    const ANNONCEE = /programm|prévu|prevu|annonc|rejug/i, JURIDICTION = /(cour d['’]appel de [A-ZÉ][\p{L}-]+|cour d['’]assises de [A-ZÉ][\p{L}-]+|tribunal [\p{L}' -]{3,40}? de [A-ZÉ][\p{L}-]+)/u;
+    const dd = fusionDate(a, c);
+    const memeAudienceAnnoncee = a.type === 'audience' && c.type === 'audience' && !!dd.date && dd.date_nature !== 'article' && dd.date_nature !== 'inconnue' && ANNONCEE.test(a.texte) && ANNONCEE.test(c.texte)
+      && !!JURIDICTION.exec(a.texte) && JURIDICTION.exec(a.texte)?.[1] === JURIDICTION.exec(c.texte)?.[1] && (evenementiel(a) || evenementiel(c));
+    const richer = memeAudienceAnnoncee || (a.texte !== c.texte && couvC < 0.8 && couvA >= 0.8);
+    const divergent = !memeAudienceAnnoncee && a.texte !== c.texte && couvC < 0.8 && couvA < 0.8;
+    const d = dd;
     out.date = d.date; out.date_nature = d.date_nature;
     if (d.conflit) { J.divergences.push({ type: a.type, ...d.conflit, texte: a.texte }); attention.push({ niveau: 'majeur', code: 'DATE_DIVERGENTE_APRES_RELECTURE', texte: `« ${String(a.texte).slice(0, 90)} » : la version approuvée date l’événement du ${d.conflit.avant}, la relecture (${c.source?.media}) du ${d.conflit.apres} : contradiction non tranchée automatiquement, la date approuvée est conservée.` }); }
-    if (richer) { out.texte = c.texte; out.type = SOUPLES.has(c.type) && SOUPLES.has(a.type) ? c.type : a.type; if (c.acteur) out.acteur = c.acteur; out.source = c.source; J.enrichies.push({ avant: a.texte, apres: c.texte, source: c.source?.media }); }
+    if (richer) { out.texte = memeAudienceAnnoncee ? avecAttributionDe(c.texte, a.texte) : c.texte; out.type = SOUPLES.has(c.type) && SOUPLES.has(a.type) ? c.type : a.type; if (c.acteur) out.acteur = c.acteur; out.source = c.source; J.enrichies.push({ avant: a.texte, apres: c.texte, source: c.source?.media }); }
     const primaire = out.source;
     const autres = unir(primaire, [a.source], a.sources_complementaires || [], [c.source], c.sources_complementaires || []);
     for (const s of autres) if (!refsEtape(a).some((r) => url(r) === url(s))) J.references_ajoutees.push({ etape: String(out.texte).slice(0, 80), media: s.media, url: s.url });
@@ -256,7 +275,12 @@ export function conserverAcquis({ precedent, candidat, sources = [], noms = [] }
     const relues = refs.filter((r) => r.lue);
     const autreAffaire = refs.filter((r) => r.lue && ['AFFAIRE_SOEUR', 'AUTRE_AFFAIRE', 'HORS_SUJET'].includes(r.pertinence));
     J.conservees.push({ texte: a.texte, type: a.type, date: a.date ?? null, source: a.source?.media, raison: relues.length ? 'RELUE_SANS_REPRISE' : 'NON_RELUE' });
-    if (autreAffaire.length === refs.length && refs.length) { J.ambigues.push({ code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: a.texte }); attention.push({ niveau: 'majeur', code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: `Toutes les sources d’une étape approuvée ont été relues et jugées d’une autre affaire (« ${String(a.texte).slice(0, 80)} ») : étape conservée, à trancher par l’éditeur (un rattachement ne se retire pas sur une seule lecture).` }); }
+    if (autreAffaire.length === refs.length && refs.length) { J.ambigues.push({ code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: a.texte }); const indices = [...new Set(refs.map((r) => r.rattachement).filter(Boolean).map(libelleIndices))];
+      attention.push({ niveau: 'majeur', code: 'SOURCE_RELUE_AUTRE_AFFAIRE', texte: `Source(s) d’une étape approuvée relue(s) et jugée(s) d’une autre affaire par la lecture automatique (« ${String(a.texte).slice(0, 70)} ») : étape conservée, à trancher par l’éditeur (un rattachement ne se retire pas sur une seule lecture).${indices.length ? ` Indices : ${indices.join(' ; ')}.` : ''}` }); }
+    // TROIS situations distinctes, jamais confondues : rejet explicite (ci-dessus) · rattachement AMBIGU (la lecture n'a pas tranché) · ERREUR TECHNIQUE (la source n'a pas été jugée).
+    const erreurs = refs.filter((r) => r.lue && r.erreurTechnique), ambiguesLues = refs.filter((r) => r.lue && !r.erreurTechnique && r.pertinence === 'AMBIGU');
+    if (erreurs.length && refs.every((r) => r.erreurTechnique || r.pertinence === 'CETTE_AFFAIRE' || !r.lue)) attention.push({ niveau: 'mineur', code: 'LECTURE_INDISPONIBLE', texte: `Une source d’une étape approuvée n’a pas pu être relue à ce passage (erreur technique du modèle, aucun jugement sur la source) : étape conservée (« ${String(a.texte).slice(0, 60)} »).` });
+    else if (ambiguesLues.length && ambiguesLues.length === refs.filter((r) => r.lue && !r.erreurTechnique).length && !autreAffaire.length) { J.ambigues.push({ code: 'SOURCE_RATTACHEMENT_AMBIGU', texte: a.texte }); attention.push({ niveau: 'majeur', code: 'SOURCE_RATTACHEMENT_AMBIGU', texte: `Le rattachement d’une source d’une étape approuvée n’est pas tranché par la lecture automatique (« ${String(a.texte).slice(0, 70)} ») : étape conservée, à trancher par l’éditeur.${[...new Set(ambiguesLues.map((r) => r.rattachement).filter(Boolean).map(libelleIndices))].map((x) => ` Indices : ${x}.`).join('')}` }); }
   }
   for (const x of cmp.ambigus) { J.ambigues.push({ code: 'APPARIEMENT_AMBIGU', avant: EA[x.i].texte, apres: EC[x.j].texte }); attention.push({ niveau: 'majeur', code: 'APPARIEMENT_AMBIGU', texte: `Une étape de la relecture (« ${String(EC[x.j].texte).slice(0, 70)} ») ressemble à plusieurs étapes approuvées : aucune fusion, tout est conservé.` }); }
   // 4. étapes nouvelles de la candidate (même absorbées-ambiguës) : ajoutées

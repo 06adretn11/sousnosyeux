@@ -51,6 +51,27 @@ t('source précédemment étayée devenue illisible (402) ou absente de la séle
   assert.match(m2.journal.non_relues[0].motif, /absente de la sélection/);
 });
 
+t('MÊME audience annoncée dite par deux articles (jour attesté, même juridiction) : UN événement, texte le plus récent, ancienne source en référence, attribution d’origine reportée (défaut Rezé : 16-18 novembre en double)', () => {
+  const ancien = etape('audience', null, 'Selon Média A, le procès en appel est programmé les 16, 17 et 18 novembre devant la cour d’appel de Rennes, selon l’avocat de la défense (information publiée le 9 juin 2026).', 'a', { date_nature: 'article' });
+  const recent = etape('audience', '2026-11-16', 'Selon Média C, le second procès est programmé du 16 au 18 novembre 2026 devant la cour d’appel de Rennes.', 'c');
+  const avant = { ...clone(APPROUVE), deroule: [...APPROUVE.deroule, ancien] };
+  const m = conserverAcquis({ precedent: avant, candidat: { ...clone(APPROUVE), deroule: [...APPROUVE.deroule, recent] }, sources: [lue('a'), lue('b'), lue('c')], noms: [] });
+  const proces = m.dossier.deroule.filter((e) => e.type === 'audience');
+  assert.equal(proces.length, 1, 'un seul événement pour le même procès');
+  assert.equal(proces[0].date, '2026-11-16'); assert.match(proces[0].texte, /du 16 au 18 novembre 2026/); assert.match(proces[0].texte, /selon l’avocat de la défense \(information publiée le 9 juin 2026\)\.$/);
+  assert.deepEqual(urlsReferences(proces).sort(), [U('a'), U('c')].sort(), 'les deux sources sont conservées (provenance)');
+  assert.ok(m.journal.enrichies.some((x) => /les 16, 17 et 18 novembre/.test(x.avant)), 'l’ancienne formulation reste dans le journal (rien de perdu en silence)');
+});
+
+t('trois situations jamais confondues pour une source d’étape approuvée : erreur technique de lecture (mineur, aucun jugement) · rattachement AMBIGU (majeur, à trancher) · rejet explicite « autre affaire » (majeur, à trancher) ; l’étape est toujours conservée', () => {
+  const candidat = { ...clone(APPROUVE), deroule: APPROUVE.deroule.filter((e) => e.source.url !== U('b') || (e.type === 'decision' && e.date === '2026-01-22')), appel: false };
+  const code = (b) => [...new Set(conserverAcquis({ precedent: APPROUVE, candidat, sources: [lue('a'), b], noms: [] }).attention.map((x) => `${x.niveau}:${x.code}`).filter((x) => /LECTURE|RATTACHEMENT|AUTRE_AFFAIRE/.test(x)))];
+  assert.deepEqual(code(lue('b', { pertinence: 'AMBIGU', raison: 'extraction indisponible' })), ['mineur:LECTURE_INDISPONIBLE']);
+  assert.deepEqual(code(lue('b', { pertinence: 'AMBIGU', raison: 'le document ne nomme pas la structure' })), ['majeur:SOURCE_RATTACHEMENT_AMBIGU']);
+  assert.deepEqual(code(lue('b', { pertinence: 'AUTRE_AFFAIRE' })), ['majeur:SOURCE_RELUE_AUTRE_AFFAIRE']);
+  assert.equal(conserverAcquis({ precedent: APPROUVE, candidat, sources: [lue('a'), lue('b', { pertinence: 'AUTRE_AFFAIRE' })], noms: [] }).dossier.deroule.length, 4, 'étape conservée');
+});
+
 t('nouvelle source + reformulation : enrichissement sans faux retrait ni doublon ; la source devenue secondaire n’est pas « retirée »', () => {
   const candidat = { ...clone(APPROUVE), deroule: [
     etape('mise_en_examen', '2025-03-14', 'Selon le parquet, un animateur du périscolaire a été mis en examen le 14 mars 2025 pour agressions sexuelles.', 'a'),

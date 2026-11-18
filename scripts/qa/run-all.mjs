@@ -234,6 +234,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Retours « À revoir » du 17/11 — jour de semaine d’un fait annoncé · « fermer » de page ≠ fermeture de structure · reprise ciblée après revue (une affaire, une fois, rien approuvé) · transmission de tous les articles du lot · ancienne proposition inerte',
+    script: 'scripts/qa/test-maj-17-11.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Corpus réel (data/cases.json)',
     script: 'scripts/qa/check-corpus.mjs',
     bloquant: STRICT,

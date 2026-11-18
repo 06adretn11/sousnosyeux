@@ -13,7 +13,10 @@ import { createHash } from 'node:crypto';
 export const TYPES_EVENEMENT = ['fait_rapporte', 'signalement', 'plainte', 'enquete', 'garde_a_vue', 'mise_en_examen', 'renvoi', 'audience', 'requisitions', 'decision', 'appel',
   'mesure_etablissement', 'mesure_collectivite', 'mesure_etat', 'communication_parquet', 'contexte'];
 export const TYPES_ACTEUR = ['institution', 'parquet', 'magistrat', 'avocat_victimes', 'avocat_defense', 'collectivite', 'education_nationale', 'association', 'parent', 'temoin', 'autre'];
-const ACTEURS_PUBLIABLES = new Set(['institution', 'parquet', 'magistrat', 'avocat_victimes', 'avocat_defense', 'collectivite', 'education_nationale', 'association']);
+const ACTEURS_PUBLIABLES = new Set(['institution', 'parquet', 'magistrat', 'avocat_victimes', 'avocat_defense', 'collectivite', 'education_nationale', 'association', 'parent']);
+// Parole d'un PARENT : attribution générique (jamais de prénom, même d'emprunt) ; propos qui désignent ou qualifient la personne mise en cause comme coupable : jamais cités (présomption d'innocence).
+const ACCUSATION_PARENT = /\b(?:ce type|ce monsieur|cet homme|cet animateur|ce pedophile|pedophile|violeur|monstre|coupable|criminel|tuer|assassin|agresseur|predateur|degenere)\b/;
+const acteurParent = (a) => (/\b(?:mere|maman)\b/.test(plat(a)) ? 'Une mère d’enfant concerné' : /\b(?:pere|papa)\b/.test(plat(a)) ? 'Un père d’enfant concerné' : 'Un parent d’enfant concerné');
 
 const SCHEMA = `{
   "pertinence": "CETTE_AFFAIRE" | "AFFAIRE_SOEUR" | "AUTRE_AFFAIRE" | "AMBIGU",
@@ -59,7 +62,7 @@ PRINCIPES
 8. NOMBRES. Peines, durées, montants : recopie exactement ce que dit le document ; si deux chiffres se contredisent dans le document, n'en choisis pas un, signale-le dans "lacunes_declarees".
 9. ACTEURS ET MESURES. L'autorité qui accomplit un acte est la source de cet acte ; une partie qui annonce une intention ne l'établit pas. "realisation" = "annoncee" pour une mesure promise, prévue, envisagée ; "realisee" seulement si le document dit qu'elle a été prise. Ne rapproche jamais deux faits par une causalité que le document n'énonce pas.
 10. DÉCISION. "issue_judiciaire" n'est renseignée que si le document rapporte une décision rendue (pas des réquisitions) CONTRE OU EN FAVEUR DE LA PERSONNE MISE EN CAUSE DE CETTE AFFAIRE — jamais celle d'une autre personne citée dans l'article. "definitive"="OUI" exige que le document l'écrive explicitement (« décision définitive », « devenue définitive », délai d'appel expiré) ; l'absence de mention d'appel ne rend rien définitif (alors "INCONNU"). "appel"="OUI" exige un appel interjeté ; le nom « cour d'appel » n'est pas un appel.
-11. DÉCLARATIONS. Seulement des propos de personnes ou institutions NOMMÉES avec leur fonction (procureur, rectrice, maire, avocat, association) : jamais d'anonymes, de parents, d'élèves ni de témoins pour "type_acteur" institutionnel ; si un parent ou un témoin s'exprime, mets type_acteur "parent" ou "temoin" (il sera écarté). La citation est un propos que le document place ENTRE GUILLEMETS, recopié tel quel et complet (pas un discours rapporté à la 3e personne) ; sans propos entre guillemets, pas de déclaration.
+11. DÉCLARATIONS. Propos de personnes ou institutions NOMMÉES avec leur fonction (procureur, rectrice, maire, avocat, association) : "type_acteur" institutionnel. Propos d'un PARENT d'enfant concerné : "type_acteur" "parent", et "acteur" = « un parent », « une mère » ou « un père » SEULEMENT (jamais un prénom, même d'emprunt, jamais l'enfant ni sa classe) ; retiens seulement ce qu'un parent dit de la réaction des institutions, des signalements, de la protection des enfants ou de ses attentes — jamais la description des gestes reprochés, jamais une accusation nominative ou qualifiante de la personne mise en cause. Un témoin (élève, voisin, collègue) : type_acteur "temoin" (il sera écarté). La citation est un propos que le document place ENTRE GUILLEMETS, recopié tel quel et complet (pas un discours rapporté à la 3e personne) ; sans propos entre guillemets, pas de déclaration.
 12. PORTÉE (champ "portee", obligatoire pour chaque événement, déclaration et lacune). "affaire" : concerne la personne mise en cause de CETTE affaire, ses faits, les victimes de CES faits, la procédure qui la vise, la réaction directe à CETTE affaire. "etablissement" : mesure ou position de la structure elle-même (direction, rectorat, gestionnaire) sur CETTE affaire. "autre_affaire" : une autre personne mise en cause, une autre procédure, un autre établissement cités dans l'article (même s'ils sont proches ou de la même série). "territoire" : plans d'action, chiffres globaux, politiques publiques, auditions parlementaires, contexte de ville, de département ou national. Un article sur une série d'affaires parle de plusieurs affaires : ne mets "affaire" que ce qui concerne la personne et l'établissement de CETTE affaire. ÉNONCÉ COLLECTIF : une phrase dont le SUJET est un ensemble de plusieurs affaires ou de plusieurs personnes (« ces trois enquêtes », « les trois autres ont été déférés », « trois hommes interpellés dans plusieurs écoles », « deux animateurs et le compagnon d'une institutrice ») n'est PAS un fait propre à CETTE affaire : étiquette-la "territoire", sauf si la phrase nomme cette affaire (son établissement ou sa personne mise en cause) parmi celles qu'elle vise. Une phrase au singulier sur la personne mise en cause ou l'établissement de CETTE affaire (« le salarié a été mis à pied », « le groupe devrait déposer plainte contre lui ») n'est JAMAIS collective, même si l'article évoque aussi d'autres affaires. Un passage consacré à cette affaire dans un article sur plusieurs (« À l'école X, … ») et les phrases qui le prolongent restent "affaire". Seuls "affaire" et "etablissement" seront retenus ; les autres sont classés sans toi — ne les supprime pas, étiquette-les.
 13. UN ÉVÉNEMENT = UNE ENTRÉE. Regroupe dans UNE seule phrase le dispositif complet d'une décision (peine principale et peines complémentaires, mesures ordonnées par le tribunal : elles font partie de la décision, ce ne sont pas des "mesure_*"). Les types "mesure_*" sont réservés aux mesures prises par un établissement, une collectivité ou l'État (suspension, licenciement, cellule d'écoute…). N'ajoute pas deux entrées pour le même fait ; le type "contexte" n'est à utiliser qu'exceptionnellement.
 
@@ -116,6 +119,18 @@ export const citationPresente = (corps, citation) => {
 
 const MOIS = ['janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin', 'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre'];
 /**
+ * Le jour figure-t-il dans une PLAGE ou une LISTE de jours écrite devant le mois (« du 16 au 18 novembre 2026 », « les 16, 17 et 18 novembre ») ?
+ * `t` est le texte normalisé (`plat`). Sans cela, un procès annoncé sur plusieurs jours restait « date non écrite » alors que la source l'écrit.
+ */
+const jourDansPlage = (t, jo, mois) => {
+  for (const m of t.matchAll(new RegExp(`\\b(\\d{1,2}(?:er)?(?:\\s+(?:et |au |a |ou )?\\d{1,2}(?:er)?)*)\\s+${mois}\\b`, 'g'))) {
+    const ns = [...m[1].matchAll(/\d{1,2}/g)].map((x) => Number(x[0]));
+    if (ns.includes(jo)) return true;
+    if (/\b(?:au|a)\s+\d/.test(m[1]) && jo > ns[0] && jo < ns[ns.length - 1]) return true;
+  }
+  return false;
+};
+/**
  * Une date n'est affichée comme celle de l'événement que si le texte cité l'ÉCRIT : jour + mois (+ année), ou mois + année, ou jj/mm/aaaa.
  * Si l'année manque, elle doit être l'année de publication ou la précédente et rendre une date antérieure à la publication.
  */
@@ -129,7 +144,7 @@ export function dateAttestee(iso, expr, publieLe = null) {
   let moisOk = t.includes(MOIS[Number(mo) - 1]);
   let jourOk = !jo;
   if (jo) {
-    jourOk = new RegExp(`\\b0?${Number(jo)}(?:er)? ${MOIS[Number(mo) - 1]}\\b`).test(t);
+    jourOk = new RegExp(`\\b0?${Number(jo)}(?:er)? ${MOIS[Number(mo) - 1]}\\b`).test(t) || jourDansPlage(t, Number(jo), MOIS[Number(mo) - 1]);
     const num = /\b(\d{1,2})\s*[\/.]\s*(\d{1,2})\s*[\/.]\s*(\d{2,4})\b/.exec(String(expr));
     if (num && Number(num[1]) === Number(jo) && Number(num[2]) === Number(mo)) { jourOk = true; moisOk = true; if (num[3].length === 4 && num[3] !== an) return false; }
   }
@@ -408,6 +423,8 @@ export function verifier(rep, { corps, publieLe = null }) {
   for (const d of rep.declarations || []) {
     const citation = nettoyerTexte(d?.citation).replace(/^[«"]\s*|\s*[»"]$/g, '');
     if (!ACTEURS_PUBLIABLES.has(d?.type_acteur)) { ecarte('declaration', `ACTEUR_NON_PUBLIABLE(${d?.type_acteur ?? '?'})`, d?.acteur); continue; }
+    if (d.type_acteur === 'parent' && ACCUSATION_PARENT.test(plat(citation))) { ecarte('declaration', 'PAROLE_PARENT_ACCUSATOIRE', citation); continue; }
+    if (d.type_acteur === 'parent' && citation.length > 220) { ecarte('declaration', 'PAROLE_PARENT_TROP_LONGUE', citation); continue; }
     if (!d.acteur || citation.length < 25 || citation.length > 340) { ecarte('declaration', 'ACTEUR_OU_CITATION_INVALIDE', citation); continue; }
     if (!citationPresente(corps, citation)) { ecarte('declaration', 'CITATION_ABSENTE_DU_CORPS', citation); continue; }
     if (!citationEntreGuillemets(corps, citation)) { ecarte('declaration', 'PROPOS_NON_ENTRE_GUILLEMETS', citation); continue; }
@@ -424,7 +441,7 @@ export function verifier(rep, { corps, publieLe = null }) {
     }
     // Un fragment (commence en minuscule, < 60 caractères) sans phrase de contexte sûre n'a pas de sens isolé (« de différentes enquêtes préliminaires ») : écarté.
     if (citation.length < 100 && /^[a-zà-ÿ]/.test(citation) && !contexte) { ecarte('declaration', 'FRAGMENT_SANS_CONTEXTE', citation); continue; }
-    sortie.declarations.push({ acteur: nettoyerTexte(d.acteur), type_acteur: d.type_acteur, a_propos: nettoyerTexte(d.a_propos) || null, citation, ...(contexte ? { contexte } : {}) });
+    sortie.declarations.push({ acteur: d.type_acteur === 'parent' ? acteurParent(d.acteur) : nettoyerTexte(d.acteur), type_acteur: d.type_acteur, a_propos: nettoyerTexte(d.a_propos) || null, citation, ...(contexte ? { contexte } : {}) });
   }
 
   for (const l of rep.lacunes_declarees || []) {

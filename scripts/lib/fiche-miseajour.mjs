@@ -18,7 +18,7 @@ export const faitJudiciaire = (f) => !!f && !f.mesure && Array.isArray(f.evidenc
  *          publie:Map<string,{d:object}>, approuvee:(id:string)=>boolean, holds:Set<string>, deja:Set<string>}} o
  * @returns {{groupes:{case_id:string, sources:{url:string,media:string|null,publication_date:string|null}[], ks:string[]}[], ecartees:{k:string, motif:string}[]}}
  */
-export function selectionnerMisesAJour({ lignes, publie, approuvee, holds, deja }) {
+export function selectionnerMisesAJour({ lignes, publie, approuvee, holds, deja, tousTypes = false }) {
   const ecartees = [], par = new Map();
   for (const l of lignes) {
     const ecarte = (motif) => ecartees.push({ k: l.k, case_id: l.case_id, motif });
@@ -31,7 +31,9 @@ export function selectionnerMisesAJour({ lignes, publie, approuvee, holds, deja 
     const pub = publie.get(l.case_id);
     if (!pub) { ecarte('PAS_DE_FICHE_PUBLIQUE'); continue; }
     if (!approuvee(l.case_id)) { ecarte('VERSION_PUBLIQUE_NON_APPROUVEE'); continue; }
-    if (!(l.facts || []).some(faitJudiciaire)) { ecarte('AUCUN_EVENEMENT_JUDICIAIRE'); continue; }
+    // tousTypes : REPRISE après un « À revoir » de l'éditeur — toute analyse rattachée du lot (réaction, mobilisation, déclaration…) est TRANSMISE à la génération, dont les gardes (pertinence,
+    // citation littérale, acteurs publiables) décident ce qui entre ; hors de ce cas, seul un événement de procédure déclenche une mise à jour.
+    if (!tousTypes && !(l.facts || []).some(faitJudiciaire)) { ecarte('AUCUN_EVENEMENT_JUDICIAIRE'); continue; }
     if (!l.url) { ecarte('SOURCE_SANS_ADRESSE'); continue; }
     if (MEDIAS_PAYANTS.includes(l.media)) { ecarte('SOURCE_PAYANTE'); continue; }
     if (urlsDe(pub.d).some((s) => s.url === l.url)) { ecarte('SOURCE_DEJA_DANS_LA_FICHE'); continue; }

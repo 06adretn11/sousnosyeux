@@ -3,6 +3,7 @@
 // puis traçabilité (chaque ligne → l'extrait littéral qui la soutient). Lecture seule : ce n'est pas la page publique.
 // =====================================================================
 import { hashDossier } from './fiche-page.mjs';
+import { libelleIndices } from './fiche-acquis.mjs';
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso || ''); return m ? `${m[3] ? `${Number(m[3])} ` : ''}${MOIS[Number(m[2]) - 1]} ${m[1]}` : null; };
 const TYPE = { fait_rapporte: 'Faits rapportés', signalement: 'Signalement', plainte: 'Plainte', enquete: 'Enquête', garde_a_vue: 'Garde à vue', mise_en_examen: 'Mise en examen', renvoi: 'Renvoi', audience: 'Audience', decision: 'Décision', appel: 'Appel',
@@ -45,6 +46,10 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   for (const r of [...(d.reactions || []), ...(d.paroles || [])]) citees.add(r.source?.url);
   const USAGE = { CETTE_AFFAIRE: 'rattachement établi — utilisée', AUTRE_AFFAIRE: 'autre affaire — NON utilisée', AFFAIRE_SOEUR: 'affaire proche — NON utilisée', AMBIGU: 'rattachement non établi — NON utilisée', HORS_SUJET: 'hors sujet (même nom ou même lieu, autre sujet) — NON utilisée' };
   const usage = (s) => (s.pertinence === 'CETTE_AFFAIRE' && !citees.has(s.url) ? 'rattachement établi, mais aucune étape ni réaction n’en provient — NON utilisée'
+    // Erreur du modèle (réseau, quota) : la source n'a PAS été jugée — jamais présentée comme « jugée d'une autre affaire » ni comme rattachée (l'acquis qui la cite est conservé).
+    : citees.has(s.url) && s.raison === 'extraction indisponible' ? 'lecture automatique INDISPONIBLE à ce passage (erreur du modèle, aucun jugement sur la source) — l’acquis n’est pas effacé'
+    // Source LUE et jugée d'une autre affaire alors qu'une étape APPROUVÉE la cite : dire « non relue » serait faux (contradiction avec le point « à trancher » : défaut Rezé 17/11/2026).
+    : citees.has(s.url) && s.acces === 'libre' && !s.ecarte && ['AUTRE_AFFAIRE', 'AFFAIRE_SOEUR', 'HORS_SUJET', 'AMBIGU'].includes(s.pertinence) ? `RELUE ET jugée « ${USAGE[s.pertinence].replace(/ — NON utilisée$/, '')} » par la lecture automatique — l’étape approuvée qui la cite est CONSERVÉE ; rattachement à trancher par l’éditeur${s.rattachement ? ` (indices : ${libelleIndices(s.rattachement)})` : ''}`
     : citees.has(s.url) && s.pertinence !== 'CETTE_AFFAIRE' ? `conservée de la version approuvée (non relue ou non reprise à ce passage${s.acces !== 'libre' ? ` : ${s.acces}${s.motif ? ` — ${s.motif}` : ''}` : ''}) — l’acquis n’est pas effacé`
     : s.pertinence ? USAGE[s.pertinence] ?? s.pertinence : (s.ecarte ? 'rattachement non établi (ne nomme pas la commune ou la structure) — NON utilisée' : (s.acces !== 'libre' ? 'non lue (inaccessible) — NON utilisée' : '—')));
   const ligneSource = (s) => `| [${s.media}](${s.url}) (${s.publication_date ?? 'date ?'}) | ${s.acces}${s.motif ? ` — ${s.motif}` : ''} | ${s.origine} | ${usage(s)} |`;

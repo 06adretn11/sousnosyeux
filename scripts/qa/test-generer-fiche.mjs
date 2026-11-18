@@ -35,6 +35,15 @@ t('date : écrite (jour+mois+année) acceptée ; « mardi » refusée ; année a
   assert.ok(dateAttestee('2025-12', 'en décembre 2025', PUB));
   assert.ok(dateAttestee('2025-03-04', 'le 04/03/2025', PUB));
 });
+t('date : une PLAGE ou une LISTE de jours écrite (« du 16 au 18 novembre 2026 ») atteste ses jours ; un jour hors plage ou une année contraire reste refusé (défaut Rezé : procès en appel « date non écrite »)', () => {
+  const PARU = '2026-11-15';
+  assert.ok(dateAttestee('2026-11-16', 'Du 16 au 18 novembre 2026, il sera donc rejugé à Rennes.', PARU), 'début de plage, année écrite, événement postérieur à la parution');
+  assert.ok(dateAttestee('2026-11-17', 'Du 16 au 18 novembre 2026, il sera donc rejugé', PARU), 'jour intérieur de la plage');
+  assert.ok(dateAttestee('2026-11-18', 'les 16, 17 et 18 novembre 2026', PARU), 'liste de jours');
+  assert.ok(!dateAttestee('2026-11-19', 'Du 16 au 18 novembre 2026', PARU), 'jour hors plage');
+  assert.ok(!dateAttestee('2025-11-16', 'Du 16 au 18 novembre 2026', PARU), 'année contraire');
+  assert.ok(!dateAttestee('2026-11-16', 'les 16, 17 et 18 novembre', '2026-06-09'), 'sans année et dans le futur de la parution : toujours non attestée (jamais devinée)');
+});
 t('quantités : une peine du texte doit figurer dans la citation (un an ≠ trois ans)', () => {
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont un an avec sursis', 'quatre ans de prison dont un an avec sursis'), []);
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont trois ans fermes', 'quatre ans de prison dont un an avec sursis'), ['3']);
@@ -104,10 +113,19 @@ t('appel / caractère définitif : un acte écrit, jamais un nom de juridiction 
 t('déclarations : institution nommée conservée ; parent / témoin / citation inventée écartés', () => {
   const r = v(base({ declarations: [
     { acteur: 'La rectrice', type_acteur: 'education_nationale', a_propos: 'suspension', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
-    { acteur: 'Une mère', type_acteur: 'parent', a_propos: 'ressenti', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
+    { acteur: 'Une voisine', type_acteur: 'temoin', a_propos: 'ressenti', portee: 'affaire', citation: 'Nous avons suspendu l\'enseignant dès le signalement et nous accompagnons les familles' },
     { acteur: 'Le maire', type_acteur: 'collectivite', a_propos: 'x', portee: 'affaire', citation: 'Nous allons tout faire pour que cela ne se reproduise jamais plus à Rouen' },
   ] }));
   assert.equal(r.declarations.length, 1); assert.deepEqual(r.ecartes.map((e) => e.raison.replace(/\(.*\)/, '')), ['ACTEUR_NON_PUBLIABLE', 'CITATION_ABSENTE_DU_CORPS']);
+});
+t('déclarations de PARENTS : propos exact entre guillemets, attribution générique (jamais de prénom), courts ; accusation nominative, gestes reprochés (proche de victime), nombre de plaintes et témoin non parent écartés ; jamais un fait établi', () => {
+  const corps = 'Une mère d’élève, Julie*, dit : « Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier ». Un père lâche : « Qu’est-ce qu’ils attendent ? Que ce type recommence ? ». Elle ajoute : « nous sommes arrivés à une dizaine de plaintes dans cette affaire ». Un père déclare : « Nos enfants n’ont pas été protégés par l’institution ». Un autre dit : « ma fille m’a raconté des choses graves ».';
+  const dp = (acteur, citation, type_acteur = 'parent') => ({ acteur, type_acteur, a_propos: 'x', portee: 'affaire', citation });
+  const r = verifier(base({ declarations: [dp('Julie*, mère d’une élève', 'Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier'), dp('Un père', 'Qu’est-ce qu’ils attendent ? Que ce type recommence ?'), dp('Une mère', 'nous sommes arrivés à une dizaine de plaintes dans cette affaire'),
+    dp('Un père d’élève', 'Nos enfants n’ont pas été protégés par l’institution'), dp('Un parent', 'ma fille m’a raconté des choses graves'), dp('Un voisin', 'Avant cette plainte, il y a eu des signalements de familles', 'temoin')] }), { corps, publieLe: PUB });
+  assert.deepEqual(r.declarations.map((x) => [x.acteur, x.citation]), [['Une mère d’enfant concerné', 'Avant cette plainte, il y a eu des signalements de familles qui remontent à avril dernier'], ['Un père d’enfant concerné', 'Nos enfants n’ont pas été protégés par l’institution']]);
+  assert.ok(!/Julie/.test(JSON.stringify(r.declarations)), 'aucun prénom, même d’emprunt');
+  assert.deepEqual(r.ecartes.map((e) => e.raison.replace(/\(.*\)/, '')), ['PAROLE_PARENT_ACCUSATOIRE', 'NOMBRE_EXACT_ENFANTS', 'PROCHE_DE_VICTIME', 'ACTEUR_NON_PUBLIABLE']);
 });
 t('portée : une autre affaire ou un territoire sont classés à part (pas dans la fiche) ; une portée absente est écartée (échec fermé)', () => {
   const cit = "condamné mardi l'enseignant à quatre ans de prison dont un an avec sursis";
@@ -295,6 +313,25 @@ t('sans décision : la phrase d’état est celle de l’étape qui fait l’ét
   assert.match(r.dossier.etat_actuel[0], /mis en examen/); assert.ok(r.attention.some((a) => a.code === 'CITATIONS_A_RELIRE'));
 });
 
+t('source LUE et jugée « autre affaire » mais citée par une étape approuvée : jamais « non relue » ; les indices de rattachement sont dits, l’étape est conservée (défaut Rezé : tableau et point « à trancher » se contredisaient)', () => {
+  const c = carte();
+  const U = 'https://exemple.test/a', U2 = 'https://exemple.test/b';
+  const r = composer({ c, extractions: [ext(doc('France 3', U), { issue: ISSUE(), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
+  const generation = { contrat: 'x', modele: 'm', genere_le: '2026-11-18', qualification: r.qualification, blocages: r.blocages, attention: r.attention, ecartes: r.ecartes, trace: r.trace, stats: r.stats, cout: { appels: 0, cache: 0, input_tokens: 0, output_tokens: 0, cout_usd: null },
+    sources: [{ url: U, media: 'France 3', acces: 'libre', origine: 'memoire', pertinence: 'CETTE_AFFAIRE' },
+      { url: U2, media: 'Autre média', acces: 'libre', origine: 'memoire', pertinence: 'AUTRE_AFFAIRE', rattachement: { statut: 'NON_RATTACHABLE', commune: true, role: true, structure: false, soeurs: 0 } }] };
+  const dossier = { ...r.dossier, deroule: r.dossier.deroule.map((e, i) => (i === 0 ? { ...e, sources_complementaires: [{ media: 'Autre média', url: U2, publie_le: '2025-12-05', acces: 'libre' }] } : e)) };
+  const pub = rendreMarkdown({ c, dossier, generation }, { complet: false });
+  const ligne = pub.split('\n').find((l) => l.includes(U2) && l.startsWith('|'));
+  assert.match(ligne, /RELUE ET jugée « autre affaire » par la lecture automatique/);
+  assert.match(ligne, /CONSERVÉE ; rattachement à trancher par l’éditeur \(indices : commune présente, rôle présent, structure NON nommée, aucune autre affaire proche dans la commune\)/);
+  assert.doesNotMatch(ligne, /non relue/);
+  // Une ERREUR du modèle (réseau, quota) n'est pas un jugement : la source n'est jamais dite « jugée » ni « rattachée ».
+  const generation2 = { ...generation, sources: [generation.sources[0], { url: U2, media: 'Autre média', acces: 'libre', origine: 'memoire', pertinence: 'AMBIGU', raison: 'extraction indisponible' }] };
+  const ligne2 = rendreMarkdown({ c, dossier, generation: generation2 }, { complet: false }).split('\n').find((l) => l.includes(U2) && l.startsWith('|'));
+  assert.match(ligne2, /lecture automatique INDISPONIBLE à ce passage \(erreur du modèle, aucun jugement sur la source\)/); assert.doesNotMatch(ligne2, /RELUE ET jugée/);
+});
+
 t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une déclaration qui répète le déroulé est écartée ; deux déclarations par acteur au plus', () => {
   const D = (acteur, citation) => ({ acteur, type_acteur: 'parquet', a_propos: 'x', portee: 'affaire', citation });
   const r = composer({ c: carte('mise en examen'), extractions: [
@@ -328,6 +365,16 @@ t('synthèse : condamnation → bloc rouge « Condamnation » (date + autorité)
   assert.ok(SIT(rel).suite.lignes[0].includes('ne mentionne de recours') && !/non définitive/.test(JSON.stringify(SIT(rel))), 'pas de « non définitive » appliqué à une relaxe ou un classement');
   const app = composer({ c: carte(), extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }), evenements: [E(), E({ type: 'plainte', texte: 'Une plainte est déposée.', date: '2024-03-04' })] })] });
   assert.deepEqual([SIT(app).suite.titre, SIT(app).suite.cat], ['Appel rapporté', 'orange']);
+  // Défaut Rezé (17/11/2026) : condamnation + appel + procès en appel programmé du 16 au 18 novembre — le bloc de situation disait seulement « Décision non définitive ».
+  const proces = (aujourdhui, extra = []) => composer({ c: carte(), aujourdhui, extractions: [ext(doc(), { issue: ISSUE({ appel: 'OUI', citation_appel: 'ont fait appel' }),
+    evenements: [E(), E({ type: 'audience', acteur: 'cour d’appel de Rennes', texte: 'Selon France 3, le procès en appel est programmé du 16 au 18 novembre 2026 devant la cour d’appel de Rennes.', date: '2026-11-16', citation: 'p' }), ...extra] })] });
+  const avant = proces('2026-11-10'), pendant = proces('2026-11-18');
+  assert.ok(SIT(avant).suite.lignes.some((l) => /^Procès en appel : selon France 3, le procès en appel est programmé du 16 au 18 novembre 2026/i.test(l)), 'le procès en appel annoncé figure dans le bloc de situation');
+  assert.ok(!SIT(avant).suite.lignes.some((l) => /Aucun article lu ne rapporte/.test(l)), 'dates pas encore atteintes : rien à dire sur le déroulement');
+  assert.ok(SIT(pendant).suite.lignes.some((l) => /Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel/.test(l)), 'dates atteintes sans source sur le déroulement : jamais présenté comme tenu ni jugé');
+  assert.ok(!/s’est tenu|a été jugé|a été rejugé/.test(JSON.stringify(SIT(pendant))));
+  assert.match(pendant.dossier.etat_actuel[2], /^Procès en appel/);
+  assert.ok(!SIT(app).suite.lignes.some((l) => /Procès en appel/.test(l)), 'sans audience d’appel programmée : aucune ligne');
 });
 t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Issue de la procédure à documenter » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
   const mee = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', acteur: 'parquet de Rennes', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] })] });
