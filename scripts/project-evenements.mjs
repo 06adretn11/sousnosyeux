@@ -32,6 +32,8 @@ const lignes = await sql`
          a.media, a.url, to_char(a.publication_date, 'YYYY-MM-DD') publie_le
     from case_events e left join articles a on a.article_id = e.article_id
    where e.case_id = any(${ids}) and e.event_type::text <> 'rectification'
+     -- Une erreur de date ou de fait se corrige par un nouvel événement (table append-only) ET un événement rectification au libellé RECTIFIE:<event_id> : l'événement visé n'est plus projeté.
+     and not exists (select 1 from case_events r where r.case_id = e.case_id and r.event_type::text = 'rectification' and r.libelle_public = 'RECTIFIE:' || e.event_id::text)
    order by e.case_id, e.event_date nulls last, e.recorded_at`;
 
 const vus = new Set();

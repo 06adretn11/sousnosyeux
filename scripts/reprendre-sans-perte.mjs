@@ -67,7 +67,8 @@ for (const [id, l] of parAffaire) {
   const derniere = l[l.length - 1];
   const decidee = derniere.decision && derniere.decision !== 'REVIEW_REQUIRED';           // ACCEPT / REJECT : l'éditeur (ou la reprise) a tranché
   const deja = (await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${`reprise-sans-perte:${id}:${derniere.pid.slice(0, 8)}`} limit 1`).length > 0;
-  const aRevoir = APRES_REVUE && derniere.decision === 'REVIEW_REQUIRED' && !estDecisionMachine(derniere.decided_by);
+  // Après revue : la dernière proposition est « À revoir » par une personne, OU encore sans décision (elle est alors REMPLACÉE : décision machine, bouton inerte, trace conservée).
+  const aRevoir = APRES_REVUE && ((derniere.decision === 'REVIEW_REQUIRED' && !estDecisionMachine(derniere.decided_by)) || derniere.decision === null);
   if (deja || (!aRevoir && (decidee || !defectueuse(derniere)))) continue;
   aReprendre.push({ id, derniere, enAttente: l.filter((p) => !p.decision) });
 }

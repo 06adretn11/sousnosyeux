@@ -381,6 +381,9 @@ export function verifier(rep, { corps, publieLe = null }) {
     // Réquisitions : jamais une décision.
     let typeFinal = type;
     if (type === 'decision' && /\brequis|requisition|requiert|requerir/.test(plat(cit)) && !/\bcondamn|relax|acquitt|non lieu/.test(plat(cit))) typeFinal = 'audience';
+    // « Début octobre, le parquet confirmait l'ouverture d'une enquête » : une COMMUNICATION du parquet (date de l'annonce), pas l'ouverture de l'enquête — sinon la date de l'annonce
+    // contredit celle du début des investigations (fausse divergence « septembre / octobre », constatée sur Rots le 18/11/2026).
+    if (type === 'enquete' && /\b(?:confirm|annonc)\w*\s+l\s+ouverture\b/.test(plat(cit))) typeFinal = 'communication_parquet';
     let date = isoOuNull(e.date), nature = 'article';
     if (date) {
       if (e.citation_date && citationPresente(corps, e.citation_date) && dateAttestee(date, e.citation_date, publieLe)) nature = date.length === 10 ? 'evenement' : 'approximative';
