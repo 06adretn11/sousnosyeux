@@ -83,6 +83,24 @@ Un seul retour à la ligne entre les blocs. Trois passes, du plus complet au plu
 
 `data/relais-reproposer.json` nomme les événements dont **toutes** les propositions ouvertes et jamais décidées (X / Facebook et Instagram) sont refermées sans décision (« remplacee ») et remplacées par une proposition commune (clé `<événement>#commun:<id>`), avec la mention « Remplace les propositions … ». S'il existe déjà une décision sur l'événement, rien n'est reproposé.
 
+## Format X standard des prises de parole (19/11/2026)
+
+Pour toute prise de parole (famille, pouvoir public) autre qu'une création ou une mise à jour de fiche :
+
+```
+<commune> · <lieu> : <acteur> évoque <évocation>. <réserve judiciaire>
+Source : <média>
+<adresse de l'article>
+A suivre sur SNY : <fiche>
+```
+
+Exemple (Rots, 253/280) : `Rots · centre de loisirs : une mère d’enfant concerné évoque des signalements antérieurs à la plainte. L’ouverture d’une enquête ne vaut pas culpabilité.` / `Source : Actu.fr` / `<URL>` / `A suivre sur SNY : <fiche>`.
+
+- **La citation n'est pas dans le texte** : elle est sur le visuel. Le début du message n'est pas chargé ; l'attribution est la ligne « Source : média ».
+- **« Évoque … » est une phrase approuvée par l'éditeur pour UNE citation exacte** (`data/evocations-paroles.json` : affaire, citation, évocation, éditeur, date). La machine ne paraphrase jamais ; une évocation approuvée pour une autre citation, ou sans éditeur, n'est jamais utilisée. Sans entrée, X garde la citation entière (même mise en page) et reste bloqué si elle ne tient pas en 280. **Pour chaque nouvelle prise de parole, ajouter l'entrée correspondante (une ligne) pour obtenir le format standard.**
+- Le lieu est l'établissement sans « de <commune> » final (« centre de loisirs de Rots » → « centre de loisirs ») ; l'acteur passe en minuscule s'il commence par « Un / Une ». Facebook et Instagram sont inchangés.
+- **X seul** : pour un événement nommé dans `data/relais-reproposer.json` dont la proposition commune est partie sans X (non publiable à l'époque), une proposition « X seul » (clé `<événement>#x:<empreinte>`, un bouton « GO X », même visuel) est faite dès que la rédaction X devient publiable. Jamais rétroactive pour un événement non nommé.
+
 ## Limites connues
 
 - X : la ligne « A suivre sur SNY » saute en dernier recours (format complet > 280) ; le contrôle « lien SNY présent » ne s'applique donc pas à X (il reste pour Facebook et Instagram).

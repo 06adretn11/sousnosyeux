@@ -1,0 +1,12 @@
+{
+  "_meta": "Format X standard des PRISES DE PAROLE (famille, pouvoir public), hors création et mise à jour de fiche : « <commune> · <lieu> : <acteur> évoque <évocation>. <réserve> » puis « Source : <média> », l'adresse de l'article, « A suivre sur SNY : <fiche> ». La citation exacte est portée par le visuel. Chaque entrée est une phrase APPROUVÉE par l'éditeur pour UNE citation exacte du dossier approuvé : la machine ne paraphrase jamais. Sans entrée pour une citation, X garde la citation entière dans le même format. Modifier la citation d'un dossier invalide l'entrée correspondante.",
+  "evocations": [
+    {
+      "case_id": "FR-2026-0133",
+      "citation": "Avant cette plainte-là, il y a eu des signalements de famille pour des faits inappropriés qui remontent à avril dernier .",
+      "evocation": "des signalements antérieurs à la plainte",
+      "approuve_par": "Adrien Etienne",
+      "le": "2026-11-19"
+    }
+  ]
+}

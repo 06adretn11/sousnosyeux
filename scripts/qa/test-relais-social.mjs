@@ -605,7 +605,7 @@ console.log('\nH. Pare-feu éditorial (1 changement judiciaire + 1 prise de paro
   // --- reproposition ciblée d'une proposition ANTÉRIEURE au visuel (jamais décidée) : remplacée, sans décision, seulement si l'événement est NOMMÉ
   const nowR = NOUVELLE.now, t0R = T0_DEFAUT(nowR), apresR = (m) => new Date(nowR.getTime() + m * 6e4);
   const cle = `new_case|${NOUVELLE.id}`;
-  const anterieure = async () => { const w = monde({ t0: t0R, candidats: [candNouvelle(t0R)] }); await executerCycle(deps(w, nowR)); delete w.props[0].identite.image; w.photos.length = 0; w.telegram.length = 0; w.rendus = 0; return w; };
+  const anterieure = async () => { const w = monde({ t0: t0R, candidats: [candNouvelle(t0R)] }); await executerCycle(deps(w, nowR)); delete w.props[0].identite.image; delete w.props[0].identite.commun; w.photos.length = 0; w.telegram.length = 0; w.rendus = 0; return w; };
   let wR = await anterieure();
   await executerCycle(deps(wR, apresR(1)));
   verifie('H14. sans nomination, la proposition antérieure reste telle quelle (aucune nouvelle proposition, aucun message)', wR.props.length === 1 && wR.props[0].resolution === null && propositions(wR).length === 0);
