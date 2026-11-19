@@ -136,6 +136,8 @@ export function portNeon(sql) {
 
     async exclusionsDe(k) { return new Set((await sql`select canal from relais_social_exclusions where event_key = ${k}`).map((r) => r.canal)); },
     async empreinteTexteExclue(canal, h) { return (await sql`select 1 x from relais_social_exclusions where canal = ${canal} and empreinte_texte = ${h}`).length > 0; },
+    /** Lignes du journal de diffusion d'une affaire depuis `depuis` (pare-feu : le jour est jugé par l'appelant, en heure de Paris). */
+    async diffusionsDeAffaire(case_id, depuis) { return sql`select event_key, canal, etat, created_at from diffusions_sociales where case_id = ${case_id} and created_at >= ${iso(depuis)}::timestamptz`; },
     async lignesOuvertes() { return sql`select * from diffusions_sociales where etat in ('reserve', 'soumis', 'programme', 'envoye', 'verifie') and created_at > now() - interval '30 days'`; },
     async etatsAffaires(ids) { return ids.length ? sql`select c.case_id, c.publication_status::text ps, exists (select 1 from reviews r where r.case_id = c.case_id and r.decision = 'retirer') retire from cases c where c.case_id = any(${ids}::text[])` : []; },
     async ledgerDe(k) { return (await sql`select 1 x from diffusions_sociales where event_key = ${k} limit 1`).length > 0; },

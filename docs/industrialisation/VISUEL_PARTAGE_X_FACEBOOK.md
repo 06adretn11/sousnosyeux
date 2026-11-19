@@ -45,6 +45,19 @@ Le visuel est celui du générateur Instagram (`instagram-visuel.mjs`), rendu **
 | Rezé, parole d'une mère | **380/280** | meilleure tentative montrée, non envoyable (dépasse de 100) ; Facebook proposé |
 | Bordeaux FR-2026-0113 | — | source liée lue en partie : visuel non composable, aucun canal proposé |
 
+## Pare-feu éditorial (19/11/2026, décision d'Adrien)
+
+Par **affaire, par canal et par jour (Europe/Paris)** : au plus **1 post de changement judiciaire** (nouvelle affaire, évolution de statut, étape de procédure) et **1 post de prise de parole** (famille ou pouvoir public) — 2 posts maximum, sur deux thèmes différents. Les deux nombres sont les seuls réglages (`PARE_FEU_PAR_JOUR`, `relais-social.mjs`) : la règle pourra évoluer.
+
+- **Thème** : une clé d'événement `case_update|<affaire>|parole-…` est une prise de parole ; tout le reste est un changement judiciaire.
+- **Compte** : les lignes du journal de diffusion (soumis, programmé, envoyé…) de l'affaire, pour le même canal et le même thème, le jour de Paris courant. Une ligne annulée ou en échec n'est pas un post. Les lignes du même événement (reprise, complément, remplaçante) ne comptent jamais contre lui-même.
+- **Deux points d'application** : à la **proposition** (un canal déjà servi n'est pas proposé ; silence journalisé) et à l'**exécution du GO** (deux GO le même jour : le second est refusé, aucun post, alerte « GO social non exécuté — pare-feu », proposition conservée avec son motif). Les propositions ouvertes ne comptent pas : seuls les posts comptent.
+- Instagram est soumis à la même règle (`relais-instagram.mjs`).
+
+## Reproposition ciblée d'une proposition antérieure au visuel
+
+Une proposition X / Facebook créée avant le visuel commun ne peut plus être exécutée (GO périmé). `data/relais-reproposer.json` nomme, un par un, les événements dont la proposition **jamais décidée** doit être remplacée : l'ancienne est refermée **sans aucune décision** (résolution « remplacee ») et une proposition avec visuel (clé `<événement>#visuel:<id>`) est envoyée, avec la mention « Remplace la proposition … ». Un clic sur l'ancienne n'enregistre rien. Un événement absent de la liste garde sa proposition, qui expire d'elle-même.
+
 ## Limites connues
 
 - Le renvoi vers SNY n'est plus un lien dans le texte X (la signature `sousnosyeux.org` est sur le visuel). Le contrôle « lien SNY présent » ne s'applique plus à X (il reste pour Facebook et Instagram).

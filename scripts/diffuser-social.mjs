@@ -223,6 +223,8 @@ if (A.includes('--verifier-connexion')) {
 const now = new Date();
 const artefact = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
 const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
+// Événements dont la proposition ANTÉRIEURE au visuel partagé (jamais décidée) doit être reproposée avec visuel : liste explicite et versionnée (voir relais-social.mjs, « reproposition ciblée »).
+const reproposer = new Set((lire('data/relais-reproposer.json').evenements || []));
 let wording = null;
 async function composition() {
   if (!wording) wording = await import('../web/src/lib/etat-wording.ts'); // formulation officielle du site
@@ -417,7 +419,7 @@ const alerter = async (texte) => { if (ECRIRE) await prevenir(texte); };
 // servi() est synchrone dans l'évaluateur : la page d'accueil est lue avant la boucle (une seule requête), seulement s'il y a un candidat potentiel.
 if (activation.actif) await accueil();
 const resultat = await executerCycle({
-  port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger,
+  port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger, reproposer,
   canauxConfigures: CANAUX_ACTIFS.filter((c) => CANAL_ID[c]), channelIds: CANAL_ID, delaiMin: DELAI_MIN,
   // Visuel commun (rendu, hébergement, relecture distante) : le MÊME générateur et le même hébergement que le canal Instagram, joint aux posts X et Facebook.
   envoyer: envoyerTelegram, envoyerPhoto: envoyerPhotoTelegram, image: imageInstagram(), servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,

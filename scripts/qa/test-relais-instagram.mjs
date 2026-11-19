@@ -88,6 +88,7 @@ function monde({ t0, igT0 = undefined, candidats = [], ps = {}, retire = {} } = 
     propositionsAConfirmer: async () => w.props.filter((p) => p.resolution === 'publie' && !p.notif_publie_at).map(clone),
     exclusionsDe: async () => new Set(), empreinteTexteExclue: async () => false,
     ledgerDe: async (k) => w.ledger.some((l) => l.event_key === k),
+    diffusionsDeAffaire: async (id) => w.ledger.filter((l) => l.case_id === id).map(clone),
     lignesOuvertes: async () => w.ledger.filter((l) => ['reserve', 'soumis', 'programme', 'envoye', 'verifie'].includes(l.etat)).map(clone),
     etatsAffaires: async (ids) => ids.map((id) => ({ case_id: id, ps: w.ps[id] ?? 'publiée', retire: !!w.retire[id] })),
   };
@@ -460,6 +461,22 @@ console.log('\nI. Sécurité du dépôt : aucun secret, aucun lanceur déguisé,
   verifie('2. le navigateur est lancé en LISTE D’ARGUMENTS (execFile), jamais par un shell, sans eval ni commande construite', /import \{ execFile \} from 'node:child_process'/.test(sources[1][1]) && /execFile\(bin, args/.test(sources[1][1]) && !/shell:\s*true|\beval\(|new Function\(|execSync|spawnSync|\bspawn\(/.test(sources[1][1]));
   verifie('3. le chemin du média est confiné par une expression stricte (aucune traversée possible)', /RE_CHEMIN = \/\^ig\\\/\[a-z0-9-\]\{3,30\}\\\/\[0-9a-f\]\{16\}\\\.png\$\//.test(sources[2][1]));
   verifie('4. aucun journal ne contient de texte éditorial ni d’adresse (les motifs sont abrégés par motifsPublics avant d’être loggés)', /motifsPublics/.test(sources[0][1]));
+}
+
+// =====================================================================
+console.log('\nPare-feu éditorial sur Instagram (1 changement judiciaire + 1 prise de parole par affaire et par jour)');
+// =====================================================================
+{
+  const postDuJour = (w, etat = 'programme') => w.ledger.push({ event_key: 'case_update|FR-2026-0146|mise-en-examen', canal: 'instagram', case_id: NOUVELLE.id, type_event: 'case_update', etat, texte: 't', created_at: now });
+  const w = prepare(); postDuJour(w);
+  const lignes = []; await cycleInstagram({ ...deps(w, now), log: (m) => lignes.push(m) });
+  verifie('PF1. un changement judiciaire déjà posté sur Instagram aujourd’hui : AUCUNE proposition Instagram pour un 2e (silence journalisé), aucun rendu', igProps(w).length === 0 && w.rendus === 0 && /SILENCE[^\n]*pare-feu/.test(lignes.join('\n')), lignes.join(' / '));
+  const w2 = prepare(); postDuJour(w2, 'annule');
+  await cycleInstagram(deps(w2, now));
+  verifie('PF2. une ligne annulée n’est pas un post : la proposition Instagram est faite', igProps(w2).length === 1);
+  const w3 = prepare(); await cycleInstagram(deps(w3, now)); await decisionIG(w3, 'I', 0, now); postDuJour(w3);
+  const r = await cycleInstagram(deps(w3, new Date(now.getTime() + 6e4)));
+  verifie('PF3. GO Instagram donné, puis un autre post judiciaire du jour part avant lui : le GO est REFUSÉ à l’exécution (aucun post Instagram), alerte, proposition conservée', w3.creations('instagram') === 0 && /^bloque: pare-feu/.test(igProps(w3)[0].resolution ?? '') && w3.telegram.some((m) => m.alerte && /pare-feu/.test(m.alerte)) && r.publications.bloquees === 1, String(igProps(w3)[0].resolution));
 }
 
 console.log(ko ? `\n❌ ${ko} vérification(s) en échec` : '\n✅ relais Instagram : toutes les vérifications passent');
