@@ -42,9 +42,10 @@ export const GABARITS = Object.freeze({
   libelle_evenement: '{libelle} (selon {media}).', // le point final du libellé est reporté après l'attribution (typographie seule)
   parole: '{acteur} ({qualite}, {date}) : « {citation} »',
   source_fb: 'Source : {media}, {date} — {url}',
-  // X (visuel partagé) : « Nom du média : URL de l'article ». Contexte, sources et renvoi SNY sont portés par le visuel joint (signature sousnosyeux.org), plus par un second lien.
-  source_x: '{media} : {url}',
-  source_x_compact: '{url}', // V4.1 : pied X compact (étiquette retirée, jamais le contenu) — seulement si aucune option fidèle ne tient avec « Source : »
+  // X (format validé par Adrien le 19/11/2026) : le fait, puis « Source : <média> », l'adresse de l'article, « A suivre sur SNY : <fiche> » — une ligne chacun (un seul retour à la ligne entre les blocs).
+  source_x: 'Source : {media}\n{url}',
+  source_x_compact: '{url}', // pied compact (ligne « Source : <média> » retirée, jamais le contenu ni l'adresse) — seulement si aucune option fidèle ne tient avec la ligne « Source : »
+  suivi_x: 'A suivre sur SNY : {lien}',
   suivi_fb: 'Contexte, sources et suivi de l’affaire sur Sous nos yeux : {lien}',
   // INSTAGRAM : une légende n'est pas cliquable. La source reste NOMMÉE et DATÉE (l'adresse reste portée par le champ `url`, qui prouve le rattachement mais n'est pas rendue) ;
   // le renvoi est le nom du site en clair, jamais un lien présenté comme cliquable ni une mention « lien en bio » tant que la bio du compte ne porte pas ce lien.
@@ -243,7 +244,9 @@ export function versInstagram(paragraphesFb) {
 }
 
 /** Rend un post : paragraphes (séparés par une ligne vide), segments d'un paragraphe séparés par une espace. */
-export const rendre = (paragraphes) => paragraphes.filter((p) => p.length).map((p) => p.map((s) => s.texte).join(' ')).join('\n\n');
+export const rendre = (paragraphes, separateur = '\n\n') => paragraphes.filter((p) => p.length).map((p) => p.map((s) => s.texte).join(' ')).join(separateur);
+/** X : un seul retour à la ligne entre les blocs (fait / source / adresse / renvoi SNY), pas de ligne vide. */
+export const rendreX = (paragraphes) => rendre(paragraphes, '\n');
 /** Longueur X : URL comptées 23 caractères (t.co), le reste en points de code. */
 export function longueurX(texte) {
   const urls = String(texte).match(/https?:\/\/\S+/g) || [];
@@ -698,17 +701,18 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
   // évolution datée, en une phrase : le détail est porté par le visuel), puis les phrases approuvées entières. Le tri est stable : l'ordre relatif des autres options est inchangé.
   const premier = (o) => (o.segs[0]?.champs?.phrase?.origine === 'dossier.accroche_courte' ? 0 : o.lieuInclus ? 1 : 2);
   options.sort((a, b) => premier(a) - premier(b));
-  // Deux passes. 1) pied « <Média> : <url de l'article> » ; 2) si aucune option fidèle ne tient, pied compact : l'adresse seule (le média reste nommé dans la phrase « selon … »).
+  // Trois passes. 1) « Source : <média> » + adresse de l'article + « A suivre sur SNY » (format validé) ; 2) si aucune option fidèle ne tient, pied compact : l'adresse seule (le média reste nommé dans la phrase « selon … ») ; 3) en dernier recours, sans la ligne « A suivre sur SNY » (le visuel joint porte sousnosyeux.org).
   // Jamais de raccourci de la qualification (D1) ni de réserve retirée. MEILLEURE TENTATIVE : si rien ne tient, la plus courte version fidèle est conservée avec son compte (arbitrage humain).
-  for (const compact of [false, true]) {
+  for (const forme of ['complet', 'compact', 'court']) {
+    const compact = forme !== 'complet', sansSuivi = forme === 'court';
     for (const o of options) {
       // Procédures sœurs : X doit aussi désigner la personne visée par sa fonction, sinon l'option est écartée (défaut v2 S06).
       if (soeurs.length && !RE_DESIGNATION_ROLE.test(o.segs.map((s) => s.texte).join(' '))) { if (!compact) essais.push('option écartée : procédure non distinguée'); continue; }
       const porteReserve = o.segs.some((s) => RE_RESERVE.test(s.texte));
       const resX = porteReserve ? [] : [segRes(reserveIndisp)];
       const tete = o.lieuInclus ? [] : [[xLieu]];
-      const paras = [...tete, [...o.segs, ...resX], [seg(compact ? 'source_x_compact' : 'source_x', { media: champ(o.src.media, 'source.media'), url: champ(o.src.url, 'source.url') }, 'attribution')]];
-      const t = rendre(paras), n = poidsX(t); essais.push(`${n} car.${compact ? ' (pied compact)' : ''}`);
+      const paras = [...tete, [...o.segs, ...resX], [seg(compact ? 'source_x_compact' : 'source_x', { media: champ(o.src.media, 'source.media'), url: champ(o.src.url, 'source.url') }, 'attribution')], ...(sansSuivi ? [] : [[seg('suivi_x', { lien: champ(lien('x'), 'lien') }, 'renvoi')]])];
+      const t = rendreX(paras), n = poidsX(t); essais.push(`${n} car.${sansSuivi ? ' (pied compact, sans renvoi SNY)' : compact ? ' (pied compact)' : ''}`);
       if (n <= LIMITE_X) { x = { paragraphes: paras, texte: t, repli: o !== options[0], compact, source: o.src, attention: alerteAcces(o.src) }; break; }
       if (!tentative || n < tentative.longueur) tentative = { texte: t, longueur: n, compact, source: o.src };
     }
@@ -757,7 +761,7 @@ export function verifierPost(post, canal, M, site, redirections = {}) {
   const ok = (nom, cond, detail = '') => c.push({ nom, ok: !!cond, detail: cond ? '' : detail });
   const autorise = valeursAutorisees(M, site);
   const segs = post.paragraphes.flat();
-  ok('texte = assemblage exact des segments (rien d’ajouté)', rendre(post.paragraphes) === post.texte);
+  ok('texte = assemblage exact des segments (rien d’ajouté)', (canal === 'x' ? rendreX(post.paragraphes) : rendre(post.paragraphes)) === post.texte);
   const gab = segs.filter((s) => !GABARITS[s.gabarit] || GABARITS[s.gabarit].replace(/\{(\w+)\}/g, (_, k) => String(s.champs[k]?.valeur ?? '')) !== s.texte);
   ok('gabarits de la liste blanche uniquement', !gab.length, gab.map((s) => s.gabarit).join(', '));
   // Un EXTRAIT (objet de la procédure, V4) n'est pas une valeur entière : il doit être une sous-chaîne exacte d'une phrase approuvée de cette affaire.
@@ -784,7 +788,7 @@ export function verifierPost(post, canal, M, site, redirections = {}) {
   ok('gardes de sécurité des personnes (texte final)', !g.bloquants.length, g.bloquants.join(', '));
   const urls = post.texte.match(/https?:\/\/\S+/g) || [];
   ok(ARBITRAGES.lienAvecDecompte ? 'URL autorisées (arbitrage A2 : décompte toléré dans l’adresse, jamais dans le texte ; aucun média payant)' : 'URL sûres (aucun décompte d’enfants dans l’adresse, aucun média payant)', urls.every((u) => urlSure(u)) && !segs.some((s) => s.gabarit.startsWith('source') && MEDIAS_PAYANTS.includes(s.champs.media?.valeur)), urls.filter((u) => !urlSure(u)).join(' '));
-  // X : le renvoi vers SNY est porté par le visuel joint (signature), pas par un second lien dans un texte de 280 caractères ; Facebook et Instagram gardent leur lien / renvoi.
+  // X : la ligne « A suivre sur SNY » saute en dernier recours (format complet > 280) ; le visuel joint porte alors la signature sousnosyeux.org. Facebook et Instagram gardent leur renvoi.
   ok('lien SNY présent', canal === 'x' || segs.some((s) => s.role === 'renvoi'));
   const versRetire = urls.filter((u) => Object.keys(redirections).some((ancien) => u.toLowerCase().includes(`/${ancien}/`) || u.toLowerCase().includes(`affaire-${ancien}`) || u.toLowerCase().includes(`=${ancien}`)));
   ok('aucun lien vers un identifiant retiré (doublon réconcilié)', !versRetire.length, versRetire.join(' '));
@@ -839,7 +843,7 @@ export function noter(post, canal, verif, { famille } = {}) {
   const accroche = (segs[0]?.champs?.commune ? 5 : 0) + (tete?.champs?.qualif || (famille || '').startsWith('declaration') || (canal === 'x' && tete && sansUrl(tete.texte).length >= 80) ? 15 : 7);
   // 4. Lisibilité (15) : longueur adaptée au réseau 10 ; structure (≤ 3 blocs sur X, ≤ 8 sur Facebook) 5.
   const n = canal === 'x' ? poidsX(post.texte) : longueurX(post.texte), blocs = post.paragraphes.filter((p) => p.length).length;
-  const lisibilite = (canal === 'x' ? (n <= LIMITE_X ? 10 : 0) + (blocs <= 3 ? 5 : 2) : (n >= 300 && n <= LIMITE_FB_LISIBLE ? 10 : 4) + (blocs <= 8 ? 5 : 2));
+  const lisibilite = (canal === 'x' ? (n <= LIMITE_X ? 10 : 0) + (blocs <= 4 ? 5 : 2) : (n >= 300 && n <= LIMITE_FB_LISIBLE ? 10 : 4) + (blocs <= 8 ? 5 : 2));
   // 5. Contexte judiciaire et valeur SNY (10) : mention judiciaire présente et non redondante 5 ; renvoi vers la fiche SNY 5.
   const themesRes = segs.filter((s) => s.role === 'reserve').map((s) => (/culpabilit|présum|présomption/i.test(s.texte) ? 'p' : /définiti/i.test(s.texte) ? 'd' : s.texte));
   const reserveOk = (themesRes.length || segs.some((s) => RE_RESERVE.test(s.texte))) && new Set(themesRes).size === themesRes.length;

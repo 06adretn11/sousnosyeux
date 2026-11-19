@@ -1,6 +1,8 @@
 {
-  "_meta": "Événements dont la proposition X / Facebook ANTÉRIEURE au visuel partagé (jamais décidée) est remplacée par une proposition avec visuel. Liste explicite : un événement absent d'ici garde sa proposition antérieure, qui expire d'elle-même. Ne retire ni ne décide rien : l'ancienne proposition est seulement refermée (résolution « remplacee »).",
+  "_meta": "Événements dont les propositions OUVERTES (X / Facebook et Instagram, jamais décidées) sont REMPLACÉES par UNE proposition commune : un message, le visuel, les trois textes, un bouton GO par réseau. Liste explicite et versionnée : un événement absent d'ici garde ses propositions, qui expirent d'elles-mêmes (l'absence de GO vaut refus). Ne retire ni ne décide rien : les anciennes sont seulement refermées (résolution « remplacee »). Si une décision existe déjà sur l'événement, rien n'est reproposé. Rezé : version approuvée 128a5a05 (19/11), étapes 0 et 1 (l'indice exact n'est pas lisible hors base : une clé sans proposition ouverte est sans effet).",
   "evenements": [
-    "case_update|FR-2026-0133|parole-156fffa5-7"
+    "case_update|FR-2026-0133|parole-156fffa5-7",
+    "case_update|FR-2026-0046|etape-128a5a05-0",
+    "case_update|FR-2026-0046|etape-128a5a05-1"
   ]
 }

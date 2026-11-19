@@ -4,7 +4,7 @@
 //   Nouveauté approuvée → contrôles (T0 global, point de départ Instagram, fraîcheur, fiche servie) → légende V4.1 (dérivée du post Facebook contrôlé) → VISUEL 1080×1350
 //   → image hébergée (URL publique stable, empreinte du CONTENU) → PROPOSITION Telegram Instagram (visuel + légende exacts) → GO Instagram → recontrôle → Buffer → journal
 //
-// INDÉPENDANCE : une proposition Instagram est SA propre ligne (`<événement>#instagram:<empreinte>`), avec SES boutons (GO Instagram / Refuser) et sa décision (`GO_I`).
+// INDÉPENDANCE : une proposition Instagram est SA propre ligne (`<événement>#instagram:<empreinte>`), avec SON bouton (GO Instagram) et sa décision (`GO_I`) ; l'absence de GO vaut refus. Quand l'événement a aussi une proposition X / Facebook, le bouton est dans le MÊME message (relais-social.mjs).
 // Un GO X / Facebook ne vaut jamais GO Instagram (contrôle « canaux autorisés ⊂ canaux proposés » d'enregistrerDecision) et inversement ; aucun code X / Facebook n'est modifié.
 // Aucune base, aucun réseau, aucun secret ici : tout est INJECTÉ (port, rendu, hébergement, Buffer, Telegram) — le même code tourne en production et dans les tests (mocks).
 //
@@ -203,19 +203,63 @@ export function messagePropositionInstagram({ id8, ident, affichage, expire_at, 
     + `Contrôles : T0 global ✓ · ${amorcage ? 'amorçage nommé' : 'point de départ Instagram'} ✓ · fiche approuvée et servie (empreinte ${esc(ident.fiche_hash)}) ✓ · légende V4.1 + vérificateur ✓ · contrôleur du visuel ✓ · source &lt; ${FENETRE_SOURCE_JOURS} j lue ✓ · image hébergée et relue (${ig.image.largeur}×${ig.image.hauteur}, ${o(ig.image.octets)}, empreinte ${esc(ig.image.sha256.slice(0, 12))}) ✓`
     + (a.reserves?.length ? `\n⚠️ Réserves : ${esc(a.reserves.join(' ; ').slice(0, 500))}` : '')
     + `\n\n<b>Visuel</b> (envoyé dans le message précédent) : ${esc(ig.image.url)}\n<b>Légende Instagram</b> (${[...ig.texte].length} car.)\n<pre>${esc(ig.texte)}</pre>\n`
-    + `\nValable jusqu’au ${new Date(expire_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Le GO porte sur CE visuel et CETTE légende, exactement : si l’un d’eux, la fiche, une source ou l’URL de l’image change, il ne vaut plus. Rien n’est publié sans ton clic ; la publication est programmée avec un délai d’annulation.`;
+    + `\nValable jusqu’au ${new Date(expire_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Le GO porte sur CE visuel et CETTE légende, exactement : si l’un d’eux, la fiche, une source ou l’URL de l’image change, il ne vaut plus. Sans GO, rien n’est publié : la proposition expire. La publication est programmée avec un délai d’annulation.`;
   if (t.length > 4000) t = t.replace(/\n⚠️ Réserves : [^\n]*/, '\n⚠️ Réserves : voir la fiche et le contrôleur (liste trop longue pour ce message)');
   return t;
 }
-export const boutonsInstagram = (id8) => ({ inline_keyboard: [[{ text: '✅ GO Instagram', callback_data: `sny:SG:I:${id8}` }, { text: '⛔ Refuser Instagram', callback_data: `sny:SG:R:${id8}` }]] });
+export const boutonsInstagram = (id8) => ({ inline_keyboard: [[{ text: 'GO Instagram', callback_data: `sny:SG:I:${id8}` }]] });
 export const legendePhoto = (ident) => `Visuel Instagram exact — ${ident.canaux.instagram.image.largeur}×${ident.canaux.instagram.image.hauteur}, empreinte ${ident.canaux.instagram.image.sha256.slice(0, 12)}`;
 
 // ---------------------------------------------------------------------
 // PHASE 1 — PROPOSER. Silence si rien d'éligible (aucune recherche historique pour « remplir »).
 // deps = { port, compo, activation, holds, igRow, canalConfigure, amorcage:string|null, ledger, envoyer, envoyerPhoto, image:{rendre,publier,lire}, log, ecrire, servi, ficheServie }
 // ---------------------------------------------------------------------
+/** Un événement est dans le périmètre d'Instagram : après le point de départ du canal, ou l'UN événement d'amorçage nommé. */
+export function dansPerimetreInstagram(c, act, amorcageCle) {
+  const amorcage = !!amorcageCle && amorcageCle === cleEvenementDe(c);
+  return { amorcage, ok: amorcage || apresPointDepart(c, act.t0) };
+}
+
+/**
+ * Les contrôles d'Instagram pour UN événement DU périmètre, sans rien écrire ni envoyer (décisions antérieures, journal, éligibilité, pare-feu, légende et visuel). Partagés par le passage
+ * Instagram autonome et par la proposition COMMUNE (relais-social.mjs). `rejouer` : un contenu déjà proposé peut l'être de nouveau (reproposition ciblée) ; `ignorer` : propositions
+ * (id) qui vont être refermées et ne comptent donc pas.
+ * @returns {Promise<{etat:'ignore'}|{etat:'ouverte', ouverte:object}|{etat:'silence', motif:string}|{etat:'ok', ig:object, contenu:string, amorcage:boolean}>}
+ */
+export async function examinerInstagram({ c, base, deps, act, rejouer = false, ignorer = new Set() }) {
+  const { port, compo, activation, holds, ledger } = deps;
+  const now = compo.now;
+  const amorcage = !!deps.amorcage && deps.amorcage === base;
+  const props = (await port.propositionsInstagramDeEvenement(base)).filter((p) => !ignorer.has(p.proposal_id));
+  const ouverte = props.find((p) => !p.decision && !p.resolution && new Date(p.expire_at) > now);
+  if (props.some((p) => p.decision === 'GO_I' || p.decision === 'REFUS')) return { etat: 'ignore' };       // décidé : jamais reproposé
+  if (await ledger.lire(base, CANAL_INSTAGRAM)) return { etat: 'ignore' };                                  // déjà diffusé (ou en cours) sur Instagram : une seule fois par événement
+  if (ouverte) return { etat: 'ouverte', ouverte };                                                         // en attente de clic
+  const ctx = { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
+    servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false };
+  const v = evaluerCandidat({ ...c, event_key: base }, ctx);
+  if (!v.ok) return { etat: 'silence', motif: v.raisons.join(' ; ') };
+  const pf = controlerPareFeu({ event_key: base, canal: CANAL_INSTAGRAM, diffusions: await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE)), now });
+  if (pf.length) return { etat: 'silence', motif: pf.join(' ; ') };
+  const ig = composerInstagram({ ...c, event_key: base }, compo);
+  if (!ig.ok) return { etat: 'silence', motif: ig.motifs.join(' ; ') };
+  const contenu = contenuDe(ig);
+  if (!rejouer && props.some((p) => p.identite?.canaux?.instagram?.contenu === contenu)) return { etat: 'ignore' }; // même contenu déjà proposé (expiré, obsolète) : jamais reproposé à l'identique
+  return { etat: 'ok', ig, contenu, amorcage };
+}
+
+/** Crée la proposition Instagram (ligne propre, clé `<événement>#instagram:<empreinte>`) avec l'image DÉJÀ produite (`cle` : clé distincte quand une proposition de même contenu vient d'être refermée). null = un autre passage vient de la créer. `commun` : jointe au message X / Facebook. */
+export async function creerPropositionInstagram({ c, base, ex, image, deps, expire_at, commun = false, cle = null }) {
+  const ident = identiteInstagram({ ...c, event_key: base }, ex.ig, image);
+  ident.affichage = affichageDe(c, ex.ig, deps.compo.site);
+  ident.amorcage = ex.amorcage;
+  if (commun) ident.commun = true;
+  return deps.port.creerProposition({ event_key: cle ?? cleProposition(base, ex.contenu), case_id: c.case_id, type_event: c.type, identite: ident, texte_x: null, texte_facebook: null, canaux_proposes: [CANAL_INSTAGRAM],
+    empreinte_x: null, empreinte_facebook: null, expire_at });
+}
+
 export async function proposerInstagram(deps) {
-  const { port, compo, activation, holds, ledger, log, ecrire } = deps;
+  const { port, compo, activation, log, ecrire } = deps;
   const bilan = { candidats: 0, proposees: 0, bloquees: 0, envoyees: 0, hors_perimetre: 0 };
   const act = verifierActivationInstagram({ activation, igRow: deps.igRow, now: compo.now, canalConfigure: deps.canalConfigure });
   if (!act.actif) { log(`instagram inactif : ${act.raisons.join(' ; ')}`); return bilan; }
@@ -224,39 +268,24 @@ export async function proposerInstagram(deps) {
   bilan.candidats = candidats.length;
   for (const c of candidats) {
     const base = cleEvenementDe(c);
-    const amorcage = !!deps.amorcage && deps.amorcage === base;
-    if (!amorcage && !apresPointDepart(c, act.t0)) { bilan.hors_perimetre++; continue; }
+    const p0 = dansPerimetreInstagram(c, act, deps.amorcage);
+    if (!p0.ok) { bilan.hors_perimetre++; continue; }
     if (bilan.proposees >= MAX_PROPOSITIONS_PAR_PASSAGE) { log('· plafond de propositions par passage atteint : suite au prochain passage'); break; }
-    const props = await port.propositionsInstagramDeEvenement(base);
-    const ouverte = props.find((p) => !p.decision && new Date(p.expire_at) > now);
-    if (props.some((p) => p.decision === 'GO_I' || p.decision === 'REFUS')) continue;             // décidé : jamais reproposé
-    if (await ledger.lire(base, CANAL_INSTAGRAM)) continue;                                          // déjà diffusé (ou en cours) sur Instagram : une seule fois par événement
-    if (ouverte) {                                                                                    // proposition en attente de clic : on ne fait que renvoyer le message s'il n'est pas parti
-      if (ecrire && ouverte.telegram_message_id == null) bilan.envoyees += await envoyer({ prop: ouverte, deps, now }) ? 1 : 0;
+    const ex = await examinerInstagram({ c, base, deps, act });
+    if (ex.etat === 'ignore') continue;
+    if (ex.etat === 'ouverte') {                                                                       // proposition en attente de clic : on ne fait que renvoyer le message s'il n'est pas parti
+      if (ecrire && ex.ouverte.telegram_message_id == null) bilan.envoyees += await envoyer({ prop: ex.ouverte, deps, now }) ? 1 : 0;
       continue;
     }
-    const ctx = { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
-      servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false };
-    const v = evaluerCandidat({ ...c, event_key: base }, ctx);
-    if (!v.ok) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(v.raisons.join(' ; '))}`); continue; }
-    const pf = controlerPareFeu({ event_key: base, canal: CANAL_INSTAGRAM, diffusions: await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE)), now });
-    if (pf.length) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(pf.join(' ; '))}`); continue; }
-    const ig = composerInstagram({ ...c, event_key: base }, compo);
-    if (!ig.ok) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(ig.motifs.join(' ; '))}`); continue; }
-    const contenu = contenuDe(ig);
-    if (props.some((p) => p.identite?.canaux?.instagram?.contenu === contenu)) continue;            // même contenu déjà proposé (expiré, obsolète) : jamais reproposé à l'identique
-    if (!ecrire) { log(`· instagram ${c.type} ${c.case_id} : ÉLIGIBLE${amorcage ? ' (amorçage)' : ''} — plan, ni rendu, ni enregistrement, ni envoi`); continue; }
+    if (ex.etat === 'silence') { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(ex.motif)}`); continue; }
+    if (!ecrire) { log(`· instagram ${c.type} ${c.case_id} : ÉLIGIBLE${ex.amorcage ? ' (amorçage)' : ''} — plan, ni rendu, ni enregistrement, ni envoi`); continue; }
     let image;
-    try { image = await produireOuReutiliser(ig.spec, ig.specHash, c, deps.image, imagesDeProps(await port.propositionsDeEvenement(base))); }
+    try { image = await produireOuReutiliser(ex.ig.spec, ex.ig.specHash, c, deps.image, imagesDeProps(await port.propositionsDeEvenement(base))); }
     catch (e) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — visuel impossible (${motifsPublics(e.message)})`); continue; }
-    const ident = identiteInstagram({ ...c, event_key: base }, ig, image);
-    ident.affichage = affichageDe(c, ig, compo.site);
-    ident.amorcage = amorcage;
-    const cree = await port.creerProposition({ event_key: cleProposition(base, contenu), case_id: c.case_id, type_event: c.type, identite: ident, texte_x: null, texte_facebook: null, canaux_proposes: [CANAL_INSTAGRAM],
-      empreinte_x: null, empreinte_facebook: null, expire_at: new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE) });
+    const cree = await creerPropositionInstagram({ c, base, ex, image, deps, expire_at: new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE) });
     if (!cree) continue;                                                                             // un autre passage vient de la créer
     bilan.proposees++;
-    log(`· instagram ${c.type} ${c.case_id} : proposition créée${amorcage ? ' (amorçage)' : ''}`);
+    log(`· instagram ${c.type} ${c.case_id} : proposition créée${ex.amorcage ? ' (amorçage)' : ''}`);
     bilan.envoyees += await envoyer({ prop: cree, deps, now }) ? 1 : 0;
   }
   log(`instagram : ${bilan.candidats} candidat(s) après T0 global, ${bilan.hors_perimetre} antérieur(s) au point de départ du canal (ignorés), ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)`);

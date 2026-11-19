@@ -18,7 +18,7 @@ import { createHash } from 'node:crypto';
 import { matiereApprouvee, composerPilote, verifierPost, poidsX } from './social-editorial.mjs';
 import { cleEvenement, evolutionSignificative, ageJours, FENETRE_SOURCE_JOURS, STATUTS_DIFFUSABLES, lienDiffusion } from './diffusion-sociale.mjs';
 import { diffuserCanal } from './diffusion-flux.mjs';
-import { visuelPartage, recontroleVisuel, imagesDeProps } from './relais-instagram.mjs';
+import { visuelPartage, recontroleVisuel, imagesDeProps, examinerInstagram, dansPerimetreInstagram, creerPropositionInstagram, verifierActivationInstagram, cleProposition as cleInstagramDe } from './relais-instagram.mjs';
 
 // X et Facebook : propositions jumelées. Instagram a SA proposition indépendante (scripts/lib/relais-instagram.mjs) : il n'entre jamais dans cette liste, donc jamais dans
 // les GO, empreintes, textes ni boutons X / Facebook.
@@ -268,47 +268,63 @@ export function identiteDe(c, comp, visuel = null) {
 // ---------------------------------------------------------------------
 export const esc = (s) => String(s ?? '').replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const jourFr = (iso) => (iso ? new Date(`${String(iso).slice(0, 10)}T12:00:00Z`).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }) : 'date inconnue');
-export function messageProposition({ id8, c, comp, ident, expire_at, site, now }) {
+export const TAILLE_MESSAGE = 4090; // l'API Telegram refuse plus de 4096 caractères (comptés après analyse du HTML : la longueur brute, balises comprises, est une borne sûre)
+/** Regroupe les blocs dans le moins de messages possible (un bloc n'est jamais coupé) ; le DERNIER message porte les boutons. */
+export function regrouper(blocs, taille = TAILLE_MESSAGE) {
+  const msgs = [];
+  for (const b of blocs.filter(Boolean)) {
+    if (msgs.length && msgs[msgs.length - 1].length + 1 + b.length <= taille) msgs[msgs.length - 1] += `\n${b}`;
+    else msgs.push(b);
+  }
+  return msgs;
+}
+const NOM_RESEAU = Object.freeze({ facebook: 'Facebook', instagram: 'Instagram', x: 'X' });
+/**
+ * UN message pour l'événement (précédé du visuel) : contrôles, puis les textes EXACTS de Facebook, Instagram et X, puis un bouton GO par réseau.
+ * `ig` = identité de la proposition Instagram jointe (ou null). @returns {string[]} messages dans l'ordre d'envoi (le dernier porte les boutons)
+ */
+export function messagesProposition({ id8, c, comp, ident, expire_at, site, now, ig = null }) {
   const e = comp.entree;
-  const fb = ident.canaux.facebook, x = ident.canaux.x;
-  const src = (fb ?? x).source;
+  const fb = ident.canaux.facebook, x = ident.canaux.x, igc = ig?.canaux?.instagram ?? null;
+  const src = (fb ?? x ?? igc).source;
   const age = ageJours(src.publie_le, now);
-  const complement = ident.complement?.canal ?? null; // GO partiel : seule la rédaction de CE canal est proposée
-  const concernes = complement ? [complement] : CANAUX_RELAIS;
-  const evenement = (ident.remplace ? `🔁 <b>Remplace la proposition ${esc(ident.remplace)}</b> (antérieure au visuel commun, refermée sans décision) — même événement, mêmes contrôles, avec visuel\n` : '')
-    + (complement ? `🔁 <b>Complément ${complement === 'x' ? 'X' : 'Facebook'}</b> — l’autre canal a déjà reçu son GO ; seule la rédaction de celui-ci a été retravaillée\n` : '')
+  const remplace = ident.remplace ?? [];
+  const evenement = (remplace.length ? `🔁 <b>Remplace ${remplace.length > 1 ? 'les propositions' : 'la proposition'} ${remplace.map(esc).join(', ')}</b> (jamais décidée${remplace.length > 1 ? 's' : ''}, refermée${remplace.length > 1 ? 's' : ''} sans décision) — même événement, un seul message pour les réseaux\n` : '')
     + (c.type === 'new_case' ? 'Nouvelle affaire' : c.sous_type === 'fiche_temoignage' ? 'Parole d’un parent (mise à jour de fiche approuvée) — statut judiciaire inchangé' : c.sous_type === 'fiche_evolution' ? `Évolution de procédure (mise à jour de fiche approuvée) — statut judiciaire inchangé${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}` : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
-  const reserves = [...new Set((complement ? [complement] : ['facebook', 'x']).flatMap((k) => comp.canaux[k]?.reserves ?? []))];
-  const bloques = concernes.filter((k) => !comp.canaux[k]?.ok).map((k) => `${k === 'x' ? 'X' : 'Facebook'} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
-  let t = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`
+  const reserves = [...new Set([...['facebook', 'x'].flatMap((k) => comp.canaux[k]?.reserves ?? []), ...(ig?.affichage?.reserves ?? [])])];
+  const bloques = CANAUX_RELAIS.filter((k) => !comp.canaux[k]?.ok).map((k) => `${NOM_RESEAU[k]} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
+  const tete = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`
     + `Source : ${esc(src.media)}, ${jourFr(src.publie_le)}${age != null ? ` (il y a ${Math.max(0, Math.floor(age))} j)` : ''} — ${esc(src.url)}\n`
     + `Fiche SNY : ${site}/affaires/${esc(c.case_id.toLowerCase())}/\n`
     + `Contrôles : T0 ✓ · fiche approuvée et servie (empreinte ${esc(comp.fiche_hash)}) ✓ · composeur ${esc('V4.1')} + vérificateur ✓ · source &lt; ${FENETRE_SOURCE_JOURS} j lue ✓${ident.image ? ` · visuel commun hébergé et relu (${ident.image.largeur}×${ident.image.hauteur}, ${Math.round(ident.image.octets / 1024)} Ko, empreinte ${esc(ident.image.sha256.slice(0, 12))}) ✓` : ''}`
-    + (reserves.length ? `\n⚠️ Réserves : ${esc(reserves.join(' ; ').slice(0, 500))}` : '') + (bloques.length ? `\n🚫 ${bloques.join('\n🚫 ')}` : '') + '\n';
-  if (fb) t += `\n<b>Facebook</b> (${[...fb.texte].length} car.)\n<pre>${esc(fb.texte)}</pre>\n`;
-  if (x) t += `\n<b>X</b> (${poidsX(x.texte)}/280 car., comptage pondéré X : URL = 23)\n<pre>${esc(x.texte)}</pre>\n`;
+    + (reserves.length ? `\n⚠️ Réserves : ${esc(reserves.join(' ; ').slice(0, 500))}` : '') + (bloques.length ? `\n🚫 ${bloques.join('\n🚫 ')}` : '');
+  const blocs = [tete];
+  if (fb) blocs.push(`<b>Facebook</b> (${[...fb.texte].length} car.)\n<pre>${esc(fb.texte)}</pre>`);
+  if (igc) blocs.push(`<b>Instagram</b> (${[...igc.texte].length} car.)\n<pre>${esc(igc.texte)}</pre>`);
+  if (x) blocs.push(`<b>X</b> (${poidsX(x.texte)}/280 car., comptage pondéré X : URL = 23)${/A suivre sur SNY/.test(x.texte) ? '' : '\nℹ️ Sans la ligne « A suivre sur SNY » : le format complet dépasse 280 (le visuel joint porte sousnosyeux.org).'}\n<pre>${esc(x.texte)}</pre>`);
   // MEILLEURE TENTATIVE X (jamais envoyée : X reste bloqué tant que la difficulté n'est pas levée) — l'éditeur voit le texte, son compte et la raison, pour arbitrer ou contre-proposer.
   const tx = comp.canaux?.x?.tentative;
-  if (!x && tx && concernes.includes('x')) t += `\n<b>X — meilleure tentative, NON ENVOYABLE</b> (${tx.longueur}/280 car.${tx.longueur > 280 ? `, dépasse de ${tx.longueur - 280}` : ''}, comptage pondéré X)\n<pre>${esc(tx.texte)}</pre>\n`;
+  if (!x && tx) blocs.push(`<b>X — meilleure tentative, NON ENVOYABLE</b> (${tx.longueur}/280 car.${tx.longueur > 280 ? `, dépasse de ${tx.longueur - 280}` : ''}, comptage pondéré X)\n<pre>${esc(tx.texte)}</pre>`);
   if (ident.image) {
-    t += `\n<b>Visuel commun X · Facebook · Instagram</b> (envoyé dans le message précédent ; joint tel quel aux posts ${concernes.map((k) => (k === 'x' ? 'X' : 'Facebook')).join(' + ')}) : ${esc(ident.image.url)}\n`;
-    const alt = ident.image.alt ? `Texte alternatif joint (${[...ident.image.alt].length} car.) : ${esc(ident.image.alt)}\n` : 'Texte alternatif : aucun (le contenu validé dépasse 1000 caractères)\n';
-    if (t.length + alt.length + 700 <= 4000) t += alt; else t += `Texte alternatif joint : ${[...(ident.image.alt ?? '')].length} car. (dérivé du visuel validé)\n`;
+    const reseaux = [fb && 'Facebook', igc && 'Instagram', x && 'X'].filter(Boolean).join(' + ');
+    const alt = ident.image.alt ? `Texte alternatif joint (${[...ident.image.alt].length} car.) : ${esc(ident.image.alt)}` : 'Texte alternatif : aucun (le contenu validé dépasse 1000 caractères)';
+    const resume = ident.image.alt ? `Texte alternatif joint : ${[...ident.image.alt].length} car. (dérivé du visuel validé)` : alt;
+    // Le texte alternatif n'est écrit en entier que s'il ne force pas un second message (les textes des posts, eux, ne sont jamais abrégés).
+    const entete = `<b>Visuel commun</b> (envoyé juste avant ; joint tel quel aux posts ${reseaux}) : ${esc(ident.image.url)}\n`;
+    blocs.push(entete + (blocs.join('\n').length + entete.length + alt.length + 450 <= TAILLE_MESSAGE ? alt : resume));
   }
-  t += `\nValable jusqu’au ${new Date(expire_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Rien n’est publié sans ton clic ; le GO porte sur CE texte et CE visuel (un changement de l’un ou de l’autre l’annule) ; texte, source et visuel sont revérifiés juste avant l’envoi, et la publication est programmée avec un délai d’annulation.`;
-  // L'API Telegram refuse plus de 4096 caractères : on abrège les réserves (jamais les textes des posts, jamais les contrôles bloquants).
-  if (t.length > 4000) t = t.replace(/\n⚠️ Réserves : [^\n]*/, '\n⚠️ Réserves : voir la fiche et le contrôleur (liste trop longue pour ce message)');
-  return t;
+  blocs.push(`Valable jusqu’au ${new Date(expire_at).toLocaleString('fr-FR', { timeZone: 'Europe/Paris', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}. Chaque bouton ne vaut que pour SON réseau, sur CE texte et CE visuel (un changement de l’un ou de l’autre l’annule). Sans GO, rien n’est publié : la proposition expire. Texte, source et visuel sont revérifiés juste avant l’envoi, et la publication est programmée avec un délai d’annulation.`);
+  const msgs = regrouper(blocs);
+  // Les réserves sont abrégées en dernier recours (jamais les textes des posts, jamais les contrôles bloquants).
+  return msgs.map((m) => (m.length > 4090 ? m.replace(/\n⚠️ Réserves : [^\n]*/, '\n⚠️ Réserves : voir la fiche et le contrôleur (liste trop longue pour ce message)') : m));
 }
-export function boutonsProposition(id8, canaux) {
-  const l = [];
-  if (canaux.includes('x') && canaux.includes('facebook')) l.push([{ text: '✅ GO X + Facebook', callback_data: `sny:SG:XF:${id8}` }]);
-  const seuls = [];
-  if (canaux.includes('facebook')) seuls.push({ text: 'GO Facebook seul', callback_data: `sny:SG:F:${id8}` });
-  if (canaux.includes('x')) seuls.push({ text: 'GO X seul', callback_data: `sny:SG:X:${id8}` });
-  if (seuls.length) l.push(seuls);
-  l.push([{ text: '⛔ Refuser', callback_data: `sny:SG:R:${id8}` }]);
-  return { inline_keyboard: l };
+/** Un bouton GO par réseau proposé, sur une seule ligne ; pas de bouton « Refuser » : l'absence de GO vaut refus (la proposition expire, rien n'est conservé). */
+export function boutonsProposition(id8, canaux, igId8 = null) {
+  const b = [];
+  if (canaux.includes('facebook')) b.push({ text: 'GO Facebook', callback_data: `sny:SG:F:${id8}` });
+  if (igId8) b.push({ text: 'GO Instagram', callback_data: `sny:SG:I:${igId8}` });
+  if (canaux.includes('x')) b.push({ text: 'GO X', callback_data: `sny:SG:X:${id8}` });
+  return { inline_keyboard: [b] };
 }
 
 // ---------------------------------------------------------------------
@@ -318,6 +334,8 @@ export function boutonsProposition(id8, canaux) {
 // rend un GO X / Facebook sans effet sur Instagram et inversement. `R` (refuser) vaut pour la proposition cliquée, quel que soit son canal.
 export const ACTIONS_SOCIALES = Object.freeze({ XF: { decision: 'GO_XF', canaux: ['x', 'facebook'] }, F: { decision: 'GO_F', canaux: ['facebook'] }, X: { decision: 'GO_X', canaux: ['x'] }, I: { decision: 'GO_I', canaux: ['instagram'] }, R: { decision: 'REFUS', canaux: [] } });
 /**
+ * Un clic = UN réseau. Chaque GO s'ajoute aux précédents sur la même proposition (GO Facebook puis GO X : les deux comptent) jusqu'à l'expiration ; un réseau sans GO n'est jamais publié.
+ * `XF` et `R` ne sont plus proposés par les messages ; ils restent décodés pour les boutons des messages déjà envoyés.
  * @param {{port:object, action:string, cle:string, now:Date, actif:boolean}} a
  * @returns {Promise<{issue:'enregistree'|'double_clic'|'introuvable'|'bouton_invalide'|'expiree'|'inactif', proposition?:object, decision?:string}>}
  */
@@ -326,15 +344,23 @@ export async function enregistrerDecision({ port, action, cle, now, actif }) {
   if (!a || !/^[0-9a-f]{8}$/.test(cle || '')) return { issue: 'bouton_invalide' };
   const p = await port.propositionParCle(cle);
   if (!p) return { issue: 'introuvable' };
-  if (p.decision) return { issue: 'double_clic', proposition: p, decision: p.decision };
-  if (p.resolution) return { issue: 'expiree', proposition: p }; // refermée sans décision (remplacée par une proposition avec visuel) : aucun GO n'est enregistré
-  if (!actif && a.canaux.length) return { issue: 'inactif', proposition: p };
+  const dejaDit = { issue: 'double_clic', proposition: p, decision: p.decision };
+  if (p.decision === 'REFUS' || p.decision === 'EXPIREE') return dejaDit;
+  if (!a.canaux.length) return p.decision ? dejaDit : refuserAncien({ port, p, a, now });
+  if (a.canaux.every((k) => (p.canaux_autorises || []).includes(k))) return dejaDit; // clic rejoué : ce réseau a déjà son GO
+  if (p.resolution && p.resolution !== 'publie') return { issue: 'expiree', proposition: p }; // refermée sans décision, ou GO périmé (bloqué / obsolète)
+  if (!actif) return { issue: 'inactif', proposition: p };
   if (a.canaux.some((k) => !(p.canaux_proposes || []).includes(k))) return { issue: 'bouton_invalide', proposition: p };
   if (dateOuNull(p.expire_at) && now.getTime() > dateOuNull(p.expire_at).getTime()) {
-    await port.decider(p.proposal_id, { decision: 'EXPIREE', canaux: [], now, resolution: 'expiree' });
+    if (!p.decision) await port.decider(p.proposal_id, { decision: 'EXPIREE', canaux: [], now, resolution: 'expiree' });
     return { issue: 'expiree', proposition: p };
   }
-  const ok = await port.decider(p.proposal_id, { decision: a.decision, canaux: a.canaux, now, resolution: a.decision === 'REFUS' ? 'refuse' : null });
+  const ok = await port.ajouterGo(p.proposal_id, { canaux: a.canaux, now });
+  return ok ? { issue: 'enregistree', proposition: p, decision: a.decision } : { issue: 'double_clic', proposition: p };
+}
+async function refuserAncien({ port, p, a, now }) { // bouton « Refuser » d'un message envoyé avant la proposition unique
+  if (p.resolution) return { issue: 'expiree', proposition: p };
+  const ok = await port.decider(p.proposal_id, { decision: a.decision, canaux: [], now, resolution: 'refuse' });
   return ok ? { issue: 'enregistree', proposition: p, decision: a.decision } : { issue: 'double_clic', proposition: p };
 }
 
@@ -346,26 +372,31 @@ export async function enregistrerDecision({ port, action, cle, now, actif }) {
  */
 export async function proposerNouveautes(deps) {
   const { port, compo, activation, holds, canauxConfigures, envoyer, log, ecrire } = deps;
-  const bilan = { candidats: 0, proposees: 0, bloquees: 0, envoyees: 0, complements: 0 };
+  const bilan = { candidats: 0, proposees: 0, bloquees: 0, envoyees: 0 };
   if (!activation.actif) { log(`relais social inactif : ${activation.raisons.join(' ; ')}`); return bilan; }
   const now = compo.now;
+  // Instagram rejoint le MÊME message (visuel + texte + bouton) quand son canal est actif et que l'événement est dans son périmètre ; sa décision et son envoi restent indépendants (relais-instagram.mjs).
+  const igAct = deps.instagram ? verifierActivationInstagram({ activation, igRow: deps.instagram.igRow, now, canalConfigure: deps.instagram.canalConfigure }) : null;
   const candidats = await port.candidats(activation.t0);
   bilan.candidats = candidats.length;
   for (const c of candidats) {
     c.event_key = c.type === 'new_case' ? cleEvenement('new_case', c.case_id) : cleEvenement('case_update', c.case_id, c.statut_apres);
     const prop = await port.propositionParEvenement(c.event_key);
-    // REPROPOSITION CIBLÉE (data/relais-reproposer.json) : une proposition ANTÉRIEURE au visuel partagé, jamais décidée, est REMPLACÉE par une proposition avec visuel (clé « <événement>#visuel:<id> »).
-    // Aucune décision n'est enregistrée sur l'ancienne (elle est seulement refermée) ; seuls les événements NOMMÉS sont concernés, les autres propositions antérieures expirent d'elles-mêmes.
-    let cleProp = c.event_key, anterieure = null;
-    if (prop && deps.reproposer?.has(c.event_key)) {
-      const remplacante = (await port.propositionsDeEvenement(c.event_key)).find((p) => p.event_key.startsWith(`${c.event_key}#visuel:`));
-      if (remplacante) { if (ecrire && !remplacante.decision && remplacante.telegram_message_id == null && new Date(remplacante.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop: remplacante, deps, c: { ...c, event_key: remplacante.event_key } }) ? 1 : 0; continue; }
-      if (!prop.decision && !prop.resolution && !prop.identite?.image && new Date(prop.expire_at) > now) { anterieure = prop; cleProp = `${c.event_key}#visuel:${String(prop.proposal_id).slice(0, 8)}`; }
+    // REPROPOSITION CIBLÉE (data/relais-reproposer.json) : toutes les propositions OUVERTES d'un événement NOMMÉ (X / Facebook et Instagram, jamais décidées) sont REMPLACÉES par une seule proposition commune
+    // (clé « <événement>#commun:<id> »). Aucune décision n'est enregistrée sur les anciennes (elles sont seulement refermées) ; si une décision existe déjà sur cet événement, rien n'est reproposé.
+    let cleProp = c.event_key, anterieures = [];
+    if (deps.reproposer?.has(c.event_key)) {
+      const rows = await port.propositionsDeEvenement(c.event_key);
+      const remplacante = rows.find((p) => p.event_key.startsWith(`${c.event_key}#commun:`));
+      if (remplacante) { if (ecrire && !remplacante.decision && !remplacante.resolution && remplacante.telegram_message_id == null && new Date(remplacante.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop: remplacante, deps, c: { ...c, event_key: remplacante.event_key } }) ? 1 : 0; continue; }
+      if (!rows.some((p) => p.decision && p.decision !== 'EXPIREE')) {
+        anterieures = rows.filter((p) => !p.decision && !p.resolution && new Date(p.expire_at) > now);
+        if (anterieures.length) cleProp = `${c.event_key}#commun:${String(anterieures[0].proposal_id).slice(0, 8)}`;
+      }
     }
     // Proposition déjà créée : on ne la recrée jamais ; on ne fait qu'envoyer le message si l'envoi n'a pas eu lieu (reprise après panne).
-    if (prop && !anterieure) {
-      if (ecrire && !prop.decision && prop.telegram_message_id == null && new Date(prop.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop, deps, c }) ? 1 : 0;
-      else if (ecrire && ['GO_X', 'GO_F'].includes(prop.decision)) bilan.complements += await proposerComplements({ c, base: prop, deps });
+    if (prop && !anterieures.length) {
+      if (ecrire && !prop.decision && !prop.resolution && prop.telegram_message_id == null && new Date(prop.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop, deps, c }) ? 1 : 0;
       continue;
     }
     const cc = { ...c, event_key: cleProp };
@@ -388,90 +419,60 @@ export async function proposerNouveautes(deps) {
       if (!visuel.ok) { for (const k of proposables) comp.canaux[k] = sansVisuel(comp.canaux[k], k, visuel.motifs); proposables = []; }
     }
     if (!proposables.length) { bilan.bloquees++; log(`· ${c.type} ${c.case_id} : SILENCE — aucun canal publiable : ${CANAUX_RELAIS.map((k) => `${k}: ${motifsPublics((comp.canaux[k]?.motifs || []).join(' ; '))}`).join(' | ')}`); continue; }
+    // Instagram dans le même message : mêmes contrôles que son passage autonome (point de départ, décisions, pare-feu, légende, visuel). Une panne ici n'empêche jamais X / Facebook.
+    let igJoint = null;
+    if (ecrire && visuel?.image && igAct?.actif && dansPerimetreInstagram(c, igAct, deps.instagram.amorcage).ok) {
+      try {
+        const ex = await examinerInstagram({ c, base: c.event_key, deps: { ...deps, amorcage: deps.instagram.amorcage }, act: igAct, rejouer: anterieures.length > 0, ignorer: new Set(anterieures.map((a) => a.proposal_id)) });
+        if (ex.etat === 'ok') igJoint = ex; else if (ex.etat === 'silence') log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(ex.motif)}`);
+      } catch (e) { log(`· instagram ${c.type} ${c.case_id} : erreur technique isolée (${motifsPublics(e.message).slice(0, 80)})`); }
+    }
     const ident = identiteDe(cc, comp, visuel);
-    if (anterieure) ident.remplace = String(anterieure.proposal_id).slice(0, 8);
-    log(`· ${c.type} ${c.case_id} : ÉLIGIBLE${anterieure ? ' (remplace une proposition antérieure au visuel)' : ''} (${proposables.join(' + ')})${ecrire ? '' : ' — plan, rien enregistré ni envoyé'}`);
+    if (anterieures.length) ident.remplace = anterieures.map((a) => String(a.proposal_id).slice(0, 8));
+    ident.commun = true;
+    log(`· ${c.type} ${c.case_id} : ÉLIGIBLE${anterieures.length ? ' (remplace des propositions antérieures)' : ''} (${[...proposables, ...(igJoint ? ['instagram'] : [])].join(' + ')})${ecrire ? '' : ' — plan, rien enregistré ni envoyé'}`);
     if (!ecrire) continue;
     const expire_at = new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE);
     const cree = await port.creerProposition({ event_key: cleProp, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: ident.canaux.x?.texte ?? null, texte_facebook: ident.canaux.facebook?.texte ?? null,
       canaux_proposes: proposables, empreinte_x: ident.canaux.x?.empreinte ?? null, empreinte_facebook: ident.canaux.facebook?.empreinte ?? null, expire_at });
     if (!cree) continue; // un autre passage vient de la créer
-    if (anterieure) await port.resoudre(anterieure.proposal_id, 'remplacee: proposition antérieure au visuel partagé, reproposée avec visuel (aucune décision enregistrée)');
+    let igProp = null;
+    if (igJoint) { try { igProp = await creerPropositionInstagram({ c, base: c.event_key, ex: igJoint, image: visuel.image, deps, expire_at, commun: true, cle: anterieures.length ? `${cleInstagramDe(c.event_key, igJoint.contenu)}-${String(anterieures[0].proposal_id).slice(0, 4)}` : null }); } catch (e) { log(`· instagram ${c.type} ${c.case_id} : proposition non créée (${motifsPublics(e.message).slice(0, 80)})`); } }
+    for (const a of anterieures) await port.resoudre(a.proposal_id, 'remplacee: proposition antérieure, reproposée dans le message commun (aucune décision enregistrée)');
     bilan.proposees++;
-    bilan.envoyees += await envoyerProposition({ prop: cree, deps, c: cc, comp, ident }) ? 1 : 0;
+    bilan.envoyees += await envoyerProposition({ prop: cree, deps, c: cc, comp, ident, igProp }) ? 1 : 0;
   }
-  log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)${bilan.complements ? `, ${bilan.complements} complément(s) envoyé(s)` : ''}`);
+  log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)`);
   return bilan;
 }
 
-/**
- * GO PARTIEL : le canal laissé sans GO reste ouvert. Une proposition COMPLÉMENTAIRE à ce seul canal est faite quand — et seulement quand — sa rédaction a CHANGÉ depuis
- * tout ce qui a déjà été proposé pour ce canal (le même texte n'est jamais reproposé). Mêmes contrôles qu'une proposition ordinaire (T0, fraîcheur, fiche servie, exclusions,
- * V4.1 + vérificateur). Un GO, un refus, ou une proposition complémentaire encore ouverte sur ce canal ferme la voie. Retourne le nombre de messages envoyés.
- */
-async function proposerComplements({ c, base, deps }) {
-  const { port, compo, activation, holds, canauxConfigures, log } = deps;
-  const now = compo.now;
-  const restants = (base.canaux_proposes || []).filter((k) => CANAUX_RELAIS.includes(k) && !(base.canaux_autorises || []).includes(k));
-  if (!restants.length) return 0;
-  const toutes = await port.propositionsDeEvenement(base.event_key);
-  let envoyes = 0;
-  for (const k of restants) {
-    const duCanal = toutes.filter((p) => p.event_key !== base.event_key && (p.canaux_proposes || []).includes(k));
-    if (duCanal.some((p) => (p.canaux_autorises || []).includes(k) || p.decision === 'REFUS')) continue; // canal déjà décidé (GO ou refus explicite)
-    const ouverte = duCanal.find((p) => !p.decision && new Date(p.expire_at) > now);
-    if (ouverte) { // un complément attend déjà un clic : on ne fait que renvoyer son message s'il n'est pas parti
-      if (ouverte.telegram_message_id == null) envoyes += await envoyerProposition({ prop: ouverte, deps, c: { ...c, event_key: ouverte.event_key } }) ? 1 : 0;
-      continue;
-    }
-    const cc = { ...c, event_key: base.event_key };
-    const exclus = await port.exclusionsDe(base.event_key);
-    const v = evaluerCandidat(cc, { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
-      servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false, exclusions: exclus });
-    if (!v.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics(v.raisons.join(' ; '))}`); continue; }
-    const comp = composerEvenement(cc, compo);
-    const canal = comp.canaux[k];
-    if (!canal?.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics((canal?.motifs || []).join(' ; '))}`); continue; }
-    if (exclus.has(k) || !canauxConfigures.includes(k) || await port.empreinteTexteExclue(k, empreinteTexte(canal.texte))) { log(`· complément ${c.case_id} [${k}] : SILENCE — canal exclu ou non configuré`); continue; }
-    const deja = new Set([base, ...duCanal].map((p) => (k === 'x' ? p.texte_x : p.texte_facebook)).filter(Boolean).map(empreinteTexte));
-    if (deja.has(empreinteTexte(canal.texte))) continue; // rédaction inchangée : rien de nouveau à proposer (le GO partiel vaut décision sur ce texte)
-    const pf = await appliquerPareFeu({ c: cc, comp, canaux: [k], port, now });
-    if (!pf.length) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics((comp.canaux[k]?.motifs || []).join(' ; '))}`); continue; }
-    const visuel = await visuelPartage({ c: cc, compo, imageDeps: deps.image, ecrire: true, existantes: imagesDeProps(toutes) });
-    if (!visuel.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics(visuel.motifs.join(' ; '))}`); continue; }
-    const cle = cleComplement(base.event_key, k, canal.texte);
-    const ident = identiteDe({ ...c, event_key: cle }, comp, visuel);
-    ident.canaux = { [k]: ident.canaux[k] };
-    ident.complement = { de: base.event_key, canal: k };
-    log(`· complément ${c.case_id} [${k}] : rédaction retravaillée ⇒ nouvelle proposition (ce canal seul)`);
-    const cree = await port.creerProposition({ event_key: cle, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: k === 'x' ? canal.texte : null, texte_facebook: k === 'facebook' ? canal.texte : null,
-      canaux_proposes: [k], empreinte_x: k === 'x' ? ident.canaux[k].empreinte : null, empreinte_facebook: k === 'facebook' ? ident.canaux[k].empreinte : null, expire_at: new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE) });
-    if (!cree) continue;
-    envoyes += await envoyerProposition({ prop: cree, deps, c: { ...c, event_key: cle }, comp, ident }) ? 1 : 0;
-  }
-  return envoyes;
-}
-
-async function envoyerProposition({ prop, deps, c, comp = null, ident = null }) {
+async function envoyerProposition({ prop, deps, c, comp = null, ident = null, igProp = null }) {
   const { port, compo, envoyer, log } = deps;
   const id8 = String(prop.proposal_id).slice(0, 8);
   const reconstruit = ident ?? prop.identite;
   const cp = comp ?? composerEvenement(c, compo);
+  // Reprise après panne : l'Instagram créé avec cette proposition, s'il attend toujours son message, repart dans le MÊME message.
+  if (!igProp) igProp = (await port.propositionsInstagramDeEvenement(cleBase(prop.event_key))).find((p) => p.identite?.commun && !p.decision && !p.resolution && p.telegram_message_id == null && new Date(p.expire_at) > compo.now) ?? null;
   // Le message reprend le texte ENREGISTRÉ (celui du GO), pas une recomposition éventuellement différente.
   if (!(await port.reclamerEnvoi(prop.proposal_id))) return false;
-  const texte = messageProposition({ id8, c, comp: cp, ident: reconstruit, expire_at: prop.expire_at, site: compo.site, now: compo.now });
+  if (igProp && !(await port.reclamerEnvoi(igProp.proposal_id))) igProp = null;
+  const messages = messagesProposition({ id8, c, comp: cp, ident: reconstruit, expire_at: prop.expire_at, site: compo.site, now: compo.now, ig: igProp?.identite ?? null });
   try {
     // Le visuel EXACT (celui qui sera joint aux posts) : Telegram le télécharge à l'adresse publique, preuve de plus qu'elle est servie.
     if (reconstruit?.image?.url) {
       if (!deps.envoyerPhoto) throw new Error('envoi du visuel impossible');
-      await deps.envoyerPhoto(reconstruit.image.url, `Visuel commun X · Facebook · Instagram — ${reconstruit.image.largeur}×${reconstruit.image.hauteur}, empreinte ${reconstruit.image.sha256.slice(0, 12)}`);
+      await deps.envoyerPhoto(reconstruit.image.url, `Visuel commun — ${reconstruit.image.largeur}×${reconstruit.image.hauteur}, empreinte ${reconstruit.image.sha256.slice(0, 12)}`);
     }
-    const mid = await envoyer(texte, boutonsProposition(id8, prop.canaux_proposes));
+    const boutons = boutonsProposition(id8, prop.canaux_proposes, igProp ? String(igProp.proposal_id).slice(0, 8) : null);
+    let mid = null;
+    for (const [i, m] of messages.entries()) mid = await envoyer(m, i === messages.length - 1 ? boutons : undefined);
     await port.noterEnvoi(prop.proposal_id, mid);
-    log(`· proposition ${id8} (${c.case_id}) envoyée sur Telegram`);
+    if (igProp) await port.noterEnvoi(igProp.proposal_id, mid);
+    log(`· proposition ${id8} (${c.case_id}) envoyée sur Telegram${igProp ? ' (avec Instagram)' : ''}`);
     return true;
   } catch (e) {
     await port.libererEnvoi(prop.proposal_id);
+    if (igProp) await port.libererEnvoi(igProp.proposal_id);
     log(`· proposition ${id8} : envoi Telegram impossible (${String(e.message).slice(0, 80)}) — nouvel essai au prochain passage`);
     return false;
   }
@@ -554,7 +555,7 @@ export async function publierDecisions(deps) {
     if (!incertain && tout) { await port.resoudre(p.proposal_id, 'publie'); bilan.publiees++; }
     if (tout && !p.notif_programme_at) {
       await port.noterNotif(p.proposal_id, 'programme');
-      await alerter(`🕒 <b>Publication programmée</b> (${id8}) : ${autorises.map((k) => (k === 'x' ? 'X' : 'Facebook')).join(' + ')}, envoi dans ~${delaiMin} min. Annulable avant l’envoi si la fiche est retirée ; sinon, aucune action requise.`);
+      await alerter(`🕒 <b>Publication programmée</b> (${id8}) : ${(aCreer.length ? aCreer : autorises).map((k) => (k === 'x' ? 'X' : 'Facebook')).join(' + ')}, envoi dans ~${delaiMin} min. Annulable avant l’envoi si la fiche est retirée ; sinon, aucune action requise.`);
     }
   }
   return bilan;

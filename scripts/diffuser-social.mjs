@@ -420,6 +420,8 @@ const alerter = async (texte) => { if (ECRIRE) await prevenir(texte); };
 if (activation.actif) await accueil();
 const resultat = await executerCycle({
   port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger, reproposer,
+  // Instagram rejoint le MÊME message que X / Facebook (un visuel, les textes, un bouton GO par réseau) ; sa décision et son envoi restent les siens.
+  instagram: INSTAGRAM_CONFIGURE ? { igRow: await port.t0Canal('instagram').catch(() => null), canalConfigure: INSTAGRAM_CONFIGURE, amorcage: AMORCAGE_INSTAGRAM } : null,
   canauxConfigures: CANAUX_ACTIFS.filter((c) => CANAL_ID[c]), channelIds: CANAL_ID, delaiMin: DELAI_MIN,
   // Visuel commun (rendu, hébergement, relecture distante) : le MÊME générateur et le même hébergement que le canal Instagram, joint aux posts X et Facebook.
   envoyer: envoyerTelegram, envoyerPhoto: envoyerPhotoTelegram, image: imageInstagram(), servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,

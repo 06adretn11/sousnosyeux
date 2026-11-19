@@ -125,6 +125,20 @@ export function portNeon(sql) {
           resolution = ${resolution ?? null}, resolved_at = case when ${resolution ?? null}::text is not null then ${iso(now)}::timestamptz end
         where proposal_id = ${id}::uuid and decision is null returning 1 x`).length === 1;
     },
+    /**
+     * UN GO d'un réseau, AJOUTÉ à ceux déjà donnés sur la même proposition (GO Facebook puis GO X : les deux comptent). Refusé si la proposition est refermée (refus, expiration, GO périmé) ou si le réseau
+     * a déjà son GO. Une proposition déjà « publiée » est rouverte pour le réseau ajouté (la confirmation et l'annonce de programmation sont à refaire). true = ce passage l'a enregistré.
+     */
+    async ajouterGo(id, { canaux, now }) {
+      return (await sql`update relais_social_propositions p set
+          canaux_autorises = u.c,
+          decision = case when 'x' = any(u.c) and 'facebook' = any(u.c) then 'GO_XF' when 'x' = any(u.c) then 'GO_X' when 'facebook' = any(u.c) then 'GO_F' else 'GO_I' end,
+          decided_at = coalesce(p.decided_at, ${iso(now)}::timestamptz), resolution = null, resolved_at = null, notif_programme_at = null, notif_publie_at = null
+        from (select array(select distinct k from unnest(coalesce(q.canaux_autorises, '{}'::text[]) || ${canaux}::text[]) k order by k) c from relais_social_propositions q where q.proposal_id = ${id}::uuid) u
+        where p.proposal_id = ${id}::uuid and p.decision is distinct from 'REFUS' and p.decision is distinct from 'EXPIREE'
+          and (p.resolution is null or p.resolution = 'publie') and not (${canaux}::text[] <@ coalesce(p.canaux_autorises, '{}'::text[]))
+        returning 1 x`).length === 1;
+    },
     async propositionsExpirees(now) { return (await sql`select proposal_id::text proposal_id from relais_social_propositions where decision is null and expire_at < ${iso(now)}::timestamptz`); },
     async propositionsAvecGo() { return (await sql`select * from relais_social_propositions where decision in ('GO_XF', 'GO_F', 'GO_X') and resolution is null order by decided_at`).map(prop); },
     async resoudre(id, resolution) { await sql`update relais_social_propositions set resolution = ${resolution}, resolved_at = now() where proposal_id = ${id}::uuid and resolution is null`; },

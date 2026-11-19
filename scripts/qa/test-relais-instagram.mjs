@@ -81,6 +81,7 @@ function monde({ t0, igT0 = undefined, candidats = [], ps = {}, retire = {} } = 
     noterEnvoi: async (id, mid) => { parId(id).telegram_message_id = mid ?? -2; },
     libererEnvoi: async (id) => { const p = parId(id); if (p.telegram_message_id === -1) p.telegram_message_id = null; },
     decider: async (id, { decision, canaux, now, resolution }) => { const p = parId(id); if (!p || p.decision) return false; p.decision = decision; p.canaux_autorises = canaux; p.decided_at = now; p.resolution = resolution ?? null; return true; },
+    ajouterGo: async (id, { canaux, now }) => { const p = parId(id); if (!p || ['REFUS', 'EXPIREE'].includes(p.decision) || (p.resolution && p.resolution !== 'publie') || canaux.every((k) => (p.canaux_autorises || []).includes(k))) return false; const u = [...new Set([...(p.canaux_autorises || []), ...canaux])].sort(); p.canaux_autorises = u; p.decision = u.includes('x') && u.includes('facebook') ? 'GO_XF' : u.includes('x') ? 'GO_X' : u.includes('facebook') ? 'GO_F' : 'GO_I'; p.decided_at = p.decided_at ?? now; p.resolution = null; p.notif_programme_at = null; p.notif_publie_at = null; return true; },
     propositionsExpirees: async (now) => w.props.filter((p) => !p.decision && new Date(p.expire_at) < now).map((p) => ({ proposal_id: p.proposal_id })),
     propositionsAvecGo: async () => w.props.filter((p) => ['GO_XF', 'GO_F', 'GO_X'].includes(p.decision) && !p.resolution).map(clone),
     resoudre: async (id, r) => { const p = parId(id); if (!p.resolution) p.resolution = r; },
@@ -274,7 +275,7 @@ console.log('\nE. Proposition Telegram, GO Instagram et décisions');
   const msg = propositionsTg(w)[0], p = igProps(w)[0], ig = p.identite.canaux.instagram;
   verifie('1. le visuel EXACT est envoyé d’abord (image hébergée à l’URL qui sera donnée à Buffer), puis la proposition', w.photos.length === 1 && w.photos[0].url === ig.image.url && /empreinte/.test(w.photos[0].legende) && w.telegram.indexOf(msg) >= 0);
   verifie('2. la proposition porte la légende INTÉGRALE, l’affaire, l’événement, les sources, le lien SNY, les contrôles et l’empreinte de l’image', msg.texte.includes(ig.texte.replace(/&/g, '&amp;')) && /Source :/.test(msg.texte) && /Fiche SNY : https:\/\/sousnosyeux\.org\/affaires\/fr-2026-0146\//.test(msg.texte) && /Contrôles :/.test(msg.texte) && msg.texte.includes(ig.image.sha256.slice(0, 12)) && /1080×1350/.test(msg.texte));
-  verifie('3. exactement deux boutons : GO Instagram et Refuser Instagram', msg.markup.inline_keyboard.flat().length === 2 && /GO Instagram/.test(msg.markup.inline_keyboard[0][0].text) && /Refuser Instagram/.test(msg.markup.inline_keyboard[0][1].text) && msg.markup.inline_keyboard[0][0].callback_data === `sny:SG:I:${p.proposal_id.slice(0, 8)}`);
+  verifie('3. exactement UN bouton : GO Instagram (l’absence de GO vaut refus : aucun bouton « Refuser »)', msg.markup.inline_keyboard.flat().length === 1 && /GO Instagram/.test(msg.markup.inline_keyboard[0][0].text) && !/Refuser/.test(JSON.stringify(msg.markup)) && msg.markup.inline_keyboard[0][0].callback_data === `sny:SG:I:${p.proposal_id.slice(0, 8)}`);
   verifie('4. les boutons sont reconnus par le décodeur, par le garde du Worker, et un format voisin ne l’est pas', decoderCallback('sny:SG:I:0123abcd')?.action === 'I' && DATA_RE.test('sny:SG:I:0123abcd') && !DATA_RE.test('sny:SG:IX:0123abcd') && !DATA_RE.test('sny:SG:i:0123abcd') && decoderCallback('sny:SG:XF:0123abcd')?.action === 'XF');
   verifie('5. l’identité enregistrée porte événement, fiche approuvée, source, légende, spécification, EMPREINTE DU CONTENU et URL de l’image, canal Instagram', !!p.identite.fiche_hash && p.identite.canal === 'instagram' && !!ig.texte && !!ig.spec_hash && /^[0-9a-f]{64}$/.test(ig.image.sha256) && ig.image.url.startsWith('https://') && !!ig.empreinte && ig.gabarit === GABARIT_VISUEL && !!ig.source.url);
   verifie('6. la proposition ne porte que le canal Instagram (aucun texte X / Facebook)', p.canaux_proposes.join() === 'instagram' && p.texte_x === null && p.texte_facebook === null);
@@ -285,12 +286,12 @@ console.log('\nE. Proposition Telegram, GO Instagram et décisions');
   const px = w2.props.find((x) => !x.event_key.includes('#instagram:'));
   const rr = await enregistrerDecision({ port: w2.port, action: 'I', cle: px.proposal_id.slice(0, 8), now, actif: true });
   verifie('8. bouton « GO Instagram » cliqué sur une proposition X / Facebook → refusé', rr.issue === 'bouton_invalide' && !px.decision);
-  verifie('9. les boutons X / Facebook sont inchangés par l’ajout d’Instagram', JSON.stringify(boutonsProposition('0123abcd', ['x', 'facebook'])) === JSON.stringify({ inline_keyboard: [[{ text: '✅ GO X + Facebook', callback_data: 'sny:SG:XF:0123abcd' }], [{ text: 'GO Facebook seul', callback_data: 'sny:SG:F:0123abcd' }, { text: 'GO X seul', callback_data: 'sny:SG:X:0123abcd' }], [{ text: '⛔ Refuser', callback_data: 'sny:SG:R:0123abcd' }]] }));
+  verifie('9. boutons du message commun : une ligne « GO Facebook · GO Instagram · GO X » (Instagram sur SA proposition) ; sans Instagram : Facebook et X seuls', JSON.stringify(boutonsProposition('0123abcd', ['x', 'facebook'], '99887766')) === JSON.stringify({ inline_keyboard: [[{ text: 'GO Facebook', callback_data: 'sny:SG:F:0123abcd' }, { text: 'GO Instagram', callback_data: 'sny:SG:I:99887766' }, { text: 'GO X', callback_data: 'sny:SG:X:0123abcd' }]] }) && JSON.stringify(boutonsProposition('0123abcd', ['x', 'facebook'])) === JSON.stringify({ inline_keyboard: [[{ text: 'GO Facebook', callback_data: 'sny:SG:F:0123abcd' }, { text: 'GO X', callback_data: 'sny:SG:X:0123abcd' }]] }));
   verifie('10. ACTIONS_SOCIALES : I = GO_I sur le seul canal instagram ; XF / F / X inchangés', ACTIONS_SOCIALES.I.decision === 'GO_I' && ACTIONS_SOCIALES.I.canaux.join() === 'instagram' && ACTIONS_SOCIALES.XF.canaux.join() === 'x,facebook' && !CANAUX_RELAIS.includes('instagram'));
   // Refus, silence, expiration, clic rejoué
   const wr = prepare(); await cycleInstagram(deps(wr, now));
   const refus = await decisionIG(wr, 'R'); await cycleInstagram(deps(wr, new Date(now.getTime() + 3 * H)));
-  verifie('11. « Refuser Instagram » → décision REFUS, aucune publication, jamais reproposé', refus.decision === 'REFUS' && wr.creations() === 0 && igProps(wr).length === 1 && propositionsTg(wr).length === 1);
+  verifie('11. ancien bouton « Refuser Instagram » (message déjà envoyé) → décision REFUS, aucune publication, jamais reproposé', refus.decision === 'REFUS' && wr.creations() === 0 && igProps(wr).length === 1 && propositionsTg(wr).length === 1);
   const we = prepare(); await cycleInstagram(deps(we, now));
   const ex = await enregistrerDecision({ port: we.port, action: 'I', cle: igProps(we)[0].proposal_id.slice(0, 8), now: new Date(now.getTime() + 60 * H), actif: true });
   await cycleInstagram(deps(we, new Date(now.getTime() + 60 * H)));
@@ -418,7 +419,7 @@ console.log('\nH. Non-régression X / Facebook, migration et client Buffer');
   const xf = (w) => w.props.filter((p) => !p.event_key.includes('#instagram:'));
   verifie('1. la proposition X / Facebook est identique, octet pour octet, avec ou sans Instagram (textes, empreintes, canaux, boutons, message)',
     xf(seul).length === 1 && xf(duo).length === 1 && xf(seul)[0].texte_x === xf(duo)[0].texte_x && xf(seul)[0].texte_facebook === xf(duo)[0].texte_facebook && xf(seul)[0].empreinte_x === xf(duo)[0].empreinte_x
-    && xf(seul)[0].empreinte_facebook === xf(duo)[0].empreinte_facebook && xf(duo)[0].canaux_proposes.join() === 'x,facebook' && JSON.stringify(seul.telegram.find((m) => m.texte).markup) === JSON.stringify(duo.telegram.find((m) => m.texte && m.markup.inline_keyboard.flat().length > 2).markup));
+    && xf(seul)[0].empreinte_facebook === xf(duo)[0].empreinte_facebook && xf(duo)[0].canaux_proposes.join() === 'x,facebook' && JSON.stringify(seul.telegram.find((m) => m.texte).markup) === JSON.stringify(duo.telegram.find((m) => m.texte && /GO X/.test(JSON.stringify(m.markup))).markup));
   verifie('2. un message Telegram distinct par proposition : X / Facebook d’un côté, Instagram de l’autre (jamais mélangés)', propositionsTg(duo).length === 2 && propositionsTg(duo).filter((m) => /INSTAGRAM/.test(m.texte)).length === 1 && !/INSTAGRAM/.test(propositionsTg(duo).find((m) => /GO X/.test(JSON.stringify(m.markup))).texte));
   // GO partiel X seul : le complément ne touche pas Instagram
   const px = xf(duo)[0];
@@ -477,6 +478,50 @@ console.log('\nPare-feu éditorial sur Instagram (1 changement judiciaire + 1 pr
   const w3 = prepare(); await cycleInstagram(deps(w3, now)); await decisionIG(w3, 'I', 0, now); postDuJour(w3);
   const r = await cycleInstagram(deps(w3, new Date(now.getTime() + 6e4)));
   verifie('PF3. GO Instagram donné, puis un autre post judiciaire du jour part avant lui : le GO est REFUSÉ à l’exécution (aucun post Instagram), alerte, proposition conservée', w3.creations('instagram') === 0 && /^bloque: pare-feu/.test(igProps(w3)[0].resolution ?? '') && w3.telegram.some((m) => m.alerte && /pare-feu/.test(m.alerte)) && r.publications.bloquees === 1, String(igProps(w3)[0].resolution));
+}
+
+// =====================================================================
+console.log('\nI. UN message pour les trois réseaux : le visuel, les textes Facebook / Instagram / X, un bouton GO par réseau');
+// =====================================================================
+{
+  const joint = (w, t) => ({ ...deps(w, t), instagram: { igRow: w.igRow, canalConfigure: true, amorcage: null } });
+  const plus = (ms) => new Date(now.getTime() + ms);
+  const sansHtml = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const xfDe = (w) => w.props.find((p) => !p.event_key.includes('#instagram:'));
+  const w = prepare(); await executerCycle(joint(w, now)); await cycleInstagram(joint(w, now));
+  const xf = xfDe(w), ig = igProps(w)[0], msgs = propositionsTg(w);
+  verifie('I1. UN seul message et UN seul visuel pour l’événement : Instagram n’envoie pas de second message', msgs.length === 1 && w.photos.length === 1 && w.props.length === 2, JSON.stringify([msgs.length, w.photos.length, w.props.length]));
+  const m = msgs[0], igTexte = ig?.identite.canaux.instagram.texte ?? '';
+  verifie('I2. le message porte les trois textes EXACTS : Facebook, Instagram et X', sansHtml(m.texte).includes(xf.texte_facebook) && sansHtml(m.texte).includes(igTexte) && sansHtml(m.texte).includes(xf.texte_x) && /<b>Instagram<\/b>/.test(m.texte));
+  const b = m.markup.inline_keyboard;
+  verifie('I3. UNE ligne de boutons « GO Facebook · GO Instagram · GO X » (aucun « Refuser ») ; GO Instagram porte l’identifiant de la proposition Instagram', b.length === 1 && b[0].map((x) => x.text).join() === 'GO Facebook,GO Instagram,GO X' && b[0][1].callback_data === `sny:SG:I:${ig.proposal_id.slice(0, 8)}` && b[0][0].callback_data === `sny:SG:F:${xf.proposal_id.slice(0, 8)}` && b[0][2].callback_data === `sny:SG:X:${xf.proposal_id.slice(0, 8)}`, JSON.stringify(b));
+  verifie('I4. le MÊME visuel (même fichier, même empreinte) pour les trois réseaux, rendu UNE seule fois', ig.identite.canaux.instagram.image.url === xf.identite.image.url && ig.identite.canaux.instagram.image.sha256 === xf.identite.image.sha256 && w.rendus === 1 && w.photos[0].url === xf.identite.image.url);
+  verifie('I5. les deux propositions portent le MÊME numéro de message Telegram (aucun renvoi) et la marque « commune »', xf.telegram_message_id > 0 && xf.telegram_message_id === ig.telegram_message_id && xf.identite.commun === true && ig.identite.commun === true);
+  await executerCycle(joint(w, plus(6e4))); await cycleInstagram(joint(w, plus(6e4)));
+  verifie('I6. cycles répétés : ni nouveau message, ni nouveau visuel, ni nouvelle proposition', propositionsTg(w).length === 1 && w.photos.length === 1 && w.props.length === 2 && w.rendus === 1);
+  // GO indépendants : Instagram, puis X ; Facebook, sans GO, n'est jamais publié
+  const ri = await enregistrerDecision({ port: w.port, action: 'I', cle: ig.proposal_id.slice(0, 8), now: plus(10 * 6e4), actif: true });
+  await executerCycle(joint(w, plus(15 * 6e4))); await cycleInstagram(joint(w, plus(15 * 6e4)));
+  verifie('I7. GO Instagram seul → UN post Instagram (légende exacte, visuel du message), rien sur X ni Facebook', ri.issue === 'enregistree' && w.creations('instagram') === 1 && w.creations() === 1 && w.appelsBuffer.find((a) => a.op === 'creerPost').texte === igTexte && w.appelsBuffer.find((a) => a.op === 'creerPost').imageUrl === xf.identite.image.url);
+  const rx = await enregistrerDecision({ port: w.port, action: 'X', cle: xf.proposal_id.slice(0, 8), now: plus(20 * 6e4), actif: true });
+  await executerCycle(joint(w, plus(25 * 6e4))); await cycleInstagram(joint(w, plus(25 * 6e4)));
+  verifie('I8. GO X ensuite sur le même message → UN post X avec le même visuel ; Facebook, sans GO, n’est jamais publié', rx.issue === 'enregistree' && w.creations() === 2 && w.creations('x') === 1 && w.creations('facebook') === 0 && w.appelsBuffer.filter((a) => a.op === 'creerPost').every((a) => a.imageUrl === xf.identite.image.url));
+  // Instagram hors périmètre (fiche approuvée avant le point de départ du canal) : le message ne l'offre pas
+  const wh = monde({ t0, igT0, candidats: [candNouvelle(t0, igT0, { approuveeApresIg: false })] }); await executerCycle(joint(wh, now)); await cycleInstagram(joint(wh, now));
+  verifie('I9. événement hors périmètre d’Instagram : message X / Facebook sans Instagram (deux boutons), aucune proposition Instagram', propositionsTg(wh).length === 1 && propositionsTg(wh)[0].markup.inline_keyboard[0].length === 2 && igProps(wh).length === 0 && !/<b>Instagram<\/b>/.test(propositionsTg(wh)[0].texte));
+  // Instagram seul (X / Facebook non publiables) : son propre message, avec son seul bouton
+  const wi = prepare(); await executerCycle({ ...joint(wi, now), canauxConfigures: [] }); await cycleInstagram(joint(wi, now));
+  verifie('I10. X / Facebook non publiables : Instagram garde son propre message (un seul bouton « GO Instagram »)', propositionsTg(wi).length === 1 && propositionsTg(wi)[0].markup.inline_keyboard.flat().length === 1 && igProps(wi).length === 1);
+  // Reproposition ciblée : les anciennes propositions (X / Facebook ET Instagram, jamais décidées) sont remplacées par UN message commun
+  const wr = prepare(); await executerCycle(deps(wr, now)); await cycleInstagram(deps(wr, now));
+  verifie('I11. (point de départ) deux anciens messages, deux propositions ouvertes', propositionsTg(wr).length === 2 && wr.props.length === 2);
+  await executerCycle({ ...joint(wr, plus(6e4)), reproposer: new Set([KEY_NOUVELLE]) }); await cycleInstagram(joint(wr, plus(6e4)));
+  const anciennes = wr.props.slice(0, 2), nouvelles = wr.props.slice(2), nm = propositionsTg(wr).slice(2), dernier = nm[nm.length - 1];
+  verifie('I12. reproposition : les deux anciennes sont refermées « remplacee » SANS décision ; UNE proposition commune X / Facebook + UNE Instagram les remplacent, dans UN seul envoi (un visuel, les textes — éventuellement sur deux messages si la taille l’exige —, les trois boutons sur le dernier)', anciennes.every((p) => !p.decision && /^remplacee:/.test(p.resolution ?? '')) && nouvelles.length === 2 && wr.photos.length === 3 && nm.length >= 1 && nm.slice(0, -1).every((x) => !x.markup) && dernier.markup.inline_keyboard[0].length === 3 && /Remplace les propositions/.test(nm.map((x) => x.texte).join(" ")) && nouvelles.some((p) => p.event_key.includes('#commun:')) && nouvelles.some((p) => p.event_key.includes('#instagram:')) && wr.rendus === 1, JSON.stringify(wr.props.map((p) => [p.event_key.slice(-22), p.resolution?.slice(0, 9) ?? null])));
+  await executerCycle({ ...joint(wr, plus(12e4)), reproposer: new Set([KEY_NOUVELLE]) }); await cycleInstagram(joint(wr, plus(12e4)));
+  verifie('I13. la reproposition ne se répète pas (cycles suivants : rien de plus)', wr.props.length === 4 && wr.photos.length === 3);
+  const ancienClic = await enregistrerDecision({ port: wr.port, action: 'I', cle: anciennes[1].proposal_id.slice(0, 8), now: plus(15e4), actif: true });
+  verifie('I14. un clic sur le bouton d’un ANCIEN message remplacé n’enregistre rien (« expirée »), aucun post', ancienClic.issue === 'expiree' && wr.creations() === 0);
 }
 
 console.log(ko ? `\n❌ ${ko} vérification(s) en échec` : '\n✅ relais Instagram : toutes les vérifications passent');
