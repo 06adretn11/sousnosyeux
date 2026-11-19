@@ -9,7 +9,7 @@
 //   READY                — proposable sans réserve majeure (l'humain reste seul à décider)
 // =====================================================================
 import { createHash } from 'node:crypto';
-import { quantites, nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, issuesPortees } from './fiche-extraction.mjs';
+import { quantites, nomsPresents, RE_NOMBRE_ENFANTS, RE_AGE_MIS_EN_CAUSE, RE_AGE_ENFANT, quantitesNonAttestees, valeursDivergentes, issuesPortees } from './fiche-extraction.mjs';
 
 export const plat = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 // Mots significatifs d'une phrase : radicaux de 5 lettres (« déposée » ≈ « déposé »), sans l'attribution « Selon X, » (le média n'est pas le sujet du fait).
@@ -93,6 +93,21 @@ const ACTEUR_NON_INSTITUTIONNEL = /^\s*(?:les\s+|des\s+)?(?:parents?|collectifs?
 export const typeCorrige = (e) => (/^mesure_/.test(e.type) && ACTEUR_NON_INSTITUTIONNEL.test(e.acteur || '') ? 'fait_rapporte' : e.type);
 export const evenementsBruts = (extractions) => extractions.filter((x) => x.doc.acces === 'libre' && x.v.pertinence === 'CETTE_AFFAIRE').flatMap((x) => x.v.evenements.map((e) => ({ ...e, type: typeCorrige(e), doc: x.doc })));
 
+/**
+ * Ligne « Procès en appel : … » du bloc de situation (appel interjeté). Annonce = étape d'audience formulée « programmé / prévu / annoncé / rejugé » (postérieure à la décision) ;
+ * ce que les sources rapportent APRÈS l'annonce (réquisitions, délibéré, décision) est dit avec sa phrase attribuée ; « aucun article ne rapporte le déroulement » seulement s'il n'y a rien.
+ * Jamais « tenu » ni « jugé » sans source. Fonction PURE, appliquée à la composition ET à la version fusionnée avec l'approuvée (la ligne se RECALCULE à chaque relecture).
+ */
+export function ligneProcesEnAppel({ deroule, apres = null, aujourdhui }) {
+  const audience = [...deroule].reverse().find((d) => d.type === 'audience' && /appel/i.test(String(d.acteur ?? '') + ' ' + d.texte) && /programm|prévu|prevu|annonc|fixé|fixe|rejug/i.test(d.texte) && (!d.date || !apres || d.date > apres));
+  if (!audience) return null;
+  const suite = deroule.filter((d) => d !== audience && ((d.date && audience.date && d.date >= audience.date) || (/délibér|requis|réquisitions|plaidoiries/i.test(d.texte) && String(d.source?.publie_le ?? '') >= String(audience.date ?? ''))));
+  const sans = (t) => String(t).replace(/^À venir : /, '');
+  const reste = suite.length ? ' ' + suite.slice(-2).map((d) => sans(d.texte)).join(' ')
+    : audience.date && audience.date <= aujourdhui && !deroule.some((d) => d.type === 'decision' && d.date && d.date >= audience.date) ? ' Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel.' : '';
+  return 'Procès en appel : ' + sans(audience.texte) + reste;
+}
+
 export function composer({ c, extractions, aujourdhui = new Date().toISOString().slice(0, 10), holds = new Set(), fusionsModele = [] }) {
   const blocages = [], attention = [], ecartesComposition = [];
   const bloque = (code, texte) => blocages.push({ code, texte });
@@ -161,7 +176,8 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     if (memeMois) signale('mineur', 'DATE_AU_MOIS', `${TYPE_FR[g.type] ?? g.type} : jours divergents selon les sources (${[...autresDates].map(dateFr).join(' / ')}) : date affichée au mois.`);
     else if (autresDates.size > 1) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : dates divergentes selon les sources (${[...autresDates].map(dateFr).join(' / ')})`);
     // Quantités divergentes entre sources pour un même fait (peine : « un an avec sursis » / « trois ans ferme »).
-    const divergent = g.membres.length > 1 && g.membres.some((m) => quantitesNonAttestees(e.texte, m.citation).length && quantitesNonAttestees(m.texte, e.citation).length);
+    // Divergence = pour UNE MÊME unité (ans, mois, jours, euros…), des valeurs sans aucune commune : « 8 ans requis » et « trois jours d'audience » ne se contredisent pas (fausse divergence publiée dans « ce que l'on ne sait pas », Rezé 19/11).
+    const divergent = g.membres.length > 1 && g.membres.some((m) => quantitesNonAttestees(e.texte, m.citation).length && quantitesNonAttestees(m.texte, e.citation).length && valeursDivergentes(e.texte, m.texte));
     if (divergent) contradictions.push(`${TYPE_FR[g.type] ?? g.type} : chiffres divergents selon les sources (${g.membres.map((m) => `${m.doc.media} : « ${m.texte.slice(0, 120)} »`).join(' ; ')})`);
     let texte = attribue(e.texte, e.doc.media);
     if (/^mesure_/.test(g.type) && g.membres.every((m) => m.realisation === 'annoncee')) texte = `Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : ${MIN(texte)}`;
@@ -236,14 +252,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   }
   // Un appel ANNONCÉ (« l'avocat a annoncé qu'il ferait appel ») n'est pas un appel interjeté : la fiche le dit sans l'affirmer, et ne prétend pas « aucun appel rapporté ».
   const appelAnnonce = issue && issue.appel !== 'OUI' ? deroule.find((d) => d.type === 'appel') : null;
-  // Appel interjeté + procès en appel PROGRAMMÉ ou en cours (audience postérieure à la décision, formulée « programmé / prévu / annoncé / rejugé ») : le bloc de situation le dit, avec la phrase
-  // attribuée de l'étape (jamais « tenu » sans source), et précise que le déroulement n'est pas rapporté quand les dates sont atteintes (défaut Rezé : « Décision non définitive » seule).
-  const audienceAppel = issue && issue.appel === 'OUI'
-    ? [...deroule].reverse().find((d) => d.type === 'audience' && /appel/i.test(`${d.acteur ?? ''} ${d.texte}`) && /programm|prévu|prevu|annonc|fixé|fixe|rejug/i.test(d.texte) && (!d.date || !issue.date || d.date > issue.date)) ?? null
-    : null;
-  const ligneAppel = audienceAppel
-    ? `Procès en appel : ${String(audienceAppel.texte).replace(/^À venir : /, '')}${audienceAppel.date && audienceAppel.date <= aujourdhui && !deroule.some((d) => d.type === 'decision' && d.date && d.date >= audienceAppel.date) ? ' Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel.' : ''}`
-    : null;
+  const ligneAppel = issue && issue.appel === 'OUI' ? ligneProcesEnAppel({ deroule, apres: issue.date, aujourdhui }) : null;
   const etat_actuel = [];
   let liberation = null;
   if (issue) {
@@ -357,8 +366,11 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     synthese: etat_actuel.length ? { decision: etat_actuel[0], ...(etat_actuel[1] ? { ouvert: etat_actuel[1] } : {}) } : undefined, reactions, statut_affiche: carte, ...(situation ? { situation } : {}),
   };
   if (!dossier.synthese) delete dossier.synthese;
+  // Un nom que le modèle a rangé parmi les « mis en cause » mais qui est celui d'un acteur NOMMÉ AVEC SA FONCTION d'une réaction retenue (avocat, procureur, maire…) est cet acteur, pas le mis en cause.
+  const acteurs = (dossier.reactions || []).map((r) => r.acteur).join(' ');
+  const nomsMisEnCause = noms.filter((n) => !nomsPresents(acteurs, [n]).length);
+  const nomsFuite = nomsPresents(JSON.stringify(dossier), nomsMisEnCause);
   const publie = JSON.stringify(dossier);
-  const nomsFuite = nomsPresents(publie, noms);
   if (nomsFuite.length) bloque('NOM_MIS_EN_CAUSE_DANS_LA_FICHE', `Un nom de mis en cause figure dans la fiche produite (${nomsFuite.length}).`);
   if (RE_AGE_ENFANT.test(publie)) bloque('AGE_ENFANT_DANS_LA_FICHE', 'Un âge d’enfant figure dans la fiche produite.');
   if (RE_AGE_MIS_EN_CAUSE.test(publie)) bloque('AGE_MIS_EN_CAUSE_DANS_LA_FICHE', 'Un âge du mis en cause figure dans la fiche produite.');

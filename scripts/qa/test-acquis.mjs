@@ -72,6 +72,20 @@ t('trois situations jamais confondues pour une source d’étape approuvée : er
   assert.equal(conserverAcquis({ precedent: APPROUVE, candidat, sources: [lue('a'), lue('b', { pertinence: 'AUTRE_AFFAIRE' })], noms: [] }).dossier.deroule.length, 4, 'étape conservée');
 });
 
+t('la ligne « Procès en appel : … » est RECALCULÉE : même état et même suite que la version approuvée, mais la relecture rapporte la tenue du procès → la ligne périmée (« aucun article ne rapporte… ») est remplacée, les autres lignes de la suite sont conservées (défaut Rezé 19/11)', () => {
+  const suite = (lignes) => ({ label: 'Suite · recours', titre: 'Appel rapporté', cat: 'orange', lignes });
+  const vieux = 'Procès en appel : Selon Média B, le procès est programmé les 16, 17 et 18 novembre 2026. Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel.';
+  const neuf = 'Procès en appel : Selon Média B, le procès est programmé les 16, 17 et 18 novembre 2026. Selon Média C, huit ans de prison ont été requis le 18 novembre 2026.';
+  const A = { ...clone(APPROUVE), situation: { ...SIT('Condamnation', 'Appel rapporté'), suite: suite(['Décision non définitive.', vieux, 'Mesure institutionnelle : x.']) }, etat_actuel: [...APPROUVE.etat_actuel, vieux] };
+  const C = { ...clone(APPROUVE), situation: { ...SIT('Condamnation', 'Appel rapporté'), suite: suite(['Décision non définitive.', neuf]) }, etat_actuel: [...APPROUVE.etat_actuel, neuf] };
+  const m = conserverAcquis({ precedent: A, candidat: C, sources: [lue('a'), lue('b')], noms: [] });
+  const l = m.dossier.situation.suite.lignes;
+  assert.ok(l.includes(neuf) && !l.includes(vieux), 'ligne recalculée');
+  assert.ok(l.includes('Décision non définitive.') && l.includes('Mesure institutionnelle : x.'), 'les autres lignes de la suite approuvée sont conservées');
+  assert.equal(m.dossier.etat_actuel.filter((x) => /^Procès en appel/.test(x)).length, 1);
+  assert.equal(m.dossier.etat_actuel.at(-1), neuf);
+});
+
 t('nouvelle source + reformulation : enrichissement sans faux retrait ni doublon ; la source devenue secondaire n’est pas « retirée »', () => {
   const candidat = { ...clone(APPROUVE), deroule: [
     etape('mise_en_examen', '2025-03-14', 'Selon le parquet, un animateur du périscolaire a été mis en examen le 14 mars 2025 pour agressions sexuelles.', 'a'),

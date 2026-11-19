@@ -23,7 +23,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { reunirSources, affairesSoeurs, rattachementInsuffisant } from './lib/fiche-sources.mjs';
 import { SYSTEME_REGROUPEMENT, invitesRegroupement, groupesValides, SYSTEME, invite, CONTRAT_VERSION, appelerModele, verifier, fusionnerPasses, extractionValide } from './lib/fiche-extraction.mjs';
-import { composer, evenementsBruts, regressionJudiciaire, qualifier, RANG } from './lib/fiche-composer.mjs';
+import { composer, evenementsBruts, regressionJudiciaire, qualifier, RANG, ligneProcesEnAppel } from './lib/fiche-composer.mjs';
 import { conserverAcquis, rangEtat, refsEtape } from './lib/fiche-acquis.mjs';
 import { canonique } from './lib/preuve-claim.mjs';
 import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
@@ -54,7 +54,7 @@ if (!A.includes('--sans-neon') && !HORS_LIGNE) { const { connecter } = await imp
 /** Appel modèle avec cache disque (clé : modèle + contrat + affaire + document) : rejouable, et chaque appel réel est compté. */
 async function extraire({ fiche, soeurs, doc, cout, sel = '' }) {
   const article = { media: doc.media, publication_date: doc.publication_date, body: doc.corps };
-  const utilisateur = invite({ fiche, soeurs, article });
+  const utilisateur = invite({ fiche, soeurs, article, rattacheValide: !!doc.rattachement_valide });
   const cle = createHash('sha1').update(`${MODELE}|${CONTRAT_VERSION}|${utilisateur}${sel ? `|${sel}` : ''}`).digest('hex').slice(0, 24);
   const f = new URL(`${cle}.json`, CACHE_LLM);
   // Une réponse sans « pertinence » n'est pas une extraction : jamais servie depuis le cache, jamais mise en cache (voir extractionValide).
@@ -85,6 +85,11 @@ for (const id of ids) {
   const cout = { appels: 0, cache: 0, input_tokens: 0, output_tokens: 0, latence_ms: 0, cout_usd: null, sans_cout: 0 };
   const vide = (raison) => ({ pertinence: 'AMBIGU', pertinence_raison: raison, noms: [], faits: [], evenements: [], issue: null, declarations: [], lacunes: [], ecartes: [] });
   // Documents lus en parallèle (4 à la fois) : l'ordre des sources est conservé, seul l'attente des appels est partagée.
+  // Rattachements VALIDÉS par une décision humaine (ATTACH accepté, ou fiche approuvée qui portait la source « à rattacher ») : le modèle n'en fait pas « ambigu » faute du nom de la structure.
+  const valides = sql ? new Set((await sql`
+    select a->>'url' url from new_case_proposals p, jsonb_array_elements(coalesce(p.payload->'articles', '[]'::jsonb)) a where p.decision = 'ACCEPT' and p.action = 'ATTACH' and p.attach_case_id = ${id} and p.decided_by ilike 'Adrien%'
+    union select s->>'url' from new_case_proposals p, jsonb_array_elements(coalesce(p.payload->'page'->'sources_a_rattacher', '[]'::jsonb)) s where p.decision = 'ACCEPT' and p.payload->'page'->>'case_id' = ${id} and p.decided_by ilike 'Adrien%'`).map((r) => canonique(r.url))) : new Set();
+  for (const d of documents) if (valides.has(canonique(d.url))) d.rattachement_valide = true;
   const extractions = new Array(documents.length);
   let suivant = 0;
   await Promise.all(Array.from({ length: 4 }, async () => {
@@ -127,7 +132,7 @@ for (const id of ids) {
     } catch (e) { console.log(`  ⚠ regroupement : ${e.message.slice(0, 100)}`); }
   }
   const r = composer({ c, extractions, holds, fusionsModele });
-  const sourcesLues = extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined,
+  const sourcesLues = extractions.map(({ doc, v }) => ({ url: doc.url, media: doc.media, publication_date: doc.publication_date, origine: doc.origine, acces: doc.acces, motif: doc.motif, ecarte: doc.ecarte, pertinence: doc.acces === 'libre' && !doc.ecarte ? v.pertinence : undefined, raison: v.pertinence_raison || undefined, rattachement_valide: doc.rattachement_valide || undefined,
     // Indices déterministes (jamais une conclusion) pour trancher une source jugée « autre affaire » mais liée à une étape approuvée.
     rattachement: doc.rattachement ? { statut: doc.rattachement.statut, commune: doc.rattachement.signaux.some((x) => x.startsWith('commune')), role: doc.rattachement.signaux.some((x) => x.startsWith('rôle')), structure: doc.rattachement.signaux.some((x) => x.startsWith('établissement')), soeurs: soeurs.length } : undefined }));
   // UNE RELECTURE ENRICHIT LES ACQUIS, ELLE NE LES REMPLACE PAS : si une version approuvée existe, la candidate = cette version + ce que la relecture apporte (lib/fiche-acquis.mjs).
@@ -138,6 +143,15 @@ for (const id of ids) {
   if (approuve) {
     const m = conserverAcquis({ precedent: approuve.d, candidat: r.dossier, sources: sourcesLues, noms: [...new Set(extractions.flatMap((x) => x.v.noms || []))] });
     dossier = m.dossier;
+    // La ligne « Procès en appel » se recalcule sur la version FUSIONNÉE (l'état approuvé peut rester celui d'avant la relecture : sa ligne ne doit pas devenir périmée).
+    if (dossier.appel && dossier.situation?.suite) {
+      const l = ligneProcesEnAppel({ deroule: dossier.deroule, apres: null, aujourdhui: new Date().toISOString().slice(0, 10) });
+      const PROCES = /^Procès en appel :/;
+      if (l) {
+        const sans = (dossier.situation.suite.lignes || []).filter((x) => !PROCES.test(x));
+        dossier = { ...dossier, situation: { ...dossier.situation, suite: { ...dossier.situation.suite, lignes: [...sans.slice(0, 1), l, ...sans.slice(1)] } }, etat_actuel: [...(dossier.etat_actuel || []).filter((x) => !PROCES.test(x)), l] };
+      }
+    }
     attention = [...r.attention, ...m.attention];
     // L'état de la carte est étayé par la version approuvée quand la relecture (source payante, bloquée…) ne le retrouve pas : ce n'est pas « aucune source ne l'établit ».
     const rangCarte = RANG[c.statut_judiciaire] ?? 99;

@@ -180,6 +180,16 @@ function choisirEtat(A, C, deroule, bilan, attention) {
     if (depuisSuite.synthese?.ouvert) P.synthese = { ...(P.synthese || {}), ouvert: depuisSuite.synthese.ouvert };
     bilan.suite = suiteDe === 'A' ? 'suite_approuvee_conservee' : 'suite_candidate';
   }
+  // La ligne « Procès en appel : … » est RECALCULÉE à chaque relecture (ce que les sources rapportent après l'annonce change) : quand l'état et la suite restent ceux de la version approuvée,
+  // la ligne de la candidate remplace l'ancienne au lieu de la laisser périmée (« aucun article ne rapporte le déroulement » alors qu'une source le rapporte — défaut Rezé 19/11).
+  const PROCES = /^Procès en appel :/;
+  const procesC = (C.situation?.suite?.lignes || []).find((l) => PROCES.test(l));
+  if (procesC && P.situation?.suite && sA && sC && sA.titre === sC.titre) {
+    const sans = (P.situation.suite.lignes || []).filter((l) => !PROCES.test(l));
+    P.situation = { ...P.situation, suite: { ...P.situation.suite, lignes: [...sans.slice(0, 1), procesC, ...sans.slice(1)] } };
+    const eC = (C.etat_actuel || []).find((l) => PROCES.test(l));
+    if (eC) { const sansE = (P.etat_actuel || []).filter((l) => !PROCES.test(l)); P.etat_actuel = [...sansE, eC]; }
+  }
   return { ...P, appel: conflit ? !!A.appel : !!(A.appel || C.appel) };
 }
 
