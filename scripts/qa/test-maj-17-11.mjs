@@ -13,9 +13,12 @@ import { readFileSync } from 'node:fs';
 import { dateEcrite, dateDuCorps, extraireReactions } from '../lib/evenement-institutionnel.mjs';
 import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
 import { messageEnrichissement } from '../lib/discovery-messages.mjs';
-import { libelleParole } from '../lib/social-editorial.mjs';
+import { libelleParole, composerPilote, matiereApprouvee, verifierPost } from '../lib/social-editorial.mjs';
+import { verifier } from '../lib/fiche-extraction.mjs';
+import { hashDossier } from '../lib/fiche-page.mjs';
+import { messageFiche } from '../lib/discovery-messages.mjs';
 import { portNeon } from '../lib/relais-social-db.mjs';
-import { evaluerCandidat } from '../lib/relais-social.mjs';
+import { evaluerCandidat, composerEvenement } from '../lib/relais-social.mjs';
 import { cleEvenement } from '../lib/diffusion-sociale.mjs';
 
 let ko = 0;
@@ -94,6 +97,39 @@ test('libellé : « prise de parole d’une mère… » — jamais « de Une mè
 
 // ---- notifier : une erreur d'envoi n'écarte jamais une proposition ----------------------------------------------------------------------------------
 test('notifier : une erreur d’envoi (« Telegram … erreur réseau ») est retentée au cycle suivant, sans marqueur « écartée » ; une proposition périmée ou ambiguë reste écartée', /if \(\/\^Telegram \/\.test\(String\(e\.message\)\)\) \{[\s\S]*?continue; \}\s*\n\s*\/\/ périmée \/ ambiguë/.test(tel) && /insert into telegram_envois \(kind, cle\) values \('info', \$\{r\.pid\}\)/.test(tel));
+
+// ---- 19/11 : fausse divergence septembre/octobre, concordance texte ↔ lien source, ensemble d'un GO unique, événements rectifiés, reprise des propositions remplacées --------------
+const corpsEnq = 'Fin septembre, une enquête a été ouverte par le parquet de Caen. Début octobre, le parquet de Caen confirmait l’ouverture d’une enquête pour agression sexuelle.';
+const evEnq = (texte, citation, date, citation_date) => ({ type: 'enquete', acteur: 'parquet de Caen', texte, date, citation_date, realisation: 'non_applicable', portee: 'affaire', citation });
+const vEnq = verifier({ pertinence: 'CETTE_AFFAIRE', pertinence_raison: 'x', personnes_mises_en_cause_nommees: [], faits_rapportes: [], issue_judiciaire: null, declarations: [], lacunes_declarees: [], evenements: [
+  evEnq('Selon ICI, une enquête a été ouverte fin septembre par le parquet de Caen.', 'Fin septembre, une enquête a été ouverte par le parquet de Caen', null, null),
+  evEnq('Selon ICI, le parquet de Caen a confirmé début octobre l’ouverture d’une enquête pour agression sexuelle.', 'Début octobre, le parquet de Caen confirmait l’ouverture d’une enquête pour agression sexuelle', null, null)] }, { corps: corpsEnq, publieLe: '2026-11-15' });
+test('« Début octobre, le parquet confirmait l’ouverture d’une enquête » = COMMUNICATION du parquet, pas une seconde enquête (plus de fausse divergence septembre/octobre) ; l’ouverture elle-même reste « enquête »', vEnq.evenements.map((e) => e.type).join() === 'enquete,communication_parquet');
+
+const FP = JSON.parse(src('scripts/qa/fixtures/parole-parent-0133.json'));
+test('fixture figée de la parole de parent (empreinte du dossier)', hashDossier(FP.dossier) === FP._meta.hash);
+const wording = await import('../../web/src/lib/etat-wording.ts');
+const MP = matiereApprouvee({ entree: FP.entree, dossier: { hub: null, d: FP.dossier }, empreinteApprouvee: FP._meta.hash, evenements: [], matiere: [], wording });
+const iParent = [...(FP.dossier.reactions || []), ...(FP.dossier.paroles || [])].findIndex((r) => /d’enfant concerné/.test(r.acteur));
+const rp = composerPilote({ scenario: { famille: 'declaration_victime', case_id: FP._meta.id, reaction: iParent, citation: 0 }, M: MP, publiques: new Map([[FP._meta.id, FP.entree]]), site: 'https://sousnosyeux.org', redirections: {} });
+test('Rots : une phrase de contexte sans média nommé (« Selon le procureur… ») est prouvée par l’article déjà cité pour la parole — texte et lien désignent la MÊME source ; Facebook conforme, aucun lien vers un média non nommé', rp.facebook.etat === 'OK' && verifierPost(rp.facebook, 'facebook', MP, 'https://sousnosyeux.org').ok
+  && (rp.facebook.texte.match(/^Source : /gm) || []).length === 1 && /propos rapportés par ici/.test(rp.facebook.texte) && /^Source : ici,/m.test(rp.facebook.texte) && !/Actu\.fr/.test(rp.facebook.texte));
+
+const msgE = messageFiche({ commune: 'Ville-Test', etablissement: 'Centre Test', page: { case_id: 'FR-X-0001', hash: 'bbbb', statut_judiciaire: 'enquête', resume: ['Une enquête.'], inconnues: [], diff_public: [], preview_url: 'https://x.test/p',
+  ensemble: { lignes: ['Rassemblement du 16 novembre : un seul événement, références concordantes', 'Correction 9 → 16 novembre : déjà acceptée (message 670), appliquée avec ce GO'], effets: ['page /affaires/fr-x-0001/ : version remplacée', 'événements : corrigés au 16 novembre'] },
+  mise_a_jour: { precedent_hash: 'aaaa', ajoutees: [], reactions_ajoutees: 0, effet: { pages: ['page /affaires/fr-x-0001/ : version remplacée'] } } } }).replace(/<\/?[bc][a-z]*>/g, '');
+test('GO unique : le message dit ligne à ligne ce que le clic autorise (ensemble) et ses effets ; sans ensemble, aucune section', /Ce GO autorise précisément \(ensemble\)/.test(msgE) && /Rassemblement du 16 novembre : un seul événement/.test(msgE) && /Correction 9 → 16 novembre/.test(msgE) && /événements : corrigés au 16 novembre/.test(msgE)
+  && !/Ce GO autorise précisément/.test(messageFiche({ commune: 'v', etablissement: 'c', page: { case_id: 'FR-X-0001', hash: 'bbbb', statut_judiciaire: 'enquête', resume: [], inconnues: [], diff_public: [], mise_a_jour: { precedent_hash: 'aaaa', ajoutees: [] } } })));
+
+const pe = src('scripts/project-evenements.mjs');
+test('projection : un événement visé par une rectification « RECTIFIE:<event_id> » (table append-only) n’est plus projeté ; les autres le restent', /not exists \(select 1 from case_events r where r\.case_id = e\.case_id and r\.event_type::text = 'rectification' and r\.libelle_public = 'RECTIFIE:' \|\| e\.event_id::text\)/.test(pe));
+test('reprise : une proposition de fiche encore SANS décision est remplacée (décision machine, bouton inerte) et régénérée depuis la version approuvée', /derniere\.decision === null/.test(src('scripts/reprendre-sans-perte.mjs')) && /superseder\('new_case_proposals', p\.pid, 'REJECT'/.test(src('scripts/reprendre-sans-perte.mjs')));
+
+// ---- audience dont la date est atteinte : seule une phrase d'ANNONCE est périmée ; un fait RAPPORTÉ (réquisitions, délibéré) ne l'est pas -------------------------------------------
+const compoP = { cases: new Map([[FP._meta.id, FP.entree]]), ev: { fiches_approuvees: { [FP._meta.id]: { hash: FP._meta.hash } }, affaires: {}, matiere: [] }, redirections: {}, wording, dossierFiche: () => ({ hub: null, d: FP.dossier }), site: 'https://sousnosyeux.org', now: new Date('2026-11-19T10:00:00Z') };
+const candP = (texte) => ({ type: 'case_update', sous_type: 'fiche_evolution', case_id: FP._meta.id, event_id: 'fiche:x:etape0', statut_apres: 'etape-x-0', fiche_hash: FP._meta.hash, etape: { type: 'audience', date: '2026-11-18', texte, media: 'ici', url: FP.dossier.deroule[0]?.source?.url, publie_le: '2026-11-18' } });
+const motifs = (texte) => (composerEvenement(candP(texte), compoP).canaux.facebook.motifs || []).join(' ; ');
+test('relais : « programmé du 16 au 18 novembre » dont la date est atteinte → aucune rédaction automatique ; « 8 ans requis le 18 novembre, délibéré au… » (fait rapporté) n’est PAS bloqué pour cette raison', /date annoncée atteinte/.test(motifs('Selon ici, le procès est programmé le 18 novembre 2026.')) && !/date annoncée atteinte/.test(motifs('Selon ici, huit ans de prison ont été requis le 18 novembre 2026 et la décision a été mise en délibéré au 5 janvier 2027.')));
 
 if (ko) { console.error(`\n✗ ${ko} contrôle(s) en échec`); process.exit(1); }
 console.log('\nContrôles retours « À revoir » 17/11 : OK');

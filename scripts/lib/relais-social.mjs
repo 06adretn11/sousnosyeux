@@ -185,7 +185,8 @@ export function composerEvenement(c, compo) {
   const evt = c.type === 'case_update' ? (M.evenements || []).find((x) => x.event_id === c.event_id) ?? null : null;
   // Une audience ANNONCÉE dont la date est atteinte : « est programmé » est périmé et le déroulement n'est pas rapporté — ni « à venir » ni « tenu » ne peut être dit : aucune rédaction automatique.
   const aujourdhui = compo.now.toISOString().slice(0, 10);
-  const perime = sous === 'fiche_evolution' && evt?.date && String(evt.date) <= aujourdhui && ['audience_appel', 'audience', 'renvoi'].includes(evt.type);
+  // Seule une phrase d'ANNONCE (« programmé », « prévu », « sera rejugé »…) dont la date est atteinte est périmée : une étape qui RAPPORTE un fait (« 8 ans requis le 18 novembre, délibéré au… ») ne l'est pas.
+  const perime = sous === 'fiche_evolution' && evt?.date && String(evt.date) <= aujourdhui && ['audience_appel', 'audience', 'renvoi'].includes(evt.type) && /programm|prévu|prevu|annonc|sera |seront |rejug\w+ le|à venir/i.test(String(c.etape?.texte ?? ''));
   const dateFait = c.type === 'case_update' ? evt?.date : entree?.etat?.date ?? null;
   const canaux = {};
   for (const canal of CANAUX_RELAIS) {

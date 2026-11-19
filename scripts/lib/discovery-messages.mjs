@@ -255,6 +255,8 @@ function messageFicheMiseAJour(p) {
     `La page existe déjà : la version publique actuelle (empreinte <code>${esc(m.precedent_hash)}</code>) reste EN LIGNE tant que vous n’approuvez pas celle-ci (<code>${esc(x.hash)}</code>).`,
     ...(x.generation ? [`🧪 Version PRODUITE AUTOMATIQUEMENT à partir de la version approuvée · qualification ${esc(x.generation.qualification)}`] : []),
     '',
+    // UN SEUL GO pour un ENSEMBLE : ce que ce clic autorise, dit ligne à ligne (rien d'implicite) ; porté par payload.page.ensemble = { lignes[], effets[] }.
+    ...(x.ensemble?.lignes?.length ? ['<b>Ce GO autorise précisément (ensemble)</b>', ...x.ensemble.lignes.slice(0, 8).map((l) => `• ${esc(cut(l, 250))}`), ''] : []),
     '<b>Situation judiciaire de cette version</b>' + (etatChange ? ' (modifiée)' : ' (inchangée)'),
     ...etatApres.map((l) => `• ${esc(cut(l, Math.max(120, ct + 60)))}`),
     ...(etatChange ? etatAvant.slice(0, 1).map((l) => `  Avant : ${esc(cut(l, 110))}`) : []),
@@ -284,6 +286,7 @@ function messageFicheMiseAJour(p) {
     '',
     '<b>Effet de l’approbation</b>',
     ...(effet.pages || [`page /affaires/${esc(String(x.case_id).toLowerCase())}/ : version remplacée`]).map((l) => `• ${esc(l)}`),
+    ...(x.ensemble?.effets || []).slice(0, 6).map((l) => `• ${esc(cut(l, 250))}`),
     ...(effet.precision ? [esc(effet.precision)] : []),
     '',
     x.preview_url ? `👁 Aperçu complet de CETTE version (empreinte ${esc(x.hash)}) : ${esc(x.preview_url)}` : '👁 Aperçu : captures de la page jointes à ce message',
