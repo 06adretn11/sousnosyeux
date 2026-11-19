@@ -77,6 +77,8 @@ function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, fich
     noterEnvoi: async (id, mid) => { parId(id).telegram_message_id = mid ?? -2; },
     libererEnvoi: async (id) => { const p = parId(id); if (p.telegram_message_id === -1) p.telegram_message_id = null; },
     decider: async (id, { decision, canaux, now, resolution }) => { const p = parId(id); if (!p || p.decision) return false; p.decision = decision; p.canaux_autorises = canaux; p.decided_at = now; p.resolution = resolution ?? null; return true; },
+    ajouterGo: async (id, { canaux, now }) => { const p = parId(id); if (!p || ['REFUS', 'EXPIREE'].includes(p.decision) || (p.resolution && p.resolution !== 'publie') || canaux.every((k) => (p.canaux_autorises || []).includes(k))) return false; const u = [...new Set([...(p.canaux_autorises || []), ...canaux])].sort(); p.canaux_autorises = u; p.decision = u.includes('x') && u.includes('facebook') ? 'GO_XF' : u.includes('x') ? 'GO_X' : u.includes('facebook') ? 'GO_F' : 'GO_I'; p.decided_at = p.decided_at ?? now; p.resolution = null; p.notif_programme_at = null; p.notif_publie_at = null; return true; },
+    propositionsInstagramDeEvenement: async (k) => w.props.filter((p) => p.event_key.startsWith(`${k}#instagram:`)).map(clone),
     propositionsExpirees: async (now) => w.props.filter((p) => !p.decision && new Date(p.expire_at) < now).map((p) => ({ proposal_id: p.proposal_id })),
     propositionsAvecGo: async () => w.props.filter((p) => ['GO_XF', 'GO_F', 'GO_X'].includes(p.decision) && !p.resolution).map(clone),
     resoudre: async (id, r) => { const p = parId(id); if (!p.resolution) p.resolution = r; },
@@ -272,10 +274,10 @@ console.log('\nC. Proposition Telegram : textes V4.1 intégraux, boutons, canal 
   const htmlTg = msg.texte.replace(/<\/?(?:b|pre)>/g, '');
   verifie('proposition Telegram = HTML valide (aucun « < », « > » ni « & » nus) et ≤ 4096 caractères', !/[<>]/.test(htmlTg) && !/&(?!amp;|lt;|gt;|quot;)/.test(htmlTg) && msg.texte.length <= 4096, String(msg.texte.length));
   const cb = msg.markup.inline_keyboard.flat().map((b) => b.callback_data);
-  verifie('boutons : GO X + Facebook, GO Facebook seul, GO X seul, Refuser (callbacks ≤ 64 octets, décodables)', cb.length === 4 && cb.every((d) => d.length <= 64 && decoderCallback(d)?.type === 'SG' && DATA_RE.test(d)), cb.join(' '));
+  verifie('boutons : GO Facebook et GO X seulement (callbacks ≤ 64 octets, décodables) — ni « X + Facebook », ni « Refuser »', cb.length === 2 && cb.every((d) => /^sny:SG:(F|X):/.test(d)) && cb.every((d) => d.length <= 64 && decoderCallback(d)?.type === 'SG' && DATA_RE.test(d)), cb.join(' '));
   verifie('le worker n’accepte pas une action sociale inventée', !DATA_RE.test('sny:SG:Z:abcdef12') && !DATA_RE.test('sny:SG:XF:ZZZZZZZZ') && DATA_RE.test('sny:SG:R:abcdef12'));
   // V4.1 : le texte est celui du composeur de production du pilote (fait qualifié, source, réserve), jamais l'ancien gabarit générique
-  verifie('texte V4.1 : lieu + fait + réserve judiciaire + sources, pas l’ancien gabarit (« Nouvelle affaire documentée par la presse »)', !/Nouvelle affaire documentée par la presse/.test(p.texte_facebook + p.texte_x) && /Source : /.test(p.texte_facebook) && /\nActu\.fr : https:\/\/actu\.fr\/\S+$/.test(p.texte_x) && !/sousnosyeux/.test(p.texte_x));
+  verifie('texte V4.1 : lieu + fait + réserve judiciaire + sources, pas l’ancien gabarit (« Nouvelle affaire documentée par la presse »)', !/Nouvelle affaire documentée par la presse/.test(p.texte_facebook + p.texte_x) && /Source : /.test(p.texte_facebook) && /\n(Source : Actu\.fr\n)?https:\/\/actu\.fr\/\S+\nA suivre sur SNY : https:\/\/sousnosyeux\.org\/\S+$/.test(p.texte_x));
   verifie('X ≤ 280 caractères (comptage pondéré X : URL et domaines nus = 23)', poidsX(p.texte_x) <= 280, String(poidsX(p.texte_x)));
   // canal bloqué : X bloqué ⇒ pas de bouton X
   const w2 = monde({ t0: new Date(PARTIELLE.now.getTime() - 24 * H), candidats: [candNouvelle(new Date(PARTIELLE.now.getTime() - 24 * H), PARTIELLE.id)] });
@@ -356,75 +358,44 @@ async function aveGo(action, { pre = null, post = null, ficheHashServi = undefin
 }
 
 // =====================================================================
-console.log('\nD2. GO partiel : le canal laissé sans GO reste ouvert, une rédaction retravaillée est reproposée à ce seul canal');
+console.log('\nD2. Un seul message par événement : un GO par réseau (ajoutés les uns aux autres), l’absence de GO vaut refus');
 // =====================================================================
 {
   const now = NOUVELLE.now, t0 = T0_DEFAUT(now);
   const apres = (min) => new Date(now.getTime() + min * 6e4);
-  // Rédaction retravaillée (simulée) : le libellé de l'établissement change, donc le texte Facebook ; le dossier approuvé, lui, est inchangé.
+  const depart = async () => { const w = monde({ t0, candidats: [candNouvelle(t0)] }); await executerCycle(deps(w, now)); return w; };
+  const clic = (w, action, min) => enregistrerDecision({ port: w.port, action, cle: cleDe(w), now: apres(min), actif: true });
+  let w = await depart();
+  const boutons = propositions(w)[0].markup.inline_keyboard;
+  verifie('D2-1. un seul message, UNE ligne de boutons « GO Facebook » et « GO X » (ni « Refuser », ni « X + Facebook »)', propositions(w).length === 1 && boutons.length === 1 && boutons[0].map((b) => b.text).join() === 'GO Facebook,GO X' && !/:(R|XF):/.test(JSON.stringify(boutons)), JSON.stringify(boutons));
+  verifie('D2-1b. le message n’offre aucun refus : il dit que l’absence de GO vaut refus', /Sans GO, rien n’est publié/.test(propositions(w)[0].texte) && !/Refuser/.test(propositions(w)[0].texte));
+  // GO Facebook puis, plus tard, GO X sur le MÊME message : les deux comptent
+  const r1 = await clic(w, 'F', 10); await executerCycle(deps(w, apres(15)));
+  verifie('D2-2. GO Facebook → UN post Facebook, rien sur X', r1.issue === 'enregistree' && w.creations() === 1 && w.posts[0].channelId === 'chF' && w.props[0].decision === 'GO_F', JSON.stringify([r1.issue, w.creations()]));
+  const r2 = await clic(w, 'X', 20); await executerCycle(deps(w, apres(25)));
+  verifie('D2-3. GO X ajouté sur le même message → UN post X ; Facebook n’est pas republié ; décision cumulée GO_XF', r2.issue === 'enregistree' && w.creations() === 2 && w.posts.filter((p) => p.channelId === 'chF').length === 1 && w.posts.some((p) => p.channelId === 'chX') && w.props[0].decision === 'GO_XF' && w.props[0].canaux_autorises.join() === 'facebook,x', JSON.stringify([r2.issue, w.creations(), w.props[0].decision, w.props[0].canaux_autorises]));
+  verifie('D2-3b. l’annonce « Publication programmée » est faite pour chaque GO exécuté (Facebook, puis X)', w.telegram.filter((m) => m.alerte && /Publication programmée/.test(m.alerte)).map((m) => (/Facebook/.test(m.alerte) ? 'F' : 'X')).join('') === 'FX', JSON.stringify(w.telegram.filter((m) => m.alerte).map((m) => m.alerte.slice(0, 80))));
+  const r3 = await clic(w, 'X', 30);
+  verifie('D2-4. clic rejoué sur un réseau déjà autorisé → aucune écriture', r3.issue === 'double_clic' && w.creations() === 2);
+  verifie('D2-5. aucune proposition complémentaire ni second message, même si la rédaction change', w.props.length === 1 && propositions(w).length === 1);
+  // GO X seul : Facebook reste sans GO, jamais publié, jamais reproposé
+  w = await depart(); await clic(w, 'X', 10);
   const retravaille = (compo) => { const e = casesPubliques.get(NOUVELLE.id); compo.cases = new Map(casesPubliques); compo.cases.set(NOUVELLE.id, { ...e, etablissement: `${e.etablissement} (rédaction retravaillée)` }); };
-  const depart = async (action) => {
-    const w = monde({ t0, candidats: [candNouvelle(t0)] });
-    await executerCycle(deps(w, now));
-    await enregistrerDecision({ port: w.port, action, cle: cleDe(w), now: apres(10), actif: true });
-    await executerCycle(deps(w, apres(15)));
-    return w;
-  };
-  // 1. GO X seul puis cycles à rédaction inchangée : rien de nouveau (le GO partiel vaut décision sur ce texte)
-  let w = await depart('X');
-  for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(15 + i)));
-  verifie('GO X seul, rédaction Facebook inchangée → aucune proposition complémentaire, un seul message', w.props.length === 1 && propositions(w).length === 1 && w.creations() === 1);
-  // 2. rédaction retravaillée → UNE proposition Facebook seul
-  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
-  const comp = w.props.find((p) => p.event_key.includes('#'));
-  verifie('rédaction Facebook retravaillée → UNE proposition complémentaire, limitée à Facebook', w.props.length === 2 && comp?.canaux_proposes.join() === 'facebook' && comp.texte_x === null && comp.texte_facebook && comp.texte_facebook !== w.props[0].texte_facebook, JSON.stringify(w.props.map((p) => [p.event_key, p.canaux_proposes])));
-  verifie('la clé du complément garde la clé de l’événement (exclusions et recontrôle partent de la base)', comp.event_key.startsWith(`${w.props[0].event_key}#facebook:`));
-  const msg = propositions(w)[1];
-  const bt = msg?.markup.inline_keyboard.flat().map((b) => b.callback_data) ?? [];
-  verifie('message Telegram du complément : texte Facebook intégral, mention « Complément Facebook », seuls « GO Facebook seul » et « Refuser » proposés', !!msg && /Complément Facebook/.test(msg.texte) && !/<b>X<\/b>/.test(msg.texte) && bt.length === 2 && bt.some((d) => /:SG:F:/.test(d)) && bt.some((d) => /:SG:R:/.test(d)), JSON.stringify(bt));
-  verifie('aucun envoi Buffer tant que le complément n’a pas son GO', w.creations() === 1);
-  for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(30 + i), { compoMod: retravaille }));
-  verifie('cycles répétés : le complément n’est ni recréé ni renvoyé', w.props.length === 2 && propositions(w).length === 2);
-  // 3. GO Facebook sur le complément → UN post Facebook, texte retravaillé exact ; X n'est jamais republié
-  const idc = comp.proposal_id.slice(0, 8);
-  const rc = await enregistrerDecision({ port: w.port, action: 'F', cle: idc, now: apres(40), actif: true });
-  await executerCycle(deps(w, apres(45), { compoMod: retravaille }));
-  const fb = w.posts.filter((p) => p.channelId === 'chF'), xs = w.posts.filter((p) => p.channelId === 'chX');
-  verifie('GO sur le complément → UN post Facebook, EXACTEMENT le texte retravaillé proposé ; X inchangé (un seul post)', rc.issue === 'enregistree' && fb.length === 1 && fb[0].text === comp.texte_facebook && xs.length === 1 && w.creations() === 2, JSON.stringify([rc.issue, fb.length, xs.length]));
-  verifie('journal : X sous la clé de l’événement, Facebook sous celle du complément ; les deux propositions résolues « publie »', w.ledger.length === 2 && w.ledger.some((l) => l.canal === 'x' && l.event_key === w.props[0].event_key) && w.ledger.some((l) => l.canal === 'facebook' && l.event_key === comp.event_key) && w.props.every((p) => p.resolution === 'publie'));
-  const avant = w.props.length; for (let i = 1; i <= 3; i++) await executerCycle(deps(w, apres(45 + i), { compoMod: retravaille }));
-  verifie('après publication : plus aucune proposition, aucun post de plus', w.props.length === avant && w.creations() === 2);
-  // 4. refus du complément : la voie se ferme, même si la rédaction change encore
-  w = await depart('X');
-  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
-  const c4 = w.props.find((p) => p.event_key.includes('#'));
-  await enregistrerDecision({ port: w.port, action: 'R', cle: c4.proposal_id.slice(0, 8), now: apres(40), actif: true });
-  const retravaille2 = (compo) => { const e = casesPubliques.get(NOUVELLE.id); compo.cases = new Map(casesPubliques); compo.cases.set(NOUVELLE.id, { ...e, etablissement: `${e.etablissement} (encore retravaillée)` }); };
-  await executerCycle(deps(w, apres(50), { compoMod: retravaille2 }));
-  verifie('refus du complément → aucun post Facebook, aucune nouvelle proposition (le refus explicite ferme le canal)', w.props.length === 2 && w.creations() === 1 && w.props.every((p) => p.event_key.includes('#') ? p.decision === 'REFUS' : true));
-  // 5. GO X + Facebook : aucun canal ouvert, aucun complément
-  w = await depart('XF');
-  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
-  verifie('GO X + Facebook → aucun complément même si la rédaction change', w.props.length === 1 && w.creations() === 2);
-  // 6. refus de la proposition de base : pas de complément
-  const w6 = monde({ t0, candidats: [candNouvelle(t0)] });
-  await executerCycle(deps(w6, now)); await enregistrerDecision({ port: w6.port, action: 'R', cle: cleDe(w6), now: apres(10), actif: true });
-  await executerCycle(deps(w6, apres(30), { compoMod: retravaille }));
-  verifie('refus de la proposition de base → aucun complément', w6.props.length === 1 && w6.creations() === 0);
-  // 7. GO sur le complément puis rédaction changée avant l'envoi : GO périmé, rien ne part (identité)
-  w = await depart('X');
-  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
-  const c7 = w.props.find((p) => p.event_key.includes('#'));
-  await enregistrerDecision({ port: w.port, action: 'F', cle: c7.proposal_id.slice(0, 8), now: apres(40), actif: true });
-  await executerCycle(deps(w, apres(45), { compoMod: retravaille2 }));
-  verifie('GO donné sur une rédaction, puis rédaction modifiée avant l’envoi → GO périmé, zéro post Facebook, alerte', w.creations() === 1 && /^obsolete/.test(w.props.find((p) => p.proposal_id === c7.proposal_id).resolution ?? '') && w.telegram.some((m) => m.alerte && /GO social non exécuté/.test(m.alerte)), JSON.stringify(w.props.map((p) => p.resolution)));
-  // 8. exclusion définitive de la base (publication manuelle antérieure) : s'applique aussi au complément
-  w = monde({ t0, candidats: [candNouvelle(t0)], exclusions: [] });
-  await executerCycle(deps(w, now)); await enregistrerDecision({ port: w.port, action: 'X', cle: cleDe(w), now: apres(10), actif: true });
-  await executerCycle(deps(w, apres(15)));
-  w.exclusions.add(`${w.props[0].event_key}|facebook`);
-  await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
-  verifie('canal Facebook exclu (publié hors circuit) → aucun complément', w.props.length === 1);
+  await executerCycle(deps(w, apres(15))); await executerCycle(deps(w, apres(30), { compoMod: retravaille }));
+  verifie('D2-6. GO X seul : un post X, Facebook jamais publié, aucune nouvelle proposition (pas de « complément »)', w.creations() === 1 && w.posts[0].channelId === 'chX' && w.props.length === 1 && propositions(w).length === 1);
+  // L'absence de GO vaut refus : un GO tardif (après les 48 h) est refusé
+  const tard = await clic(w, 'F', 61 * 60);
+  verifie('D2-7. absence de GO = refus : un GO Facebook après les 48 h est refusé, Facebook n’est jamais publié', tard.issue === 'expiree' && w.creations() === 1 && !w.props[0].canaux_autorises.includes('facebook'));
+  // Messages déjà envoyés avant ce changement : leurs anciens boutons fonctionnent encore
+  w = await depart(); const rr = await clic(w, 'R', 10);
+  verifie('D2-8. ancien bouton « Refuser » d’un message déjà envoyé : toujours pris en compte (REFUS, zéro post)', rr.issue === 'enregistree' && w.props[0].decision === 'REFUS' && w.creations() === 0);
+  const apresRefus = await clic(w, 'F', 11);
+  verifie('D2-8b. un GO après un refus est sans effet', apresRefus.issue === 'double_clic' && w.creations() === 0);
+  // Un GO périmé n'autorise rien : le second GO sur une proposition refermée « bloque » est refusé
+  w = await depart(); await clic(w, 'F', 10);
+  await executerCycle(deps(w, apres(15), { compoMod: (c) => { c.ev.fiches_approuvees[NOUVELLE.id] = { hash: '0000000000000000' }; }, ficheHashServi: '0000000000000000' }));
+  const surBloquee = await clic(w, 'X', 20);
+  verifie('D2-9. GO périmé (fiche modifiée) : zéro post, et un GO X ajouté ensuite sur la proposition refermée est refusé', w.creations() === 0 && /^(obsolete|bloque)/.test(w.props[0].resolution ?? '') && surBloquee.issue === 'expiree', String(w.props[0].resolution));
 }
 
 // =====================================================================
@@ -512,7 +483,7 @@ console.log('\nG. Visuel commun X · Facebook · Instagram, texte X court, meill
   verifie('G1b. l’empreinte de CHAQUE canal couvre le visuel (autre visuel ⇒ autre empreinte)', p.identite.canaux.x.empreinte !== p.identite.canaux.facebook.empreinte && w.props.length === 1 && !!p.empreinte_x && !!p.empreinte_facebook);
   verifie('G2. aperçu Telegram : le visuel EXACT part d’abord (photo), puis le message — compteur X, textes intégraux, adresse du visuel, texte alternatif', w.photos.length === 1 && w.photos[0].url === im.url && /\/280 car\./.test(msg.texte) && msg.texte.includes(im.url) && /Texte alternatif joint/.test(msg.texte) && sansHtml(msg.texte).includes(p.texte_x) && sansHtml(msg.texte).includes(p.texte_facebook), msg.texte.slice(0, 200));
   verifie('G3. le texte Facebook proposé est STRICTEMENT celui d’avant l’évolution (fixture figée, composée par main avant le visuel partagé)', p.texte_facebook === FB_FIGE['FR-2026-0146 nouvelle'].texte);
-  verifie('G4. texte X : « lieu · fait (selon média). réserve », puis « Média : URL de l’article » ; ni lien SNY, ni « Suivi », ni « Source : » ; ≤ 280 (comptage pondéré)', /^Montpellier · .+ \(selon Actu\.fr\)\. .*ne vaut pas culpabilité\.\n\nActu\.fr : https:\/\/actu\.fr\/\S+$/s.test(p.texte_x) && !/sousnosyeux|Suivi|Source :/.test(p.texte_x) && poidsX(p.texte_x) <= 280, p.texte_x);
+  verifie('G4. texte X : « lieu : fait (selon média). réserve », l’adresse de l’article (pied compact : la ligne « Source : » ne tient pas), puis « A suivre sur SNY : fiche » — une ligne chacun ; ≤ 280 (comptage pondéré)', /^Montpellier · .+ \(selon Actu\.fr\)\. .*ne vaut pas culpabilité\.\nhttps:\/\/actu\.fr\/\S+\nA suivre sur SNY : https:\/\/sousnosyeux\.org\/affaires\/fr-2026-0146\/\S*$/s.test(p.texte_x) && !/\n\n/.test(p.texte_x) && poidsX(p.texte_x) <= 280, p.texte_x);
   await go(w, 'XF');
   await executerCycle(deps(w, apres(15)));
   const pX = w.appelsBuffer.find((a) => a.op === 'creerPost' && a.canal === 'x'), pF = w.appelsBuffer.find((a) => a.op === 'creerPost' && a.canal === 'facebook');
@@ -540,7 +511,7 @@ console.log('\nG. Visuel commun X · Facebook · Instagram, texte X court, meill
   const wE = monde({ t0: t0E, candidats: [candEvolution(t0E)] });
   await executerCycle(deps(wE, EVOLUTION.now));
   const pE = wE.props[0];
-  verifie('G9. évolution : X dit QUOI et QUAND (« mise en examen le 22 mai 2026 pour … »), réserve, média : URL ; Facebook = fixture figée', /^Paris 7e · .+ : mise en examen le 22 mai 2026 pour .+ \(selon franceinfo\)\. La mise en examen ne vaut pas culpabilité\.\n\nfranceinfo : https:\/\/www\.franceinfo\.fr\/\S+$/s.test(pE.texte_x) && pE.texte_facebook === FB_FIGE['FR-2026-0005 évolution'].texte, pE.texte_x);
+  verifie('G9. évolution : X dit QUOI et QUAND (« mise en examen le 22 mai 2026 pour … »), réserve, « Source : média », adresse, « A suivre sur SNY » ; Facebook = fixture figée', /^Paris 7e · .+ : mise en examen le 22 mai 2026 pour .+ \(selon franceinfo\)\. La mise en examen ne vaut pas culpabilité\.\n(Source : franceinfo\n)?https:\/\/www\.franceinfo\.fr\/\S+\nA suivre sur SNY : https:\/\/sousnosyeux\.org\/\S+$/s.test(pE.texte_x) && pE.texte_facebook === FB_FIGE['FR-2026-0005 évolution'].texte, pE.texte_x);
 
   // --- E10 : X trop long ⇒ MEILLEURE TENTATIVE montrée, X non envoyable ; Facebook et son visuel ne sont pas bloqués
   const long = (c) => { c.cases = new Map(c.cases); c.cases.set(NOUVELLE.id, { ...c.cases.get(NOUVELLE.id), etablissement: `école maternelle ${'Johann-Wolfgang-Von-Goethe-'.repeat(6)}Goethe` }); };
@@ -641,7 +612,7 @@ console.log('\nH. Pare-feu éditorial (1 changement judiciaire + 1 prise de paro
   wR = await anterieure();
   await executerCycle({ ...deps(wR, apresR(1)), reproposer: new Set([cle]) });
   const [vieille, neuve] = wR.props;
-  verifie('H15. événement nommé : la proposition antérieure est REFERMÉE sans décision (« remplacee ») et une proposition AVEC visuel la remplace', wR.props.length === 2 && vieille.decision === null && /^remplacee:/.test(vieille.resolution ?? '') && neuve.event_key === `${cle}#visuel:${vieille.proposal_id.slice(0, 8)}` && !!neuve.identite.image && neuve.canaux_proposes.join() === 'x,facebook', JSON.stringify(wR.props.map((p) => [p.event_key, p.resolution])));
+  verifie('H15. événement nommé : la proposition antérieure est REFERMÉE sans décision (« remplacee ») et une proposition commune AVEC visuel la remplace', wR.props.length === 2 && vieille.decision === null && /^remplacee:/.test(vieille.resolution ?? '') && neuve.event_key === `${cle}#commun:${vieille.proposal_id.slice(0, 8)}` && !!neuve.identite.image && neuve.canaux_proposes.join() === 'x,facebook', JSON.stringify(wR.props.map((p) => [p.event_key, p.resolution])));
   verifie('H16. la remplaçante est envoyée avec le visuel exact (photo puis message) ; textes X et Facebook = ceux de la proposition normale', wR.photos.length === 1 && propositions(wR).length === 1 && neuve.texte_facebook === lire('scripts/qa/fixtures/facebook-textes-figes.json')['FR-2026-0146 nouvelle'].texte && propositions(wR)[0].texte.includes(`Remplace la proposition ${vieille.proposal_id.slice(0, 8)}`));
   const reproposable = JSON.parse(readFileSync(join(racine, 'data/relais-reproposer.json'), 'utf8'));
   verifie('H16b. data/relais-reproposer.json : liste explicite de clés d’événement valides (aucun joker)', Array.isArray(reproposable.evenements) && reproposable.evenements.every((k) => /^(new_case\|FR-\d{4}-\d{4}|case_update\|FR-\d{4}-\d{4}\|[a-z0-9-]+)$/.test(k)), JSON.stringify(reproposable));

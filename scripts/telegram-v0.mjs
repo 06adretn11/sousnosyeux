@@ -459,7 +459,7 @@ async function clicSocial(cb, action, cle) {
     await rep('Décision enregistrée.');
     await dit(r.decision === 'REFUS'
       ? `⛔ <b>Refusé</b> (${cle}). Aucune publication, ni maintenant ni plus tard.`
-      : `✅ <b>GO social enregistré : ${canaux}</b> (${cle})\nRecontrôle (éligibilité, source, texte, version approuvée) puis programmation avec délai d’annulation : tu recevras la confirmation, ou le motif si le recontrôle bloque. Rien n’a encore été envoyé à Buffer.`);
+      : `✅ <b>GO social enregistré : ${canaux}</b> (${cle})\nRecontrôle (éligibilité, source, texte, visuel, version approuvée) puis programmation avec délai d’annulation : tu recevras la confirmation, ou le motif si le recontrôle bloque. Rien n’a encore été envoyé à Buffer. Les autres réseaux de ce message restent ouverts jusqu’à son expiration ; sans GO, rien n’y est publié.`);
   } else if (r.issue === 'double_clic') { console.log(`relais social : double clic sur ${cle} : aucune écriture`); await rep(`Déjà enregistrée (${r.decision ?? r.proposition?.decision}).`); }
   else if (r.issue === 'expiree') { await rep('Proposition expirée.'); await dit(`⌛ <b>Proposition expirée</b> (${cle}) : le GO arrive trop tard, rien n’est publié. Une nouvelle proposition sera faite si l’événement reste éligible.`); }
   else if (r.issue === 'inactif') { await rep('Relais social désactivé.'); await dit(`🔒 <b>Relais social désactivé</b> (coupe-circuit ou T0 non vérifié) : ton GO (${cle}) n’est PAS enregistré, rien n’est publié.`); }
