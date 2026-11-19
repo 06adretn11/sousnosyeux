@@ -4,7 +4,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, valeursAutorisees, decomposerAttribution, gardes, longueurX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, valeursAutorisees, decomposerAttribution, gardes, longueurX, poidsX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
 import { genererBanc, htmlBanc, mdBanc } from '../banc-social.mjs';
@@ -55,7 +55,7 @@ const publies = banc.resultats.flatMap((r) => ['x', 'facebook'].map((c) => ({ r,
 verifie('au moins 8 messages générés (hors blocages)', publies.length >= 8, String(publies.length));
 for (const { r, c, k } of publies) {
   verifie(`${r.id} ${c} : 100 % des contrôles automatisés passent`, k.controles.every((x) => x.ok), k.controles.filter((x) => !x.ok).map((x) => x.nom).join(', '));
-  if (c === 'x') verifie(`${r.id} X ≤ ${LIMITE_X} (URL = 23)`, longueurX(k.texte) <= LIMITE_X, String(longueurX(k.texte)));
+  if (c === 'x') verifie(`${r.id} X ≤ ${LIMITE_X} (comptage pondéré, URL = 23)`, poidsX(k.texte) <= LIMITE_X, String(poidsX(k.texte)));
   verifie(`${r.id} ${c} : réserve judiciaire présente`, RE_RESERVE.test(k.texte));
   verifie(`${r.id} ${c} : lien source = média cité dans le texte`, !k.source || k.texte.includes(k.source.url) && k.texte.toLowerCase().includes(String(k.source.media).toLowerCase().split(/[ (]/)[0]) || /selon franceinfo|selon france info/i.test(k.texte), k.source?.media);
 }
@@ -206,7 +206,7 @@ section('7. V4.1 — D1, D3, concordance des sources (S01, S03) et Montpellier (
 // D1 : aucune qualification raccourcie ; le X de S01 garde la circonstance aggravante et tient grâce au pied compact (contenu inchangé).
 { const d13 = dossierFiche('FR-2026-0113').d; const q = qualification('enquête', [{ texte: d13.etat_actuel[0], origine: 'x' }], cases.get('FR-2026-0113'));
   verifie('D1 : la qualification n’a plus de variante raccourcie', q && !('court' in q) && /par personne ayant autorité$/.test(q.qualif), JSON.stringify(q));
-  verifie('D1 : X de S01 = qualification COMPLÈTE (« par personne ayant autorité »), réserve et deux liens, ≤ 280', /mineurs de 15 ans par personne ayant autorité \(selon France 3/.test(R.S01.canaux.x.texte) && RE_RESERVE.test(R.S01.canaux.x.texte) && R.S01.canaux.x.urls.length === 2 && R.S01.canaux.x.longueur <= LIMITE_X, R.S01.canaux.x.texte);
+  verifie('D1 : X de S01 = qualification COMPLÈTE (« par personne ayant autorité »), réserve et lien de l’article (« Média : URL »), ≤ 280 (comptage pondéré)', /mineurs de 15 ans par personne ayant autorité \(selon France 3/.test(R.S01.canaux.x.texte) && RE_RESERVE.test(R.S01.canaux.x.texte) && R.S01.canaux.x.urls.length === 1 && /\nFrance 3 [^\n:]+ : https:\/\/\S+$/.test(R.S01.canaux.x.texte) && R.S01.canaux.x.longueur <= LIMITE_X, R.S01.canaux.x.texte);
   verifie('D1 : aucun X du banc ne porte une qualification amputée de sa circonstance (« sur mineurs de 15 ans (selon »)', !banc.resultats.some((r) => /mineurs de 15 ans \(selon/.test(r.canaux.x.texte ?? ''))); }
 // D3 : contestation rapportée, sans registre émotionnel ; le texte est le DÉBUT EXACT de la phrase approuvée.
 verifie('D3 : S02 rapporte la contestation (« nie avec fermeté l’accusation de viol »), sans « humilié » ni « effondré »', /nie avec fermeté l'accusation de viol\./.test(R.S02.canaux.facebook.texte) && !/humili|effondr/i.test(R.S02.canaux.facebook.texte));

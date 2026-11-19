@@ -19,18 +19,18 @@ export const ABANDON_RESERVE_H = 24;
  * Journal attendu : lire(key, canal) → ligne|null · reserver(ligne) → true si INSÉRÉE, false si elle existait · maj(key, canal, patch) · lignesOuvertes() → lignes soumis|programme|envoye|reserve.
  * Buffer attendu : creerPost · lirePost · trouverPost · supprimerPost (voir lib/buffer.mjs).
  */
-export async function diffuserCanal({ ev, canal, texte, channelId, imageUrl = null, lien = null, ledger, buffer, now, delaiMin = 15, alerter = async () => {} }) {
+export async function diffuserCanal({ ev, canal, texte, channelId, imageUrl = null, altText = null, lien = null, ledger, buffer, now, delaiMin = 15, alerter = async () => {} }) {
   const row = await ledger.lire(ev.event_key, canal);
-  if (row) return row.etat === 'reserve' ? reconcilierReserve({ row, canal, channelId, imageUrl, lien, ledger, buffer, now, delaiMin, alerter }) : { canal, action: 'deja', etat: row.etat };
+  if (row) return row.etat === 'reserve' ? reconcilierReserve({ row, canal, channelId, imageUrl, altText, lien, ledger, buffer, now, delaiMin, alerter }) : { canal, action: 'deja', etat: row.etat };
   const inseree = await ledger.reserver({ event_key: ev.event_key, canal, type_event: ev.type, case_id: ev.case_id, texte });
   if (!inseree) return { canal, action: 'deja', etat: 'reserve' }; // un autre passage vient de la réserver
-  return creer({ ev, canal, texte, channelId, imageUrl, lien, ledger, buffer, now, delaiMin });
+  return creer({ ev, canal, texte, channelId, imageUrl, altText, lien, ledger, buffer, now, delaiMin });
 }
 
-async function creer({ ev, canal, texte, channelId, imageUrl, lien, ledger, buffer, now, delaiMin }) {
+async function creer({ ev, canal, texte, channelId, imageUrl, altText, lien, ledger, buffer, now, delaiMin }) {
   const dueAt = new Date(now.getTime() + delaiMin * MIN).toISOString();
   try {
-    const post = await buffer.creerPost({ channelId, canal, texte, dueAt, imageUrl, avecLienFacebook: canal === 'facebook' ? lien : null });
+    const post = await buffer.creerPost({ channelId, canal, texte, dueAt, imageUrl, altText, avecLienFacebook: canal === 'facebook' ? lien : null });
     const e = etatDepuisBuffer(post);
     await ledger.maj(ev.event_key, canal, { etat: e.etat === 'programme' ? 'programme' : 'soumis', buffer_post_id: post.id, soumis_at: now });
     return { canal, action: 'cree', etat: e.etat === 'programme' ? 'programme' : 'soumis', dueAt };
@@ -42,7 +42,7 @@ async function creer({ ev, canal, texte, channelId, imageUrl, lien, ledger, buff
   }
 }
 
-async function reconcilierReserve({ row, canal, channelId, imageUrl, lien, ledger, buffer, now, delaiMin, alerter }) {
+async function reconcilierReserve({ row, canal, channelId, imageUrl, altText, lien, ledger, buffer, now, delaiMin, alerter }) {
   const age = now.getTime() - new Date(row.created_at).getTime();
   if (age > ABANDON_RESERVE_H * 60 * MIN) {
     await ledger.maj(row.event_key, canal, { etat: 'echec', erreur: `réponse restée incertaine plus de ${ABANDON_RESERVE_H} h : abandon, aucune republication automatique` });
@@ -60,7 +60,7 @@ async function reconcilierReserve({ row, canal, channelId, imageUrl, lien, ledge
   }
   if (age < GRACE_REESSAI_MIN * MIN) return { canal, action: 'attente', raison: 'aucun post retrouvé, délai de grâce non écoulé' };
   // Lecture réussie, rien trouvé, délai écoulé : le createPost n'a pas eu lieu. UNE nouvelle création, journalisée.
-  return creer({ ev: { event_key: row.event_key, type: row.type_event, case_id: row.case_id }, canal, texte: row.texte, channelId, imageUrl, lien, ledger, buffer, now, delaiMin });
+  return creer({ ev: { event_key: row.event_key, type: row.type_event, case_id: row.case_id }, canal, texte: row.texte, channelId, imageUrl, altText, lien, ledger, buffer, now, delaiMin });
 }
 
 /** Suivi d'une ligne ouverte : Buffer a-t-il programmé / envoyé / refusé ? Met le journal à jour ; alerte en cas d'échec distant. */
