@@ -260,13 +260,6 @@
           "is_primary": false
         },
         {
-          "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
-          "media": "Le Journal du Dimanche",
-          "publication_date": "2026-05-20",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://www.lejdd.fr/Societe/periscolaire-a-paris-la-mairie-accusee-davoir-maintenu-un-animateur-malgre-une-plainte-pour-agressions-sexuelles-174609",
           "media": "Le Journal du Dimanche",
           "publication_date": "2026-05-23",
@@ -277,6 +270,13 @@
           "url": "https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787",
           "media": "Le Journal du Dimanche",
           "publication_date": "2026-10-11",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+          "media": "Le Journal du Dimanche",
+          "publication_date": "2026-05-20",
           "source_type": "presse",
           "is_primary": false
         },
@@ -1503,6 +1503,13 @@
           "is_primary": true
         },
         {
+          "url": "https://www.20minutes.fr/justice/4191190-20251214-nantes-animateur-personne-voyait-jamais-juge-agressions-sexuelles-13-enfants",
+          "media": "20 Minutes",
+          "publication_date": "2025-12-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/reze-l-ex-animateur-periscolaire-soupconne-d-agressions-sexuelles-sera-rejuge-en-novembre-a-rennes-8058661",
           "media": "ICI",
           "publication_date": "2026-06-09",
@@ -1517,13 +1524,6 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/societe/justice/ex-animateur-periscolaire-juge-a-nantes-pour-agressions-sexuelles-sur-des-enfants-ces-faits-ne-se-sont-pas-produits-6734d21c-d99a-11f0-9f4a-0c1392737a7e",
-          "media": "Ouest-France",
-          "publication_date": "2025-12-15",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://www.ouest-france.fr/societe/justice/proces-des-agressions-sexuelles-denfants-dans-deux-ecoles-a-reze-ce-sont-des-gestes-subreptices-dont-on-parle-3cb7ea2e-e35d-11f1-a3b1-0c6de532ce7d",
           "media": "Ouest-France",
           "publication_date": "2026-11-18",
@@ -1531,9 +1531,23 @@
           "is_primary": false
         },
         {
+          "url": "https://www.ouest-france.fr/societe/justice/ex-animateur-periscolaire-juge-a-nantes-pour-agressions-sexuelles-sur-des-enfants-ces-faits-ne-se-sont-pas-produits-6734d21c-d99a-11f0-9f4a-0c1392737a7e",
+          "media": "Ouest-France",
+          "publication_date": "2025-12-15",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
           "media": "ici",
           "publication_date": "2026-11-15",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://infos-media-nantes.fr/reze-proces-appel-animateur-periscolaire-rennes-novembre-2026/",
+          "media": "infos-media-nantes.fr",
+          "publication_date": "2026-11-18",
           "source_type": "presse",
           "is_primary": false
         }
@@ -2208,7 +2222,7 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
           "media": "ici",
           "publication_date": "2026-10-07",
           "source_type": "presse",
@@ -2222,7 +2236,7 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
           "media": "ici",
           "publication_date": "2026-10-07",
           "source_type": "presse",
