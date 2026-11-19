@@ -184,8 +184,8 @@
     ],
     "FR-2026-0133": [
       {
-        "event_id": "6d68d709-5b7e-474c-8e80-a03b60732a64",
-        "date": "2026-11-09",
+        "event_id": "ac1fa42f-f810-4b77-aaec-5650861cbde1",
+        "date": "2026-11-16",
         "type": "mobilisation",
         "statut": null,
         "libelle": "Selon la presse, des parents ont annoncé une mobilisation.",
@@ -755,30 +755,7 @@
       },
       "etablissement": "centre de loisirs de Rots",
       "case_id": "FR-2026-0133",
-      "event_id": "6d68d709-5b7e-474c-8e80-a03b60732a64",
-      "destinations": {
-        "fiche": "FR-2026-0133",
-        "hubs": []
-      }
-    },
-    {
-      "id": "8a9c37a5c02c",
-      "nature": "mobilisation",
-      "libelle": "Selon la presse, des parents ont annoncé une mobilisation.",
-      "realisation": "annoncée",
-      "portee": "établissement",
-      "acteur": "parents",
-      "territoire": null,
-      "date": "2026-11-09",
-      "periode": null,
-      "source": {
-        "media": "ici",
-        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
-        "publie_le": "2026-11-15"
-      },
-      "etablissement": "centre de loisirs de Rots",
-      "case_id": "FR-2026-0133",
-      "event_id": "6d68d709-5b7e-474c-8e80-a03b60732a64",
+      "event_id": "ac1fa42f-f810-4b77-aaec-5650861cbde1",
       "destinations": {
         "fiche": "FR-2026-0133",
         "hubs": []
@@ -878,30 +855,7 @@
       },
       "etablissement": "centre de loisirs de Rots",
       "case_id": "FR-2026-0133",
-      "event_id": "6d68d709-5b7e-474c-8e80-a03b60732a64",
-      "destinations": {
-        "fiche": "FR-2026-0133",
-        "hubs": []
-      }
-    },
-    {
-      "id": "d833b3f91e05",
-      "nature": "mobilisation",
-      "libelle": "Selon la presse, des parents ont annoncé un rassemblement.",
-      "realisation": "annoncée",
-      "portee": "établissement",
-      "acteur": "parents",
-      "territoire": null,
-      "date": "2026-11-09",
-      "periode": null,
-      "source": {
-        "media": "ici",
-        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
-        "publie_le": "2026-11-15"
-      },
-      "etablissement": "centre de loisirs de Rots",
-      "case_id": "FR-2026-0133",
-      "event_id": "6d68d709-5b7e-474c-8e80-a03b60732a64",
+      "event_id": "ac1fa42f-f810-4b77-aaec-5650861cbde1",
       "destinations": {
         "fiche": "FR-2026-0133",
         "hubs": []
