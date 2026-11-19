@@ -18,7 +18,7 @@ import { signatureTexte } from '../lib/diffusion-sociale.mjs';
 import { decoderCallback } from '../lib/telegram-clics.mjs';
 import { DATA_RE } from '../../workers/telegram-webhook/worker.mjs';
 import { verifierActivation, executerCycle, enregistrerDecision, evaluerCandidat, controlerFraicheur, decouperInstructions, instructionDestructrice, boutonsProposition,
-  CANAUX_RELAIS, T0_PLANCHER, sha256, empreinteTexte, motifsPublics } from '../lib/relais-social.mjs';
+  CANAUX_RELAIS, T0_PLANCHER, sha256, empreinteTexte, motifsPublics, controlerPareFeu, themeDe } from '../lib/relais-social.mjs';
 
 let ko = 0;
 const verifie = (nom, cond, detail = '') => { console.log(`  ${cond ? '✅' : '❌'} ${nom}${cond ? '' : ' — ' + String(detail).slice(0, 400)}`); if (!cond) ko++; };
@@ -85,6 +85,7 @@ function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, fich
     exclusionsDe: async (k) => new Set(CANAUX_RELAIS.filter((c) => w.exclusions.has(`${k}|${c}`))),
     empreinteTexteExclue: async (c, h) => w.empreintesExclues.has(`${c}|${h}`),
     ledgerDe: async (k) => w.ledger.some((l) => l.event_key === k),
+    diffusionsDeAffaire: async (id) => w.ledger.filter((l) => l.case_id === id).map(clone),
     lignesOuvertes: async () => w.ledger.filter((l) => ['reserve', 'soumis', 'programme', 'envoye', 'verifie'].includes(l.etat)).map(clone),
     etatsAffaires: async (ids) => ids.map((id) => ({ case_id: id, ps: w.ps[id] ?? 'publiée', retire: !!w.retire[id] })),
   }, { get: (t, k) => (typeof t[k] === 'function' ? (...a) => { w.compteurPort++; return t[k](...a); } : t[k]) });
@@ -587,6 +588,76 @@ console.log('\nG. Visuel commun X · Facebook · Instagram, texte X court, meill
   const ig0 = composerInstagram({ ...candNouvelle(t0), event_key: 'new_case|FR-2026-0146' }, deps(w, now).compo);
   const alt = texteAlternatif(ig0.spec);
   verifie('G15. texte alternatif : dérivé de la spécification validée (lieu, libellé, faits, réserve, sources), ≤ 1000 caractères, sans appel de modèle ; trop long ⇒ aucun plutôt que coupé', !!alt && [...alt].length <= 1000 && ig0.spec.reserves.every((r) => alt.includes(r)) && ig0.spec.sources.every((s) => alt.includes(s)) && ig0.spec.faits.every((f) => alt.includes(f)) && texteAlternatif({ ...ig0.spec, faits: ['x'.repeat(1200)] }) === null, alt);
+}
+
+// =====================================================================
+console.log('\nH. Pare-feu éditorial (1 changement judiciaire + 1 prise de parole par affaire, canal et jour) et reproposition ciblée');
+// =====================================================================
+{
+  const now = new Date('2026-11-19T10:00:00Z');
+  const ligne = (cle, canal, etat = 'programme', cree = now) => ({ event_key: cle, canal, etat, created_at: cree });
+  const PAROLE = 'case_update|FR-2026-0133|parole-156fffa5-7', PAROLE2 = 'case_update|FR-2026-0133|parole-156fffa5-5', NOUVELLE_K = 'new_case|FR-2026-0133', EVO = 'case_update|FR-2026-0133|mise-en-examen';
+  const pf = (cle, canal, diffusions, n = now) => controlerPareFeu({ event_key: cle, canal, diffusions, now: n });
+  verifie('H1. thèmes : « parole-… » = prise de parole ; nouvelle affaire, évolution de statut, étape de procédure = changement judiciaire (suffixes de proposition ignorés)', themeDe(PAROLE) === 'parole' && themeDe(`${PAROLE}#visuel:ab12cd34`) === 'parole' && themeDe(NOUVELLE_K) === 'judiciaire' && themeDe(EVO) === 'judiciaire' && themeDe('case_update|FR-2026-0133|etape-156fffa5-0') === 'judiciaire');
+  verifie('H2. une 2e prise de parole le même jour, sur le même canal, est refusée ; 2 paroles = 2 posts ⇒ jamais', pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook')]).length === 1 && /pare-feu/.test(pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook')])[0]));
+  verifie('H3. un post judiciaire ET un post de parole le même jour : permis (2 thèmes, 2 posts maximum)', pf(PAROLE, 'facebook', [ligne(EVO, 'facebook')]).length === 0 && pf(EVO, 'facebook', [ligne(PAROLE, 'facebook')]).length === 0);
+  verifie('H4. 2 changements judiciaires le même jour (nouvelle affaire puis évolution) : le second est refusé', pf(EVO, 'x', [ligne(NOUVELLE_K, 'x')]).length === 1);
+  verifie('H5. le compte est PAR CANAL : un post sur Facebook ne ferme pas X', pf(PAROLE2, 'x', [ligne(PAROLE, 'facebook')]).length === 0);
+  verifie('H6. une ligne annulée ou en échec n’est pas un post : elle ne compte pas', pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook', 'annule'), ligne(PAROLE, 'facebook', 'echec')]).length === 0);
+  verifie('H7. la veille (jour de Paris) ne compte pas ; 23 h 30 UTC est déjà le lendemain à Paris', pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook', 'programme', new Date('2026-11-18T10:00:00Z'))]).length === 0
+    && pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook', 'programme', new Date('2026-11-19T22:30:00Z'))], new Date('2026-11-19T23:30:00Z')).length === 0 && pf(PAROLE2, 'facebook', [ligne(PAROLE, 'facebook', 'programme', new Date('2026-11-19T22:30:00Z'))], new Date('2026-11-19T22:45:00Z')).length === 1);
+  verifie('H8. les lignes du MÊME événement (reprise, complément, remplaçante) ne comptent jamais contre lui-même', pf(PAROLE, 'facebook', [ligne(`${PAROLE}#facebook:ab12cd34`, 'facebook'), ligne(PAROLE, 'facebook')]).length === 0);
+
+  // --- intégration (affaire FR-2026-0146, Montpellier) : un post judiciaire du jour est déjà dans le journal
+  const t0P = T0_DEFAUT(NOUVELLE.now), jour = (m) => new Date(NOUVELLE.now.getTime() + m * 6e4);
+  const postDuJour = (w, canal, cle = 'case_update|FR-2026-0146|mise-en-examen', etat = 'programme') => w.ledger.push({ event_key: cle, canal, case_id: NOUVELLE.id, type_event: 'case_update', etat, texte: 't', created_at: NOUVELLE.now });
+  const wA = monde({ t0: t0P, candidats: [candNouvelle(t0P)] }); postDuJour(wA, 'x'); postDuJour(wA, 'facebook');
+  const lignes = []; await executerCycle({ ...deps(wA, jour(5)), log: (m) => lignes.push(m) });
+  verifie('H9. changement judiciaire déjà posté aujourd’hui sur X et Facebook : AUCUNE proposition pour un 2e (silence « pare-feu » journalisé, sans texte ni adresse), aucun rendu, aucun message', wA.props.length === 0 && propositions(wA).length === 0 && wA.rendus === 0 && /SILENCE[^\n]*pare-feu/.test(lignes.join('\n')) && !/https?:\/\//.test(lignes.join('\n')), lignes.join(' / '));
+  const wB = monde({ t0: t0P, candidats: [candNouvelle(t0P)] }); postDuJour(wB, 'x');
+  await executerCycle(deps(wB, jour(5)));
+  verifie('H10. le compte est par canal : X déjà servi aujourd’hui ⇒ seule Facebook est proposée (X reste visible comme refusé par le pare-feu, aucun bouton X)', wB.props.length === 1 && wB.props[0].canaux_proposes.join() === 'facebook' && /X BLOQUÉ[^\n]*pare-feu/.test(propositions(wB)[0].texte) && !propositions(wB)[0].markup.inline_keyboard.flat().some((b) => /:(X|XF):/.test(b.callback_data)));
+  const wC = monde({ t0: t0P, candidats: [candNouvelle(t0P)] }); postDuJour(wC, 'x'); postDuJour(wC, 'facebook');
+  await executerCycle(deps(wC, jour(26 * 60)));
+  verifie('H11. le lendemain (jour de Paris suivant) : l’événement est proposé', wC.props.length === 1 && wC.props[0].canaux_proposes.join() === 'x,facebook');
+  // GO donné AVANT que le pare-feu ne s'applique, un autre post du même thème part ensuite : le GO est refusé à l'exécution
+  const wD = monde({ t0: t0P, candidats: [candNouvelle(t0P)] });
+  await executerCycle(deps(wD, jour(1)));
+  await enregistrerDecision({ port: wD.port, action: 'XF', cle: cleDe(wD), now: jour(5), actif: true });
+  postDuJour(wD, 'x'); postDuJour(wD, 'facebook');
+  await executerCycle(deps(wD, jour(20)));
+  verifie('H12. GO donné, puis un autre post judiciaire du jour part avant lui : le GO est REFUSÉ à l’exécution (aucun post), alerte, proposition conservée avec son motif', wD.creations() === 0 && /^bloque: pare-feu/.test(wD.props[0].resolution ?? '') && wD.telegram.some((m) => m.alerte && /GO social non exécuté/.test(m.alerte) && /pare-feu/.test(m.alerte)), String(wD.props[0].resolution));
+  const wE = monde({ t0: t0P, candidats: [candNouvelle(t0P)] }); postDuJour(wE, 'x', 'case_update|FR-2026-0146|mise-en-examen', 'annule'); postDuJour(wE, 'facebook', 'case_update|FR-2026-0146|mise-en-examen', 'echec');
+  await executerCycle(deps(wE, jour(5)));
+  verifie('H13. des lignes annulées ou en échec ne sont pas des posts : l’événement est proposé normalement', wE.props.length === 1 && wE.props[0].canaux_proposes.join() === 'x,facebook');
+
+  // --- reproposition ciblée d'une proposition ANTÉRIEURE au visuel (jamais décidée) : remplacée, sans décision, seulement si l'événement est NOMMÉ
+  const nowR = NOUVELLE.now, t0R = T0_DEFAUT(nowR), apresR = (m) => new Date(nowR.getTime() + m * 6e4);
+  const cle = `new_case|${NOUVELLE.id}`;
+  const anterieure = async () => { const w = monde({ t0: t0R, candidats: [candNouvelle(t0R)] }); await executerCycle(deps(w, nowR)); delete w.props[0].identite.image; w.photos.length = 0; w.telegram.length = 0; w.rendus = 0; return w; };
+  let wR = await anterieure();
+  await executerCycle(deps(wR, apresR(1)));
+  verifie('H14. sans nomination, la proposition antérieure reste telle quelle (aucune nouvelle proposition, aucun message)', wR.props.length === 1 && wR.props[0].resolution === null && propositions(wR).length === 0);
+  wR = await anterieure();
+  await executerCycle({ ...deps(wR, apresR(1)), reproposer: new Set([cle]) });
+  const [vieille, neuve] = wR.props;
+  verifie('H15. événement nommé : la proposition antérieure est REFERMÉE sans décision (« remplacee ») et une proposition AVEC visuel la remplace', wR.props.length === 2 && vieille.decision === null && /^remplacee:/.test(vieille.resolution ?? '') && neuve.event_key === `${cle}#visuel:${vieille.proposal_id.slice(0, 8)}` && !!neuve.identite.image && neuve.canaux_proposes.join() === 'x,facebook', JSON.stringify(wR.props.map((p) => [p.event_key, p.resolution])));
+  verifie('H16. la remplaçante est envoyée avec le visuel exact (photo puis message) ; textes X et Facebook = ceux de la proposition normale', wR.photos.length === 1 && propositions(wR).length === 1 && neuve.texte_facebook === lire('scripts/qa/fixtures/facebook-textes-figes.json')['FR-2026-0146 nouvelle'].texte && propositions(wR)[0].texte.includes(`Remplace la proposition ${vieille.proposal_id.slice(0, 8)}`));
+  const reproposable = JSON.parse(readFileSync(join(racine, 'data/relais-reproposer.json'), 'utf8'));
+  verifie('H16b. data/relais-reproposer.json : liste explicite de clés d’événement valides (aucun joker)', Array.isArray(reproposable.evenements) && reproposable.evenements.every((k) => /^(new_case\|FR-\d{4}-\d{4}|case_update\|FR-\d{4}-\d{4}\|[a-z0-9-]+)$/.test(k)), JSON.stringify(reproposable));
+  await executerCycle({ ...deps(wR, apresR(2)), reproposer: new Set([cle]) }); await executerCycle({ ...deps(wR, apresR(3)), reproposer: new Set([cle]) });
+  verifie('H17. passages répétés : ni doublon, ni second message', wR.props.length === 2 && propositions(wR).length === 1 && wR.photos.length === 1);
+  const clicVieux = await enregistrerDecision({ port: wR.port, action: 'XF', cle: vieille.proposal_id.slice(0, 8), now: apresR(5), actif: true });
+  verifie('H18. un clic sur l’ancienne proposition refermée n’enregistre AUCUNE décision', clicVieux.issue === 'expiree' && vieille.decision === null);
+  await enregistrerDecision({ port: wR.port, action: 'XF', cle: neuve.proposal_id.slice(0, 8), now: apresR(10), actif: true });
+  await executerCycle({ ...deps(wR, apresR(30)), reproposer: new Set([cle]) });
+  verifie('H19. GO sur la remplaçante : X et Facebook partent AVEC le visuel ; le journal porte la clé de la remplaçante', wR.creations() === 2 && wR.appelsBuffer.filter((a) => a.op === 'creerPost').every((a) => a.imageUrl === neuve.identite.image.url) && wR.ledger.every((l) => l.event_key === neuve.event_key), JSON.stringify(wR.ledger.map((l) => l.event_key)));
+  // remplaçante dont le message n'est pas parti (photo Telegram refusée) : renvoyée au passage suivant, une seule fois
+  const wP = await anterieure(); wP.pannes.photo = true;
+  await executerCycle({ ...deps(wP, apresR(1)), reproposer: new Set([cle]) });
+  const sansMessage = wP.props.length === 2 && wP.props[1].telegram_message_id == null && propositions(wP).length === 0;
+  wP.pannes.photo = false; await executerCycle({ ...deps(wP, apresR(2)), reproposer: new Set([cle]) }); await executerCycle({ ...deps(wP, apresR(3)), reproposer: new Set([cle]) });
+  verifie('H20. remplaçante créée mais non envoyée (photo refusée) : renvoyée au passage suivant, une seule fois', sansMessage && propositions(wP).length === 1 && wP.photos.length === 1);
 }
 
 // =====================================================================

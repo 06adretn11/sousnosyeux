@@ -16,7 +16,7 @@
 //   · un événement n'est diffusé qu'UNE fois sur Instagram : le journal est tenu sur la clé de l'événement (pas sur celle de la proposition) ;
 //   · silence, refus, expiration, clic rejoué, image altérée ou injoignable ⇒ zéro publication.
 // =====================================================================
-import { composerEvenement, evaluerCandidat, controlerFraicheur, esc, sha256, jsonCanonique, motifsPublics, cleBase, VALIDITE_PROPOSITION_H } from './relais-social.mjs';
+import { composerEvenement, evaluerCandidat, controlerFraicheur, controlerPareFeu, esc, sha256, jsonCanonique, motifsPublics, cleBase, VALIDITE_PROPOSITION_H } from './relais-social.mjs';
 import { verifierPost, rendre } from './social-editorial.mjs';
 import { versInstagram } from './social-editorial.mjs';
 import { cleEvenement, ageJours, FENETRE_SOURCE_JOURS } from './diffusion-sociale.mjs';
@@ -239,6 +239,8 @@ export async function proposerInstagram(deps) {
       servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false };
     const v = evaluerCandidat({ ...c, event_key: base }, ctx);
     if (!v.ok) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(v.raisons.join(' ; '))}`); continue; }
+    const pf = controlerPareFeu({ event_key: base, canal: CANAL_INSTAGRAM, diffusions: await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE)), now });
+    if (pf.length) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(pf.join(' ; '))}`); continue; }
     const ig = composerInstagram({ ...c, event_key: base }, compo);
     if (!ig.ok) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — ${motifsPublics(ig.motifs.join(' ; '))}`); continue; }
     const contenu = contenuDe(ig);
@@ -312,7 +314,9 @@ export async function publierInstagram(deps) {
           const cc = { ...c, event_key: base };
           const v = evaluerCandidat(cc, { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
             servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false });
+          const pf = v.ok ? controlerPareFeu({ event_key: base, canal: CANAL_INSTAGRAM, diffusions: await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE)), now }) : [];
           if (!v.ok) bloque = `bloque: ${v.raisons.join(' ; ')}`;
+          else if (pf.length) bloque = `bloque: ${pf.join(' ; ')}`;
           else {
             const ig = composerInstagram(cc, compo);
             if (!ig.ok) bloque = `bloque: Instagram n’est plus publiable (${ig.motifs.join(' ; ').slice(0, 200)})`;

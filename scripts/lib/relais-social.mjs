@@ -222,7 +222,31 @@ export function composerEvenement(c, compo) {
 // ---------------------------------------------------------------------
 // IDENTITÉ IMMUABLE : affaire + événement + version approuvée + sources + texte + URLs + canal → empreinte. PURE.
 // ---------------------------------------------------------------------
-/** Un canal dont le visuel est indisponible n'est PAS envoyable (aucun envoi sans image) ; le texte X reste visible comme tentative. */
+// ---------------------------------------------------------------------
+// PARE-FEU ÉDITORIAL (19/11/2026, décision d'Adrien) : par affaire, par canal et par jour (Europe/Paris), AU PLUS un post de CHANGEMENT JUDICIAIRE (nouvelle affaire, évolution de statut,
+// étape de procédure) et AU PLUS un post de PRISE DE PAROLE (famille ou pouvoir public) — soit 2 posts maximum, sur deux thèmes différents. La règle pourra évoluer : ces deux nombres
+// sont les seuls réglages. Elle est appliquée à la proposition ET, de nouveau, à l'exécution du GO (deux GO le même jour : le second est refusé, jamais envoyé).
+// Compte : les lignes du journal de diffusion (soumis, programmé, envoyé…) ; une ligne annulée ou en échec n'a pas de post et ne compte pas.
+// ---------------------------------------------------------------------
+export const PARE_FEU_PAR_JOUR = Object.freeze({ judiciaire: 1, parole: 1 });
+const LIBELLE_THEME = Object.freeze({ judiciaire: 'changement judiciaire', parole: 'prise de parole (famille ou pouvoir public)' });
+/** Thème d'une clé d'événement : « parole-… » (parole d'un parent de la fiche) = prise de parole ; tout le reste = changement judiciaire. */
+export const themeDe = (cle) => (/^case_update\|[^|]+\|parole-/.test(cleBase(cle)) ? 'parole' : 'judiciaire');
+export const jourParis = (d) => new Date(d).toLocaleDateString('fr-CA', { timeZone: 'Europe/Paris' });
+/** @returns {string[]} raisons de refus (vide = permis). diffusions = lignes du journal de CETTE affaire (event_key, canal, etat, created_at). */
+export function controlerPareFeu({ event_key, canal, diffusions, now }) {
+  const theme = themeDe(event_key), base = cleBase(event_key), jour = jourParis(now);
+  const deja = (diffusions || []).filter((l) => l.canal === canal && cleBase(l.event_key) !== base && themeDe(l.event_key) === theme && !['annule', 'echec'].includes(l.etat) && jourParis(l.created_at) === jour);
+  return deja.length >= PARE_FEU_PAR_JOUR[theme] ? [`pare-feu : ${deja.length} post(s) de ce thème (${LIBELLE_THEME[theme]}) déjà programmé(s) ou publié(s) aujourd’hui pour cette affaire sur ${canal} — maximum ${PARE_FEU_PAR_JOUR[theme]} par jour et par thème`] : [];
+}
+/** Applique le pare-feu aux canaux proposables d'un événement : un canal refusé devient non proposable (le texte X reste visible comme tentative). @returns {Promise<string[]>} canaux restants */
+async function appliquerPareFeu({ c, comp, canaux, port, now }) {
+  const diffusions = await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE));
+  for (const k of canaux) { const r = controlerPareFeu({ event_key: c.event_key, canal: k, diffusions, now }); if (r.length) comp.canaux[k] = sansVisuel(comp.canaux[k], k, r); }
+  return canaux.filter((k) => comp.canaux[k]?.ok);
+}
+
+/** Un canal fermé (visuel indisponible, pare-feu) n'est PAS envoyable ; le texte X reste visible comme tentative. */
 function sansVisuel(canal, k, motifs) {
   return { ok: false, motifs, ...(k === 'x' && canal?.texte ? { tentative: { texte: canal.texte, longueur: canal.longueur } } : {}) };
 }
@@ -251,7 +275,8 @@ export function messageProposition({ id8, c, comp, ident, expire_at, site, now }
   const age = ageJours(src.publie_le, now);
   const complement = ident.complement?.canal ?? null; // GO partiel : seule la rédaction de CE canal est proposée
   const concernes = complement ? [complement] : CANAUX_RELAIS;
-  const evenement = (complement ? `🔁 <b>Complément ${complement === 'x' ? 'X' : 'Facebook'}</b> — l’autre canal a déjà reçu son GO ; seule la rédaction de celui-ci a été retravaillée\n` : '')
+  const evenement = (ident.remplace ? `🔁 <b>Remplace la proposition ${esc(ident.remplace)}</b> (antérieure au visuel commun, refermée sans décision) — même événement, mêmes contrôles, avec visuel\n` : '')
+    + (complement ? `🔁 <b>Complément ${complement === 'x' ? 'X' : 'Facebook'}</b> — l’autre canal a déjà reçu son GO ; seule la rédaction de celui-ci a été retravaillée\n` : '')
     + (c.type === 'new_case' ? 'Nouvelle affaire' : c.sous_type === 'fiche_temoignage' ? 'Parole d’un parent (mise à jour de fiche approuvée) — statut judiciaire inchangé' : c.sous_type === 'fiche_evolution' ? `Évolution de procédure (mise à jour de fiche approuvée) — statut judiciaire inchangé${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}` : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
   const reserves = [...new Set((complement ? [complement] : ['facebook', 'x']).flatMap((k) => comp.canaux[k]?.reserves ?? []))];
   const bloques = concernes.filter((k) => !comp.canaux[k]?.ok).map((k) => `${k === 'x' ? 'X' : 'Facebook'} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
@@ -302,6 +327,7 @@ export async function enregistrerDecision({ port, action, cle, now, actif }) {
   const p = await port.propositionParCle(cle);
   if (!p) return { issue: 'introuvable' };
   if (p.decision) return { issue: 'double_clic', proposition: p, decision: p.decision };
+  if (p.resolution) return { issue: 'expiree', proposition: p }; // refermée sans décision (remplacée par une proposition avec visuel) : aucun GO n'est enregistré
   if (!actif && a.canaux.length) return { issue: 'inactif', proposition: p };
   if (a.canaux.some((k) => !(p.canaux_proposes || []).includes(k))) return { issue: 'bouton_invalide', proposition: p };
   if (dateOuNull(p.expire_at) && now.getTime() > dateOuNull(p.expire_at).getTime()) {
@@ -328,12 +354,21 @@ export async function proposerNouveautes(deps) {
   for (const c of candidats) {
     c.event_key = c.type === 'new_case' ? cleEvenement('new_case', c.case_id) : cleEvenement('case_update', c.case_id, c.statut_apres);
     const prop = await port.propositionParEvenement(c.event_key);
+    // REPROPOSITION CIBLÉE (data/relais-reproposer.json) : une proposition ANTÉRIEURE au visuel partagé, jamais décidée, est REMPLACÉE par une proposition avec visuel (clé « <événement>#visuel:<id> »).
+    // Aucune décision n'est enregistrée sur l'ancienne (elle est seulement refermée) ; seuls les événements NOMMÉS sont concernés, les autres propositions antérieures expirent d'elles-mêmes.
+    let cleProp = c.event_key, anterieure = null;
+    if (prop && deps.reproposer?.has(c.event_key)) {
+      const remplacante = (await port.propositionsDeEvenement(c.event_key)).find((p) => p.event_key.startsWith(`${c.event_key}#visuel:`));
+      if (remplacante) { if (ecrire && !remplacante.decision && remplacante.telegram_message_id == null && new Date(remplacante.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop: remplacante, deps, c: { ...c, event_key: remplacante.event_key } }) ? 1 : 0; continue; }
+      if (!prop.decision && !prop.resolution && !prop.identite?.image && new Date(prop.expire_at) > now) { anterieure = prop; cleProp = `${c.event_key}#visuel:${String(prop.proposal_id).slice(0, 8)}`; }
+    }
     // Proposition déjà créée : on ne la recrée jamais ; on ne fait qu'envoyer le message si l'envoi n'a pas eu lieu (reprise après panne).
-    if (prop) {
+    if (prop && !anterieure) {
       if (ecrire && !prop.decision && prop.telegram_message_id == null && new Date(prop.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop, deps, c }) ? 1 : 0;
       else if (ecrire && ['GO_X', 'GO_F'].includes(prop.decision)) bilan.complements += await proposerComplements({ c, base: prop, deps });
       continue;
     }
+    const cc = { ...c, event_key: cleProp };
     const exclus = await port.exclusionsDe(c.event_key);
     const ctx = { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
       servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: await port.ledgerDe(c.event_key), exclusions: exclus };
@@ -346,21 +381,24 @@ export async function proposerNouveautes(deps) {
       if (comp.canaux[k]?.ok && await port.empreinteTexteExclue(k, empreinteTexte(comp.canaux[k].texte))) comp.canaux[k] = { ok: false, motifs: ['texte identique à une publication déjà faite (exclusion)'] };
     }
     let proposables = CANAUX_RELAIS.filter((k) => comp.canaux[k]?.ok);
+    if (proposables.length) proposables = await appliquerPareFeu({ c: cc, comp, canaux: proposables, port, now });
     let visuel = null;
     if (proposables.length) {
       visuel = await visuelPartage({ c, compo, imageDeps: deps.image, ecrire, existantes: imagesDeProps(await port.propositionsDeEvenement(c.event_key)) });
       if (!visuel.ok) { for (const k of proposables) comp.canaux[k] = sansVisuel(comp.canaux[k], k, visuel.motifs); proposables = []; }
     }
     if (!proposables.length) { bilan.bloquees++; log(`· ${c.type} ${c.case_id} : SILENCE — aucun canal publiable : ${CANAUX_RELAIS.map((k) => `${k}: ${motifsPublics((comp.canaux[k]?.motifs || []).join(' ; '))}`).join(' | ')}`); continue; }
-    const ident = identiteDe(c, comp, visuel);
-    log(`· ${c.type} ${c.case_id} : ÉLIGIBLE (${proposables.join(' + ')})${ecrire ? '' : ' — plan, rien enregistré ni envoyé'}`);
+    const ident = identiteDe(cc, comp, visuel);
+    if (anterieure) ident.remplace = String(anterieure.proposal_id).slice(0, 8);
+    log(`· ${c.type} ${c.case_id} : ÉLIGIBLE${anterieure ? ' (remplace une proposition antérieure au visuel)' : ''} (${proposables.join(' + ')})${ecrire ? '' : ' — plan, rien enregistré ni envoyé'}`);
     if (!ecrire) continue;
     const expire_at = new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE);
-    const cree = await port.creerProposition({ event_key: c.event_key, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: ident.canaux.x?.texte ?? null, texte_facebook: ident.canaux.facebook?.texte ?? null,
+    const cree = await port.creerProposition({ event_key: cleProp, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: ident.canaux.x?.texte ?? null, texte_facebook: ident.canaux.facebook?.texte ?? null,
       canaux_proposes: proposables, empreinte_x: ident.canaux.x?.empreinte ?? null, empreinte_facebook: ident.canaux.facebook?.empreinte ?? null, expire_at });
     if (!cree) continue; // un autre passage vient de la créer
+    if (anterieure) await port.resoudre(anterieure.proposal_id, 'remplacee: proposition antérieure au visuel partagé, reproposée avec visuel (aucune décision enregistrée)');
     bilan.proposees++;
-    bilan.envoyees += await envoyerProposition({ prop: cree, deps, c, comp, ident }) ? 1 : 0;
+    bilan.envoyees += await envoyerProposition({ prop: cree, deps, c: cc, comp, ident }) ? 1 : 0;
   }
   log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)${bilan.complements ? `, ${bilan.complements} complément(s) envoyé(s)` : ''}`);
   return bilan;
@@ -397,6 +435,8 @@ async function proposerComplements({ c, base, deps }) {
     if (exclus.has(k) || !canauxConfigures.includes(k) || await port.empreinteTexteExclue(k, empreinteTexte(canal.texte))) { log(`· complément ${c.case_id} [${k}] : SILENCE — canal exclu ou non configuré`); continue; }
     const deja = new Set([base, ...duCanal].map((p) => (k === 'x' ? p.texte_x : p.texte_facebook)).filter(Boolean).map(empreinteTexte));
     if (deja.has(empreinteTexte(canal.texte))) continue; // rédaction inchangée : rien de nouveau à proposer (le GO partiel vaut décision sur ce texte)
+    const pf = await appliquerPareFeu({ c: cc, comp, canaux: [k], port, now });
+    if (!pf.length) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics((comp.canaux[k]?.motifs || []).join(' ; '))}`); continue; }
     const visuel = await visuelPartage({ c: cc, compo, imageDeps: deps.image, ecrire: true, existantes: imagesDeProps(toutes) });
     if (!visuel.ok) { log(`· complément ${c.case_id} [${k}] : SILENCE — ${motifsPublics(visuel.motifs.join(' ; '))}`); continue; }
     const cle = cleComplement(base.event_key, k, canal.texte);
@@ -476,7 +516,10 @@ export async function publierDecisions(deps) {
           const rv = await recontroleVisuel({ c, compo, stock, imageDeps: deps.image });
           const ident = identiteDe(c, comp, rv.motif ? null : { image: rv.image, spec_hash: stock.spec_hash, gabarit: stock.gabarit, alt: stock.alt });
           const exclus = await port.exclusionsDe(cleBase(p.event_key));
+          const pfDiffusions = rv.motif ? [] : await port.diffusionsDeAffaire(c.case_id, new Date(now.getTime() - 36 * HEURE));
+          const pf = rv.motif ? [] : aCreer.flatMap((k) => controlerPareFeu({ event_key: p.event_key, canal: k, diffusions: pfDiffusions, now }));
           if (rv.motif) bloque = rv.motif;
+          else if (pf.length) bloque = `bloque: ${[...new Set(pf)].join(' ; ')}`;
           else for (const k of aCreer) {
             if (exclus.has(k)) bloque = `bloque: publication déjà faite hors circuit sur ${k}`;
             else if (!canauxConfigures.includes(k) || !channelIds[k]) bloque = `bloque: canal ${k} non configuré`;
