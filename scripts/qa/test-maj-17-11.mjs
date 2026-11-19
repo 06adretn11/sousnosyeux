@@ -14,7 +14,7 @@ import { dateEcrite, dateDuCorps, extraireReactions } from '../lib/evenement-ins
 import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
 import { messageEnrichissement } from '../lib/discovery-messages.mjs';
 import { libelleParole, composerPilote, matiereApprouvee, verifierPost } from '../lib/social-editorial.mjs';
-import { verifier } from '../lib/fiche-extraction.mjs';
+import { verifier, invite, valeursDivergentes } from '../lib/fiche-extraction.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
 import { portNeon } from '../lib/relais-social-db.mjs';
@@ -130,6 +130,16 @@ const compoP = { cases: new Map([[FP._meta.id, FP.entree]]), ev: { fiches_approu
 const candP = (texte) => ({ type: 'case_update', sous_type: 'fiche_evolution', case_id: FP._meta.id, event_id: 'fiche:x:etape0', statut_apres: 'etape-x-0', fiche_hash: FP._meta.hash, etape: { type: 'audience', date: '2026-11-18', texte, media: 'ici', url: FP.dossier.deroule[0]?.source?.url, publie_le: '2026-11-18' } });
 const motifs = (texte) => (composerEvenement(candP(texte), compoP).canaux.facebook.motifs || []).join(' ; ');
 test('relais : « programmé du 16 au 18 novembre » dont la date est atteinte → aucune rédaction automatique ; « 8 ans requis le 18 novembre, délibéré au… » (fait rapporté) n’est PAS bloqué pour cette raison', /date annoncée atteinte/.test(motifs('Selon ici, le procès est programmé le 18 novembre 2026.')) && !/date annoncée atteinte/.test(motifs('Selon ici, huit ans de prison ont été requis le 18 novembre 2026 et la décision a été mise en délibéré au 5 janvier 2027.')));
+
+// ---- rattachement VALIDÉ par l'éditeur (ATTACH accepté) : jamais « ambigu » faute du nom de la structure ; l'invite des autres documents est inchangée (cache) --------------------------------
+const aff = { fiche: { case_id: 'X', etablissement: 'E', type_structure: 't', commune: 'C', role_mis_en_cause: 'r', type_affaire: 'a', statut_judiciaire: 's' }, article: { media: 'm', publication_date: '2026-01-01', body: 'corps' } };
+test('invite : la mention « RATTACHEMENT VALIDÉ » n’apparaît que pour un document dont le rattachement a été décidé par l’éditeur ; sinon l’invite est identique à l’ancienne (réponses en cache conservées)', !invite(aff).includes('RATTACHEMENT') && invite({ ...aff, rattacheValide: true }).includes('RATTACHEMENT VALIDÉ') && invite(aff).includes('état judiciaire enregistré : s\n\nDOCUMENT'));
+const gf = src('scripts/generer-fiche.mjs');
+test('génération : les URL attachées par une décision ATTACH acceptée (ou portées par une fiche approuvée) de l’éditeur sont transmises comme rattachement validé', /p\.action = 'ATTACH' and p\.attach_case_id/.test(gf) && /rattacheValide: !!doc\.rattachement_valide/.test(gf));
+
+// ---- divergence de chiffres : par unité (« 8 ans requis » ≠ « trois jours d'audience » ne se contredisent pas ; « 1 an » / « 3 ans » oui) ------------------------------------------
+test('divergence chiffrée : seule une MÊME unité portant des valeurs mutuellement absentes diverge (fausse « divergence » publiée sur Rezé le 19/11 : ans contre jours)', !valeursDivergentes('Selon OF, huit ans de prison ont été requis.', 'Le procès a duré trois jours.')
+  && valeursDivergentes('quatre ans dont un an avec sursis', 'quatre ans dont trois ans fermes') && !valeursDivergentes('six ans de prison ferme', 'six ans de prison'));
 
 if (ko) { console.error(`\n✗ ${ko} contrôle(s) en échec`); process.exit(1); }
 console.log('\nContrôles retours « À revoir » 17/11 : OK');

@@ -71,7 +71,7 @@ ${SCHEMA}`;
 
 export const CONTRAT_VERSION = 'fiche-extraction-1+' + createHash('sha256').update(SYSTEME).digest('hex').slice(0, 8);
 
-export const invite = ({ fiche, soeurs = [], article }) => `AFFAIRE SUIVIE
+export const invite = ({ fiche, soeurs = [], article, rattacheValide = false }) => `AFFAIRE SUIVIE
 case_id: ${fiche.case_id}
 structure : ${fiche.etablissement}${/non nomm/i.test(fiche.etablissement) ? ' (non nommée dans l\'observatoire)' : ''}
 type de structure : ${fiche.type_structure}
@@ -79,7 +79,9 @@ commune : ${fiche.commune}${fiche.departement ? ` (${fiche.departement})` : ''}
 rôle de la personne mise en cause : ${fiche.role_mis_en_cause}
 nature des faits (catégorie de l'observatoire) : ${fiche.type_affaire}
 état judiciaire enregistré : ${fiche.statut_judiciaire}
-${soeurs.length ? `\nAFFAIRES SŒURS PROCHES (même commune ou même structure ; ne pas les confondre)\n${soeurs.map((s) => `- ${s.case_id} : ${s.etablissement}, ${s.commune}, rôle ${s.role_mis_en_cause}, état ${s.statut_judiciaire}`).join('\n')}\n` : ''}
+${soeurs.length ? `\nAFFAIRES SŒURS PROCHES (même commune ou même structure ; ne pas les confondre)\n${soeurs.map((s) => `- ${s.case_id} : ${s.etablissement}, ${s.commune}, rôle ${s.role_mis_en_cause}, état ${s.statut_judiciaire}`).join('\n')}\n` : ''}${rattacheValide ? `
+RATTACHEMENT VALIDÉ : l'éditeur a rattaché ce document à CETTE affaire par une décision humaine (la structure peut n'y être pas nommée). Ne réponds pas « AMBIGU » pour cette seule raison ; la pertinence ne devient « AUTRE_AFFAIRE » que si le document décrit un fait incompatible avec cette affaire.
+` : ''}
 DOCUMENT
 média : ${article.media}
 date de publication : ${article.publication_date ?? 'inconnue'}
@@ -168,6 +170,22 @@ export function quantites(texte) {
   }
   return out;
 }
+/** Valeurs chiffrées d'un texte PAR UNITÉ (« 8 ans » et « 3 jours » ne sont pas la même grandeur). */
+export function quantitesParUnite(texte) {
+  const t = plat(texte).replace(/(\d)\s(\d{3})\b/g, '$1$2');
+  const out = new Map();
+  for (const m of t.matchAll(new RegExp(`\\b(\\d+|un|une|${Object.keys(MOTS_NOMBRE).join('|')})\\s+(${UNITES})\\b`, 'g'))) {
+    const v = /^\d+$/.test(m[1]) ? Number(m[1]) : MOTS_UN.test(m[1]) ? 1 : MOTS_NOMBRE[m[1]];
+    const u = m[2].replace(/^(?:annee|annees|ans)$/, 'an').replace(/s$/, '');
+    out.set(u, new Set([...(out.get(u) || []), v]));
+  }
+  return out;
+}
+/** Deux textes portent-ils, pour UNE MÊME unité, chacun une valeur que l'autre n'a pas (« 1 an » / « 3 ans ») ? « 8 ans » et « 3 jours » ne divergent pas. */
+export function valeursDivergentes(a, b) {
+  const qa = quantitesParUnite(a), qb = quantitesParUnite(b);
+  return [...qa].some(([u, va]) => qb.has(u) && [...va].some((x) => !qb.get(u).has(x)) && [...qb.get(u)].some((x) => !va.has(x)));
+}
 /** Toute durée/montant du texte rédigé figure-t-elle dans la citation ? Rend les valeurs non attestées. */
 export const quantitesNonAttestees = (texte, citation) => {
   const c = quantites(citation);
@@ -184,7 +202,8 @@ const ISSUES = [
   ['mise_en_examen', /\bmis(?:e)?(?:s)? en examen|\bmise en examen/], ['definitif', /\bdefinitiv/], ['appel', /\b(?:fait appel|interjete|appel)\b/], ['incarceration', /\b(?:detention|incarcer|mandat de depot)/],
 ];
 export function issuesPortees(s) {
-  const t = plat(s);
+  // « cour d'appel » est le NOM d'une juridiction, pas un appel interjeté : sinon un texte qui dit « devant la cour d'appel de Rennes » exigeait une citation contenant « appel » (réquisitions du 18/11 écartées à tort).
+  const t = plat(s).replace(/\bcours? d appel\b/g, 'cour');
   return ISSUES.filter(([, re]) => re.test(t)).map(([k]) => k);
 }
 export function issuesNonAttestees(texte, citation) {

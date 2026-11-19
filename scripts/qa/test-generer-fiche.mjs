@@ -44,6 +44,11 @@ t('date : une PLAGE ou une LISTE de jours écrite (« du 16 au 18 novembre 2026 
   assert.ok(!dateAttestee('2025-11-16', 'Du 16 au 18 novembre 2026', PARU), 'année contraire');
   assert.ok(!dateAttestee('2026-11-16', 'les 16, 17 et 18 novembre', '2026-06-09'), 'sans année et dans le futur de la parution : toujours non attestée (jamais devinée)');
 });
+t('« cour d’appel » est un nom de juridiction, pas un appel interjeté : des réquisitions « devant la cour d’appel » ne sont plus écartées ; « a fait appel » exige toujours un acte cité (défaut Rezé : réquisitions du 18/11 écartées)', () => {
+  assert.deepEqual(issuesNonAttestees('Selon Ouest-France, huit ans de prison ont été requis devant la cour d’appel de Rennes.', 'Huit ans de prison ferme ont été requis mercredi 18 novembre'), []);
+  assert.deepEqual(issuesNonAttestees('Il a fait appel de sa peine.', 'Condamné en janvier à six ans de prison'), ['appel']);
+  assert.deepEqual(issuesNonAttestees('Il a fait appel de sa peine.', 'Il a fait appel de sa peine de six ans'), []);
+});
 t('quantités : une peine du texte doit figurer dans la citation (un an ≠ trois ans)', () => {
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont un an avec sursis', 'quatre ans de prison dont un an avec sursis'), []);
   assert.deepEqual(quantitesNonAttestees('quatre ans de prison dont trois ans fermes', 'quatre ans de prison dont un an avec sursis'), ['3']);
@@ -332,6 +337,15 @@ t('source LUE et jugée « autre affaire » mais citée par une étape approuvé
   assert.match(ligne2, /lecture automatique INDISPONIBLE à ce passage \(erreur du modèle, aucun jugement sur la source\)/); assert.doesNotMatch(ligne2, /RELUE ET jugée/);
 });
 
+t('le nom d’un avocat rangé par le modèle parmi les « mis en cause » (variance) ne bloque pas la fiche quand il n’est que le libellé d’une réaction ; le même nom dans une étape ou une citation reste une fuite (défaut Rezé 19/11 : fiche BLOQUÉE à tort)', () => {
+  const D = { acteur: 'Me Paul Martin, avocat de la défense', type_acteur: 'avocat_defense', a_propos: 'x', citation: 'Il y a une forme d’hypersensibilité qu’il a du mal à masquer' };
+  const ok = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { noms: ['Paul Martin'], evenements: [E({ type: 'mise_en_examen', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' })], declarations: [D] })] });
+  assert.ok(!ok.blocages.some((x) => x.code === 'NOM_MIS_EN_CAUSE_DANS_LA_FICHE'), JSON.stringify(ok.blocages));
+  assert.ok(ok.dossier.reactions.some((r) => /Paul Martin/.test(r.acteur)), 'la réaction nommée est conservée');
+  const fuite = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { noms: ['Paul Martin'], evenements: [E({ type: 'mise_en_examen', texte: 'Selon Le Monde, Paul Martin a été mis en examen.', date: '2026-07-10', citation: 'm' })] })] });
+  assert.ok(fuite.blocages.some((x) => x.code === 'NOM_MIS_EN_CAUSE_DANS_LA_FICHE'), 'le nom dans une étape reste bloquant');
+});
+
 t('doublons : une mesure rapportée sous deux étiquettes = un fait ; une déclaration qui répète le déroulé est écartée ; deux déclarations par acteur au plus', () => {
   const D = (acteur, citation) => ({ acteur, type_acteur: 'parquet', a_propos: 'x', portee: 'affaire', citation });
   const r = composer({ c: carte('mise en examen'), extractions: [
@@ -375,6 +389,11 @@ t('synthèse : condamnation → bloc rouge « Condamnation » (date + autorité)
   assert.ok(!/s’est tenu|a été jugé|a été rejugé/.test(JSON.stringify(SIT(pendant))));
   assert.match(pendant.dossier.etat_actuel[2], /^Procès en appel/);
   assert.ok(!SIT(app).suite.lignes.some((l) => /Procès en appel/.test(l)), 'sans audience d’appel programmée : aucune ligne');
+  // Après l'annonce, une source rapporte la TENUE (réquisitions, délibéré) : la ligne le dit, et ne prétend plus « aucun article ne rapporte le déroulement » (défaut Rezé 19/11).
+  const tenu = proces('2026-11-19', [E({ type: 'audience', acteur: 'cour d’appel de Rennes', texte: 'Selon France 3, huit ans de prison ont été requis le 18 novembre 2026 ; l’affaire est mise en délibéré au 5 janvier 2027.', date: '2026-11-18', citation: 'r' })]);
+  assert.ok(SIT(tenu).suite.lignes.some((l) => /^Procès en appel : .*sera|programmé/i.test(l) && /huit ans de prison ont été requis le 18 novembre 2026/.test(l)), 'annonce + fait rapporté dans la même ligne');
+  assert.ok(!SIT(tenu).suite.lignes.some((l) => /Aucun article lu ne rapporte/.test(l)), 'plus de « aucun article ne rapporte le déroulement » quand une source le rapporte');
+  assert.ok(!/condamné en appel|a été jugé en appel/.test(JSON.stringify(SIT(tenu))), 'jamais une issue déduite des réquisitions');
 });
 t('synthèse : une mise en examen n’est jamais présentée comme une condamnation ; sans décision → « Issue de la procédure à documenter » + présomption d’innocence ; audience future → « Prochaine étape »', () => {
   const mee = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [E({ type: 'mise_en_examen', acteur: 'parquet de Rennes', texte: 'Le juge a mis en examen l’animateur.', date: '2026-07-10', citation: 'm' }), E({ type: 'garde_a_vue', texte: 'L’animateur a été placé en garde à vue.', date: '2026-07-06', citation: 'g' })] })] });
