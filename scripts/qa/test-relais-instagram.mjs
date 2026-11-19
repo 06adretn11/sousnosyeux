@@ -514,6 +514,7 @@ console.log('\nI. UN message pour les trois réseaux : le visuel, les textes Fac
   verifie('I10. X / Facebook non publiables : Instagram garde son propre message (un seul bouton « GO Instagram »)', propositionsTg(wi).length === 1 && propositionsTg(wi)[0].markup.inline_keyboard.flat().length === 1 && igProps(wi).length === 1);
   // Reproposition ciblée : les anciennes propositions (X / Facebook ET Instagram, jamais décidées) sont remplacées par UN message commun
   const wr = prepare(); await executerCycle(deps(wr, now)); await cycleInstagram(deps(wr, now));
+  for (const p of wr.props) delete p.identite.commun; // simule des propositions ANTÉRIEURES à la proposition commune
   verifie('I11. (point de départ) deux anciens messages, deux propositions ouvertes', propositionsTg(wr).length === 2 && wr.props.length === 2);
   await executerCycle({ ...joint(wr, plus(6e4)), reproposer: new Set([KEY_NOUVELLE]) }); await cycleInstagram(joint(wr, plus(6e4)));
   const anciennes = wr.props.slice(0, 2), nouvelles = wr.props.slice(2), nm = propositionsTg(wr).slice(2), dernier = nm[nm.length - 1];
@@ -522,6 +523,35 @@ console.log('\nI. UN message pour les trois réseaux : le visuel, les textes Fac
   verifie('I13. la reproposition ne se répète pas (cycles suivants : rien de plus)', wr.props.length === 4 && wr.photos.length === 3);
   const ancienClic = await enregistrerDecision({ port: wr.port, action: 'I', cle: anciennes[1].proposal_id.slice(0, 8), now: plus(15e4), actif: true });
   verifie('I14. un clic sur le bouton d’un ANCIEN message remplacé n’enregistre rien (« expirée »), aucun post', ancienClic.issue === 'expiree' && wr.creations() === 0);
+}
+
+// =====================================================================
+console.log('\nJ. X seul : la rédaction de X devient publiable APRÈS la proposition commune (événement nommé)');
+// =====================================================================
+{
+  const joint = (w, t, extra = {}) => ({ ...deps(w, t), instagram: { igRow: w.igRow, canalConfigure: true, amorcage: null }, ...extra });
+  const plus = (ms) => new Date(now.getTime() + ms);
+  const w = prepare(); const nomme = new Set([KEY_NOUVELLE]);
+  await executerCycle(joint(w, now, { canauxConfigures: ['facebook'], reproposer: nomme }));
+  const m1 = propositionsTg(w)[0];
+  verifie('J1. X non publiable à l’époque : message commun Facebook + Instagram (deux boutons), X montré comme bloqué', propositionsTg(w).length === 1 && m1.markup.inline_keyboard[0].map((b) => b.text).join() === 'GO Facebook,GO Instagram' && /X BLOQUÉ/.test(m1.texte));
+  const xf = w.props.find((p) => !p.event_key.includes('#instagram:'));
+  await enregistrerDecision({ port: w.port, action: 'F', cle: xf.proposal_id.slice(0, 8), now: plus(60e3), actif: true });
+  await enregistrerDecision({ port: w.port, action: 'I', cle: igProps(w)[0].proposal_id.slice(0, 8), now: plus(60e3), actif: true });
+  await executerCycle(joint(w, plus(120e3), { reproposer: nomme }));
+  const xs = w.props.find((p) => p.event_key.includes('#x:'));
+  const m2 = propositionsTg(w)[1];
+  verifie('J2. X devenu publiable : UNE proposition « X seul » (clé #x:, canal X), même visuel (aucun nouveau rendu), un seul bouton « GO X »', !!xs && xs.canaux_proposes.join() === 'x' && xs.texte_facebook === null && xs.identite.image.url === xf.identite.image.url && w.rendus === 1 && m2?.markup.inline_keyboard.flat().length === 1 && m2.markup.inline_keyboard[0][0].text === 'GO X' && /X seul/.test(m2.texte), JSON.stringify(w.props.map((p) => p.event_key.slice(-18))));
+  await executerCycle(joint(w, plus(180e3), { reproposer: nomme }));
+  verifie('J3. cycles suivants : pas de seconde proposition X', w.props.filter((p) => p.event_key.includes('#x:')).length === 1 && propositionsTg(w).length === 2);
+  const rx = await enregistrerDecision({ port: w.port, action: 'X', cle: xs.proposal_id.slice(0, 8), now: plus(240e3), actif: true });
+  await executerCycle(joint(w, plus(15 * 6e4), { reproposer: nomme }));
+  const postX = w.appelsBuffer.find((a) => a.op === 'creerPost' && a.canal === 'x');
+  verifie('J4. GO X → UN post X, texte exact de la proposition, avec le visuel', rx.issue === 'enregistree' && w.creations('x') === 1 && postX?.texte === xs.texte_x && postX?.imageUrl === xf.identite.image.url, JSON.stringify([rx.issue, w.creations('x')]));
+  const wn = prepare();
+  await executerCycle(joint(wn, now, { canauxConfigures: ['facebook'] }));
+  await executerCycle(joint(wn, plus(120e3)));
+  verifie('J5. un événement NON nommé ne reçoit jamais de proposition « X seul » rétroactive', wn.props.every((p) => !p.event_key.includes('#x:')) && propositionsTg(wn).length === 1);
 }
 
 console.log(ko ? `\n❌ ${ko} vérification(s) en échec` : '\n✅ relais Instagram : toutes les vérifications passent');

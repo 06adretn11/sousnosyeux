@@ -178,6 +178,7 @@ export function composerEvenement(c, compo) {
   const scenario = { famille, case_id: c.case_id, ...(sous === 'fiche_temoignage' ? { reaction: c.reaction, citation: 0 } : c.type === 'case_update' ? { event_id: c.event_id } : {}) };
   const M = matiereApprouvee({ entree, dossier: compo.dossierFiche(c.case_id), empreinteApprouvee: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
     evenements: compo.ev.affaires?.[c.case_id] ?? [], matiere: (compo.ev.matiere || []).filter((m) => m.case_id === c.case_id), wording: compo.wording });
+  M.evocations = compo.evocations ?? []; // phrases « ce qu'il évoque » approuvées par l'éditeur (format X des prises de parole)
   if (sous === 'fiche_evolution' && c.etape) {
     const type = c.etape.type === 'audience' && /appel/i.test(c.etape.texte || '') ? 'audience_appel' : c.etape.type;
     M.evenements = [...(M.evenements || []), { event_id: c.event_id, type, statut: entree?.statut_judiciaire ?? null, date: c.etape.date ?? null, libelle: c.etape.texte, source: { media: c.etape.media, url: c.etape.url, publie_le: c.etape.publie_le } }];
@@ -289,10 +290,11 @@ export function messagesProposition({ id8, c, comp, ident, expire_at, site, now,
   const src = (fb ?? x ?? igc).source;
   const age = ageJours(src.publie_le, now);
   const remplace = ident.remplace ?? [];
-  const evenement = (remplace.length ? `🔁 <b>Remplace ${remplace.length > 1 ? 'les propositions' : 'la proposition'} ${remplace.map(esc).join(', ')}</b> (jamais décidée${remplace.length > 1 ? 's' : ''}, refermée${remplace.length > 1 ? 's' : ''} sans décision) — même événement, un seul message pour les réseaux\n` : '')
+  const evenement = (ident.complementX ? '➕ <b>X seul</b> — Facebook et Instagram ont déjà été décidés pour cet événement ; seule la rédaction de X est proposée ici (format standard des prises de parole)\n' : '')
+    + (remplace.length ? `🔁 <b>Remplace ${remplace.length > 1 ? 'les propositions' : 'la proposition'} ${remplace.map(esc).join(', ')}</b> (jamais décidée${remplace.length > 1 ? 's' : ''}, refermée${remplace.length > 1 ? 's' : ''} sans décision) — même événement, un seul message pour les réseaux\n` : '')
     + (c.type === 'new_case' ? 'Nouvelle affaire' : c.sous_type === 'fiche_temoignage' ? 'Parole d’un parent (mise à jour de fiche approuvée) — statut judiciaire inchangé' : c.sous_type === 'fiche_evolution' ? `Évolution de procédure (mise à jour de fiche approuvée) — statut judiciaire inchangé${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}` : `Évolution judiciaire : ${esc(c.statut_avant ?? '?')} → ${esc(c.statut_apres)}${comp.evt?.date ? ` (${jourFr(comp.evt.date)})` : ''}`);
   const reserves = [...new Set([...['facebook', 'x'].flatMap((k) => comp.canaux[k]?.reserves ?? []), ...(ig?.affichage?.reserves ?? [])])];
-  const bloques = CANAUX_RELAIS.filter((k) => !comp.canaux[k]?.ok).map((k) => `${NOM_RESEAU[k]} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
+  const bloques = CANAUX_RELAIS.filter((k) => !comp.canaux[k]?.ok && (!ident.complementX || k === 'x')).map((k) => `${NOM_RESEAU[k]} BLOQUÉ : ${esc((comp.canaux[k]?.motifs || []).join(' ; ').slice(0, 300))}`);
   const tete = `📣 <b>RELAIS SOCIAL — proposition</b> (${id8})\n<b>${esc(e.etablissement)} — ${esc(e.commune)}</b>\n${evenement}\n`
     + `Source : ${esc(src.media)}, ${jourFr(src.publie_le)}${age != null ? ` (il y a ${Math.max(0, Math.floor(age))} j)` : ''} — ${esc(src.url)}\n`
     + `Fiche SNY : ${site}/affaires/${esc(c.case_id.toLowerCase())}/\n`
@@ -387,8 +389,9 @@ export async function proposerNouveautes(deps) {
     let cleProp = c.event_key, anterieures = [];
     if (deps.reproposer?.has(c.event_key)) {
       const rows = await port.propositionsDeEvenement(c.event_key);
-      const remplacante = rows.find((p) => p.event_key.startsWith(`${c.event_key}#commun:`));
-      if (remplacante) { if (ecrire && !remplacante.decision && !remplacante.resolution && remplacante.telegram_message_id == null && new Date(remplacante.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop: remplacante, deps, c: { ...c, event_key: remplacante.event_key } }) ? 1 : 0; continue; }
+      // Proposition commune déjà faite (remplaçante, ou proposition d'origine) : on ne la refait pas ; on la renvoie si elle n'est pas partie, et on propose X seul s'il n'était pas publiable à l'époque.
+      const commune = rows.find((p) => p.event_key.startsWith(`${c.event_key}#commun:`)) ?? rows.find((p) => p.identite?.commun && !/#(instagram|x):/.test(p.event_key));
+      if (commune) { if (ecrire && !commune.decision && !commune.resolution && commune.telegram_message_id == null && new Date(commune.expire_at) > now) bilan.envoyees += await envoyerProposition({ prop: commune, deps, c: { ...c, event_key: commune.event_key } }) ? 1 : 0; if (ecrire) bilan.envoyees += await proposerXSeul({ c, rows, deps }); continue; }
       if (!rows.some((p) => p.decision && p.decision !== 'EXPIREE')) {
         anterieures = rows.filter((p) => !p.decision && !p.resolution && new Date(p.expire_at) > now);
         if (anterieures.length) cleProp = `${c.event_key}#commun:${String(anterieures[0].proposal_id).slice(0, 8)}`;
@@ -444,6 +447,36 @@ export async function proposerNouveautes(deps) {
   }
   log(`${bilan.candidats} candidat(s) après T0, ${bilan.proposees} proposition(s) créée(s), ${bilan.bloquees} silence(s)`);
   return bilan;
+}
+
+/**
+ * X SEUL pour un événement NOMMÉ (data/relais-reproposer.json) dont la proposition commune est déjà partie SANS X (X n'était pas publiable). Quand sa rédaction le devient (format standard), UNE proposition
+ * « X seul » est faite, avec le même visuel. Mêmes contrôles qu'une proposition ordinaire ; jamais si X a déjà une proposition, une ligne de journal ou une exclusion. @returns {Promise<number>} messages envoyés
+ */
+async function proposerXSeul({ c, rows, deps }) {
+  const { port, compo, activation, holds, canauxConfigures, log, ledger } = deps;
+  const now = compo.now;
+  if (rows.some((p) => (p.canaux_proposes || []).includes('x')) || await ledger.lire(c.event_key, 'x') || !canauxConfigures.includes('x')) return 0;
+  const exclus = await port.exclusionsDe(c.event_key);
+  if (exclus.has('x')) return 0;
+  const v = evaluerCandidat(c, { t0: activation.t0, now, holds, entree: compo.cases.get(c.case_id) ?? null, ficheHash: compo.ev.fiches_approuvees?.[c.case_id]?.hash ?? null,
+    servi: deps.servi(c.case_id), ficheServie: await deps.ficheServie(c.case_id), proposition: false, ledger: false, exclusions: exclus });
+  if (!v.ok) { log(`· X seul ${c.case_id} : SILENCE — ${motifsPublics(v.raisons.join(' ; '))}`); return 0; }
+  const comp = composerEvenement(c, compo);
+  if (!comp.canaux.x?.ok) { log(`· X seul ${c.case_id} : SILENCE — ${motifsPublics((comp.canaux.x?.motifs || []).join(' ; '))}`); return 0; }
+  if (await port.empreinteTexteExclue('x', empreinteTexte(comp.canaux.x.texte))) return 0;
+  const cle = `${c.event_key}#x:${empreinteTexte(comp.canaux.x.texte).slice(0, 8)}`;
+  const cc = { ...c, event_key: cle };
+  if (!(await appliquerPareFeu({ c: cc, comp, canaux: ['x'], port, now })).length) { log(`· X seul ${c.case_id} : SILENCE — ${motifsPublics((comp.canaux.x?.motifs || []).join(' ; '))}`); return 0; }
+  const visuel = await visuelPartage({ c, compo, imageDeps: deps.image, ecrire: true, existantes: imagesDeProps(rows) });
+  if (!visuel.ok) { log(`· X seul ${c.case_id} : SILENCE — ${motifsPublics(visuel.motifs.join(' ; '))}`); return 0; }
+  const ident = identiteDe(cc, comp, visuel);
+  ident.canaux = { x: ident.canaux.x };
+  ident.complementX = true;
+  log(`· X seul ${c.case_id} : rédaction X devenue publiable ⇒ proposition X seul (Facebook et Instagram déjà décidés)`);
+  const cree = await port.creerProposition({ event_key: cle, case_id: c.case_id, type_event: c.type, identite: ident, texte_x: ident.canaux.x.texte, texte_facebook: null, canaux_proposes: ['x'],
+    empreinte_x: ident.canaux.x.empreinte, empreinte_facebook: null, expire_at: new Date(now.getTime() + VALIDITE_PROPOSITION_H * HEURE) });
+  return cree && await envoyerProposition({ prop: cree, deps, c: cc, comp, ident }) ? 1 : 0;
 }
 
 async function envoyerProposition({ prop, deps, c, comp = null, ident = null, igProp = null }) {

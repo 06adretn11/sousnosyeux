@@ -228,7 +228,7 @@ const reproposer = new Set((lire('data/relais-reproposer.json').evenements || []
 let wording = null;
 async function composition() {
   if (!wording) wording = await import('../web/src/lib/etat-wording.ts'); // formulation officielle du site
-  return { cases: artefact, ev: lire('data/evenements.json'), redirections: lire('data/redirections-affaires.json').redirections ?? {}, wording, dossierFiche, site: SITE, now };
+  return { cases: artefact, ev: lire('data/evenements.json'), evocations: lire('data/evocations-paroles.json').evocations ?? [], redirections: lire('data/redirections-affaires.json').redirections ?? {}, wording, dossierFiche, site: SITE, now };
 }
 // Site servi : lu une seule fois, à la demande (aucun accès réseau s'il n'y a aucun candidat).
 let htmlAccueil;

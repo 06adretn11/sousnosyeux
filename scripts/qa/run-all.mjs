@@ -214,6 +214,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Relais social REVIEW — format X standard des prises de parole : « lieu : acteur évoque … », Source / adresse / A suivre sur SNY, évocation approuvée pour la citation exacte (jamais de paraphrase machine), Facebook inchangé',
+    script: 'scripts/qa/test-parole-x.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Diffusion sociale — le vrai script en processus (coupe-circuit : aucun appel sortant sans mode REVIEW, T0 vérifié, tables présentes)',
     script: 'scripts/qa/test-diffuser-script.mjs',
     bloquant: true,

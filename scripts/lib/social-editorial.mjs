@@ -41,6 +41,8 @@ export const GABARITS = Object.freeze({
   phrase: '{phrase}',
   libelle_evenement: '{libelle} (selon {media}).', // le point final du libellé est reporté après l'attribution (typographie seule)
   parole: '{acteur} ({qualite}, {date}) : « {citation} »',
+  // X, prise de parole (format standard) : l'évocation est une phrase approuvée par l'éditeur pour la citation exacte (data/evocations-paroles.json) ; la citation elle-même est sur le visuel.
+  parole_x: '{commune} · {lieu} : {acteur} évoque {evocation}.',
   source_fb: 'Source : {media}, {date} — {url}',
   // X (format validé par Adrien le 19/11/2026) : le fait, puis « Source : <média> », l'adresse de l'article, « A suivre sur SNY : <fiche> » — une ligne chacun (un seul retour à la ligne entre les blocs).
   source_x: 'Source : {media}\n{url}',
@@ -60,6 +62,15 @@ export const LIBELLES = Object.freeze({
   declaration_association: 'déclaration de {acteur}',
   declaration_victime: 'prise de parole de {acteur}',
 });
+/** Établissement sans le « de <commune> » final quand la commune est déjà en tête (« centre de loisirs de Rots » → « centre de loisirs »). Seul usage : le format X des prises de parole. */
+export const lieuCourt = (e) => {
+  const c = String(e?.commune ?? ''), t = String(e?.etablissement ?? '');
+  const fin = new RegExp(`\\s+(?:de|du|d['’]|à)\\s*${c.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i');
+  return c && fin.test(t) ? t.replace(fin, '') : t;
+};
+/** « Une mère d’enfant concerné » → « une mère d’enfant concerné » au milieu d'une phrase ; un nom propre ou une fonction nommée reste tel quel. */
+export const acteurEnPhrase = (a) => String(a ?? '').replace(/^(Un|Une) /, (m) => m.toLowerCase());
+const espaces = (s) => String(s ?? '').replace(/\s+/g, ' ').trim();
 /** « prise de parole de une mère » serait fautif : l'article indéfini de l'attribution générique s'élide (« d’une mère », « d’un père »). */
 export const libelleParole = (acteur) => { const a = String(acteur ?? ''); return /^(Un|Une) /.test(a) ? 'prise de parole d’' + a.replace(/^(Un|Une) /, (m) => m.toLowerCase()) : LIBELLES.declaration_victime.replace('{acteur}', a); };
 
@@ -696,6 +707,13 @@ export function composerPilote({ scenario, M, publiques, site, redirections = {}
   // de la phrase d'où il est extrait. Remplace le repli V3 sur la seule phrase d'état du site (« Selon X, une enquête a été ouverte. ») : une formule qui ne
   // dit que l'étape, et qui créditait pour S01 un article (Ouest-France) jamais relu par SNY (arbitrage n°1 : pas de formule abstraite à la place du fait).
   if (Q && srcQ) ajoutOption([seg('fait_x', { ...lieuChamps, ...qualifChamp, media: champ(srcQ.media, 'source.media') }, 'fait', preuve(Q, srcQ, `${validationDe(Q.origine)} — extrait exact`))], srcQ, true);
+  // PRISE DE PAROLE — FORMAT STANDARD X (19/11/2026, Adrien) : « <lieu> : <acteur> évoque <ce qu'il évoque>. <réserve> » puis « Source : <média> », l'adresse, « A suivre sur SNY ». La citation est portée par le visuel.
+  // « Ce qu'il évoque » est une phrase APPROUVÉE par l'éditeur pour CETTE citation exacte (data/evocations-paroles.json) : la machine ne paraphrase jamais. Sans elle, X garde la citation entière (option suivante).
+  const evoc = scenario.famille === 'declaration_victime' && principal[0]?.parole ? (M.evocations || []).find((x) => espaces(x.citation) === espaces(principal[0].citation)) : null;
+  if (evoc && typeof evoc.evocation === 'string' && evoc.approuve_par && !gardes(evoc.evocation, e).bloquants.length && srcLien) {
+    ajoutOption([seg('parole_x', { commune: champ(e.commune, 'entree.commune'), lieu: champ(lieuCourt(e), 'entree.etablissement (sans « de <commune> »)'), acteur: champ(acteurEnPhrase(principal[0].acteur), `${principal[0].origine}.acteur`), evocation: champ(evoc.evocation, 'data/evocations-paroles.json') }, 'fait',
+      preuve(null, srcLien, `évocation approuvée par ${evoc.approuve_par} le ${evoc.le} (data/evocations-paroles.json) pour la citation exacte du dossier approuvé`))], srcLien, true);
+  }
   let x = null; const essais = []; let tentative = null;
   // X (visuel partagé) — ORDRE DE PRÉFÉRENCE : phrase courte approuvée (A3), puis le fait QUALIFIÉ « <lieu> : <étape datée> pour <objet> (selon <média>). » (lieu + information essentielle ou
   // évolution datée, en une phrase : le détail est porté par le visuel), puis les phrases approuvées entières. Le tri est stable : l'ordre relatif des autres options est inchangé.
@@ -748,6 +766,10 @@ export function valeursAutorisees(M, site) {
   for (const l of Object.values(LIBELLES.evolution)) for (const x of M.evenements || []) add(l.replace('{date}', dateLongue(x.date) ?? ''));
   for (const x of M.matiere || []) add(LIBELLES.declaration_association.replace('{acteur}', x.acteur));
   if (M.d) for (const r of [...(M.d.reactions || []), ...(M.d.paroles || [])]) add(libelleParole(r.acteur));
+  // Format X des prises de parole : lieu sans « de <commune> », acteur en milieu de phrase, évocations approuvées par l'éditeur.
+  if (e) add(lieuCourt(e));
+  if (M.d) for (const r of [...(M.d.reactions || []), ...(M.d.paroles || [])]) add(acteurEnPhrase(r.acteur));
+  for (const x of M.evocations || []) add(x.evocation);
   if (e) for (const canal of ['x', 'facebook']) for (const fiche of [true, false]) {
     add(lienDiffusion({ site, case_id: e.case_id, type: 'new_case', canal, fiche }));
     for (const x of M.evenements || []) add(lienDiffusion({ site, case_id: e.case_id, type: 'case_update', statut: x.statut, canal, fiche }));
@@ -796,7 +818,9 @@ export function verifierPost(post, canal, M, site, redirections = {}) {
   // Le média du lien « Source » doit être NOMMÉ par le texte qui affirme (hors ligne « Source : » elle-même). Défaut v1 non détecté : « Selon Ouest-France » + lien Le Figaro.
   const corps = segs.filter((s) => s.role !== 'attribution' && s.role !== 'renvoi').map((s) => s.texte).join(' ');
   const lies = segs.filter((s) => s.role === 'attribution').map((s) => M.sources.get(s.champs.url?.valeur)).filter(Boolean);
-  ok('le lien « Source » est celui d’un média nommé dans le texte', lies.length > 0 && lies.every((s) => sourcesNommees(corps, new Map([[s.url, s]])).length === 1), lies.map((s) => s.media).join(', '));
+  // Prise de parole X (format standard) : la ligne « Source : <média> » EST l'attribution (le début du message n'est pas chargé) ; le lien reste celui de la source de la parole.
+  const parLigneSource = segs.some((s) => s.gabarit === 'parole_x');
+  ok('le lien « Source » est celui d’un média nommé dans le texte (prise de parole X : la ligne « Source : média » fait l’attribution)', lies.length > 0 && lies.every((s) => parLigneSource || sourcesNommees(corps, new Map([[s.url, s]])).length === 1), lies.map((s) => s.media).join(', '));
   // V4.1 (S03) : concordance média cité ↔ passage ↔ adresse. Une affirmation qui nomme un média est prouvée par l'article de CE média.
   const discord = segs.filter((s) => ['fait', 'contexte'].includes(s.role) && s.gabarit === 'phrase' && s.preuve?.source?.url).filter((s) => {
     const n = sourcesNommees(s.texte, M.sources);
