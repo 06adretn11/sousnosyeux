@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-18"
+    "generated_at": "2026-11-19"
   },
   "cases": [
     {
@@ -1513,6 +1513,27 @@
           "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
           "media": "La Nouvelle Republique",
           "publication_date": "2026-04-24",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/societe/justice/proces-des-agressions-sexuelles-denfants-dans-deux-ecoles-a-reze-ce-sont-des-gestes-subreptices-dont-on-parle-3cb7ea2e-e35d-11f1-a3b1-0c6de532ce7d",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-18",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/societe/justice/ex-animateur-periscolaire-juge-a-nantes-pour-agressions-sexuelles-sur-des-enfants-ces-faits-ne-se-sont-pas-produits-6734d21c-d99a-11f0-9f4a-0c1392737a7e",
+          "media": "Ouest-France",
+          "publication_date": "2025-12-15",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+          "media": "ici",
+          "publication_date": "2026-11-15",
           "source_type": "presse",
           "is_primary": false
         }
