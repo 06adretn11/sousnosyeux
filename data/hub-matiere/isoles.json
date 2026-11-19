@@ -2735,6 +2735,19 @@
           "date_nature": "evenement"
         },
         {
+          "date": "2019-06-04",
+          "type": "plainte",
+          "texte": "Selon ici, une mère d'enfant du périscolaire de Chêne-Creux a porté plainte le 4 juin 2019.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-15"
+          },
+          "date_nature": "evenement"
+        },
+        {
           "date": "2025-12",
           "type": "audience",
           "texte": "Selon ICI, en décembre 2025, le procureur avait réclamé cinq ans de prison.",
@@ -2758,7 +2771,15 @@
             "media": "Ouest-France",
             "publie_le": "2025-12-15"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
+            }
+          ]
         },
         {
           "date": "2025-12-15",
@@ -2815,6 +2836,19 @@
           ]
         },
         {
+          "date": "2026-02-11",
+          "type": "contexte",
+          "texte": "Selon France 3 Régions, l'ancien animateur était incarcéré depuis le 11 février 2026.",
+          "acteur": null,
+          "source": {
+            "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+            "acces": "libre",
+            "media": "France 3 Régions",
+            "publie_le": "2026-04-23"
+          },
+          "date_nature": "evenement"
+        },
+        {
           "date": "2026-04-21",
           "type": "audience",
           "texte": "Selon France 3 Régions, lors de l'audience du 21 avril 2026, l'avocat général a requis la remise en liberté de l'animateur en attendant son nouveau procès.",
@@ -2834,6 +2868,19 @@
               "publie_le": "2026-04-24"
             }
           ]
+        },
+        {
+          "date": "2026-04-21",
+          "type": "audience",
+          "texte": "Selon France 3 Régions, une audience s'est tenue le 21 avril 2026 devant les juges de la cour d'appel de Rennes.",
+          "acteur": "cour d'appel de Rennes",
+          "source": {
+            "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+            "acces": "libre",
+            "media": "France 3 Régions",
+            "publie_le": "2026-04-23"
+          },
+          "date_nature": "evenement"
         },
         {
           "date": null,
@@ -2905,6 +2952,19 @@
         },
         {
           "date": null,
+          "type": "appel",
+          "texte": "Selon France 3 Régions, un nouveau procès en appel est à venir, sa date devant être connue début juin 2026.",
+          "acteur": null,
+          "source": {
+            "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/loire-atlantique/nantes/l-ex-animateur-periscolaire-accuse-d-agressions-sexuelles-a-reze-pres-de-nantes-remis-en-liberte-sous-controle-judiciaire-3339746.html",
+            "acces": "libre",
+            "media": "France 3 Régions",
+            "publie_le": "2026-04-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
           "type": "audience",
           "texte": "Selon La Nouvelle République, les dates et la durée du procès en appel devaient être décidées le 9 juin 2026 lors d’une audience relais devant la cour d’appel ; elles ont été annoncées ensuite (voir l’étape suivante).",
           "acteur": "cour d'appel",
@@ -2919,15 +2979,29 @@
         {
           "date": null,
           "type": "appel",
-          "texte": "Selon La Nouvelle Republique, l'ancien animateur périscolaire a fait appel de sa condamnation.",
+          "texte": "Selon ICI, l'ancien animateur périscolaire de Rezé a fait appel de sa condamnation à six ans de prison ferme.",
           "acteur": null,
           "source": {
-            "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+            "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/reze-l-ex-animateur-periscolaire-soupconne-d-agressions-sexuelles-sera-rejuge-en-novembre-a-rennes-8058661",
             "acces": "libre",
-            "media": "La Nouvelle Republique",
-            "publie_le": "2026-04-24"
+            "media": "ICI",
+            "publie_le": "2026-06-09"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lanouvellerepublique.fr/loire-atlantique/un-ex-animateur-periscolaire-condamne-pour-des-agressions-sexuelles-sur-des-enfants-libere-avant-son-proces-en-appel-1777041857",
+              "acces": "libre",
+              "media": "La Nouvelle Republique",
+              "publie_le": "2026-04-24"
+            },
+            {
+              "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
+            }
+          ]
         },
         {
           "date": null,
@@ -2941,6 +3015,33 @@
             "publie_le": "2026-06-09"
           },
           "date_nature": "article"
+        },
+        {
+          "date": "2026-11",
+          "type": "audience",
+          "texte": "Selon Ouest-France, Huit ans de prison ferme ont été requis à l'encontre de l'ancien animateur périscolaire, le mercredi 18 novembre, devant la cour d'appel de Rennes.",
+          "acteur": "avocate générale",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/justice/proces-des-agressions-sexuelles-denfants-dans-deux-ecoles-a-reze-ce-sont-des-gestes-subreptices-dont-on-parle-3cb7ea2e-e35d-11f1-a3b1-0c6de532ce7d",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-18"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
+            },
+            {
+              "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/reze-l-ex-animateur-periscolaire-soupconne-d-agressions-sexuelles-sera-rejuge-en-novembre-a-rennes-8058661",
+              "acces": "libre",
+              "media": "ICI",
+              "publie_le": "2026-06-09"
+            }
+          ]
         },
         {
           "date": null,
@@ -2974,7 +3075,21 @@
             "media": "ICI",
             "publie_le": "2026-06-09"
           },
-          "date_nature": "evenement"
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ouest-france.fr/societe/justice/proces-des-agressions-sexuelles-denfants-dans-deux-ecoles-a-reze-ce-sont-des-gestes-subreptices-dont-on-parle-3cb7ea2e-e35d-11f1-a3b1-0c6de532ce7d",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-11-18"
+            },
+            {
+              "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
+            }
+          ]
         }
       ],
       "synthese": {
@@ -3074,6 +3189,53 @@
           "validation": "POSITION_ATTRIBUEE",
           "attribution": "POSITION_ATTRIBUEE",
           "date_nature": "article"
+        },
+        {
+          "date": "2026-11-18",
+          "acteur": "Benoît Poquet, avocat de la défense",
+          "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/justice/proces-des-agressions-sexuelles-denfants-dans-deux-ecoles-a-reze-ce-sont-des-gestes-subreptices-dont-on-parle-3cb7ea2e-e35d-11f1-a3b1-0c6de532ce7d",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2026-11-18"
+          },
+          "qualite": "propos rapportés par Ouest-France",
+          "a_propos": "l'attitude de son client à l'audience",
+          "citations": [
+            {
+              "pour": "l'attitude de son client à l'audience",
+              "texte": "il y a une forme d’hypersensibilité qu’il a du mal à masquer"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (Ouest-France) : « Derrière un air débonnaire » , pointé par l’un de ses avocats, Benoît Poquet, « il y a une forme d’hypersensibilité qu’il a du mal à masquer » .",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-15",
+          "acteur": "Une mère d’enfant concerné",
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ici.fr/pays-de-la-loire/loire-atlantique-44/reze/l-ex-animateur-periscolaire-de-reze-soupconne-d-agressions-sexuelles-sur-des-enfants-rejuge-a-rennes-9201309",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-15"
+          },
+          "qualite": "propos rapportés par ici",
+          "a_propos": "attentes pour le second procès",
+          "citations": [
+            {
+              "pour": "attentes pour le second procès",
+              "texte": "On ne tournera pas la page. Parce que je pense que depuis cette histoire, en fait, c'est tout le livre de notre vie qui est à réécrire, enfin qui s'écrit de façon différente suite à ce traumatisme."
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
       "situation": {
@@ -3084,7 +3246,7 @@
           "titre": "Appel rapporté",
           "lignes": [
             "Décision non définitive.",
-            "Procès en appel : Selon ICI, l'ancien animateur périscolaire de Rezé sera rejugé les 16, 17 et 18 novembre 2026 devant la cour d'appel de Rennes. Aucun article lu ne rapporte le déroulement ni l’issue de ce procès en appel.",
+            "Procès en appel : Selon ICI, l'ancien animateur périscolaire de Rezé sera rejugé les 16, 17 et 18 novembre 2026 devant la cour d'appel de Rennes, selon l'avocat de la défense (information publiée le 9 juin 2026). Selon Ouest-France, Huit ans de prison ferme ont été requis à l'encontre de l'ancien animateur périscolaire, le mercredi 18 novembre, devant la cour d'appel de Rennes.",
             "Mesure institutionnelle (distincte de la décision judiciaire) : selon France 3 Régions, la supérieure hiérarchique de l'animateur à l'école du Chêne-Creux avait demandé en début d'année scolaire de ne jamais le laisser seul avec les enfants."
           ]
         },
@@ -3098,7 +3260,8 @@
       },
       "etat_actuel": [
         "Selon France 3 Régions, le tribunal correctionnel de Nantes a condamné l’animateur le 22 janvier 2026 à six ans de prison ferme, à un suivi socio-judiciaire de trois ans, à l’interdiction définitive d’exercer une activité en contact avec des mineurs et à une inéligibilité de cinq ans pour douze agressions sexuelles.",
-        "Un appel est rapporté (France 3 Régions) : la décision n’est pas définitive."
+        "Un appel est rapporté (France 3 Régions) : la décision n’est pas définitive.",
+        "Procès en appel : Selon ICI, l'ancien animateur périscolaire de Rezé sera rejugé les 16, 17 et 18 novembre 2026 devant la cour d'appel de Rennes, selon l'avocat de la défense (information publiée le 9 juin 2026). Selon Ouest-France, Huit ans de prison ferme ont été requis à l'encontre de l'ancien animateur périscolaire, le mercredi 18 novembre, devant la cour d'appel de Rennes."
       ],
       "statut_affiche": "condamnation non définitive"
     },
