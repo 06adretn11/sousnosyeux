@@ -14,7 +14,7 @@ import { resolve, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dossierFiche } from './lib/fiche-page.mjs';
 import { composerMessage, lienDiffusion } from './lib/diffusion-sociale.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, noter, preuvesDe, longueurX, VERSION } from './lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, noter, preuvesDe, longueurX, poidsX, VERSION } from './lib/social-editorial.mjs';
 
 const ROOT = new URL('../', import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(new URL(f, ROOT), 'utf8'));
@@ -46,7 +46,7 @@ export async function genererBanc({ corpus = lire('scripts/qa/fixtures/banc-soci
       const note = noter(p, canal, verif, { famille: sc.famille });
       const attentionCanal = [...r.attention, ...(p.attention || [])];
       const etat = !verif.ok ? 'BLOQUE' : attentionCanal.length ? 'REVUE_HUMAINE' : 'CONFORME';
-      canaux[canal] = { etat, texte: p.texte, longueur: canal === 'x' ? longueurX(p.texte) : [...p.texte].length, urls: p.texte.match(/https?:\/\/\S+/g) || [],
+      canaux[canal] = { etat, texte: p.texte, longueur: canal === 'x' ? poidsX(p.texte) : [...p.texte].length, urls: p.texte.match(/https?:\/\/\S+/g) || [],
         repli: !!p.repli, attention: p.attention || [], source: canal === 'x' ? p.source ?? null : r.sourcePrincipale, controles: verif.controles, note, preuves: preuvesDe(p), motifs: verif.ok ? [] : verif.controles.filter((c) => !c.ok).map((c) => `${c.nom} : ${c.detail}`) };
     }
     // Version ACTUELLE (moteur de production, inchangé) pour la même affaire : référence « avant ».

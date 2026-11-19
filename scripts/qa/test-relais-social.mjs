@@ -9,7 +9,11 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { dossierFiche as dossierFicheVivant, hashDossier } from '../lib/fiche-page.mjs';
-import { ErreurBuffer } from '../lib/buffer.mjs';
+import { ErreurBuffer, clientBuffer } from '../lib/buffer.mjs';
+import { composerInstagram, texteAlternatif, controlerImageDistante } from '../lib/relais-instagram.mjs';
+import { urlMedia } from '../lib/media-github.mjs';
+import { LARGEUR, HAUTEUR } from '../lib/instagram-visuel.mjs';
+import { poidsX } from '../lib/social-editorial.mjs';
 import { signatureTexte } from '../lib/diffusion-sociale.mjs';
 import { decoderCallback } from '../lib/telegram-clics.mjs';
 import { DATA_RE } from '../../workers/telegram-webhook/worker.mjs';
@@ -58,7 +62,8 @@ const candEvolution = (t0) => ({ type: 'case_update', case_id: EVOLUTION.id, eve
 // --- monde simulé -----------------------------------------------------------------------------------------------------------------------
 function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, ficheHashServi = null } = {}) {
   const w = { t0Row: t0 ? { t0, mode: 'review', provenance: 'test' } : null, candidats, props: [], ledger: [], exclusions: new Set(exclusions.map((x) => `${x.event_key}|${x.canal}`)), empreintesExclues: new Set(),
-    posts: [], appelsBuffer: [], telegram: [], envoisTg: 0, ps, retire, ficheHashServi, pannes: { creerApresCreation: 0, creerAvantCreation: 0 }, compteurPort: 0 };
+    posts: [], appelsBuffer: [], telegram: [], envoisTg: 0, ps, retire, ficheHashServi, pannes: { creerApresCreation: 0, creerAvantCreation: 0, rendu: false, hebergement: false, photo: false }, compteurPort: 0,
+    medias: new Map(), photos: [], rendus: 0 };
   const clone = (x) => (x ? JSON.parse(JSON.stringify(x)) : x);
   const parId = (id) => w.props.find((p) => p.proposal_id === id);
   w.port = new Proxy({
@@ -89,8 +94,8 @@ function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, fich
     maj: async (k, c, p) => { const r = w.ledger.find((l) => l.event_key === k && l.canal === c); for (const [a, b] of Object.entries(p)) if (b != null) r[a === 'soumis_at' ? 'soumis_at' : a] = b; },
   };
   w.buffer = {
-    creerPost: async ({ channelId, canal, texte, dueAt }) => {
-      w.appelsBuffer.push({ op: 'creerPost', channelId, canal, texte, dueAt });
+    creerPost: async ({ channelId, canal, texte, dueAt, imageUrl = null, altText = null, avecLienFacebook = null }) => {
+      w.appelsBuffer.push({ op: 'creerPost', channelId, canal, texte, dueAt, imageUrl, altText, avecLienFacebook });
       if (w.pannes.creerAvantCreation > 0) { w.pannes.creerAvantCreation--; throw new ErreurBuffer('incertain', 'délai dépassé'); }
       const post = { id: `bp${w.posts.length + 1}`, status: 'scheduled', text: texte, channelId, dueAt, externalLink: null };
       w.posts.push(post);
@@ -101,11 +106,22 @@ function monde({ t0, candidats = [], exclusions = [], ps = {}, retire = {}, fich
     trouverPost: async ({ channelId, signature }) => { w.appelsBuffer.push({ op: 'trouverPost', channelId }); return w.posts.find((p) => p.channelId === channelId && String(p.text).replace(/\s+/g, ' ').includes(signature)) ?? null; },
     supprimerPost: async (id) => { w.appelsBuffer.push({ op: 'supprimerPost', id }); const p = w.posts.find((x) => x.id === id); if (p?.status === 'sent') throw new ErreurBuffer('refus', 'déjà publié'); w.posts = w.posts.filter((x) => x.id !== id); return true; },
   };
+  // Rendu, hébergement et relecture distante SIMULÉS (le rendu réel par un navigateur est vérifié à part : essai-rendu-instagram.mjs). Rendu déterministe : même HTML ⇒ mêmes octets.
+  w.image = {
+    rendre: async ({ html }) => { if (w.pannes.rendu) throw new Error('le texte ne tient pas dans le gabarit'); w.rendus++; return { png: faussePng(sha256(html).slice(0, 8)), fit: { k: 1, contexte: true } }; },
+    publier: async ({ chemin, png }) => { if (w.pannes.hebergement) throw new Error('dépôt du média refusé (HTTP 403)'); const url = urlMedia('06adretn11/sousnosyeux', chemin); w.medias.set(url, { status: 200, contentType: 'image/png', png }); return { url }; },
+    lire: async (url) => w.medias.get(url) ?? { status: 404, contentType: 'text/html', png: Buffer.alloc(0) },
+  };
   w.ecritures = () => w.appelsBuffer.filter((a) => a.op === 'creerPost' || a.op === 'supprimerPost').length;
   w.creations = () => w.appelsBuffer.filter((a) => a.op === 'creerPost').length;
   return w;
 }
 
+// PNG minimal VALIDE pour l'en-tête (signature + IHDR 1080×1350) : le test ne rend rien, il vérifie les contrôles qui entourent le rendu.
+function faussePng(graine = 'a') {
+  const ihdr = Buffer.alloc(25); ihdr.writeUInt32BE(13, 0); ihdr.write('IHDR', 4, 'ascii'); ihdr.writeUInt32BE(LARGEUR, 8); ihdr.writeUInt32BE(HAUTEUR, 12); ihdr[16] = 8; ihdr[17] = 2;
+  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), ihdr, Buffer.from(`SNY-${graine}`.padEnd(200, '.'))]);
+}
 const env = (t0, extra = {}) => ({ SNY_DIFFUSION_ACTIVE: '1', SNY_DIFFUSION_MODE: 'review', SNY_DIFFUSION_DEPUIS: t0.toISOString(), ...extra });
 function deps(w, now, { ecrire = true, envE, ficheHashServi = undefined, compoMod = null, canauxConfigures = ['x', 'facebook'] } = {}) {
   const t0 = w.t0Row?.t0 ?? null;
@@ -117,6 +133,7 @@ function deps(w, now, { ecrire = true, envE, ficheHashServi = undefined, compoMo
   return { port: w.port, compo, activation, holds: new Set(), ecrire, log: () => {}, alerter: async (t) => { w.telegram.push({ alerte: t }); }, buffer: w.buffer, ledger: w.ledgerPort,
     canauxConfigures, channelIds: { x: 'chX', facebook: 'chF' }, delaiMin: 15,
     envoyer: async (texte, markup) => { w.telegram.push({ texte, markup }); return 100 + ++w.envoisTg; },
+    image: w.image, envoyerPhoto: async (url, legende) => { if (w.pannes.photo) throw new Error('photo HS'); w.photos.push({ url, legende }); return 50 + w.photos.length; },
     servi: () => true, ficheServie: async (id) => ({ status: 200, hash: ficheHashServi === undefined ? compo.ev.fiches_approuvees?.[id]?.hash ?? null : ficheHashServi }) };
 }
 const propositions = (w) => w.telegram.filter((m) => m.texte);
@@ -257,15 +274,14 @@ console.log('\nC. Proposition Telegram : textes V4.1 intégraux, boutons, canal 
   verifie('boutons : GO X + Facebook, GO Facebook seul, GO X seul, Refuser (callbacks ≤ 64 octets, décodables)', cb.length === 4 && cb.every((d) => d.length <= 64 && decoderCallback(d)?.type === 'SG' && DATA_RE.test(d)), cb.join(' '));
   verifie('le worker n’accepte pas une action sociale inventée', !DATA_RE.test('sny:SG:Z:abcdef12') && !DATA_RE.test('sny:SG:XF:ZZZZZZZZ') && DATA_RE.test('sny:SG:R:abcdef12'));
   // V4.1 : le texte est celui du composeur de production du pilote (fait qualifié, source, réserve), jamais l'ancien gabarit générique
-  verifie('texte V4.1 : lieu + fait + réserve judiciaire + sources, pas l’ancien gabarit (« Nouvelle affaire documentée par la presse »)', !/Nouvelle affaire documentée par la presse/.test(p.texte_facebook + p.texte_x) && /Source : /.test(p.texte_facebook) && /Suivi/.test(p.texte_x));
-  verifie('X ≤ 280 caractères (URL = 23)', (() => { const n = [...p.texte_x.replace(/https?:\/\/\S+/g, '')].length + (p.texte_x.match(/https?:\/\/\S+/g) || []).length * 23; return n <= 280; })());
+  verifie('texte V4.1 : lieu + fait + réserve judiciaire + sources, pas l’ancien gabarit (« Nouvelle affaire documentée par la presse »)', !/Nouvelle affaire documentée par la presse/.test(p.texte_facebook + p.texte_x) && /Source : /.test(p.texte_facebook) && /\nActu\.fr : https:\/\/actu\.fr\/\S+$/.test(p.texte_x) && !/sousnosyeux/.test(p.texte_x));
+  verifie('X ≤ 280 caractères (comptage pondéré X : URL et domaines nus = 23)', poidsX(p.texte_x) <= 280, String(poidsX(p.texte_x)));
   // canal bloqué : X bloqué ⇒ pas de bouton X
   const w2 = monde({ t0: new Date(PARTIELLE.now.getTime() - 24 * H), candidats: [candNouvelle(new Date(PARTIELLE.now.getTime() - 24 * H), PARTIELLE.id)] });
   await executerCycle(deps(w2, PARTIELLE.now));
   const q = w2.props[0];
-  verifie('source partielle (Facebook) → Facebook BLOQUÉ, seul X est proposé', !!q && q.canaux_proposes.join() === 'x' && q.texte_facebook === null, JSON.stringify(q?.canaux_proposes));
-  const cb2 = propositions(w2)[0].markup.inline_keyboard.flat().map((b) => b.callback_data);
-  verifie('canal bloqué non proposé : aucun bouton Facebook ni « X + Facebook »', cb2.length === 2 && cb2.every((d) => /:(X|R):/.test(d)), cb2.join(' '));
+  // Le visuel est COMMUN : il dérive de la composition validée (légende Instagram). Une source liée lue en partie bloque cette composition ⇒ aucune image honnête ⇒ aucun canal ne part (jamais d'envoi sans image).
+  verifie('source partielle (Facebook) → composition du visuel refusée : ni Facebook ni X ne sont proposés, aucune ligne, aucun message, aucun rendu', !q && propositions(w2).length === 0 && w2.photos.length === 0 && w2.rendus === 0 && w2.ecritures() === 0, JSON.stringify(q?.canaux_proposes));
   verifie('boutonsProposition : un seul canal ⇒ jamais « X + Facebook »', !boutonsProposition('abcdef12', ['facebook']).inline_keyboard.flat().some((b) => /:XF:/.test(b.callback_data)));
   // Journaux publics : un motif de blocage qui cite un extrait ou une adresse n'est jamais imprimé tel quel.
   const lignes = [];
@@ -325,11 +341,12 @@ async function aveGo(action, { pre = null, post = null, ficheHashServi = undefin
   verifie('GO X seul → AUCUN post Facebook', g.w.creations() === 1 && g.w.posts.every((p) => p.channelId === 'chX') && !g.w.ledger.some((l) => l.canal === 'facebook'));
   verifie('aucun appel Buffer sur un canal autre que X / Facebook (jamais Instagram)', !CANAUX_RELAIS.includes('instagram') && g.w.appelsBuffer.every((a) => !a.channelId || ['chX', 'chF'].includes(a.channelId)));
   // GO sur un canal non proposé
-  const w3 = monde({ t0: new Date(PARTIELLE.now.getTime() - 24 * H), candidats: [candNouvelle(new Date(PARTIELLE.now.getTime() - 24 * H), PARTIELLE.id)] });
-  await executerCycle(deps(w3, PARTIELLE.now));
-  const r3 = await enregistrerDecision({ port: w3.port, action: 'F', cle: cleDe(w3), now: PARTIELLE.now, actif: true });
-  const r3b = await enregistrerDecision({ port: w3.port, action: 'XF', cle: cleDe(w3), now: PARTIELLE.now, actif: true });
-  verifie('GO sur un canal bloqué (Facebook) ou « X + Facebook » → bouton invalide, rien d’enregistré', r3.issue === 'bouton_invalide' && r3b.issue === 'bouton_invalide' && !w3.props[0].decision);
+  // (X non configuré : X bloqué, Facebook proposable — le scénario « source partielle » ne produit plus aucune proposition, le visuel étant commun)
+  const w3 = monde({ t0, candidats: [candNouvelle(t0)] });
+  await executerCycle({ ...deps(w3, now), canauxConfigures: ['facebook'] });
+  const r3 = await enregistrerDecision({ port: w3.port, action: 'X', cle: cleDe(w3), now, actif: true });
+  const r3b = await enregistrerDecision({ port: w3.port, action: 'XF', cle: cleDe(w3), now, actif: true });
+  verifie('GO sur un canal bloqué (X) ou « X + Facebook » → bouton invalide, rien d’enregistré', r3.issue === 'bouton_invalide' && r3b.issue === 'bouton_invalide' && !w3.props[0].decision);
   // GO alors que le relais est désactivé
   const w4 = monde({ t0, candidats: [candNouvelle(t0)] }); await executerCycle(deps(w4, now));
   const r4 = await enregistrerDecision({ port: w4.port, action: 'XF', cle: cleDe(w4), now, actif: false });
@@ -474,6 +491,102 @@ console.log('\nE. GO périmé, retrait, Buffer en panne');
   verifie('délai de grâce non écoulé : aucun second createPost', g.w.creations() === 1);
   await executerCycle(deps(g.w, new Date(t.getTime() + 40 * 6e4)));
   verifie('rien retrouvé après le délai de grâce : UNE nouvelle création, un seul post', g.w.creations() === 2 && g.w.posts.length === 1);
+}
+
+// =====================================================================
+console.log('\nG. Visuel commun X · Facebook · Instagram, texte X court, meilleure tentative, GO couvrant le texte ET le visuel');
+// =====================================================================
+{
+  const now = NOUVELLE.now, t0 = T0_DEFAUT(now);
+  const FB_FIGE = lire('scripts/qa/fixtures/facebook-textes-figes.json');
+  const apres = (m) => new Date(now.getTime() + m * 6e4);
+  const sansHtml = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const go = (w, action, i = 0, m = 10) => enregistrerDecision({ port: w.port, action, cle: cleDe(w, i), now: apres(m), actif: true });
+
+  // --- E1-E8 : cas nominal (nouvelle affaire documentée, Montpellier)
+  const w = monde({ t0, candidats: [candNouvelle(t0)] });
+  await executerCycle(deps(w, now));
+  const p = w.props[0], im = p.identite?.image, msg = propositions(w)[0];
+  verifie('G1. la proposition porte UN visuel hébergé et relu : HTTPS, 1080×1350, < 5 Mo, empreinte du contenu, spécification et gabarit (couverts par le GO)', !!im && /^https:\/\//.test(im.url) && im.largeur === LARGEUR && im.hauteur === HAUTEUR && /^[0-9a-f]{64}$/.test(im.sha256) && im.octets < 5 * 1024 * 1024 && !!im.spec_hash && !!im.gabarit, JSON.stringify(im));
+  verifie('G1b. l’empreinte de CHAQUE canal couvre le visuel (autre visuel ⇒ autre empreinte)', p.identite.canaux.x.empreinte !== p.identite.canaux.facebook.empreinte && w.props.length === 1 && !!p.empreinte_x && !!p.empreinte_facebook);
+  verifie('G2. aperçu Telegram : le visuel EXACT part d’abord (photo), puis le message — compteur X, textes intégraux, adresse du visuel, texte alternatif', w.photos.length === 1 && w.photos[0].url === im.url && /\/280 car\./.test(msg.texte) && msg.texte.includes(im.url) && /Texte alternatif joint/.test(msg.texte) && sansHtml(msg.texte).includes(p.texte_x) && sansHtml(msg.texte).includes(p.texte_facebook), msg.texte.slice(0, 200));
+  verifie('G3. le texte Facebook proposé est STRICTEMENT celui d’avant l’évolution (fixture figée, composée par main avant le visuel partagé)', p.texte_facebook === FB_FIGE['FR-2026-0146 nouvelle'].texte);
+  verifie('G4. texte X : « lieu · fait (selon média). réserve », puis « Média : URL de l’article » ; ni lien SNY, ni « Suivi », ni « Source : » ; ≤ 280 (comptage pondéré)', /^Montpellier · .+ \(selon Actu\.fr\)\. .*ne vaut pas culpabilité\.\n\nActu\.fr : https:\/\/actu\.fr\/\S+$/s.test(p.texte_x) && !/sousnosyeux|Suivi|Source :/.test(p.texte_x) && poidsX(p.texte_x) <= 280, p.texte_x);
+  await go(w, 'XF');
+  await executerCycle(deps(w, apres(15)));
+  const pX = w.appelsBuffer.find((a) => a.op === 'creerPost' && a.canal === 'x'), pF = w.appelsBuffer.find((a) => a.op === 'creerPost' && a.canal === 'facebook');
+  verifie('G5. le MÊME visuel (même adresse, même fichier) est joint aux posts X et Facebook, avec son texte alternatif dérivé du contenu validé', pX?.imageUrl === im.url && pF?.imageUrl === im.url && !!im.alt && pX.altText === im.alt && pF.altText === im.alt && w.rendus === 1 && w.medias.size === 1, JSON.stringify({ x: pX?.imageUrl, f: pF?.imageUrl, rendus: w.rendus }));
+  verifie('G6. texte Facebook posté = fixture figée ; texte X posté = celui de la proposition', pF.texte === FB_FIGE['FR-2026-0146 nouvelle'].texte && pX.texte === p.texte_x);
+
+  // --- E7 : GO distincts par réseau, chacun avec le visuel
+  const w7 = monde({ t0, candidats: [candNouvelle(t0)] });
+  await executerCycle(deps(w7, now)); await go(w7, 'F'); await executerCycle(deps(w7, apres(15)));
+  verifie('G7. GO Facebook seul → UN post Facebook AVEC le visuel, aucun post X', w7.creations() === 1 && w7.appelsBuffer.find((a) => a.op === 'creerPost').canal === 'facebook' && w7.appelsBuffer.find((a) => a.op === 'creerPost').imageUrl === w7.props[0].identite.image.url);
+
+  // --- E8 : adaptateur réel, charge utile réelle (jamais d'appel réseau) : image native, alt, pas d'aperçu de lien en concurrence
+  const envoyes = [];
+  const bufReel = clientBuffer({ cle: 'k', organisationId: 'o', fetchImpl: async (u, o) => { envoyes.push(JSON.parse(o.body).variables?.input); return { ok: true, status: 200, json: async () => ({ data: { createPost: { __typename: 'PostActionSuccess', post: { id: 'p', status: 'scheduled', dueAt: 'd', channelId: 'c', text: 't' } } } }) }; } });
+  await bufReel.creerPost({ channelId: 'cx', canal: 'x', texte: 't', dueAt: 'd', imageUrl: im.url, altText: im.alt });
+  await bufReel.creerPost({ channelId: 'cf', canal: 'facebook', texte: 't', dueAt: 'd', imageUrl: im.url, altText: im.alt, avecLienFacebook: 'https://sousnosyeux.org/affaires/x/' });
+  await bufReel.creerPost({ channelId: 'cf', canal: 'facebook', texte: 't', dueAt: 'd', avecLienFacebook: 'https://sousnosyeux.org/affaires/x/' });
+  verifie('G8. adaptateur Buffer : X = assets[].image {url, metadata.altText}, sans metadata réseau ; Facebook avec image = image native et PAS de linkAttachment ; Facebook sans image = lien joint comme avant',
+    JSON.stringify(envoyes[0].assets) === JSON.stringify([{ image: { url: im.url, metadata: { altText: im.alt } } }]) && envoyes[0].metadata === undefined
+    && JSON.stringify(envoyes[1].assets) === JSON.stringify(envoyes[0].assets) && JSON.stringify(envoyes[1].metadata) === JSON.stringify({ facebook: { type: 'post' } })
+    && envoyes[2].assets.length === 0 && envoyes[2].metadata.facebook.linkAttachment.url === 'https://sousnosyeux.org/affaires/x/', JSON.stringify(envoyes));
+
+  // --- E9 : évolution (la nouveauté est datée, l'ancien événement n'est pas présenté comme récent)
+  const t0E = T0_DEFAUT(EVOLUTION.now);
+  const wE = monde({ t0: t0E, candidats: [candEvolution(t0E)] });
+  await executerCycle(deps(wE, EVOLUTION.now));
+  const pE = wE.props[0];
+  verifie('G9. évolution : X dit QUOI et QUAND (« mise en examen le 22 mai 2026 pour … »), réserve, média : URL ; Facebook = fixture figée', /^Paris 7e · .+ : mise en examen le 22 mai 2026 pour .+ \(selon franceinfo\)\. La mise en examen ne vaut pas culpabilité\.\n\nfranceinfo : https:\/\/www\.franceinfo\.fr\/\S+$/s.test(pE.texte_x) && pE.texte_facebook === FB_FIGE['FR-2026-0005 évolution'].texte, pE.texte_x);
+
+  // --- E10 : X trop long ⇒ MEILLEURE TENTATIVE montrée, X non envoyable ; Facebook et son visuel ne sont pas bloqués
+  const long = (c) => { c.cases = new Map(c.cases); c.cases.set(NOUVELLE.id, { ...c.cases.get(NOUVELLE.id), etablissement: `école maternelle ${'Johann-Wolfgang-Von-Goethe-'.repeat(6)}Goethe` }); };
+  const wL = monde({ t0, candidats: [candNouvelle(t0)] });
+  await executerCycle(deps(wL, now, { compoMod: long }));
+  const pL = wL.props[0], mL = propositions(wL)[0];
+  const tentative = /meilleure tentative, NON ENVOYABLE<\/b> \((\d+)\/280 car\., dépasse de (\d+)/.exec(mL?.texte ?? '');
+  verifie('G10. X trop long : la tentative est MONTRÉE avec son compte et son dépassement, X n’est pas proposé (aucun bouton X), Facebook reste proposé avec le visuel', !!pL && pL.canaux_proposes.join() === 'facebook' && pL.texte_x === null && !!tentative && Number(tentative[1]) > 280 && Number(tentative[2]) === Number(tentative[1]) - 280
+    && mL.markup.inline_keyboard.flat().every((b) => !/:(X|XF):/.test(b.callback_data)) && /X BLOQUÉ/.test(mL.texte) && !!pL.identite.image, mL?.texte?.slice(0, 300));
+  await go(wL, 'F'); await executerCycle(deps(wL, apres(15), { compoMod: long }));
+  verifie('G10b. un problème propre à X ne bloque pas Facebook : post Facebook créé avec le visuel, aucun post X', wL.creations() === 1 && wL.appelsBuffer.find((a) => a.op === 'creerPost').canal === 'facebook' && !!wL.appelsBuffer.find((a) => a.op === 'creerPost').imageUrl);
+
+  // --- E11 : visuel indisponible ⇒ aucun canal ne part sans image (jamais d'envoi sans image), aucune proposition à moitié
+  for (const [nom, panne] of [['rendu impossible', { rendu: true }], ['hébergement refusé', { hebergement: true }]]) {
+    const wp = monde({ t0, candidats: [candNouvelle(t0)] }); Object.assign(wp.pannes, panne);
+    const lignes = []; await executerCycle({ ...deps(wp, now), log: (m) => lignes.push(m) });
+    verifie(`G11. ${nom} → aucune proposition, aucun message, aucune photo, aucun appel Buffer ; le journal public dit pourquoi (sans texte ni adresse)`, wp.props.length === 0 && propositions(wp).length === 0 && wp.photos.length === 0 && wp.ecritures() === 0 && /visuel indisponible/.test(lignes.join('\n')) && !/https?:\/\//.test(lignes.join('\n')), lignes.join(' / '));
+  }
+  const wph = monde({ t0, candidats: [candNouvelle(t0)] }); wph.pannes.photo = true;
+  await executerCycle(deps(wph, now));
+  verifie('G11b. photo Telegram refusée → proposition conservée, message NON envoyé (il part, une seule fois, au passage suivant)', wph.props.length === 1 && wph.props[0].telegram_message_id == null && propositions(wph).length === 0);
+  wph.pannes.photo = false; await executerCycle(deps(wph, apres(1))); await executerCycle(deps(wph, apres(2)));
+  verifie('G11c. passage suivant : UN message, UNE photo, aucun doublon', propositions(wph).length === 1 && wph.photos.length === 1);
+
+  // --- E12 : GO périmé ⇒ rien n'est envoyé, l'échec est remonté, la proposition est CONSERVÉE (résolue, jamais effacée)
+  const perime = async (nom, alterer, motif) => {
+    const wg = monde({ t0, candidats: [candNouvelle(t0)] });
+    await executerCycle(deps(wg, now)); await enregistrerDecision({ port: wg.port, action: 'XF', cle: cleDe(wg), now: apres(10), actif: true });
+    alterer(wg);
+    await executerCycle(deps(wg, apres(15)));
+    verifie(`G12. ${nom} → aucun envoi (ni X ni Facebook), alerte, proposition conservée avec son motif`, wg.ecritures() === 0 && wg.props.length === 1 && motif.test(wg.props[0].resolution ?? '') && wg.telegram.some((m) => m.alerte && /GO social non exécuté/.test(m.alerte)), `${wg.props[0]?.resolution} | ${wg.ecritures()}`);
+  };
+  await perime('ancien GO sans visuel validé (proposition antérieure au visuel partagé)', (wg) => { delete wg.props[0].identite.image; }, /^obsolete: proposition antérieure au visuel partagé/);
+  await perime('visuel altéré à son adresse publique (octets différents)', (wg) => { const u = wg.props[0].identite.image.url; wg.medias.get(u).png = faussePng('autre'); }, /^bloque: le visuel validé n’est plus servi à l’identique/);
+  await perime('visuel injoignable (HTTP 404)', (wg) => { wg.medias.delete(wg.props[0].identite.image.url); }, /^bloque: le visuel validé n’est plus servi à l’identique \(média injoignable/);
+  await perime('visuel remplacé par une autre version éditoriale (spécification différente)', (wg) => { wg.props[0].identite.image.spec_hash = 'ffffffffffffffff'; }, /^obsolete: le visuel validé a changé/);
+  await perime('visuel de remplacement (même texte, autre adresse) : l’empreinte du GO ne vaut plus', (wg) => { const im2 = wg.props[0].identite.image; const u2 = im2.url.replace(/[0-9a-f]{16}\.png$/, '0000000000000000.png'); wg.medias.set(u2, wg.medias.get(im2.url)); im2.url = u2; }, /^(obsolete|bloque): /);
+
+  // --- E13 : même visuel pour les trois réseaux (aucun second rendu : Instagram réutilise le fichier validé) — preuve détaillée dans test-relais-instagram.mjs (2b)
+  // --- E14 : comptage X pondéré (celui de Buffer / X), poids maximal de l'image
+  verifie('G14. poidsX : URL = 23, nom de domaine nu = 23, emoji = 2, « … » = 2, lettres accentuées et « — ’ » = 1', poidsX('a https://exemple.org/très-long-chemin-qui-ne-compte-que-23') === 25 && poidsX('Actu.fr') === 23 && poidsX('😀') === 2 && poidsX('…') === 2 && poidsX('éàç—’«»·') === 8 && poidsX('Fin de phrase. Suite') === 20);
+  const gros = Buffer.concat([faussePng('gros'), Buffer.alloc(5 * 1024 * 1024)]);
+  let lourd = null; try { await controlerImageDistante({ url: 'https://x.test/a.png', attendu: null, imageDeps: { lire: async () => ({ status: 200, contentType: 'image/png', png: gros }) } }); } catch (e) { lourd = e.message; }
+  verifie('G14b. une image de plus de 5 Mo (plafond de X via Buffer) est refusée', /trop lourd/.test(lourd ?? ''), String(lourd));
+  const ig0 = composerInstagram({ ...candNouvelle(t0), event_key: 'new_case|FR-2026-0146' }, deps(w, now).compo);
+  const alt = texteAlternatif(ig0.spec);
+  verifie('G15. texte alternatif : dérivé de la spécification validée (lieu, libellé, faits, réserve, sources), ≤ 1000 caractères, sans appel de modèle ; trop long ⇒ aucun plutôt que coupé', !!alt && [...alt].length <= 1000 && ig0.spec.reserves.every((r) => alt.includes(r)) && ig0.spec.sources.every((s) => alt.includes(s)) && ig0.spec.faits.every((f) => alt.includes(f)) && texteAlternatif({ ...ig0.spec, faits: ['x'.repeat(1200)] }) === null, alt);
 }
 
 // =====================================================================

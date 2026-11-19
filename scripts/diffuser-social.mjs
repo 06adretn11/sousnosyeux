@@ -2,6 +2,8 @@
 // =====================================================================
 // scripts/diffuser-social.mjs — RELAIS SOCIAL, MODE REVIEW (Buffer → X, Facebook, Instagram). Aucun appel de modèle.
 // Instagram a SA proposition (visuel + légende exacts, GO Instagram) et son point de départ propre : voir scripts/lib/relais-instagram.mjs.
+// Le MÊME visuel (générateur Instagram) est joint aux posts X et Facebook ; leur proposition le montre et le GO le couvre (empreinte). X : texte court + comptage pondéré.
+
 //   node scripts/diffuser-social.mjs --initialiser-t0-instagram --confirmer   pose le point de départ d'Instagram (ligne 2, horloge de la base, UNE fois, immuable)
 //
 //   node scripts/diffuser-social.mjs                        PLAN (défaut) : événements éligibles et raisons de silence ; AUCUNE écriture, AUCUN Telegram, AUCUN Buffer
@@ -246,7 +248,7 @@ async function envoyerTelegram(texte, markup) {
   return j.result?.message_id ?? null;
 }
 
-/** Le VISUEL exact de la proposition Instagram : Telegram le télécharge lui-même à l'adresse publique (donc preuve supplémentaire qu'elle est servie à des tiers). */
+/** Le VISUEL exact d'une proposition (X / Facebook / Instagram) : Telegram le télécharge lui-même à l'adresse publique (donc preuve supplémentaire qu'elle est servie à des tiers). */
 async function envoyerPhotoTelegram(urlImage, legende) {
   const token = env('TELEGRAM_BOT_TOKEN'), chat = Number(env('TELEGRAM_ALLOWED_USER_ID'));
   if (!token || !Number.isInteger(chat)) throw new Error('Telegram non configuré');
@@ -417,7 +419,8 @@ if (activation.actif) await accueil();
 const resultat = await executerCycle({
   port, compo, activation, holds, ecrire: ECRIRE, log, alerter, buffer, ledger,
   canauxConfigures: CANAUX_ACTIFS.filter((c) => CANAL_ID[c]), channelIds: CANAL_ID, delaiMin: DELAI_MIN,
-  envoyer: envoyerTelegram, servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,
+  // Visuel commun (rendu, hébergement, relecture distante) : le MÊME générateur et le même hébergement que le canal Instagram, joint aux posts X et Facebook.
+  envoyer: envoyerTelegram, envoyerPhoto: envoyerPhotoTelegram, image: imageInstagram(), servi: (id) => htmlAccueil !== null && ecartsSite(htmlAccueil, [id], artefact).length === 0, ficheServie,
 });
 // INSTAGRAM : après X / Facebook (qui ont déjà suivi, annulé ou confirmé les lignes ouvertes du journal, Instagram compris). Une panne ici n'arrête jamais le reste : le canal est isolé.
 let erreursInstagram = 0;

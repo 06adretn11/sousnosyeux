@@ -77,9 +77,16 @@ export function clientBuffer({ cle, organisationId = null, fetchImpl = globalThi
      * Crée UNE publication AUTOMATIQUE (schedulingType 'automatic', jamais 'notification') programmée à `dueAt` (marge d'annulation B7).
      * @returns {{id:string, status:string, dueAt:string|null}}   throws ErreurBuffer
      */
-    async creerPost({ channelId, canal, texte, dueAt, imageUrl = null, avecLienFacebook = null }) {
+    async creerPost({ channelId, canal, texte, dueAt, imageUrl = null, altText = null, avecLienFacebook = null }) {
       const input = { channelId, text: texte, schedulingType: 'automatic', mode: 'customScheduled', dueAt, assets: [] };
-      if (canal === 'facebook') input.metadata = { facebook: { type: 'post', ...(avecLienFacebook ? { linkAttachment: { url: avecLienFacebook } } : {}) } };
+      // Visuel partagé X / Facebook : image native (assets[].image.url, texte alternatif dans image.metadata.altText — champ obligatoire de ImageMetadataInput, donc omis si absent).
+      const asset = () => [{ image: { url: imageUrl, ...(altText ? { metadata: { altText } } : {}) } }];
+      if (canal === 'facebook') {
+        // Une image jointe remplace l'aperçu du lien (le lien reste dans le texte, inchangé) : jamais les deux sur un même post.
+        input.metadata = { facebook: { type: 'post', ...(!imageUrl && avecLienFacebook ? { linkAttachment: { url: avecLienFacebook } } : {}) } };
+        if (imageUrl) input.assets = asset();
+      }
+      if (canal === 'x' && imageUrl) input.assets = asset();
       if (canal === 'instagram') {
         if (!imageUrl) throw new ErreurBuffer('refus', 'Instagram exige une image à URL publique stable');
         input.assets = [{ image: { url: imageUrl } }];

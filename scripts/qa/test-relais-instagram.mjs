@@ -97,8 +97,8 @@ function monde({ t0, igT0 = undefined, candidats = [], ps = {}, retire = {} } = 
     maj: async (k, c, p) => { const r = w.ledger.find((l) => l.event_key === k && l.canal === c); for (const [a, b] of Object.entries(p)) if (b != null) r[a] = b; },
   };
   w.buffer = {
-    creerPost: async ({ channelId, canal, texte, dueAt, imageUrl }) => {
-      w.appelsBuffer.push({ op: 'creerPost', channelId, canal, texte, dueAt, imageUrl });
+    creerPost: async ({ channelId, canal, texte, dueAt, imageUrl, altText = null }) => {
+      w.appelsBuffer.push({ op: 'creerPost', channelId, canal, texte, dueAt, imageUrl, altText });
       const post = { id: `bp${w.posts.length + 1}`, status: 'scheduled', text: texte, channelId, dueAt, externalLink: null };
       w.posts.push(post);
       if (w.pannes.creerApresCreation > 0) { w.pannes.creerApresCreation--; throw new ErreurBuffer('incertain', 'délai dépassé après création'); }
@@ -331,7 +331,8 @@ console.log('\nF. Publication : un GO Instagram valide → UN post Instagram, ri
   await enregistrerDecision({ port: wx.port, action: 'XF', cle: px.proposal_id.slice(0, 8), now, actif: true });
   const dx2 = deps(wx, new Date(now.getTime() + 6e4)); await executerCycle(dx2); await cycleInstagram(dx2);
   verifie('2. GO X + Facebook donné, aucun GO Instagram → X et Facebook partent, AUCUN post Instagram', wx.creations('x') === 1 && wx.creations('facebook') === 1 && wx.creations('instagram') === 0 && igProps(wx)[0].decision === null);
-  verifie('2b. ni X ni Facebook ne portent d’image ni de canal Instagram', wx.appelsBuffer.filter((a) => a.op === 'creerPost').every((a) => !a.imageUrl && a.channelId !== 'chI'));
+  verifie('2b. X et Facebook portent le MÊME visuel que la proposition Instagram (même URL, même fichier), avec son texte alternatif ; aucun ne passe par le canal Instagram',
+    wx.appelsBuffer.filter((a) => a.op === 'creerPost').every((a) => a.imageUrl === igProps(wx)[0].identite.canaux.instagram.image.url && !!a.altText && a.channelId !== 'chI') && wx.rendus === 1, `rendus=${wx.rendus}`);
   // GO Instagram valide
   const wg = prepare(); await executerCycle(deps(wg, now)); await cycleInstagram(deps(wg, now));
   await decisionIG(wg, 'I', 0, now);

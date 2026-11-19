@@ -73,7 +73,9 @@ export function comparerAuSchema(introspection) {
   const ig = T(nomNu(champDe(meta, 'instagram')?.type));
   ok('metadata.instagram.type et shouldShareToFeed', champDe(ig, 'type') && champDe(ig, 'shouldShareToFeed'), ig ? ig.name : 'absent');
   const actif = T(nomNu(champDe(entree, 'assets')?.type));
-  ok('assets[].image.url (visuel Instagram)', champDe(T(nomNu(champDe(actif, 'image')?.type)), 'url'), actif ? actif.name : 'absent');
+  ok('assets[].image.url (visuel partagé X · Facebook · Instagram)', champDe(T(nomNu(champDe(actif, 'image')?.type)), 'url'), actif ? actif.name : 'absent');
+  const imageEntree = T(nomNu(champDe(actif, 'image')?.type));
+  ok('assets[].image.metadata.altText (texte alternatif du visuel)', champDe(T(nomNu(champDe(imageEntree, 'metadata')?.type)), 'altText'), imageEntree ? imageEntree.name : 'absent');
 
   // --- post (lecture d'un post) et posts (réconciliation) ----------------------------------------------------------------------------
   const post = T('Post');

@@ -25,6 +25,8 @@ import { specVisuel, verifierVisuel, htmlVisuel, empreinteSpec, empreinteImage, 
 
 export const CANAL_INSTAGRAM = 'instagram';
 export const LIMITE_LEGENDE = 2200;     // plafond Instagram
+export const LIMITE_OCTETS_IMAGE = 5 * 1024 * 1024;   // plafond d'une image X via Buffer (le plus strict des trois réseaux)
+export const LIMITE_ALT = 1000;          // plafond d'un texte alternatif (X)
 export const MAX_PROPOSITIONS_PAR_PASSAGE = 3;
 const HEURE = 36e5;
 const dateOuNull = (d) => { if (d == null || d === '') return null; const x = d instanceof Date ? d : new Date(d); return Number.isNaN(x.getTime()) ? null : x; };
@@ -117,9 +119,68 @@ export async function controlerImageDistante({ url, attendu, imageDeps }) {
   if (!/^image\/png\b/i.test(String(r.contentType || ''))) throw new Error(`type de média inattendu (${String(r.contentType).slice(0, 40)})`);
   const d = pngDimensions(r.png);
   if (!d || d.largeur !== LARGEUR || d.hauteur !== HAUTEUR) throw new Error('format du média inattendu (attendu 1080×1350)');
+  if (r.png.length > LIMITE_OCTETS_IMAGE) throw new Error(`média trop lourd (${Math.round(r.png.length / 1024)} Ko > 5 Mo, plafond de X)`);
   const sha = empreinteImage(r.png);
   if (attendu && sha !== attendu) throw new Error('empreinte du média distant différente de celle validée');
   return { url, sha256: sha, largeur: d.largeur, hauteur: d.hauteur, octets: r.png.length };
+}
+
+/**
+ * TEXTE ALTERNATIF du visuel, tiré de la spécification VALIDÉE (jamais d'appel de modèle) : lieu, libellé, faits, réserves, sources — le contexte n'est ajouté que s'il tient.
+ * Au-delà de LIMITE_ALT sans le contexte : null (aucun texte alternatif plutôt qu'un texte coupé).
+ */
+export function texteAlternatif(spec) {
+  const lieu = `${spec.commune}${spec.departement ? ` (${spec.departement})` : ''}`;
+  const tete = `Carte Sous nos yeux — ${spec.kicker}. ${lieu}, ${spec.etablissement} : ${spec.libelle}${spec.qualif ? ` pour ${spec.qualif}` : ''}.`;
+  for (const ctx of [spec.contexte, []]) {
+    const t = [tete, ...spec.faits, ...ctx, ...spec.reserves, ...spec.sources].join(' ');
+    if ([...t].length <= LIMITE_ALT) return t;
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------
+// VISUEL PARTAGÉ X · Facebook · Instagram : UN visuel par événement et version éditoriale (même spécification ⇒ même fichier, même URL). Aucun second générateur.
+// ---------------------------------------------------------------------
+/** Images déjà validées dans des propositions (X / Facebook : identite.image ; Instagram : identite.canaux.instagram). */
+export function imagesDeProps(props) {
+  return (props || []).flatMap((p) => [p.identite?.image, p.identite?.canaux?.instagram ? { ...p.identite.canaux.instagram.image, spec_hash: p.identite.canaux.instagram.spec_hash, gabarit: p.identite.canaux.instagram.gabarit } : null])
+    .filter((i) => i?.url && i.sha256 && i.spec_hash);
+}
+/** Réutilise une image déjà hébergée ET relue à l'identique pour la même spécification ; sinon rend et héberge. throws Error */
+export async function produireOuReutiliser(spec, specHash, c, imageDeps, existantes = []) {
+  for (const e of existantes) {
+    if (e.spec_hash !== specHash || e.gabarit !== GABARIT_VISUEL) continue;
+    try { return await controlerImageDistante({ url: e.url, attendu: e.sha256, imageDeps }); } catch { /* absente ou altérée : on passe à la suivante, puis au rendu */ }
+  }
+  return produireImage(spec, c, imageDeps);
+}
+/**
+ * Visuel d'un événement pour X / Facebook : composition Instagram (PURE : mêmes contrôles de la légende et du visuel), puis image (rendu, hébergement, relecture distante).
+ * Indisponible ⇒ { ok:false, motifs } : aucun canal ne part sans image. ecrire=false : aucun rendu (plan).
+ * @returns {Promise<{ok:boolean, motifs?:string[], spec?:object, spec_hash?:string, gabarit?:string, alt?:string|null, image?:object|null}>}
+ */
+export async function visuelPartage({ c, compo, imageDeps, ecrire, existantes = [] }) {
+  const ig = composerInstagram(c, compo);
+  if (!ig.ok) return { ok: false, motifs: ig.motifs.map((m) => `visuel : ${m}`) };
+  const v = { ok: true, spec: ig.spec, spec_hash: ig.specHash, gabarit: GABARIT_VISUEL, alt: texteAlternatif(ig.spec), image: null };
+  if (!ecrire) return v;
+  if (!imageDeps) return { ok: false, motifs: ['visuel : rendu et hébergement non configurés'] };
+  try { return { ...v, image: await produireOuReutiliser(ig.spec, ig.specHash, c, imageDeps, existantes) }; }
+  catch (e) { return { ok: false, motifs: [`visuel indisponible : ${String(e.message).slice(0, 160)}`] }; }
+}
+/**
+ * Recontrôle, juste avant l'envoi, du visuel VALIDÉ par le GO : la spécification recomposée est celle de la proposition ET le fichier est toujours servi à l'identique.
+ * @returns {Promise<{motif?:string, image?:object, alt?:string|null}>} motif = « obsolete: … » | « bloque: … »
+ */
+export async function recontroleVisuel({ c, compo, stock, imageDeps }) {
+  if (!stock?.url || !stock?.sha256 || !stock?.spec_hash) return { motif: 'obsolete: proposition antérieure au visuel partagé (aucune image validée par le GO)' };
+  const ig = composerInstagram(c, compo);
+  if (!ig.ok) return { motif: `bloque: le visuel n’est plus composable (${ig.motifs.join(' ; ').slice(0, 160)})` };
+  if (ig.specHash !== stock.spec_hash || stock.gabarit !== GABARIT_VISUEL) return { motif: 'obsolete: le visuel validé a changé (spécification ou gabarit)' };
+  if (!imageDeps) return { motif: 'bloque: contrôle de l’image impossible (hébergement non configuré)' };
+  try { return { image: await controlerImageDistante({ url: stock.url, attendu: stock.sha256, imageDeps }), alt: texteAlternatif(ig.spec) }; }
+  catch (e) { return { motif: `bloque: le visuel validé n’est plus servi à l’identique (${String(e.message).slice(0, 120)})` }; }
 }
 
 // ---------------------------------------------------------------------
@@ -184,7 +245,7 @@ export async function proposerInstagram(deps) {
     if (props.some((p) => p.identite?.canaux?.instagram?.contenu === contenu)) continue;            // même contenu déjà proposé (expiré, obsolète) : jamais reproposé à l'identique
     if (!ecrire) { log(`· instagram ${c.type} ${c.case_id} : ÉLIGIBLE${amorcage ? ' (amorçage)' : ''} — plan, ni rendu, ni enregistrement, ni envoi`); continue; }
     let image;
-    try { image = await produireImage(ig.spec, c, deps.image); }
+    try { image = await produireOuReutiliser(ig.spec, ig.specHash, c, deps.image, imagesDeProps(await port.propositionsDeEvenement(base))); }
     catch (e) { bilan.bloquees++; log(`· instagram ${c.type} ${c.case_id} : SILENCE — visuel impossible (${motifsPublics(e.message)})`); continue; }
     const ident = identiteInstagram({ ...c, event_key: base }, ig, image);
     ident.affichage = affichageDe(c, ig, compo.site);
