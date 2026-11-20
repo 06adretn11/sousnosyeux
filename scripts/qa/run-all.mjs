@@ -119,6 +119,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Fait déjà publié — un fait que la fiche porte déjà n’est pas une information à décider (au plus, une source à rattacher) ; rejeu Rots',
+    script: 'scripts/qa/test-fait-deja-publie.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Résolveur — départage par les sources et la chronologie (plusieurs candidates ≠ ambiguïté tant qu’on ne les a pas comparées)',
     script: 'scripts/qa/test-departage.mjs',
     bloquant: true,
