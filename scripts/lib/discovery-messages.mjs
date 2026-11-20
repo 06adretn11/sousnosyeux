@@ -8,7 +8,7 @@
 // Les liens sont écrits en clair (aperçu désactivé à l'envoi) : un lien non cliquable reste copiable.
 // =====================================================================
 import { porteeRelais } from './diffusion-sociale.mjs';
-import { preuvesDe } from './preuves.mjs';
+import { preuvesDe, SEUIL_PUBLICATION } from './preuves.mjs';
 import { moisFr } from './evenement-institutionnel.mjs';
 import { stadeCite } from './stade-judiciaire.mjs';
 import { comparerEtablissements } from './rapprochement-garde.mjs';
@@ -78,8 +78,33 @@ const ligneSources = (p) => {
   if (!n) return '';
   // Autant d'éditeurs n'est pas autant d'origines : un média qui reprend une dépêche ou en relaie un autre n'ajoute pas une origine indépendante.
   const reprises = p.medias != null && p.independantes != null && p.independantes < p.medias;
-  return `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)${reprises ? ' — les autres éditeurs reprennent ou relaient : ils ne comptent pas comme des origines de plus' : ''}`;
+  const regle = p.recoupement_reprise ? `\n⚖ Recoupement RECONNU par la règle de reprise (ce ne sont pas deux origines indépendantes) : ${esc(p.recoupement_reprise)}.` : '';
+  return `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)${reprises ? ' — les autres éditeurs reprennent ou relaient : ils ne comptent pas comme des origines de plus' : ''}${regle}`;
 };
+
+/**
+ * BLOC QUALITÉ — ce qui sépare un doute de FOND (véracité : recoupement, statut, source, ancienneté) d'un doute d'IDENTIFICATION (établissement non nommé :
+ * le point sera au centre de la commune, la véracité n'est pas touchée). Montré à CHAQUE proposition de création : l'éditeur clique en connaissance de cause.
+ */
+export function blocQualite(p) {
+  const f = p?.fiche;
+  if (!f || f.crit_recoupement === undefined) return [];
+  const pv = preuvesDe(p);
+  const ok = (b) => (b ? '✓' : '✗');
+  const fond = [];
+  if (f.crit_recoupement === false) fond.push('recoupement : une seule origine (les éditeurs reprennent la même dépêche)');
+  if (f.crit_statut_clair === false) fond.push('statut judiciaire à qualifier');
+  if (f.crit_source_fiable === false) fond.push('source jugée insuffisamment fiable');
+  if (f.crit_article_recent === false) fond.push('article ancien');
+  const ident = f.crit_etablissement_nomme === false ? 'établissement non nommé : la véracité n’est pas touchée, le point de carte sera le centre de la commune' : null;
+  return [
+    '',
+    `📊 Qualité ${pv.fiabilite}/10 (publiable dès ${SEUIL_PUBLICATION}) : ${ok(f.crit_source_fiable)} source fiable · ${ok(f.crit_article_recent)} article récent · ${ok(f.crit_statut_clair)} statut clair · ${ok(f.crit_recoupement)} recoupement · ${ok(f.crit_etablissement_nomme)} établissement nommé`,
+    ...(fond.length ? [`⚠ Doute de FOND : ${fond.join(' ; ')}.`] : []),
+    ...(ident ? [`ℹ Doute d’IDENTIFICATION : ${ident}.`] : []),
+    ...(!fond.length && !ident ? ['Aucun doute sur les cinq critères.'] : []),
+  ];
+}
 const ligneRemplace = (p) => (p.remplace ? `↻ Version consolidée : elle remplace la proposition ${esc(p.remplace.pid8)} (son bouton est inerte) — ${esc(cut(p.remplace.motif || '', 160))}` : '');
 
 /**
@@ -386,7 +411,7 @@ export function messageDecision(p, recommendation) {
     ? `→ VALIDER ET PUBLIER : je confirme cette affaire, j’autorise sa publication sur SNY (pas son relais social : il fait l’objet d’une proposition distincte), j’accepte la localisation (approximative, centre de commune) et les réserves ci-dessous. Stade judiciaire retenu : « ${p.stade_minimal || p.fiche?.statut_judiciaire} ».\nRéserves : ${(dp.reserves || []).join(' ; ') || 'aucune'}.\n🟡 REVIEW : mettre de côté, rien n’est créé · ⛔ REJECT : écarter.`
     : !pending
     ? `→ VALIDATE${p.non_publiable?.length ? ' (validation documentaire, SANS publication)' : ''} : ${p.independantes || p.medias} sources indépendantes recoupent les faits${preuvesDe(p).manques.length ? ` (réserve : ${preuvesDe(p).manques.join(' ; ')})` : ''}.`
-    : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent. REVIEW : mettre de côté sans rien créer.`;
+    : `→ CRÉER EN ATTENTE DE PREUVES : signal crédible, mais ${preuvesDe(p, recommendation).manques.join(' ; ') || 'matière à confirmer'}. La candidate ne sera pas publiable tant que ces preuves manquent (réexamen dans 7 jours). REVIEW : mettre de côté sans rien créer — à choisir si un doute de fond subsiste ; ta lecture sert alors à ajuster la règle.`;
   return [
     `🆕 <b>DISCOVERY</b> · AFFAIRE POTENTIELLE · ${esc(p.commune)}`,
     ligneRemplace(p),
@@ -405,6 +430,7 @@ export function messageDecision(p, recommendation) {
     esc(sny),
     p.avertissement ? `\n⚠ ${esc(cutMot(p.avertissement, 360))}` : '',
     p.resume_neutralise?.length ? `ℹ Résumé volontairement neutre : les articles divergent sur ${esc(p.resume_neutralise.join(', '))}, ce n’est donc pas présenté comme établi.` : '',
+    ...blocQualite(p),
     !dp && p.non_publiable?.length ? `\n🚫 Publication non proposée : ${esc(cut(p.non_publiable.join(' ; '), 260))}.` : '',
     '',
     esc(reco),

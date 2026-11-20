@@ -23,6 +23,7 @@ import { detecterInstitutionnel } from './evenement-institutionnel.mjs';
 import { stadeEtabli, stadeCite } from './stade-judiciaire.mjs';
 import { MACHINE_RE, DECIDEUR_MACHINE } from './decision-machine.mjs';
 import { evaluerPublication } from './publication-gates.mjs';
+import { recoupementParReprise } from './recoupement-reprise.mjs';
 import { geocoderCommune } from './geocoder-commune.mjs';
 import { localisationDe } from './proposition-publication.mjs';
 
@@ -427,6 +428,7 @@ export function fusionner(base, ajout) {
   out.evidence = [...(out.evidence || []), ...(ajout.evidence || []).filter((e) => !preuves.has(`${canonique(e.url)}|${e.quote}`))];
   out.medias = new Set(out.articles.map((x) => domaine(x.url))).size;
   out.independantes = Math.max(out.independantes || 0, ajout.independantes || 0);
+  out.recoupement_reprise = out.recoupement_reprise || ajout.recoupement_reprise || undefined;
   const inconnues = [...(out.unknowns || [])];
   const note = (t) => { if (t && !inconnues.includes(t)) inconnues.push(t); };
   for (const u of ajout.unknowns || []) note(u);
@@ -455,7 +457,7 @@ export function fusionner(base, ajout) {
     } else note(`autre mesure institutionnelle rapportée : « ${ajout.institutionnel.libelle_public} »`);
   }
   out.unknowns = inconnues;
-  out.fiche = { ...out.fiche, crit_recoupement: out.independantes >= 2 };
+  out.fiche = { ...out.fiche, crit_recoupement: out.independantes >= 2 || !!out.recoupement_reprise };
   if (out.articles.length > (base.articles || []).length) out.regroupes = (out.regroupes || 1) + 1; // un rejeu sans page nouvelle ne compte pas
   return out;
 }
@@ -694,6 +696,10 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
   // différents, ne sont jamais deux confirmations indépendantes (un éditeur commun n'exclut pas une information originale complémentaire, mais
   // celle-ci enrichit le dossier : elle ne le recoupe pas).
   const indep = Math.min(independantes(lues), domaines.size);
+  // RÈGLE A (20/11/2026) : un fait judiciaire repris par ≥ 3 éditeurs dont un titre de référence, attribué à une autorité, vaut recoupement du critère.
+  // Le compte d'origines (`independantes`) reste VRAI et affiché ; seul le critère « recoupement » (et la recommandation) en tient compte.
+  const reprise = indep < 2 ? recoupementParReprise({ domaines: [...domaines], pages: lues, statut: c.statut_judiciaire }) : null;
+  const indepRetenu = reprise?.ok ? 2 : indep;
 
   // Rapprochement : une résolution PAR page, jamais sur le texte concaténé (faux POSSIBLE_MATCH constaté).
   const parPage = lues.map((p) => resoudre({ candidate: { title: '' }, index, corps: p.corps }));
@@ -767,7 +773,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     resume: c.resume, commune: c.commune, etablissement: c.etablissement, structure: c.type_structure, stade_minimal: c.statut_judiciaire,
     evidence, articles: lues.map((p) => ({ media: p.media, url: p.url, published: p.published })),
     unknowns: c.ambiguite ? [c.ambiguite] : [],
-    independantes: indep, medias: domaines.size, personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
+    independantes: indep, medias: domaines.size, ...(reprise?.ok ? { recoupement_reprise: reprise.motif } : {}), personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
     ...(etat.regroupes.length ? { regroupes: etat.cles.length } : {}),
     ...(c.diag_enum ? { diag_extraction: c.diag_enum } : {}),   // forme originale des champs catégoriels (liste récupérée / repli et sa raison)
     ...(c.resume_neutralise?.length ? { resume_neutralise: c.resume_neutralise } : {}),   // actes de procédure contestés : absents du résumé (voir faitsContestes)
@@ -782,7 +788,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     departement: c.departement || '', type_structure: c.type_structure, role_mis_en_cause: c.role_mis_en_cause, type_affaire: c.type_affaire,
     statut_judiciaire: c.statut_judiciaire, statut_des_faits: c.statut_des_faits, enfants_concernes_public: c.enfants_concernes_public,
     crit_source_fiable: true, crit_article_recent: true, crit_etablissement_nomme: nomme,
-    crit_statut_clair: c.statut_judiciaire !== 'à qualifier', crit_recoupement: indep >= 2,
+    crit_statut_clair: c.statut_judiciaire !== 'à qualifier', crit_recoupement: indepRetenu >= 2,
   };
 
   // UNE AFFAIRE, UNE DÉCISION. Avant de proposer, ce signal décrit-il une affaire déjà proposée ? (pages citées en commun)
@@ -853,7 +859,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     recommendation = 'REVIEW'; avertissement = avertissementVoisines(voisinsResolver, geoDe);
   } else if (domaines.size < 2) {
     return { statut: 'attente', motif: 'un seul média : en attente de recoupement', cout: ext.cout };
-  } else if (indep < 2) {
+  } else if (indepRetenu < 2) {
     recommendation = 'REVIEW'; avertissement = 'les médias reprennent la même dépêche (une seule source indépendante)' + (c.ambiguite ? ' · ' + c.ambiguite : '');
   } else recommendation = 'NEW_CASE_CANDIDATE';
 

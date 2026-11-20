@@ -6,7 +6,7 @@
 // une seule fois (`applied_at`), jamais une proposition sans décision.
 //
 //   VALIDATE / CREATE         → fiche `candidate` + sources + revue « validé » (publiable SUR GO)
-//   CREATE_PENDING_EVIDENCE   → fiche `candidate` + sources + revue « à corriger » SEULE (réexamen à +30 jours) : le garde-fou de
+//   CREATE_PENDING_EVIDENCE   → fiche `candidate` + sources + revue « à corriger » SEULE (réexamen à +7 jours) : le garde-fou de
 //                               publication existant la rend NON publiable ; ce qui manque est consigné dans la revue ;
 //                               la Maintenance la surveille (stock = publiées + réexamens planifiés)
 //   REVIEW (= HOLD)           → AUCUNE écriture : ni fiche, ni rattachement, ni état (la proposition reste, décision consignée)
@@ -39,6 +39,9 @@ import { execFileSync } from 'node:child_process';
 
 const ECRIRE = process.argv.includes('--ecrire');
 const CI = !!process.env.CI;
+// Réexamen d'une candidate « en attente de preuves » : 7 jours (avant : 30). La Maintenance quotidienne surveille déjà ce stock (watch-updates : reviews.next_review_at) ; la date
+// planifiée est consignée dans reviews.next_review_at, la colonne que lit la Maintenance.
+const DELAI_REEXAMEN_JOURS = 7;
 const { sql } = connecter();
 const S = await schemaBoucle(sql);
 
@@ -313,7 +316,7 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
     }
   }
   if (!ECRIRE) { console.log(`  ${r.created_case_id ? 'reprendrait la publication de ' + r.created_case_id : 'créerait'} ${pubStatus} · ${sources.length} source(s) · revue ${revue}${direct ? ' + GO publication (VALIDER ET PUBLIER)' : ''}`); continue; }
-  const prochain = revue === 'à corriger' ? new Date(Date.now() + 30 * 864e5).toISOString().slice(0, 10) : null;
+  const prochain = revue === 'à corriger' ? new Date(Date.now() + DELAI_REEXAMEN_JOURS * 864e5).toISOString().slice(0, 10) : null;
   const note = enAttente
     ? `${balise} CREATE_PENDING_EVIDENCE — NON PUBLIABLE tant que les preuves manquent : ${manques.join(' ; ') || 'à confirmer'} — ${p.resume}`
     : `${balise} ${rejet ? 'REJECT' : 'VALIDATE'} — ${p.resume}`;
@@ -372,7 +375,7 @@ Autorisation de la PAGE enregistrée en base ; l’affaire n’est pas modifiée
         console.log(`  + événement institutionnel (${inst.mesure}, ${inst.realisation}) — état judiciaire inchangé`);
       }
     }
-    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +30 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : direct ? 'GO publication enregistré par ce même clic (VALIDER ET PUBLIER) : exécution en cours.' : phrasePublication('candidate')}`);
+    await prevenir(`📌 <b>Appliqué en base</b> — ${rejet ? 'affaire écartée (mémoire du rejet)' : enAttente ? 'nouvelle affaire créée EN ATTENTE DE PREUVES' : 'nouvelle affaire créée'}\n${esc(cree[0].created_case_id)} — ${esc(etab)} (${esc(p.commune)}), ${pubStatus}${enAttente ? `, réexamen planifié à +7 jours.\nNON PUBLIABLE — manque : ${esc(manques.join(' ; ') || 'à confirmer')}` : ''}.\n${rejet ? 'Elle ne sera pas reproposée.' : enAttente ? 'La publication reste interdite tant que ces preuves ne sont pas réunies.' : direct ? 'GO publication enregistré par ce même clic (VALIDER ET PUBLIER) : exécution en cours.' : phrasePublication('candidate')}`);
   }
   // --- GO publication porté par le clic unique ---------------------------------------------------------------------------------
   const cid = r.created_case_id || cree[0]?.created_case_id;
