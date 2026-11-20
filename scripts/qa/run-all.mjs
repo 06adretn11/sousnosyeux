@@ -119,6 +119,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Règle A (reprise d’un fait judiciaire par ≥ 3 éditeurs dont une référence) · bloc qualité du message Discovery · réexamen à 7 jours · confirmation signée du recoupement',
+    script: 'scripts/qa/test-recoupement-reprise.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fait déjà publié — un fait que la fiche porte déjà n’est pas une information à décider (au plus, une source à rattacher) ; rejeu Rots',
     script: 'scripts/qa/test-fait-deja-publie.mjs',
     bloquant: true,

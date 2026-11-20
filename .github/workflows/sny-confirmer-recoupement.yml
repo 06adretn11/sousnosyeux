@@ -1,0 +1,65 @@
+# SNY — l'éditeur confirme, après lecture des articles, le critère « recoupement » d'UNE candidate (scripts/confirmer-recoupement.mjs).
+# Déclenchement MANUEL uniquement (workflow_dispatch) : plan par défaut (lecture seule), puis `ecrire`.
+# Ne publie RIEN : la candidate devient éligible à la proposition « PUBLIER ? », créée et envoyée par sny-clics (toutes les 30 min) ;
+# la publication reste un GO distinct (clic PUBLIER sur Telegram).
+# Les écritures en base se font ici, en CI (TLS vérifié), jamais depuis un poste avec la vérification des certificats désactivée.
+name: sny-confirmer-recoupement
+
+on:
+  workflow_dispatch:
+    inputs:
+      affaire:
+        description: 'Affaire visée (FR-AAAA-NNNN)'
+        required: true
+        type: string
+      motif:
+        description: 'Ta lecture des articles, en clair (20 à 400 caractères, sans nom de personne)'
+        required: true
+        type: string
+      go:
+        description: 'Ton mot de GO, consigné tel quel (requis pour écrire)'
+        required: false
+        type: string
+      ecrire:
+        description: 'Écrire (sinon : plan, lecture seule)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  confirmer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      AFFAIRE: ${{ inputs.affaire }}
+      MOTIF: ${{ inputs.motif }}
+      GO_EDITEUR: ${{ inputs.go }}
+      ECRIRE: ${{ inputs.ecrire }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # Saisie validée : un identifiant FR-AAAA-NNNN exactement ; motif et GO ne sont JAMAIS interpolés dans une commande (variables d'environnement, liste d'arguments).
+      - name: Valider la saisie
+        run: |
+          case "$AFFAIRE" in
+            FR-[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]) ;;
+            *) echo "saisie refusée : un identifiant FR-AAAA-NNNN est attendu"; exit 2 ;;
+          esac
+      - name: Confirmer le recoupement (plan, ou écriture si demandé)
+        run: |
+          if [ "$ECRIRE" = "true" ]; then
+            node scripts/confirmer-recoupement.mjs "$AFFAIRE" --motif "$MOTIF" --ecrire --go "$GO_EDITEUR"
+          else
+            node scripts/confirmer-recoupement.mjs "$AFFAIRE" --motif "$MOTIF"
+          fi
