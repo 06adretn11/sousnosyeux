@@ -31,8 +31,21 @@ t('paroles (dossier Cenon) : attribuées, sourcées, une citation = un point ; a
   }
 });
 t('aucun nombre exact d’enfants ni nom de personne mise en cause dans la matière des fiches', () => {
-  const txt = JSON.stringify([fichiers.find(([h]) => h === 'isoles')[1], lire('data/hub-matiere/paris-11e.json').dossiers['POC-09']]);
+  // Un acteur AVEC TITRE (procureur, maire, avocat…) est une autorité qui parle : son nom est une attribution publique (doctrine des Hubs), pas la personne mise en cause.
+  // Seul le NOM déclaré dans un champ « acteur » qui porte un titre est exempté (partout où il est cité, p. ex. dans le contexte de sa déclaration) ;
+  // tout autre nom (sans titre, ou jamais déclaré comme acteur) échoue toujours.
+  const TITRE = /\b(procureure?|substitut|magistrat\w*|maire|adjoint\w*|préfet\w*|recteur|rectrice|directeur|directrice|avocat\w*|président\w*|ministre|porte-parole)\b/i;
+  const masque = (o) => {
+    const noms = new Set();
+    JSON.stringify(o, (k, v) => { if (k === 'acteur' && typeof v === 'string' && TITRE.test(v)) noms.add(v.split(',')[0].trim()); return v; });
+    return [...noms].filter((x) => x.length > 3).reduce((s, x) => s.split(x).join('[acteur titré]'), JSON.stringify(o));
+  };
+  const NOM = /Nicolas|\b[A-Z]\.\s?[A-Z]\./;
+  assert.ok(!NOM.test(masque({ reactions: [{ acteur: 'Nicolas Dupont, procureur de la République', paraphrase: 'a expliqué le procureur Nicolas Dupont.' }] })), 'un acteur titré est exempté, y compris dans sa citation de contexte');
+  assert.ok(NOM.test(masque({ reactions: [{ acteur: 'Nicolas Dupont' }] })), 'un nom sans titre reste refusé');
+  assert.ok(NOM.test(masque({ reactions: [{ acteur: 'Nicolas Dupont, procureur' }], deroule: [{ texte: 'Selon Nicolas Martin, l’animateur' }] })), 'un autre nom jamais déclaré comme acteur titré reste refusé');
+  const txt = masque([fichiers.find(([h]) => h === 'isoles')[1], lire('data/hub-matiere/paris-11e.json').dossiers['POC-09']]);
   assert.ok(!/\b(deux|trois|quatre|cinq|six|sept|huit|neuf|dix|douze|\d+)\s+(fillettes|enfants|élèves|garçons)\b/i.test(txt), 'nombre exact d’enfants');
-  assert.ok(!/Nicolas|\b[A-Z]\.\s?[A-Z]\./.test(txt), 'nom ou initiale d’une personne mise en cause');
+  assert.ok(!NOM.test(txt), 'nom ou initiale d’une personne mise en cause');
 });
 console.log(`\n${n} contrôles fiches : OK`);
