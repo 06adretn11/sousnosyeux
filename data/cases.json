@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 67,
+    "total_cases": 68,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -2620,6 +2620,44 @@
           "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
           "media": "Actu.fr",
           "publication_date": "2026-11-13",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0149",
+      "etablissement": "périscolaire non nommée",
+      "commune": "Beauvais",
+      "departement": "Oise",
+      "type_structure": "périscolaire",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 49.439313,
+      "lng": 2.087881,
+      "geocode_source": "ban-commune",
+      "sources": [
+        {
+          "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+          "media": "Le Figaro",
+          "publication_date": "2026-11-19",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+          "media": "Le Bien Public",
+          "publication_date": "2026-11-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+          "media": "Sud Ouest",
+          "publication_date": "2026-11-19",
           "source_type": "presse",
           "is_primary": false
         }
