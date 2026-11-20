@@ -104,6 +104,12 @@ const LIBELLES_DECLARATION = {
   declaration_employeur: 'Selon la presse, l’employeur de l’agent concerné a publié un communiqué par lequel il affirme avoir assumé ses responsabilités d’employeur. Position de l’employeur, non vérifiée par ailleurs.',
 };
 
+/** Codes de mesure (vocabulaire fermé) qu'un texte énonce — lecture d'une étape DÉJÀ publiée, sans exiger d'acteur ni de réalisation. */
+export function mesuresDeTexte(texte) {
+  const n = norm(texte);
+  return MESURES.filter(([, motif]) => motif.test(n)).map(([code]) => code);
+}
+
 export function libelleInstitutionnel(mesure, realisation) {
   return LIBELLES[mesure]?.[realisation] || null;
 }

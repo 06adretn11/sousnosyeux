@@ -23,6 +23,7 @@ import { messageDecision, boutons, modeCreation, messageEnrichissement } from '.
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer, suiteClicNouvelle, accuseVersion } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
+import { dejaPublie } from './lib/fait-deja-publie.mjs';
 import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
 import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
 import { portNeon } from './lib/relais-social-db.mjs';
@@ -198,7 +199,13 @@ async function decisionReactions(cle, p, faits) {
   const connus = await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null
                            union all select f.fait->>'event_type', f.fait->>'event_date', f.fait->>'event_period', f.fait->>'libelle_public' from state_proposals q cross join lateral jsonb_array_elements(q.facts) f(fait)
                             where q.case_id = ${p.case_id} and q.decision = 'ACCEPT' and q.proposal_id <> ${p.proposal_id}`;
-  const { neufs, propres, territoire } = planReactions(faits, connus);
+  const plan = planReactions(faits, connus);
+  // Un fait que la FICHE PUBLIÉE porte déjà n'est pas une information à décider (Rots, 20/11/2026) : au plus, une source à rattacher.
+  const dossier = dossierFiche(p.case_id)?.d ?? null;
+  const publies = plan.neufs.map((f) => ({ f, pub: dejaPublie(dossier, f, p.url) })).filter((x) => x.pub);
+  const neufs = plan.neufs.filter((f) => !publies.some((x) => x.f === f));
+  const propres = plan.propres.filter((f) => neufs.includes(f)), territoire = plan.territoire.filter((f) => neufs.includes(f));
+  if (!neufs.length && publies.length) return rattachementSeul(p, publies[0].pub);
   if (!neufs.length) throw new Error('informations déjà consignées ou validées pour cette affaire : aucune nouvelle demande');
   // Une même information déjà soumise à décision (autre article, même libellé) : une seule demande.
   const soeurs = await sql`
@@ -235,6 +242,22 @@ function pagesSiValidee(case_id, neufs) {
     return { flat: pagesSiValide(faits, ctx, site), parFait: pagesParFait(faits, ctx, site) };
   } catch { return null; }
 }
+/**
+ * Le fait proposé figure DÉJÀ dans la fiche publiée : rien à décider, aucune information à ajouter.
+ *   · l'article est déjà référencé par la fiche → aucun message ;
+ *   · sinon → un message d'INFORMATION sans bouton : il reste seulement à rattacher la source (aucune écriture, aucun VALIDATE).
+ */
+function rattachementSeul(p, { sourceDejaRattachee }) {
+  if (sourceDejaRattachee) throw new Error('fait déjà publié dans la fiche et article déjà référencé : aucun message');
+  return envoyer(
+    `🔄 <b>MAINTENANCE</b> · 📎 ${entete(p)}
+
+SOURCE À RATTACHER
+Cette information figure déjà dans la fiche publiée ; l’article n’y est pas encore référencé.` +
+      `
+Aucune information ajoutée, aucun changement d’état (état : ${esc(p.courant)}).`,
+  );
+}
 async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
   if (p.decision) throw new Error(`déjà décidée (${p.decision}) — rien envoyé`);
@@ -245,6 +268,8 @@ async function decisionInstitutionnelle(cle) {
   if (!inst) throw new Error('aucune information nouvelle à décider (source seule) : aucun message');
   const [deja] = await sql`select 1 x from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
   if (deja) throw new Error('mesure déjà consignée pour cette affaire : aucune nouvelle demande');
+  const pub = dejaPublie(dossierFiche(p.case_id)?.d ?? null, { ...inst, event_date: p.ed }, p.url);
+  if (pub) return rattachementSeul(p, pub);
   const soeurs = await sql`
     select q.facts from state_proposals q
      where q.case_id = ${p.case_id} and q.proposal_id <> ${p.proposal_id} and q.decision is null and q.analysis_action = 'ENRICHMENT'
