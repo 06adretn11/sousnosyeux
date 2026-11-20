@@ -12780,8 +12780,54 @@
               "acces": "libre",
               "media": "Actu.fr",
               "publie_le": "2026-11-13"
+            },
+            {
+              "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-01"
             }
           ]
+        },
+        {
+          "date": "2026-10-06",
+          "type": "plainte",
+          "texte": "Selon Actu.fr, plusieurs plaintes ont été déposées par des parents de l'école maternelle Germaine-Sablon, la première le 6 octobre 2026.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/val-de-marne-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-agressions-sexuelles-sur-des-enfants-4c3b8aac-df78-11f1-8a68-1e9f9f2c4ff6",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-11-13"
+            },
+            {
+              "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-01"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Actu.fr, un agent périscolaire est soupçonné d'agressions sexuelles dans le Val-de-Marne.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-01"
+          },
+          "date_nature": "article"
         },
         {
           "date": "2026-11-12",
@@ -12822,6 +12868,12 @@
               "acces": "libre",
               "media": "Ouest-France",
               "publie_le": "2026-11-13"
+            },
+            {
+              "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-01"
             }
           ]
         },
@@ -12855,6 +12907,19 @@
           "date": null,
           "type": "plainte",
           "texte": "Selon Actu.fr, deux autres plaintes auraient été déposées ensuite.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon la maire du Perreux-sur-Marne, une plainte contre X a été déposée.",
           "acteur": null,
           "source": {
             "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
@@ -12982,6 +13047,29 @@
             {
               "pour": "absence d'auteur identifié et circonstances des faits à établir",
               "texte": "aucun auteur n'a été identifié à notre connaissance et les circonstances précises des faits restent à établir"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-13",
+          "acteur": "Christel Royer, maire du Perreux-sur-Marne",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-13"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "accusations sans fondement établi, menaces et atteintes aux personnes",
+          "citations": [
+            {
+              "pour": "accusations sans fondement établi, menaces et atteintes aux personnes",
+              "texte": "ne peut justifier ni les accusations sans fondement établi , ni les menaces, ni les atteintes aux personnes"
             }
           ],
           "validation": "POSITION_ATTRIBUEE",
@@ -13362,6 +13450,236 @@
       },
       "etat_actuel": [
         "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue."
+      ],
+      "statut_affiche": "mise en examen"
+    },
+    "FR-2026-0149": {
+      "appel": false,
+      "faits": "Selon Le Figaro, un animateur périscolaire de Beauvais a été mis en examen pour agression sexuelle sur mineur, corruption de mineur et détention d'images à caractère pédopornographique. Selon Le Figaro, une enquête préliminaire avait été ouverte après un signalement provenant de la ville de Beauvais.",
+      "deroule": [
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Le Figaro, lors de la perquisition de son domicile, des fichiers à caractère pédopornographique ont été retrouvés, a relevé le procureur.",
+          "acteur": "parquet de Beauvais",
+          "source": {
+            "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon Sud Ouest, un signalement provenant de la ville de Beauvais indiquait que l'animateur, qui intervenait notamment dans une école élémentaire, pouvait avoir des comportements inadaptés à l'égard de mineurs.",
+          "acteur": "mairie de Beauvais",
+          "source": {
+            "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+            "acces": "libre",
+            "media": "Sud Ouest",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+              "acces": "libre",
+              "media": "Le Bien Public",
+              "publie_le": "2026-11-19"
+            },
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon Le Bien Public, une enquête préliminaire avait été ouverte début octobre après un signalement provenant de la ville.",
+          "acteur": "parquet",
+          "source": {
+            "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+            "acces": "libre",
+            "media": "Le Bien Public",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            },
+            {
+              "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "garde_a_vue",
+          "texte": "Selon Le Bien Public, l'animateur a contesté les accusations lors de sa garde à vue.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+            "acces": "libre",
+            "media": "Le Bien Public",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            },
+            {
+              "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mise_en_examen",
+          "texte": "Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen jeudi pour agression sexuelle sur mineur de moins de 15 ans, corruption de mineur de moins de 15 ans et détention d'images à caractère pédopornographique.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+            "acces": "libre",
+            "media": "Sud Ouest",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon le parquet, l'animateur périscolaire a été suspendu de ses fonctions par la mairie de Beauvais immédiatement après le signalement.",
+          "acteur": "mairie de Beauvais",
+          "source": {
+            "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+            "acces": "libre",
+            "media": "Le Bien Public",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            },
+            {
+              "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Selon Le Bien Public, le mis en cause a été placé en détention provisoire, conformément aux réquisitions du parquet.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.bienpublic.com/faits-divers-justice/2026/11/19/beauvais-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur",
+            "acces": "libre",
+            "media": "Le Bien Public",
+            "publie_le": "2026-11-19"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2026-11-19"
+            },
+            {
+              "url": "https://www.sudouest.fr/faits-divers/un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-dans-l-oise-31589057.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-11-19"
+            }
+          ]
+        }
+      ],
+      "synthese": {
+        "decision": "Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen jeudi pour agression sexuelle sur mineur de moins de 15 ans, corruption de mineur de moins de 15 ans et détention d'images à caractère pédopornographique."
+      },
+      "inconnues": [
+        "Aucun jugement sur le fond n’est rapporté par les sources lues : une audience est annoncée (voir le déroulé) ; son issue est inconnue.",
+        "Le dossier ne repose que sur 3 articles lus (Le Figaro, Le Bien Public, Sud Ouest)."
+      ],
+      "reactions": [
+        {
+          "date": "2026-11-19",
+          "acteur": "Nicolas Septe, procureur de Beauvais",
+          "etabli": "Établi : propos rapportés par Le Figaro. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.lefigaro.fr/faits-divers/oise-un-animateur-periscolaire-de-beauvais-mis-en-examen-pour-agression-sexuelle-et-corruption-de-mineur-20261119",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2026-11-19"
+          },
+          "qualite": "propos rapportés par Le Figaro",
+          "a_propos": "le signalement de la ville de Beauvais",
+          "citations": [
+            {
+              "pour": "le signalement de la ville de Beauvais",
+              "texte": "pouvait avoir des comportements inadaptés à l’égard de mineurs"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (Le Figaro) : Une enquête préliminaire avait été ouverte début octobre, après un signalement provenant de la ville indiquant que cet animateur de 32 ans, qui intervenait notamment dans une école élémentaire, «pouvait avoir des comportements inadaptés à l’égard de mineurs» , a expliqué le procureur de Beauvais Nicolas Septe.",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        }
+      ],
+      "situation": {
+        "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
+          "label": "Suite",
+          "titre": "Issue de la procédure à documenter",
+          "lignes": [
+            "La personne mise en cause est présumée innocente.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon le parquet, l'animateur périscolaire a été suspendu de ses fonctions par la mairie de Beauvais immédiatement après le signalement."
+          ]
+        },
+        "decision": {
+          "cat": "blue",
+          "label": "Situation judiciaire",
+          "texte": "Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen jeudi pour agression sexuelle sur mineur de moins de 15 ans, corruption de mineur de moins de 15 ans et détention d'images à caractère pédopornographique.",
+          "titre": "Mise en examen"
+        }
+      },
+      "etat_actuel": [
+        "Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen jeudi pour agression sexuelle sur mineur de moins de 15 ans, corruption de mineur de moins de 15 ans et détention d'images à caractère pédopornographique."
       ],
       "statut_affiche": "mise en examen"
     }
