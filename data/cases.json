@@ -2617,6 +2617,13 @@
           "is_primary": true
         },
         {
+          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+          "media": "Actu.fr",
+          "publication_date": "2026-11-01",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
           "media": "Actu.fr",
           "publication_date": "2026-11-13",
