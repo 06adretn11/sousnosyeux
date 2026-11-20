@@ -4,7 +4,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { dossierFiche } from '../lib/fiche-page.mjs';
-import { matiereApprouvee, composerPilote, verifierPost, valeursAutorisees, decomposerAttribution, gardes, longueurX, poidsX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
+import { matiereApprouvee, composerPilote, verifierPost, valeursAutorisees, decomposerAttribution, gardes, longueurX, poidsX, RE_RESERVE, sourceALier, phrasesDe, GABARITS, urlAvecDecompte, ARBITRAGES, DEROGATIONS_ROLE, reserveA4, MENTION_A4, qualification, urlAnnonceAutreEtape, interetConcret, categorieParole, LIBELLES, sansRegistreEmotionnel } from '../lib/social-editorial.mjs';
 import { hashDossier } from '../lib/fiche-page.mjs';
 import { LIMITE_X } from '../lib/diffusion-sociale.mjs';
 import { genererBanc, htmlBanc, mdBanc } from '../banc-social.mjs';
@@ -122,6 +122,11 @@ verifie('« mineurs de 15 ans » (qualification pénale) n’est pas un âge d�
 verifie('« âgée de 6 ans » est un âge d’enfant', gardes('une élève âgée de 6 ans', {}).bloquants.length > 0);
 verifie('« faits présumés » n’est PAS une réserve de présomption d’innocence', !RE_RESERVE.test('pour des faits présumés d’agressions sexuelles'));
 verifie('rôle générique « autre » n’est pas une fuite de rôle', gardes('d’autres parents ont porté plainte', { role_mis_en_cause: 'autre' }).bloquants.length === 0);
+{ const ph = 'Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen.';
+  verifie('A6 : le rôle exact reste BLOQUÉ pour une affaire hors dérogation', gardes(ph, { case_id: 'FR-2026-0999', role_mis_en_cause: 'animateur périscolaire' }).bloquants.some((b) => /rôle exact/.test(b)));
+  verifie('A6 : dérogation FR-2026-0149 — le rôle exact n’est plus bloquant', !gardes(ph, { case_id: 'FR-2026-0149', role_mis_en_cause: 'animateur périscolaire' }).bloquants.some((b) => /rôle exact/.test(b)));
+  verifie('A6 : la dérogation ne lève AUCUNE autre garde (âge, décompte, fonction unique)', gardes('Selon le parquet, un animateur périscolaire âgé de 32 ans a été mis en examen.', { case_id: 'FR-2026-0149', role_mis_en_cause: 'animateur périscolaire' }).bloquants.length > 0 && gardes('Selon la presse, le directeur de l’école Goethe a été mis en examen.', { case_id: 'FR-2026-0149', role_mis_en_cause: 'animateur périscolaire' }).bloquants.length > 0);
+  verifie('A6 : liste fermée, une seule affaire', DEROGATIONS_ROLE.length === 1 && DEROGATIONS_ROLE[0] === 'FR-2026-0149'); }
 // 3h. procédure sœur sans désignation de fonction → bloqué
 { const d = clone(dossierFiche('FR-2026-0002')); d.d.etat_actuel = ['Selon Le Monde.fr, une réunion avec les parents s\'est tenue le 16 octobre et une cellule psychologique a été ouverte à l\'école Aqueduc.'];
   const r = composerPilote({ scenario: { id: 'T', famille: 'nouvelle_affaire', case_id: 'FR-2026-0002' }, M: matiereApprouvee({ entree: cases.get('FR-2026-0002'), dossier: d, empreinteApprouvee: (await import('../lib/fiche-page.mjs')).hashDossier(d.d), wording }), publiques: cases, site: SITE });

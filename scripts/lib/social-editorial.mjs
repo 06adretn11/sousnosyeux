@@ -95,6 +95,9 @@ const RE_FONCTION_UNIQUE = /\b(?:directeur|directrice|proviseure?|chef d['’]é
 //   A5 détails déjà approuvés sur la fiche (sexe d'un enfant, peine, FIJAIS) : repris tels quels, sans revue spécifique.
 // ---------------------------------------------------------------------
 export const ARBITRAGES = Object.freeze({ date: '2026-11-12', lienAvecDecompte: true, revueSexeEnfant: false });
+// A6 (20/11/2026, Adrien) — DÉROGATION PAR AFFAIRE à la garde « rôle exact de la fiche » : l'affaire est déjà publique avec ce rôle écrit tel quel dans la fiche approuvée ET aucun établissement n'est nommé
+// (la fonction seule, dans une commune, ne désigne pas une personne). Liste FERMÉE, une affaire à la fois ; toute autre garde (âge, décompte, parenté, fonction unique, nom) reste appliquée.
+export const DEROGATIONS_ROLE = Object.freeze(['FR-2026-0149']);
 const RE_SEXE_ENFANT = /\b(?:une|cette|la) enfant\b|\bfillettes?\b|\bpetite fille\b|\bmineure\b/i;
 
 export function gardes(texte, entree) {
@@ -107,7 +110,7 @@ export function gardes(texte, entree) {
   if (RE_AGE_MIS_EN_CAUSE.test(t)) bloquants.push('âge de la personne mise en cause');
   if (RE_PROCHE_VICTIME.test(t)) bloquants.push('lien de parenté avec une victime');
   const role = plat(entree?.role_mis_en_cause);
-  if (role.length >= 6 && !ROLES_GENERIQUES.has(role) && (' ' + plat(t) + ' ').includes(` ${role} `)) bloquants.push('rôle exact de la fiche (garantie du moteur actuel)');
+  if (role.length >= 6 && !ROLES_GENERIQUES.has(role) && !DEROGATIONS_ROLE.includes(entree?.case_id) && (' ' + plat(t) + ' ').includes(` ${role} `)) bloquants.push('rôle exact de la fiche (garantie du moteur actuel)');
   if (/\.\.\.|…\s*$/.test(t)) bloquants.push('texte tronqué');
   // V4.1 (S13, hors corpus) : une fonction UNIQUE dans un établissement nommé (« le directeur de l'école maternelle Goethe ») désigne la personne aussi sûrement
   // qu'un nom (règle : jamais le nom de la personne mise en cause). Les fonctions d'institution (« directeur académique des services ») ne sont pas visées.
