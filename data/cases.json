@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-20"
+    "generated_at": "2026-11-21"
   },
   "cases": [
     {
@@ -260,6 +260,13 @@
           "is_primary": false
         },
         {
+          "url": "https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787",
+          "media": "Le Journal du Dimanche",
+          "publication_date": "2026-10-11",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.lejdd.fr/Societe/periscolaire-a-paris-la-mairie-accusee-davoir-maintenu-un-animateur-malgre-une-plainte-pour-agressions-sexuelles-174609",
           "media": "Le Journal du Dimanche",
           "publication_date": "2026-05-23",
@@ -270,13 +277,6 @@
           "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
           "media": "Le Journal du Dimanche",
           "publication_date": "2026-05-20",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.lejdd.fr/Societe/scandale-du-periscolaire-nouvelle-plainte-contre-des-responsables-parisiens-185787",
-          "media": "Le Journal du Dimanche",
-          "publication_date": "2026-10-11",
           "source_type": "presse",
           "is_primary": false
         },
@@ -1705,16 +1705,16 @@
           "is_primary": false
         },
         {
-          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
+          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
           "media": "Sud Ouest",
-          "publication_date": "2026-10-08",
+          "publication_date": "2026-09-30",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+          "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-a-cenon-l-employeur-de-l-animateur-mis-en-cause-pour-agressions-sur-mineurs-assure-avoir-respecte-les-reglementations-30957358.php",
           "media": "Sud Ouest",
-          "publication_date": "2026-09-30",
+          "publication_date": "2026-10-08",
           "source_type": "presse",
           "is_primary": false
         }
@@ -2194,16 +2194,16 @@
           "is_primary": true
         },
         {
-          "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+          "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
           "media": "Actu.fr",
-          "publication_date": "2026-10-07",
+          "publication_date": "2026-11-17",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
+          "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
           "media": "Actu.fr",
-          "publication_date": "2026-11-17",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2222,13 +2222,6 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
-          "media": "ici",
-          "publication_date": "2026-11-15",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
           "media": "ici",
           "publication_date": "2026-10-07",
@@ -2239,6 +2232,13 @@
           "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
           "media": "ici",
           "publication_date": "2026-10-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+          "media": "ici",
+          "publication_date": "2026-11-15",
           "source_type": "presse",
           "is_primary": false
         }
@@ -2617,16 +2617,16 @@
           "is_primary": true
         },
         {
-          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
+          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
           "media": "Actu.fr",
-          "publication_date": "2026-11-01",
+          "publication_date": "2026-11-13",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+          "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058",
           "media": "Actu.fr",
-          "publication_date": "2026-11-13",
+          "publication_date": "2026-11-01",
           "source_type": "presse",
           "is_primary": false
         }
