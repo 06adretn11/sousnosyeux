@@ -47,7 +47,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { connecter } from './lib/neon.mjs';
 import { extraireCorps } from './lib/corps-article.mjs';
-import { etatAffaire, fingerprint, PRIMITIVE_VERSION } from './lib/etat-affaire.mjs';
+import { etatAffaire, fingerprint, PRIMITIVE_VERSION, rattacher } from './lib/etat-affaire.mjs';
 import { comprendre, evidenceLitterale, contratVersion } from './lib/comprendre-source.mjs';
 import { assurerArticle, enregistrerProposition } from './lib/persist-etat-affaire.mjs';
 import {
@@ -58,7 +58,8 @@ import {
 import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
 import { suivrePistes, estFaitDeTerritoireNomme, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
 import { extraireReactions, dateEcrite, separerParPortee } from './lib/evenement-institutionnel.mjs';
-import { dejaConnu } from './lib/nouveaute.mjs';
+import { dejaConnu, dejaConnuChezVoisines } from './lib/nouveaute.mjs';
+import { extraireParoles, PAROLES_VERSION } from './lib/paroles-attribuees.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const A = process.argv.slice(2);
@@ -105,7 +106,9 @@ const domaine = (u) => { try { return new URL(u).hostname.replace(/^www\./, '');
 const cle = (a) => `${norm(a.title)}|${domaine(a.source_domain || a.url || '')}`;
 
 // --- entrées ----------------------------------------------------------
-const rapport = JSON.parse(readFileSync(RAPPORT ? resolve(ROOT, RAPPORT) : resolve(ROOT, 'data/watch-report.json'), 'utf8'));
+// `--paroles-connues FR-…,POC-…` : REPRISE PONCTUELLE des sources déjà connues de ces affaires, jamais qualifiées pour leurs paroles (aucune veille, aucun rapport). Hors workflow : un appel humain, une fois.
+const PAROLES_CONNUES = new Set((val('--paroles-connues') || '').split(',').map((x) => x.trim()).filter((x) => /^[A-Za-z0-9-]{3,30}$/.test(x)));
+const rapport = PAROLES_CONNUES.size ? { results: [] } : JSON.parse(readFileSync(RAPPORT ? resolve(ROOT, RAPPORT) : resolve(ROOT, 'data/watch-report.json'), 'utf8'));
 const pontPath = resolve(ROOT, 'data/maintenance-urls.json');
 const pont = existsSync(pontPath) ? JSON.parse(readFileSync(pontPath, 'utf8')) : {};
 
@@ -375,7 +378,7 @@ const F = {
   url_non_resolue: 0, fetch_echoue: 0, qualifies: 0,
   NO_CHANGE: 0, NEW_SOURCE_NO_STATE_CHANGE: 0, STATE_CHANGE_CANDIDATE: 0,
   AMBIGUOUS: 0, SOURCE_ACCESS_BLOCKED: 0, SOURCE_REVIEW_REQUIRED: 0,
-  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, pistes_suivies: 0, pistes_inaccessibles: 0, faits_deja_connus: 0,
+  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, sources_connues_qualifiees: 0, sources_connues_inaccessibles: 0, pistes_suivies: 0, pistes_inaccessibles: 0, faits_deja_connus: 0,
   appels_llm: 0, fetches: 0, octets: 0,
   analyses_ecrites: 0, analyses_reutilisees: 0, evidence_inventee: 0,
   input_tokens: 0, output_tokens: 0, cout_usd: 0,
@@ -393,6 +396,8 @@ const detail = [];
 const t0 = Date.now();
 const cacheDocs = new Map();       // url → page lue, partagé entre claims et affaires
 const cacheAnalyses = new Map();   // (affaire|url) → sortie, un même document ne paie qu'une lecture
+// Registre des acteurs suivis (data/associations-watchlist.json) : sert seulement à rattacher une parole dont l'article ne dit pas l'affaire (affaires_rattachees).
+const REGISTRE_ACTEURS = (() => { try { return JSON.parse(readFileSync(resolve(ROOT, 'data/associations-watchlist.json'), 'utf8')).organismes || []; } catch { return []; } })();
 
 /**
  * Qualifie UNE source pour UNE affaire. Le corps est déjà lu (`page`) ou
@@ -411,8 +416,49 @@ const dateCoherente = (eventDate, fenetre) => {
   return e >= Date.parse(fenetre.debut) - 30 * JOUR_MS && e <= Date.parse(fenetre.fin || fenetre.debut) + 10 * JOUR_MS;
 };
 
+// --- SOURCES DÉJÀ CONNUES, JAMAIS QUALIFIÉES POUR LEURS PAROLES -------------------------------------------------------------------------------------------------------
+// La preuve par claim ne relit pas une page dont le claim est déjà vérifié (article de réaction sur une relaxe déjà établie) : ses paroles n'étaient donc jamais lues. Une fois par source et par
+// affaire (marqueur `discovery_etat`, aucun nouveau stockage), le cycle qualifie pour leurs paroles — SEULEMENT — les sources connues d'une affaire qui a de l'activité aujourd'hui (un résultat
+// dans le rapport de la veille), au plus PAROLES_PAR_AFFAIRE par affaire et par cycle ; la reprise ponctuelle (--paroles-connues) en traite davantage, sans veille. Aucun historique rescanné chaque jour :
+// une source qualifiée (ou inaccessible depuis moins de 7 jours) n'est jamais relue.
+const PAROLES_PAR_AFFAIRE = 3, PAROLES_PONCTUEL = 12;
+const marquesParoles = new Map();
+for (const m of await sql`select cle, valeur, maj::text maj from discovery_etat where cle like ${'paroles|' + PAROLES_VERSION + '|%'}`) marquesParoles.set(m.cle, { valeur: m.valeur, maj: m.maj });
+const cleParoles = (case_id, article_id) => `paroles|${PAROLES_VERSION}|${case_id}|${article_id}`;
+const aMarquerParoles = new Set();
+const marquee = (case_id, article_id) => { const m = marquesParoles.get(cleParoles(case_id, article_id)); return !!m && (m.valeur !== 'inaccessible' || Date.now() - Date.parse(m.maj) < 7 * 864e5); };
+async function marquerParoles(case_id, article_id, valeur = 'qualifiée') {
+  marquesParoles.set(cleParoles(case_id, article_id), { valeur, maj: new Date().toISOString() });
+  if (DRY) return;
+  await sql`insert into discovery_etat (cle, valeur) values (${cleParoles(case_id, article_id)}, ${valeur}) on conflict (cle) do update set valeur = excluded.valeur, maj = now()`;
+}
+async function qualifierParolesConnues(fiche, { max }) {
+  const connues = await sql`select distinct a.article_id, a.url, a.media, a.publication_date::text pd from state_proposals p join articles a on a.article_id = p.article_id
+                            where p.case_id = ${fiche.case_id} and a.url is not null`;
+  const sources = (fiche.sources || []).filter((x) => x?.url).map((x) => ({ article_id: 'ART-' + fingerprint(x.url).slice(0, 10), url: x.url, media: x.media, pd: x.publication_date ? String(x.publication_date).slice(0, 10) : null }));
+  const vues = new Set(), liste = [];
+  for (const x of [...connues, ...sources]) { if (!x.url || x.url.includes('news.google.com') || vues.has(x.url)) continue; vues.add(x.url); liste.push(x); }
+  const aTraiter = liste.filter((x) => !marquee(fiche.case_id, x.article_id)).sort((a, b) => String(a.pd || '').localeCompare(String(b.pd || ''))).slice(0, max);
+  for (const x of aTraiter) {
+    const page = await lirePage(x.url, cacheDocs);
+    F.fetches++; F.octets += page.octets || 0;
+    if (!page.ok) { F.sources_connues_inaccessibles++; await marquerParoles(fiche.case_id, x.article_id, 'inaccessible'); continue; }
+    F.sources_connues_qualifiees++;
+    const att = rattacher(fiche, page.corps);
+    if (att.rattachement !== 'OK') { await marquerParoles(fiche.case_id, x.article_id, 'non_rattachee'); continue; }   // une page qui ne nomme pas l'affaire n'a pas de parole à lui attribuer
+    const article = { article_id: x.article_id, media: x.media || null, publication_date: x.pd || page.publie_le || null, url: x.url, body: page.corps, content_fingerprint: fingerprint(page.corps) };
+    const rx = reactionsDe(fiche, article, page.corps, { seulementParoles: true }).filter((f) => f.nature === 'parole');
+    if (rx.length && !DRY) {
+      await assurerArticle(sql, article);
+      await ecrireReactions({ case_id: fiche.case_id, article_id: article.article_id, content_fingerprint: article.content_fingerprint, version: PRIMITIVE_VERSION, rattachement: 'OK',
+        CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, SOURCE_DATE: article.publication_date, finalite: 'inconnue', REQUIRES_HUMAN_REVIEW: true, source_connue: true }, rx);
+    }
+    await marquerParoles(fiche.case_id, x.article_id, 'qualifiée');
+  }
+}
+
 /** Réponses publiques NOUVELLES d'un article (absentes de la mémoire de l'affaire). Pas de modèle : vocabulaire et libellés fermés. */
-function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
+function reactionsDe(fiche, article, corps, { viaPiste = false, seulementParoles = false } = {}) {
   const memoire = memoireFaits.get(fiche.case_id) || [];
   const pub = String(article.publication_date || '').slice(0, 10) || null;
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
@@ -421,18 +467,31 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   // Deux affaires au MÊME établissement (même commune) : un fait ne se rattache pas à « la procédure » de l'une plutôt que de l'autre.
   const cleEtab = (e) => String(e || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\b(?:ecole|maternelle|elementaire|primaire|college|lycee)\b/g, '').replace(/\s+/g, ' ').trim();
   const soeursMemeEtablissement = fiches.some((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune && cleEtab(f.etablissement) && cleEtab(f.etablissement) === cleEtab(fiche.etablissement));
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
-    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
+  // Mémoire des AUTRES affaires de la même commune : un fait de portée territoire déjà consigné pour l'une d'elles n'est pas reproposé pour sa voisine (dejaConnuChezVoisines).
+  const voisines = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).flatMap((f) => memoireFaits.get(f.case_id) || []);
+  const r = seulementParoles ? [] : extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
+    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)) && (!viaPiste || estFaitDeTerritoireNomme(x)));
+  // PAROLES ATTRIBUÉES (même lecture, même corps, aucun appel supplémentaire) : déclarations entre guillemets d'un locuteur nommé ou anonymisé par le média. Jamais via une piste
+  // (un article lié ne nomme pas l'établissement) ; la mémoire des affaires voisines ne compare que le libellé (locuteur + extrait), jamais type + jour.
+  const paroles = viaPiste ? [] : extraireParoles(corps, { etablissement: fiche.etablissement, autres, commune: fiche.commune, caseId: fiche.case_id, anneeRef: pub, registre: REGISTRE_ACTEURS }).faits
+    .filter((x) => !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)));
+  F.paroles_nouvelles = (F.paroles_nouvelles || 0) + paroles.length;
+  if (!viaPiste && article.article_id) aMarquerParoles.add(`${fiche.case_id}|${article.article_id}`);   // cette source est qualifiée pour ses paroles : jamais relue pour cela
   F.reactions_nouvelles += r.length;
-  return r;
+  return [...r, ...paroles];
 }
 /** Proposition ENRICHMENT SÉPARÉE (version « +reactions ») : décision et effets distincts du changement d'état ; idempotente. */
 async function ecrireReactions(base, reactions) {
   if (DRY || !reactions.length) return;
+  // Les PAROLES ont leur propre proposition (version `.p1+reactions`) : un article déjà qualifié pour ses mobilisations et mesures (clé d'idempotence identique) peut ainsi l'être, UNE fois, pour ses
+  // paroles, sans rejouer les autres faits ; une seconde lecture de la même page retombe sur la même clé (`deja_presente`) — jamais de doublon.
+  const paroles = reactions.filter((f) => f.nature === 'parole');
+  if (paroles.length && paroles.length < reactions.length) { await ecrireReactions(base, reactions.filter((f) => f.nature !== 'parole')); return ecrireReactions(base, paroles); }
   // UNE PROPOSITION PAR PORTÉE (evenement-institutionnel.separerParPortee) : des faits de portées ou de territoires différents ne se décident pas ensemble (cas du
   // 12/11/2026 : une mobilisation à « Montreuil » et une mesure de « Paris » dans UNE proposition, annoncée sous le seul territoire du premier fait). Le premier groupe garde
   // la clé d'idempotence d'origine ; les suivants portent un suffixe d'empreinte (la clé unique est (affaire, article, empreinte, version)).
-  const groupes = separerParPortee(reactions);
+  // Une PAROLE = une décision : l'éditeur valide ou écarte chaque déclaration (locuteur + extrait) séparément, jamais cinq paroles d'un seul clic.
+  const groupes = paroles.length ? reactions.map((f) => ({ cle: `parole|${norm(f.libelle_public).slice(0, 60)}`, faits: [f] })) : separerParPortee(reactions);
   for (const [i, g] of groupes.entries()) {
     const faits = g.faits.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
     const r2 = await enregistrerProposition(sql, {
@@ -441,12 +500,13 @@ async function ecrireReactions(base, reactions) {
     // `.q3` (06/11/2026) : « mobilisation » n'est plus un « rassemblement » (libellé = preuve : « des parents se sont mobilisés »), « a manifesté » est un fait accompli, le territoire nommé par
     // « devant le tribunal de Paris » / « à travers Paris » est lu, et un fait rapporté à « cette procédure » est lié à l'affaire. Les lignes `.q2` (REVIEW compris) restent telles quelles ;
     // celles encore sans décision sont remplacées par scripts/reprendre-sans-perte.mjs (jamais approuvées à la place de leur version corrigée).
-    ...base, version: `${base.version || PRIMITIVE_VERSION}.q3+reactions`,
-    ...(i > 0 && base.content_fingerprint ? { content_fingerprint: `${base.content_fingerprint}~${i + 1}` } : {}),
+    ...base, version: paroles.length ? `${PAROLES_VERSION}+reactions` : `${base.version || PRIMITIVE_VERSION}.q3+reactions`,   // la version d'une parole ne dépend ni du moteur ni du contrat : même clé que l'analyse soit neuve ou réutilisée
+    // Une parole porte l'empreinte de SON texte (et non son rang) : qu'une autre déclaration soit décidée entre deux passages ne la renumérote pas, donc ne la duplique pas.
+    ...(base.content_fingerprint && (paroles.length || i > 0) ? { content_fingerprint: paroles.length ? `${base.content_fingerprint}~p${fingerprint(g.faits[0].libelle_public).slice(0, 8)}` : `${base.content_fingerprint}~${i + 1}` } : {}),
     engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
     PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
     _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
-    RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee}${x.territoire ? ' · ' + x.territoire : ''})`).join(' ; ')}`,
+    RATIONALE: `${paroles.length ? 'ENRICHMENT paroles attribuées' : 'ENRICHMENT institutionnel'} — ${faits.map((x) => `${x.mesure} (${x.realisation ?? 'prise de parole'}, ${x.portee}${x.territoire ? ' · ' + x.territoire : ''})`).join(' ; ')}`,
     });
     if (!r2.deja_presente) F.propositions_reactions++;
   }
@@ -860,6 +920,8 @@ function fixturesLecteur(dossier, S) {
 // =====================================================================
 // BOUCLE PAR AFFAIRE
 // =====================================================================
+// REPRISE PONCTUELLE (--paroles-connues) : les sources connues de ces affaires, sans veille ni rapport.
+for (const id of PAROLES_CONNUES) { const base = parId.get(id); if (base && (!ONLY || ONLY === id)) await qualifierParolesConnues(base, { max: PAROLES_PONCTUEL }); }
 for (const r of rapport.results) {
   if (ONLY && r.case_id !== ONLY) continue;
   const base = parId.get(r.case_id);
@@ -868,6 +930,21 @@ for (const r of rapport.results) {
   const fiche = ETAT_DU_RAPPORT && r.statut_judiciaire ? { ...base, statut_judiciaire: r.statut_judiciaire } : base;
 
   F.affaires++;
+  // RECHERCHE EN ERREUR (audit du 21/11/2026). Une recherche qui a échoué n'est jamais « rien de nouveau » : la ligne `case_checks` porte NON_EXAMINE (valeur
+  // existante : « rien n'a été lu ») et le marqueur [RECHERCHE_EN_ERREUR] dans `strategy` ; ni mémoire, ni routage, ni preuve ne sont touchés.
+  // DÉGRADATION SUSPECTÉE (rafale de flux vides) : même valeur NON_EXAMINE (rien n'a été retenu, à reprendre), marqueur DISTINCT — le flux a répondu, aucune panne n'est établie.
+  if (r.etat_recherche === 'ERREUR' || r.etat_recherche === 'DEGRADATION_SUSPECTEE' || (r.error && r.etat_recherche === undefined)) {
+    const marqueur = r.etat_recherche === 'DEGRADATION_SUSPECTEE' ? '[DEGRADATION_SUSPECTEE]' : '[RECHERCHE_EN_ERREUR]';
+    if (r.etat_recherche === 'DEGRADATION_SUSPECTEE') F.degradations_suspectees = (F.degradations_suspectees || 0) + 1;
+    else F.recherches_en_erreur = (F.recherches_en_erreur || 0) + 1;
+    if (!DRY) {
+      await sql`insert into case_checks (case_id, strategy, primitive_version, engine, n_resultats, n_deja_vus, n_doublons, n_non_pertinents, n_candidats, n_bloques, resultat, vus)
+                values (${r.case_id}, ${`${marqueur} ${[r.query, r.query_open].filter(Boolean).join(' | ')}`.slice(0, 900)}, ${PRIMITIVE_VERSION}, ${MOTEUR}, 0, 0, 0, 0, 0, 0, 'NON_EXAMINE', '[]')`;
+    }
+    continue;
+  }
+  // Affaire avec de l'ACTIVITÉ aujourd'hui : ses sources connues, jamais qualifiées pour leurs paroles, le sont maintenant (bornées, une fois).
+  if (!LEGACY && (r.new_articles || []).length) await qualifierParolesConnues(fiche, { max: PAROLES_PAR_AFFAIRE });
   const bruts = r.new_articles || [];
   F.bruts += bruts.length;
 
@@ -1115,7 +1192,8 @@ for (const r of rapport.results) {
   const resultat = lus.length === 0
     ? (attenduLire ? 'NON_EXAMINE' : 'NO_NEW_INFORMATION')
     : (lus.some((s) => s.sortie !== 'NO_CHANGE') ? 'NOUVEAUTE_DETECTEE' : 'NO_NEW_INFORMATION');
-  const strategie = [r.query, r.query_open].filter(Boolean).join(' | ') || '(requête non consignée par la veille)';
+  // Tentative RÉUSSIE sans rien ramener = [FLUX_VIDE] (distinct d'une erreur) ; [REPLI] : la requête de repli sans guillemets a été utilisée.
+  const strategie = `${r.etat_recherche === 'FLUX_VIDE' ? '[FLUX_VIDE] ' : ''}${r.repli ? '[REPLI] ' : ''}${[r.query, r.query_open].filter(Boolean).join(' | ') || '(requête non consignée par la veille)'}`;
 
   if (!DRY) {
     await sql`
@@ -1192,7 +1270,10 @@ ligne('moteur', MOTEUR);
 ligne('appels LLM', F.appels_llm);
 ligne('documents lus par le modèle', F.docs_lus_par_modele);
 ligne('propositions écartées : fait déjà validé', F.decisions_deja_prises);
+for (const k of aMarquerParoles) { const [c, a] = k.split('|'); if (!marquee(c, a)) await marquerParoles(c, a); }
 ligne('analyses réutilisées', F.analyses_reutilisees);
+ligne('sources connues qualifiées (paroles)', F.sources_connues_qualifiees);
+ligne('paroles nouvelles proposées', F.paroles_nouvelles || 0);
 ligne('analyses NO_CHANGE écrites', F.analyses_ecrites);
 ligne('citations non littérales', F.evidence_inventee);
 ligne('tokens in/out', F.input_tokens + ' / ' + F.output_tokens);

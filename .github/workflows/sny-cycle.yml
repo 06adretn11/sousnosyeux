@@ -53,15 +53,32 @@ jobs:
 
       # Dépôt public => logs publics. La sortie de la veille (requêtes, titres, URL, erreur brute) va dans un
       # fichier du runner ; seuls deux compteurs et le code de sortie sont affichés.
+      # Reprise bornée à l'échec : sur un créneau planifié, --sauter-reussies-du-jour ne refait pas les affaires déjà examinées aujourd'hui. Code de sortie 3 = passage INCOMPLET
+      # (veille interrompue ou plus de la moitié des recherches en échec) : la maintenance (B) consigne ce qui a été trouvé, mais le passage du jour (Z) n'est PAS consigné,
+      # de sorte qu'un créneau suivant reprend les affaires non examinées. Code 2 (aucune recherche n'a abouti) : l'étape échoue comme avant.
       - name: A. veille (Google News → data/watch-report.json)
+        id: veille
         if: ${{ steps.garde.outputs.skip != 'true' }}
         run: |
           set +e
-          node scripts/watch-updates.mjs > "$RUNNER_TEMP/watch.log" 2>&1
+          options=""
+          if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then options="--sauter-reussies-du-jour"; fi
+          node scripts/watch-updates.mjs $options > "$RUNNER_TEMP/watch.log" 2>&1
           code=$?
-          grep -E "affaire\(s\) à surveiller|affaire\(s\) avec nouveaux articles" "$RUNNER_TEMP/watch.log"
+          grep -E "affaire\(s\) à surveiller|affaire\(s\) avec nouveaux articles|reprise bornée|passage incomplet" "$RUNNER_TEMP/watch.log"
           echo "erreurs de recherche : $(grep -c 'Erreur recherche' "$RUNNER_TEMP/watch.log")"
           echo "watch-updates : code de sortie $code"
+          # Bilan (complet · clos_avec_erreurs · incomplet · echec) : transmis à l'étape Z, qui consigne un jour CLOS AVEC ERREURS autrement qu'un jour intégralement réussi.
+          bilan=$(grep -E "^   bilan : " "$RUNNER_TEMP/watch.log" | head -1 | sed -E "s/^   bilan : ([a-z_]+).*/\1/")
+          echo "bilan=${bilan:-inconnu}" >> "$GITHUB_OUTPUT"
+          echo "bilan de la veille : ${bilan:-inconnu}"
+          if [ "$code" = "3" ]; then
+            echo "incomplet=true" >> "$GITHUB_OUTPUT"
+            echo "passage incomplet : le passage du jour ne sera pas consigné"
+            # Reprise PLAFONNÉE : le passage incomplet est compté (lib/reprise-bornee.mjs, plafond 3 par jour UTC) ; au plafond, le garde-fou (étape 0) arrête les créneaux suivants du jour.
+            if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then node scripts/garde-quotidien.mjs incomplet maintenance || echo "compteur de passages incomplets non écrit"; fi
+            exit 0
+          fi
           exit $code
       # --sources-suivies : publications publiques des organismes de data/associations-watchlist.json (docs/industrialisation/VEILLE_ASSOCIATIVE_1.md).
       # Retour arrière : retirer l'option (aucune suppression d'historique).
@@ -83,5 +100,5 @@ jobs:
         if: ${{ (!cancelled()) && steps.garde.outputs.skip != 'true' }}
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
       - name: Z. consigner le passage du jour
-        if: ${{ github.event_name != 'workflow_dispatch' && steps.garde.outputs.skip != 'true' && success() }}
-        run: node scripts/garde-quotidien.mjs marquer maintenance
+        if: ${{ github.event_name != 'workflow_dispatch' && steps.garde.outputs.skip != 'true' && steps.veille.outputs.incomplet != 'true' && success() }}
+        run: node scripts/garde-quotidien.mjs marquer maintenance --bilan "${{ steps.veille.outputs.bilan }}"

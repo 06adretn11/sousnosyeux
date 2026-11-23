@@ -48,7 +48,7 @@ const MESURES = [
 ];
 
 const ANNONCE = /\b(annonc\w+|va|vont|sera|seront|serait|prevu\w*|prevoit|prevoient|projette\w*|compte|comptent|s'engage\w*|promet\w*|propos\w+|presente\w*\s+(?:un|une|des)\s+(?:plan|serie|mesures?)|presentera|decide\s+de|lancera|mettra|souhait\w+|envisag\w+|il y aura|veut|veulent)\b/;
-const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+)?(?:en place|effectifs?|suspendu\w*|ferme\w*|termine\w*)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\b(?:a|ont)\s+(?:manifeste|defile|rassemble|mobilise)\w*/;
+const ACCOMPLI = /\b(a|ont|avait|avaient)\s+(?:ete\s+)?(?:suspendu\w*|ecarte\w*|licenci\w+|ferme\w*|mis(?:e|es)?\s+a\s+pied|mis(?:e|es)?\s+en\s+place|instaur\w*|remplac\w*|lance\w*|ordonne\w*|declenche\w*|conduit\w*|realise\w*|effectue\w*|diligent\w*|rendu\w*\s+obligatoire\w*)|\b(est|sont)\s+(?:desormais\s+|actuellement\s+|en ce moment\s+)?(?:en place|en cours|effectifs?|suspendu\w*|ferme\w*|termine\w*|menee?s?|conduite?s?)\b|\b(?:se\s+sont|s'est)\s+(?:reuni|rassembl|mobilis)\w*|\ba eu lieu\b|\b(?:a|ont)\s+(?:manifeste|defile|rassemble|mobilise)\w*/;
 // Un début de mobilisation RAPPORTÉ au passé (« a marqué le début de la mobilisation », « a déclenché ») est un fait accompli ; sans ces marques, le doute reste « annoncée ».
 const MOBILISATION_ACCOMPLIE = /\b(?:a|ont)\s+(?:marque|declenche|suscite|provoque|lance)\w*[^.]{0,60}\bmobilis|\bdebut\s+de\s+la\s+mobilis/;
 /** Texte comparable : sans accents, minuscules, apostrophes unifiées. */
@@ -117,12 +117,19 @@ export function libelleInstitutionnel(mesure, realisation) {
 const REMISE_CONCLUSIONS = /\b(?:a|ont)\s+(?:rendu|remis|publie|presente|livre)\w*\s+(?:ses|son|leurs?|sa|le|la|les)\s+(?:conclusions?|rapport|avis|recommandations?|preconisations?|propositions?)\b/;
 const PLAN_COMME_CONTEXTE = /\bcomme\s+(?:l'une|l'un|une|un)\s+(?:des\s+)?(?:mesures?|volets?|axes?|piliers?)\b[^.]{0,60}\b(?:de|du)\s+(?:son|leur|ce|la|le)?\s*plan d'action/;
 /** Le « plan d'action » de cette phrase n'est-il qu'un contexte (remise de conclusions, « présentée comme une mesure de son plan ») ? `texte` : déjà normalisé (`norm`) ou non. */
-export const planSeulementEnContexte = (texte) => { const n = norm(texte); return REMISE_CONCLUSIONS.test(n) || PLAN_COMME_CONTEXTE.test(n); };
+// Constat ANCIEN rappelé (« Dès 2015, l'Inspection générale avait pointé… ») : un rapport passé n'est ni un contrôle annoncé ni un contrôle conduit aujourd'hui (rejeu du 23/11/2026, POC-10).
+const RAPPEL_ANCIEN_CONSTAT = /\b(?:des|depuis|en)\s+(?:19|20)\d{2}\b[^.]{0,60}\b(?:avait|avaient)\s+(?:pointe|releve|epingle|denonce|alerte|souligne|critique|constate)\w*/;
+export const planSeulementEnContexte = (texte) => { const n = norm(texte); return REMISE_CONCLUSIONS.test(n) || PLAN_COMME_CONTEXTE.test(n) || RAPPEL_ANCIEN_CONSTAT.test(n); };
+
+// « deux jours après l'annonce de la relaxe » : le NOM « annonce » rappelle une décision déjà rendue, il n'annonce pas la mesure ou le rassemblement de la phrase.
+// Mesuré le 23/11/2026 sur l'article BFMTV du 10/07 : le rassemblement du 9 juillet (« se sont réunis ») était lu « annoncé » à cause de ce seul nom.
+const ANNONCE_DE_DECISION = /\b(?:l'|cette |son |leur )annonces?\s+(?:de la |du |de l'|des )(?:relaxe|decision|jugement|verdict|condamnation|peine|appel|renvoi|delibere|acquittement)\w*/g;
+export const annonceFuture = (n) => ANNONCE.test(String(n).replace(ANNONCE_DE_DECISION, ' '));
 
 /** « réalisée » seulement si la citation établit l'accomplissement ET n'annonce rien. */
 export function realisationDe(citation) {
   const n = norm(citation);
-  return ACCOMPLI.test(n) && !ANNONCE.test(n) ? 'réalisée' : 'annoncée';
+  return ACCOMPLI.test(n) && !annonceFuture(n) ? 'réalisée' : 'annoncée';
 }
 
 const MOIS = { janvier: '01', fevrier: '02', mars: '03', avril: '04', mai: '05', juin: '06', juillet: '07', aout: '08', septembre: '09', octobre: '10', novembre: '11', decembre: '12' };
@@ -317,7 +324,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef: anneeRe
       // Un titre (« … parents et enseignants rassemblés à l'école ») et la phrase du corps rapportent le MÊME rassemblement : « réalisé » dès
       // qu'une phrase l'établit (participe passé ou verbe d'accomplissement) sans marque d'annonce ; sinon « annoncé » (doute = annoncé).
       const passe = ACCOMPLI.test(n) || /\b(?:rassembl|reuni|mobilis)\w*s\b/.test(n) || (mesure === 'mobilisation' && MOBILISATION_ACCOMPLIE.test(n));
-      const realisation = passe && !ANNONCE.test(n) ? 'réalisée' : 'annoncée';
+      const realisation = passe && !annonceFuture(n) ? 'réalisée' : 'annoncée';
       const nomme = !!jetons.length && jetons.some((t) => n.includes(t));
       const multi = jetonsAutres.some((t) => n.includes(t));
       // Lien à l'AFFAIRE : la phrase se rapporte explicitement à la PROCÉDURE de l'affaire (« en soutien aux familles de cette procédure »), dans un article rattaché à l'affaire et qui ne
@@ -371,6 +378,7 @@ export function extraireReactions(corps, { etablissement = '', anneeRef: anneeRe
       // Un plan d'action cité seulement comme CONTEXTE d'un autre acte (« la convention citoyenne, présentée comme l'une des mesures phare de son plan d'action,
       // a rendu ses conclusions le 23 juin ») n'est pas l'annonce d'un plan : la phrase rapporte la remise de conclusions, qu'aucun libellé fermé ne couvre.
       if (mesure === 'plan_action_encadrement' && planSeulementEnContexte(propre ?? n)) continue;
+      if (RAPPEL_ANCIEN_CONSTAT.test(propre ? norm(propre) : n)) continue;   // « Dès 2015, l'Inspection générale avait pointé… » : constat ancien rappelé, pas une mesure
       const realisation = realisationDe(propre ?? phrase);
       // Lien à l'affaire ≠ étendue. Le rattachement de l'ARTICLE aide à comprendre le fait, il ne décide pas seul de sa portée : la réponse reste liée à l'affaire
       // (même si la mesure vise plusieurs structures ; étendue conservée à part dans `territoire`) SEULEMENT si le contexte ne la contredit pas :
@@ -414,6 +422,7 @@ export function detecterInstitutionnel(citations) {
     if (c.length < 25 || !ACTEUR.test(n)) continue;
     for (const [mesure, motif] of MESURES) {
       if (!motif.test(n)) continue;
+      if (RAPPEL_ANCIEN_CONSTAT.test(n)) continue;   // constat ancien rappelé : ni mesure annoncée ni mesure conduite
       const realisation = realisationDe(c);
       return {
         event_type: mesure === 'suspension_agent' ? 'suspension' : 'réponse_institutionnelle',

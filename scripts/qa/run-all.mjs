@@ -39,6 +39,46 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Sens des actes — négation, portée, rappel (« n’a pas été mis en examen » n’est pas une mise en examen)',
+    script: 'scripts/qa/test-negation-actes.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Actes procéduraux sans changement de statut — fait décidable, libellé fermé, dates, déduplication au niveau du fait, aucun faux fait',
+    script: 'scripts/qa/test-acte-procedural.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Revue contradictoire du 23/11 — refus, négations de sujet, auteur et date d’un appel, présentation au juge, discours rapporté, famille de faits, destinations',
+    script: 'scripts/qa/test-faux-faits-revue.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Article à deux établissements voisins (cas BFMTV du 10/07) — « annonce de la relaxe » ≠ annonce du rassemblement, fait de territoire déjà consigné pour la voisine, acte de l’autre école',
+    script: 'scripts/qa/test-article-multi-affaires.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Paroles attribuées d’une source lue — locuteur et anonymat tels qu’écrits, rattachement, extrait littéral, identité, aucune proposition artificielle (cas BFMTV)',
+    script: 'scripts/qa/test-paroles-attribuees.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Règle opérationnelle du fait incertain — aucun fait inscrit comme établi, signal conservé (« Il a fait appel », acte nié, envisagé, rappelé)',
+    script: 'scripts/qa/test-signaux-actes.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Garde-fou quotidien — fenêtre, passage du jour, reprise plafonnée à 3 passages incomplets par jour (fonction pure)',
+    script: 'scripts/qa/test-reprise-bornee.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Recherche de la veille — repli ciblé, échec ≠ flux vide ≠ résultats, reprise bornée, disjoncteur (faux fetch)',
+    script: 'scripts/qa/test-recherche-veille.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Sources suivies — publications d’organismes (attribution, rattachement par le texte, mémoire, échecs visibles)',
     script: 'scripts/qa/test-sources-suivies.mjs',
     bloquant: true,

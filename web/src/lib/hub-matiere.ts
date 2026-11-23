@@ -48,13 +48,23 @@ const acteurLisible = (m: any): string => {
   return m.acteur && !/^(la ville|collectivite|la commune)$/i.test(m.acteur) ? (LISIBLE[m.acteur] ?? m.acteur) : 'Collectivité';
 };
 /** Carte du bloc « réponses » d'un Hub (contrat Reponses). */
-export const carteReponse = (m: any) => ({
+export const carteReponse = (m: any) => m.nature === 'parole' && m.parole ? ({
+  // PAROLE attribuée (validée par l'éditeur) : locuteur et qualité tels que le média les écrit, extrait mot pour mot, attribué ; jamais une affirmation de SNY.
+  ...periodeOuDate(m), acteur: m.parole.acteur,
+  texte: `${m.parole.qualite ? `${m.parole.qualite} : ` : ''}« ${m.parole.citations.map((c: any) => c.texte).join(' […] ')} » — propos rapportés par le média, position de leur auteur.${m.portee === 'territoire' ? ` Portée : ${m.territoire ?? 'territoire'}.` : ''}`,
+  source: m.source ? { ...m.source, acces: 'libre' } : null,
+}) : ({
   ...periodeOuDate(m), acteur: acteurLisible(m),
   texte: m.portee === 'territoire' ? `${m.libelle} Portée : ${m.territoire ?? 'territoire'}, non propre à une école.` : `${m.libelle}${m.etablissement ? ` (${m.etablissement})` : ''}${m.territoire ? ` Étendue de la mesure : ${m.territoire}, non limitée à cet établissement.` : ''}`,
   source: m.source ? { ...m.source, acces: 'libre' } : null,
 });
 /** Carte de la rubrique « Paroles et réactions » d'une fiche (contrat Paroles compact) : jamais de citation inventée, position attribuée au média. */
-export const carteReaction = (m: any) => ({
+export const carteReaction = (m: any) => m.nature === 'parole' && m.parole ? ({
+  // PAROLE attribuée (contrat Paroles compact) : acteur et qualité conservés, citations exactes, niveau « position attribuée » — elle n'établit ni les faits ni le contenu d'une décision.
+  ...periodeOuDate(m), acteur: m.parole.acteur, qualite: m.parole.qualite ?? '', acte: 'declaration', attribution: 'POSITION_ATTRIBUEE', portee: 'affaire', rappel_territorial: m.portee === 'territoire',
+  citations: m.parole.citations, contexte: m.parole.contexte, precision: 'Position de son auteur, rapportée par le média : elle n’établit ni les faits ni le contenu de la décision.',
+  source: m.source ? { ...m.source, acces: 'libre' } : null,
+}) : ({
   ...periodeOuDate(m), acteur: acteurLisible(m), qualite: m.nature === 'mobilisation' ? 'Mobilisation' : 'Mesure annoncée ou conduite',
   attribution: 'POSITION_ATTRIBUEE', portee: 'affaire', rappel_territorial: m.portee === 'territoire',
   ...(m.portee === 'territoire' ? { a_propos: `Mesure à portée territoriale (${m.territoire ?? 'territoire'}), non propre à cet établissement` }

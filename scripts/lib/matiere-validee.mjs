@@ -39,14 +39,17 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
     id: createHash('sha1').update(`${r.case_id}|${r.fait.libelle_public}|${r.fait.event_date ?? r.fait.event_period ?? ""}`).digest('hex').slice(0, 12),
     proposal_id: r.proposal_id, case_id: r.case_id, nature: r.fait.nature || 'mesure', mesure: r.fait.mesure, libelle: r.fait.libelle_public,
     realisation: r.fait.realisation ?? 'inconnue', portee: r.fait.portee || 'établissement', ajustements: r.fait.ajustements_inconnues ?? null, acteur: r.fait.acteur_nomme || r.fait.acteur || null, territoire: r.fait.territoire || null,
-    date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,
+    date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null, parole: r.fait.nature === 'parole' ? r.fait.parole ?? null : null,
     source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, event_id: r.applied_event_id, etablissement: r.etablissement, _commune: r.commune, _dep: r.departement,
   }));
   // Une information validée plusieurs fois (deux articles, même libellé, même affaire, MÊME jour ou période) ne compte qu'une fois : la plus ancienne fait foi.
   // Deux événements de jours différents au libellé identique (deux rassemblements) sont deux faits.
   const vus = new Set();
   const uniques = items.filter((i) => { const k = `${i.case_id}|${i.libelle}|${i.date ?? i.periode ?? ''}`; if (vus.has(k)) return false; vus.add(k); return true; });
-  return uniques.filter((i) => (case_id ? i.case_id === case_id : true)
+  // Un acte procédural validé (garde à vue, appel, détention…) est un ÉVÉNEMENT de l'affaire (case_events → chronologie de la fiche), pas une information de Hub :
+  // il ne rejoint jamais les blocs « mesures » d'un Hub par la matière validée.
+  return uniques.filter((i) => i.nature !== 'acte_procédural')
+    .filter((i) => (case_id ? i.case_id === case_id : true)
     && (commune ? norm(i._commune) === norm(commune) || (i.territoire && norm(i.territoire) === norm(commune)) : true)
     && (departement ? norm(i._dep) === norm(departement) || (i.territoire && norm(i.territoire) === norm(departement)) : true))
     .map(({ _commune, _dep, ...i }) => i);

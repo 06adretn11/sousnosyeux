@@ -26,14 +26,26 @@ const doc = (titre, ...p) => ({ titre, corps: [titre, ...p].join('\n\n'), url: '
 const ORG = { id: 'asso', nom: 'Association Test', portee: 'nationale', suivi: { domaines: ['asso.example'] } };
 
 console.log('\n  REGISTRE');
-await t('registre de production : 18 entrées (15 du kit + 3 historiques conservées), identités uniques, chaque page a un type et un émetteur', () => {
+await t('registre de production : 19 entrées (15 du kit + 3 historiques conservées + le cabinet d’avocates du 23/11), identités uniques, chaque page a un type et un émetteur', () => {
   const r = chargerRegistre(REG);
-  assert.equal(r.organismes.length, 18);
-  assert.equal(new Set(r.organismes.map((o) => o.id)).size, 18);
-  for (const id of ['enfant-bleu', 'colosse', 'adavem-jp40', 'ose-paris', 'innocence-en-danger', 'fcpe-paris', 'fcpe-33', 'pav75', 'victaid', 'mediavic05', 'metooecole',
+  assert.equal(r.organismes.length, 19);
+  assert.equal(new Set(r.organismes.map((o) => o.id)).size, 19);
+  for (const id of ['enfant-bleu', 'colosse', 'adavem-jp40', 'ose-paris', 'innocence-en-danger', 'fcpe-paris', 'fcpe-33', 'pav75', 'victaid', 'mediavic05', 'metooecole', 'kopp-royer',
     'mouvenfants', 'francas33', 'sos-periscolaire', 'couples-et-familles-tarnos', 'cdp-enfance', 'cvm', 'une-vie']) assert.ok(r.organismes.some((o) => o.id === id), id);
   for (const p of r.pages) { assert.ok(['index', 'service', 'document'].includes(p.type), p.url); assert.ok(p.emetteur, p.url); }
   assert.equal(r.organismes.find((o) => o.id === 'couples-et-familles-tarnos').suivi.pages.length, 0, 'identité non résolue : aucune URL inventée');
+});
+await t('acteurs du 23/11 : identité, rôle public, preuve du rattachement, canaux déclarés et ÉTAT RÉEL DE COLLECTE distincts ; aucun canal présenté comme collecté sans test', () => {
+  const r = chargerRegistre(REG);
+  const m = r.organismes.find((o) => o.id === 'metooecole'), k = r.organismes.find((o) => o.id === 'kopp-royer');
+  assert.equal(m.porte_parole[0].nom, 'Barka Zerouali'); assert.ok(m.porte_parole[0].preuves.length >= 2, 'rôle public prouvé par plusieurs sources');
+  assert.deepEqual(m.canaux.map((c) => c.type).sort(), ['facebook', 'instagram', 'petition_change_org', 'site', 'x']);
+  for (const c of m.canaux) { assert.ok(c.etat && c.collecte, `canal ${c.type} : état et collecte renseignés`); if (c.type !== 'site') assert.match(c.collecte, /non testée/, `canal ${c.type} : jamais présenté comme collecté`); }
+  assert.match(m.canaux.find((c) => c.type === 'site').collecte, /bloquée/, 'le site est protégé par un contrôle anti-robot : non contourné');
+  for (const [ty, cpt] of [['x', '@MeTooEcole'], ['instagram', '@metooecole'], ['facebook', '@metooecole']]) assert.equal(m.canaux.find((c) => c.type === ty).compte, cpt);
+  assert.ok(k.implication_verifiee && /deux sources indépendantes/.test(k.implication_detail), 'rattachement des avocates prouvé hors de l’article BFMTV');
+  assert.equal(k.suivi.pages.length, 0, 'aucune page de publications : rien d’inventé à suivre');
+  assert.ok(!JSON.stringify([m, k]).match(/@[a-z0-9_]+\.[a-z]{2,}/i), 'aucune adresse électronique');
 });
 await t('page commune à deux organismes (paris.fr : OSE + PAV) lue UNE fois, émise par la Ville', () => {
   const r = chargerRegistre(REG);
