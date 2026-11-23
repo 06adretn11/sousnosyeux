@@ -758,6 +758,19 @@ t('phase d’instruction : « pas de mise en examen » et « le parquet fait app
   const sans = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [ext(d1, { evenements: evs.slice(0, 2) })] });
   assert.ok(!/mis en examen|appel/.test(sans.dossier.etat_actuel.slice(1).join(' ')), 'sans décision ni appel, rien n’est ajouté');
 });
+t('phase d’instruction : une phrase d’état plus RÉCENTE que la décision du juge (auditions) ne la fait pas disparaître du bloc du haut ; décision → appel → audience dans cet ordre', () => {
+  const d1 = doc('ici', 'https://x.test/ici2', '2026-11-20');
+  const evs = [E({ type: 'garde_a_vue', acteur: null, texte: 'Selon ici, l’animateur a été placé en garde à vue le 17 novembre 2026.', date: '2026-11-17', citation: 'g' }),
+    E({ type: 'decision', acteur: 'Juge d’instruction', texte: 'Selon ici, le juge n’a pas mis en examen l’animateur le 19 novembre 2026, ressorti libre.', date: '2026-11-19', citation: 'd' }),
+    E({ type: 'enquete', acteur: 'Gendarmerie', texte: 'Selon ici, les enfants sont auditionnés par les enquêteurs spécialisés.', date: null, date_nature: 'article', citation: 'e' }),
+    E({ type: 'audience', acteur: 'Chambre de l’instruction', texte: 'Selon ici, la chambre de l’instruction de la cour d’appel se prononcera dans les prochains jours.', date: null, date_nature: 'article', citation: 'u' }),
+    E({ type: 'appel', acteur: 'Procureur de Caen', texte: 'Selon ici, le procureur de Caen a décidé de faire appel de la décision du juge d’instruction.', date: null, date_nature: 'article', citation: 'a' })];
+  const r = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [ext(d1, { evenements: evs })] });
+  const lignes = r.dossier.situation.suite.lignes.filter((l) => /^Évolution rapportée/.test(l));
+  assert.equal(lignes.length, 3);
+  assert.match(lignes[0], /n’a pas mis en examen/); assert.match(lignes[1], /faire appel/); assert.match(lignes[2], /chambre de l’instruction/);
+  assert.equal(r.dossier.situation.suite.titre, 'Appel rapporté');
+});
 t('même fait rapporté par deux articles du MÊME média : la source la plus récente le représente ; deux médias différents : règle inchangée', () => {
   const ev = (texte) => [E({ type: 'garde_a_vue', acteur: null, texte, date: '2026-11-17', citation: 'g' })];
   const ancien = ext(doc('ici', 'https://x.test/ancien', '2026-10-07'), { evenements: ev('Selon ici, l’animateur a été placé en garde à vue.') });
