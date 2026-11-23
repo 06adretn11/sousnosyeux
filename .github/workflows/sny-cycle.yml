@@ -71,6 +71,8 @@ jobs:
           if [ "$code" = "3" ]; then
             echo "incomplet=true" >> "$GITHUB_OUTPUT"
             echo "passage incomplet : le passage du jour ne sera pas consigné"
+            # Reprise PLAFONNÉE : le passage incomplet est compté (lib/reprise-bornee.mjs, plafond 3 par jour UTC) ; au plafond, le garde-fou (étape 0) arrête les créneaux suivants du jour.
+            if [ "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]; then node scripts/garde-quotidien.mjs incomplet maintenance || echo "compteur de passages incomplets non écrit"; fi
             exit 0
           fi
           exit $code

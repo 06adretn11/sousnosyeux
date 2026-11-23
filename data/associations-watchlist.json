@@ -421,11 +421,43 @@
    "id": "metooecole",
    "nom": "Collectif MeTooEcole",
    "alias": [
-    "MeTooEcole"
+    "MeTooEcole",
+    "MeTooÉcole",
+    "MeToo École"
    ],
    "role": "organisme",
    "portee": "nationale",
+   "themes": [
+    "violences sexuelles dans le périscolaire et à l'école",
+    "procès et décisions de justice à Paris",
+    "interpellation des pouvoirs publics (lettre ouverte, courriers à la Ville de Paris)"
+   ],
    "note": "Pas de fil daté identifié. Plainte collective : seule l'introduction publique est lue (aucun formulaire, champ ou réponse). La déclaration d'une démarche ne confirme pas son stade judiciaire. Conditions de reproduction et de liens du site à vérifier avant toute projection publique.",
+   "implication_verifiee": true,
+   "implication_detail": "Collectif présenté par franceinfo comme « constitué de nombreuses familles d'Alphonse-Baudin » (cofondatrice citée) ; BFMTV (10/07/2026) légende une manifestation « organisée par le #MeToo École devant l'école maternelle Alphonse-Baudin » (la date de la photo n'est pas donnée par la légende). Une déclaration du collectif n'établit ni les faits dénoncés ni une étape judiciaire.",
+   "implication_source": "franceinfo (procès Alphonse-Baudin, mai 2026) ; BFMTV, 10/07/2026",
+   "porte_parole": [
+    {
+     "nom": "Barka Zerouali",
+     "role_public": "cofondatrice et porte-parole du collectif",
+     "statut": "identifiée",
+     "preuves": [
+      "BFMTV, 10/07/2026 : « Barka Zerouali, du collectif #MeToo École »",
+      "Le Média (Journal des luttes) : « porte-parole du collectif MeTooEcole »",
+      "franceinfo (mai 2026) : « Barka, cofondatrice de #MeTooEcole » (prénom seul)"
+     ],
+     "portee": "nationale (paroles sur les procès parisiens et sur la réponse des pouvoirs publics)",
+     "collecte": "Requête de presse sur le nom exact testée le 23/11/2026 (Google Actualités, 11 résultats) ; aucun compte personnel recherché ni suivi."
+    }
+   ],
+   "canaux": [
+    { "type": "site", "url": "https://www.metooecole.org/", "etat": "déclaré par le collectif · page déjà suivie (ci-dessous)", "collecte": "lecture bloquée par le contrôle anti-robot du site (constat du 05/11/2026 et du 23/11/2026) : aucune lecture automatique ; non contourné" },
+    { "type": "x", "compte": "@MeTooEcole", "url": "https://x.com/MeTooEcole", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
+    { "type": "instagram", "compte": "@metooecole", "url": "https://www.instagram.com/metooecole/", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
+    { "type": "facebook", "compte": "@metooecole", "url": "https://www.facebook.com/metooecole", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
+    { "type": "petition_change_org", "url": "https://www.change.org/p/metooecole-parce-qu-aucun-enfant-ne-devrait-avoir-peur-d-aller-à-l-école", "etat": "pétition du collectif et ses mises à jour (adresse retrouvée par recherche : titre « Petition update · Lettre ouverte à Emmanuel Macron… ») · non ouverte, sans compte ni signature", "collecte": "non testée — aucune inscription, aucun abonnement" }
+   ],
+   "collecte_reelle": "Recherche de presse (existante, requêtes contextuelles de scripts/watch-updates.mjs) testée le 23/11/2026 : nom du collectif sans accent 24 résultats, avec accent et « périscolaire » 4 résultats (Google Actualités RSS, titres seuls). Site : bloqué. Réseaux sociaux et Change.org : aucune collecte.",
    "suivi": {
     "domaines": [
      "metooecole.org"
@@ -445,6 +477,31 @@
       "sans_date_publiee": true
      }
     ]
+   }
+  },
+  {
+   "id": "kopp-royer",
+   "nom": "Cabinet Kopp & Royer (Me Hannah Kopp, Me Rebecca Royer)",
+   "alias": [
+    "Hannah Kopp",
+    "Rebecca Royer"
+   ],
+   "role": "avocates_de_familles",
+   "portee": "affaire (Alphonse-Baudin, Paris 11e) ; paroles nationales sur les procès du périscolaire parisien",
+   "themes": [
+    "violences sexuelles dans le périscolaire parisien",
+    "procès et décisions de justice à Paris"
+   ],
+   "description": "Cabinet d'avocates au barreau de Paris « fondé par Maître Hannah Kopp et Maître Rebecca Royer » (site professionnel : https://www.kr-avocates.com/ ; la page d'accueil ne mentionne ni ces affaires ni réseau social ni actualités).",
+   "url_site": "https://www.kr-avocates.com/",
+   "verifie_le": "2026-11-23",
+   "implication_verifiee": true,
+   "implication_detail": "Rattachement CONFIRMÉ par deux sources indépendantes de BFMTV : franceinfo (procès d'Alphonse-Baudin, mai 2026) les présente comme « avocates qui représentent six des enfants d'Alphonse-Baudin et leurs familles » ; Le Média les présente comme « avocates de plusieurs familles de victimes dans l'affaire de l'école Alphonse Baudin ». BFMTV (10/07/2026) les cite après la relaxe sans dire qui elles représentent : le rattachement ne repose donc pas sur cet article seul. Elles ne sont pas citées pour l'école Titon.",
+   "implication_source": "franceinfo, mai 2026 ; Le Média ; BFMTV, 10/07/2026",
+   "note": "Aucune page de publications propre : pas de page suivie. Déjà suivies par la presse (scripts/watch-updates.mjs : mots-clés d'acteurs notables et requêtes contextuelles). Le nom des mis en cause ou des enfants n'est jamais repris. Une parole d'avocate est une position attribuée, jamais un fait établi.",
+   "collecte_reelle": "Recherche de presse testée le 23/11/2026 : « Hannah Kopp » 9 résultats, « Rebecca Royer » 10 résultats (Google Actualités RSS, titres seuls). Aucun réseau social déclaré : aucun compte recherché.",
+   "suivi": {
+    "pages": []
    }
   },
   {

@@ -12,10 +12,14 @@
 // (routage-veille.actesDetail) n'est jamais proposé comme fait nouveau — sauf « pas de mise en examen », qui est lui-même le fait.
 // Les actes qui font évoluer le STATUT (mise en examen affirmée, procès, condamnation, relaxe…) restent le travail du circuit STATE_CHANGE.
 //
-// Règle de conduite (revue contradictoire du 23/11/2026) : en cas de doute sur la phrase, AUCUN fait (jamais un fait inversé, jamais l'auteur,
-// le jour ou la nature d'un autre événement). Un fait manquant se rattrape à l'article suivant ; un faux fait reste dans la mémoire.
+// RÈGLE OPÉRATIONNELLE (revue contradictoire du 23/11/2026, reformulée le 23/11 après-midi) :
+//   1. AUCUN fait incertain n'est inscrit comme établi : en cas de doute sur la phrase, aucun fait n'est produit (jamais un fait inversé, jamais l'auteur,
+//      le jour ou la nature d'un autre événement). Un libellé plus pauvre mais vrai est préféré à un libellé précis mais douteux (« Il a fait appel » → « un appel a été formé »).
+//   2. Le doute N'EFFACE PAS le signal : `signauxNonRetenus` nomme l'acte vu et pourquoi il n'est pas un fait (nié, rappelé, écarté, ou affirmé sans sujet/date/stade sûr) ;
+//      le notifier le consigne avec la proposition écartée (state_proposals.payload.ecartee : motif + signaux). La SOURCE (article) et les citations restent dans la proposition elle-même.
+//   3. Rien n'est « rattrapé à l'article suivant » par hypothèse : un signal consigné se relit (scripts/rejeu-ecartees.mjs) et se décide, ou se rouvre si un article ultérieur le précise.
 // =====================================================================
-import { actesDetail, ACTES_REGEX, polarites, aplat } from './routage-veille.mjs';
+import { actesDetail, ACTES_REGEX, polarites, aplat, jetonsEtab } from './routage-veille.mjs';
 import { dateEcrite } from './evenement-institutionnel.mjs';
 import { estPisteDeNavigation } from './corps-article.mjs';
 import { LIB, TYPE, MESURES_PROCEDURALES, dateLisible } from './mesures-procedurales.mjs';
@@ -141,9 +145,14 @@ function acteurAppel(n) {
  * @returns {Array<{event_type:string, nature:'acte_procédural', mesure:string, realisation:'annoncée'|'réalisée', portee:'établissement', acteur:null,
  *                  event_date:string|null, event_period:string|null, libelle_public:string, evidence:string[]}>}
  */
-export function detecterActesProcéduraux(citations, { pubDate = null, courant = null, memoire = [] } = {}) {
+export function detecterActesProcéduraux(citations, { pubDate = null, courant = null, memoire = [], etablissements = null } = {}) {
   const parMesure = new Map();
-  const cites = (citations || []).map((c) => String(c || '').replace(/\s+/g, ' ').trim()).filter((c) => c.length >= 25 && !estPisteDeNavigation(c));
+  // ARTICLE À PLUSIEURS ÉTABLISSEMENTS (BFMTV du 10/07/2026 : « … la relaxe de l'animateur de l'école Titon » dans un article sur Baudin) : une citation qui nomme un AUTRE établissement
+  // de la commune sans nommer celui de l'affaire parle d'une autre procédure ; ses actes ne sont jamais attribués à cette affaire. Sans nom d'établissement, rien n'est écarté (doute = gardé).
+  const propres = etablissements ? jetonsEtab(etablissements.propre || '') : [];
+  const autres = etablissements ? (etablissements.autres || []).flatMap((e) => jetonsEtab(e)).filter((t) => !propres.includes(t)) : [];
+  const parleDUneAutre = (c) => { const n = ` ${norm(c).replace(/[^a-z0-9]+/g, ' ')} `; return autres.some((t) => n.includes(` ${t} `)) && !propres.some((t) => n.includes(` ${t} `)); };
+  const cites = (citations || []).map((c) => String(c || '').replace(/\s+/g, ' ').trim()).filter((c) => c.length >= 25 && !estPisteDeNavigation(c) && !parleDUneAutre(c));
   // Une présentation à un juge n'est combinée à « pas de mise en examen » que si AUCUNE citation n'affirme une mise en examen
   // (deux suspects, l'un mis en examen, l'autre non : jamais « présenté à un juge, qui ne l'a pas mis en examen »).
   const uneMiseEnExamen = cites.some((c) => actesDetail(c).affirmes.includes('MISE_EN_EXAMEN'));

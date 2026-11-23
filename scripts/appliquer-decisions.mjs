@@ -180,6 +180,13 @@ if (process.argv.includes('--generique')) {
     // Libellé public tiré d'une table fermée ; la citation reste en mémoire privée. Identité de l'événement : (affaire, libellé)
     // — la même mesure, au même stade (annoncée / réalisée), rapportée par un second article, n'est pas un second événement.
     if (!REPLAY && p.aa === 'ENRICHMENT') {
+      // HOLD : une affaire sous HOLD ne reçoit AUCUNE mutation publique automatique (un événement consigné serait projeté sur sa fiche). L'ACCEPT reste enregistré et NON appliqué :
+      // il sera appliqué (ou écarté) par un humain à la levée du HOLD. Mesuré le 23/11/2026 (parcours isolé) : sans cette garde, un ACCEPT sur une affaire sous HOLD écrivait ses événements.
+      if (holds.has(p.case_id)) {
+        special++;
+        dire(`  ${p.k} | ${p.case_id} | ENRICHMENT | NOT_APPLICABLE_AUTOMATICALLY — HOLD actif sur la fiche : aucune écriture (l'ACCEPT reste enregistré, non appliqué)`);
+        continue;
+      }
       // Faits structurés (proposition « +reactions ») : un événement par mesure de PORTÉE « établissement » ; une mesure « territoire »
       // (politique de collectivité visant plusieurs structures) n'est jamais écrite comme événement de cette affaire.
       const structures = faitsStructures(p.facts);

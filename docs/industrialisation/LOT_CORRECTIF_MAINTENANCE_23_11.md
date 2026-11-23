@@ -17,7 +17,7 @@ Objectif : qu'une évolution pertinente **arrive dans la mémoire de l'affaire**
 | Fenêtres de jours | 45 jours productifs (08/10→21/11) ; 44 avec recherche aboutie (échec total du 05/11) ; 29 = 22/10→21/11 (31 jours civils) hors 05/11 et 18/11 (4 runs ce jour-là) pour la mesure « affaire sans nouvel article ». Depuis sa première ligne, **chaque affaire éligible a une ligne chaque jour productif** (0 trou ; 3 283 case-jours sur 3 358 hors 05/11 = 97,8 %). Délai entre éligibilité et 1re recherche des 13 entrées tardives : non mesurable (date d'éligibilité non consignée). |
 | 12/10 | **Pas un échec global prouvé.** Dans l'ordre de traitement : ~20 affaires normales puis une série de 28 affaires d'affilée sans nouvel article, run 2,3 fois plus long, 0 erreur comptée ; la plus longue série légitime des jours normaux est de 4. Hypothèse (non prouvée) : limitation de Google renvoyant des flux vides. Détection ajoutée (§3.4) ; cause non établie. |
 
-## 2. Diff minimal (11 fichiers modifiés, 10 nouveaux ; état après la revue contradictoire du 23/11, voir §5)
+## 2. Diff minimal (état de la branche : voir `git diff --stat` ; premier état : 11 fichiers modifiés, 10 nouveaux ; état après la revue contradictoire du 23/11, voir §5)
 
 | Composant | Changement | Pourquoi (preuve) |
 |---|---|---|
@@ -58,10 +58,10 @@ Seuils : **pas** de seuil de 20 % (arbitraire) ; chaque seuil est tiré d'une me
 ## 4. Limites et obstacles à la mise en production
 
 * **Aucune décision d'Adrien n'est engagée.** À décider : (a) le circuit « actes procéduraux » (libellés ci-dessus, une décision par proposition, `case_events` sans changement d'état) ; (b) le repli de requêtes (+≈ 15 requêtes/jour) ; (c) les corrections de fiches préparées hors dépôt (FR-2026-0026, FR-2026-0012, FR-2026-0144).
-* Les propositions antérieures déjà écartées (marquées `telegram_envois` sans message) **ne reviennent pas toutes seules** : un rejeu ciblé reste à autoriser (lecture seule disponible : `scripts/rejeu-ecartees.mjs`).
-* Une phrase de moins de 25 caractères (« Il a fait appel. ») n'est jamais un fait (garde héritée) : l'appel de FR-2026-0012 passe par une correction éditoriale, pas par l'automatisme.
+* Les propositions antérieures déjà écartées (marquées `telegram_envois` sans message) **ne reviennent pas toutes seules**. Un rejeu **borné** sur exports locaux est fait (§6) ; le rejeu complet exige une lecture Neon (colonnes manquantes listées au §6) : `scripts/rejeu-ecartees.mjs` (lecture seule) le produit.
+* Une phrase de moins de 25 caractères (« Il a fait appel. ») n'est jamais un **fait** (garde héritée), mais son **signal** est désormais consigné avec la proposition (§8) ; l'appel de FR-2026-0012 reste une correction éditoriale.
 * Non démontré : cause de l'absence de proposition pour les signalements de FR-2026-0114 (30/10) ; cause du 12/10 ; délai entre éligibilité et première recherche ; pertinence au-delà de 19 affaires.
-* Déploiement : le code déployé est `main` ; ce lot est une branche locale non poussée.
+* Déploiement : le code déployé est `main` ; ce lot est une branche poussée et une PR ouverte, **non fusionnée**.
 
 ## 5. Revue contradictoire (deux passes, 23/11/2026) — défauts confirmés et corrigés
 
@@ -78,6 +78,69 @@ Revue indépendante en lecture seule (phrases synthétiques, veille avec faux fe
 | Destination | message annonçant un Hub (bloc « mesures ») jamais alimenté | `destinationsDe` : acte procédural ⇒ fiche seulement |
 | Relances | 9 échecs sur 10 sortaient en code 0 et le jour était marqué fait ; flux vides en rafale : repli doublé puis recherche de tout le stock ; `--cases` sans valeur ⇒ TypeError ; repli sur rôles génériques (« bordeaux autre ») | code 3 « passage incomplet » (la maintenance consigne, l'étape Z ne marque pas le jour : workflow, sortie `incomplet`) ; arrêt sur rafale, pas de repli après 3 flux vides (60 → 21 requêtes pour 20 affaires de test) ; `--cases` validé ; `--sauter-reussies-du-jour` (reprise bornée aux échecs, créneaux planifiés) ; rôles génériques exclus, titre de repli devant dire une affaire |
 
-**Restent des limites connues (non corrigées, déclarées) :** une phrase qui cumule deux actes avec sujets différents n'est pas démêlée au-delà de la proposition ; l'auteur d'un appel n'est donné que si son sujet est écrit juste avant le verbe ; la date d'un appel dont l'article ne dit que « la décision de mardi » reste vide ; `--sauter-reussies-du-jour` lit `case_checks` (Neon) et n'a été vérifié ici que par lecture du code et par le faux fetch, pas contre la base.
+**Restent des limites connues (non corrigées, déclarées) :** une phrase qui cumule deux actes avec sujets différents n'est pas démêlée au-delà de la proposition ; l'auteur d'un appel n'est donné que si son sujet est écrit juste avant le verbe ; la date d'un appel dont l'article ne dit que « la décision de mardi » reste vide ; `--sauter-reussies-du-jour` lit `case_checks` : **exercé depuis sur une base locale isolée** (§7).
 
-**Vérifications après correctifs :** `run-all` QA_PASSED ; `test-faux-faits-revue` 22, `test-acte-procedural` 18, `test-negation-actes` 13, `test-recherche-veille` 19, `test-routage` 52 ; parcours isolé rejoué (2 `case_events`, message sans Hub, rejeu sans doublon) ; comparaison hors ligne sur 75 citations exportées : les 16 faits procéduraux sont conservés. **Le rejeu complet des 91 propositions écartées avec le code final n'a pas pu être relancé** (accès Neon non accordé pour cette étape) : les chiffres du §3 datent du code d'avant la revue ; commande à lancer en lecture seule : `node scripts/rejeu-ecartees.mjs --sortie <fichier hors dépôt>`.
+**Les chiffres des §3 et §5 datent du code d'avant la revue ; ceux des §6 à §8 sont ceux du code final.**
+
+## 6. Rejeu des propositions écartées avec le code final — borné, limites exactes
+
+**Source :** exports locaux du 21/11 (non versionnés) : 88 propositions ouvertes écartées sans message (75 `ENRICHMENT`, 13 `STATE_CHANGE` ; le rejeu précédent en comptait 91, trois sont postérieures à l'export). Les 13 `STATE_CHANGE` ne relèvent pas du lot (circuit d'état non modifié) : **75 relues**, avec le code de cette branche.
+
+**Ce que les exports contiennent :** les citations littérales des 75 propositions, l'état des fiches, 40 événements consignés (24 affaires), les dates de publication des articles, les envois Telegram. **Ce qui manque pour un rejeu complet :** (1) le verdict de rattachement du modèle (`payload.rattachement`) — supposé `OK` ; (2) la mémoire complète des 75 affaires (événements de 24 affaires seulement, aucune information validée `ACCEPT`) ; (3) les faits en attente de décision de l'éditeur (`soumis`) ; (4) les trois propositions postérieures ; (5) l'adresse des articles (pour `dejaPublie`). La **classe finale** n'est donc pas établie ; le **fait détecté et sa preuve** le sont.
+
+| Classe (rejeu borné) | Nombre | Lecture |
+|---|---|---|
+| `SANS_APPORT` | 59 | aucun acte ni mesure consignable (rappel, stade déjà atteint, sans acte) |
+| `NOUVEAU` | 10 propositions / 12 faits | faits décidables, chacun avec sa citation |
+| `DEJA_SOUMIS` | 5 | même fait déjà proposé par une autre écartée |
+| `DEJA_CONSIGNE` | 1 | fait déjà en mémoire |
+
+**Changements par rapport au rejeu précédent (dernier rejeu réel, code d'avant la revue) : 3 classes sur 75.** FR-2026-0122 `RATTACHEMENT → DEJA_SOUMIS` (hypothèse `rat = OK`, non vérifiable) ; POC-10 `DEJA_SOUMIS → DEJA_CONSIGNE` (le fait « inspection annoncée » est supprimé : la citation rappelait un constat de 2015) ; FR-2026-0048 `DEJA_SOUMIS → NOUVEAU` (artefact : `soumis` manquant, l'ancienne classe est probablement exacte). Les chiffres « 9 propositions / 11 faits » ne sont **pas** une cible et ne sont pas comparables (contexte différent).
+
+**Vérification des faits nouvellement proposés (preuve = citation exportée, sauf mention) :**
+
+| Affaire | Fait | Date | Preuve |
+|---|---|---|---|
+| FR-2026-0137, POC-07, FR-2026-0122, FR-2026-0011 | détention provisoire | 14/10/2026 (« mercredi »), 30/04/2026, 24/09/2026, 27/11/2025 (« écroué jeudi soir ») | date écrite ou jour de semaine calculé depuis la date de l'article : conformes |
+| FR-2026-0145 | garde à vue | sans date | citation explicite ; le fait principal de l'article (statut de témoin assisté) sort des libellés fermés, non proposé |
+| FR-2026-0146 | garde à vue ; « pas mis en examen à ce stade » | sans date | citation explicite ; la garde à vue est en cours : le libellé « à ce stade » reste exact (à relire si elle prend fin) |
+| FR-2026-0114 | audience annoncée le 22/02/2027 | 22/02/2027 | **article relu en entier** : « renvoyé devant le tribunal correctionnel pour y être jugé le 22 février 2027 » — fait acquis, la citation exportée était tronquée au début |
+| FR-2026-0046 | appel (générique) | sans date | « Il fait appel de peine » : ni auteur ni date inventés |
+| FR-2026-0133 | garde à vue ; présenté à un juge sans mise en examen | 19/11/2026 | cas déclencheur, déjà traité |
+| FR-2026-0048 | contrôle / inspection | — | dépend de `soumis` manquant ; « enquête administrative actuellement menée » = conduite, plus « annoncée » |
+
+## 7. Passage incomplet et reprise — preuve sur base locale isolée
+
+**Dispositif :** base PGlite locale (structure copiée de Neon, **aucune donnée copiée**), faux fetch (aucun réseau), **mêmes scripts de production** (`watch-updates`, `maintenance-cycle`, `garde-quotidien`) ; trois affaires synthétiques ; chemin SQL réel de `--sauter-reussies-du-jour` (`case_checks`) et compteur dans `discovery_etat`. Hors dépôt (dépendance PGlite non ajoutée) ; les décisions pures (plafond, fenêtre) sont testées dans le dépôt (`test-reprise-bornee`, 8).
+
+| Étape | Résultat observé |
+|---|---|
+| 1. Une recherche réussit, deux échouent (HTTP 503) | code **3** (« passage incomplet : 2/3 ») ; `case_checks` : `NO_NEW_INFORMATION` (réussie), `NON_EXAMINE` + `[RECHERCHE_EN_ERREUR]` (2 échecs) ; compteur d'incomplets = 1 ; le jour **n'est pas** consigné |
+| 2. Créneau suivant (`--sauter-reussies-du-jour`) | « reprise bornée : **1** affaire déjà examinée ignorée, **2** restantes » : seules les deux en échec sont cherchées ; l'une répond, l'autre échoue encore |
+| 3. Dernier créneau | « 2 ignorées, 1 restante » ; plus aucune erreur ; code 0 ; le passage du jour est consigné ; le créneau suivant « ne fait rien » |
+| 4. Invocation **sans affaire restante** | « 3 ignorées, **0** restante » ; **0 requête émise** (le faux service était en panne : aucun appel visible), `searches_failed = 0`, aucune ligne `case_checks` ajoutée, code 0 : ni faux échec, ni relance |
+| 5. Cinq déclenchements le même jour sans réussite | les 3 premiers travaillent (compteur 1, 2, 3) ; les 4ᵉ et 5ᵉ « ne font rien — plafond 3, reprise complète demain » |
+
+**Code ajouté :** `scripts/lib/reprise-bornee.mjs` (décision pure) ; `garde-quotidien.mjs incomplet` (compteur `quotidien:<nom>:incomplets`, valeur `AAAA-MM-JJ:N`) ; étape A du workflow : sur code 3, le passage incomplet est compté (jamais sur `workflow_dispatch`). **Avant : aucun plafond** — chaque créneau (≈ 24 déclenchements planifiés + relais) relançait la veille contre un service qui ne répond pas.
+
+**Quatre états distincts** dans le rapport et `case_checks` : *absence de nouveauté* (`NO_NEW_INFORMATION`) · *flux vide* (`[FLUX_VIDE]`, tentative réussie, jamais compté comme échec) · *dégradation suspectée* (`DEGRADATION_SUSPECTEE`, `[DEGRADATION_SUSPECTEE]` : au-delà de 8 flux vides d'affilée, aucune panne n'est affirmée, la recherche n'est pas retenue comme « rien trouvé ») · *erreur technique* (`ERREUR`, `[RECHERCHE_EN_ERREUR]`). Une rafale de flux vides ne devient pas une panne : elle interrompt la veille (affaires restantes « non tentées », même état `DEGRADATION_SUSPECTEE`) et produit un passage **incomplet** (code 3, repris de façon bornée) — **jamais le code 2** réservé à « aucune recherche n'a abouti » (erreurs techniques seulement).
+
+**Limite déclarée :** un échec **minoritaire** (≤ la moitié des recherches) sort en code 0 et clôt le jour ; ses affaires restent `NON_EXAMINE` et sont reprises au passage complet du lendemain.
+
+**Parcours de l'enrichissement (base isolée, code final) :** (a) les faits **montrés** sont ceux **appliqués** : l'état de la fiche, la mémoire et la citation ont été modifiés entre la présentation et le clic, les deux faits gelés sont écrits tels que montrés ; (b) une **interruption** après le premier événement (déclencheur SQL) laisse 1 événement et la proposition non appliquée ; la reprise écrit seulement le second (« mesure déjà consignée : aucun doublon »), pose `applied_event_id`, et un rejeu n'ajoute rien ; (c) un `ACCEPT` sur une affaire sous **HOLD** était **appliqué** et projeté (défaut constaté, hérité) : désormais « HOLD actif sur la fiche : aucune écriture », l'`ACCEPT` reste enregistré non appliqué, la projection ne contient pas l'affaire.
+
+## 8. Règle opérationnelle du fait incertain (remplace « un fait manquant se rattrape à l'article suivant »)
+
+1. **Aucun fait incertain n'est inscrit comme établi** (libellé fermé, plus pauvre mais vrai : « Il a fait appel » dans une phrase qui porte son contexte → « un appel a été formé », ni auteur ni date).
+2. **Le doute n'efface pas le signal** : `lib/signaux-actes.mjs` nomme l'acte vu et son état (`nie`, `ecarte`, `rappele`, `incertain`) ; le notifier le consigne avec la proposition écartée (`state_proposals.payload.ecartee` : motif + signaux, **colonne existante**, ni nom ni citation) ; la **source** (article) et les citations restent dans la proposition.
+3. **Rien n'est supposé rattrapé plus tard** : un signal consigné se relit (`rejeu-ecartees`) et se décide, ou se rouvre si un article ultérieur le précise.
+
+Cas « Il a fait appel » seul (16 caractères, sous le seuil de 25) : **aucun fait**, signal `APPEL_FORME / incertain` consigné (parcours isolé : `payload.ecartee` écrit à l'écartement d'une proposition à acte nié).
+
+## 9. Cas BFMTV Baudin–Titon, découverte, acteurs
+
+Voir `CAS_BFM_BAUDIN_TITON_23_11.md` (diagnostic, tableau par élément, enrichissements prêts, preuves de découverte, registre d'acteurs). Quatre défauts concrets corrigés (« annonce de la relaxe » lu comme annonce du rassemblement ; fait de territoire reproposé pour l'école voisine ; acte de l'autre école attribué à l'affaire ; deux faits institutionnels non soutenus par leur citation), `test-article-multi-affaires` (12 tests).
+
+## 10. Vérifications finales
+
+`run-all` : voir la PR. Tests propres au lot : `test-faux-faits-revue` 22, `test-acte-procedural` 18, `test-negation-actes` 13, `test-signaux-actes` 8, `test-reprise-bornee` 8, `test-recherche-veille` 19, `test-article-multi-affaires` 12, `test-sources-suivies` 25 (acteurs).

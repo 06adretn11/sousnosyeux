@@ -54,6 +54,21 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Article à deux établissements voisins (cas BFMTV du 10/07) — « annonce de la relaxe » ≠ annonce du rassemblement, fait de territoire déjà consigné pour la voisine, acte de l’autre école',
+    script: 'scripts/qa/test-article-multi-affaires.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Règle opérationnelle du fait incertain — aucun fait inscrit comme établi, signal conservé (« Il a fait appel », acte nié, envisagé, rappelé)',
+    script: 'scripts/qa/test-signaux-actes.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Garde-fou quotidien — fenêtre, passage du jour, reprise plafonnée à 3 passages incomplets par jour (fonction pure)',
+    script: 'scripts/qa/test-reprise-bornee.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Recherche de la veille — repli ciblé, échec ≠ flux vide ≠ résultats, reprise bornée, disjoncteur (faux fetch)',
     script: 'scripts/qa/test-recherche-veille.mjs',
     bloquant: true,

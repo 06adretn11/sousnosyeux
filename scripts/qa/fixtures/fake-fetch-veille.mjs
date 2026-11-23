@@ -18,6 +18,12 @@ globalThis.fetch = async (url) => {
   // « ok-puis-503 » : la première affaire (Alpha) répond, toutes les suivantes sont en HTTP 503 (service qui se dégrade en cours de passage).
   if (mode === 'ok-puis-503') return /Alpha/i.test(u) ? rep(flux(['Exemple Alpha : audience annoncée'])) : rep('indisponible', 503);
   if (mode === 'vide') return rep(flux([]));   // flux RSS valides mais VIDES pour toutes les requêtes (limitation silencieuse suspectée)
+  // « selon-env » : SNY_FAKE_ECHECS = noms (séparés par des virgules) dont les requêtes répondent HTTP 503 ; tous les autres noms répondent un article. Sert au parcours
+  // « passage incomplet → reprise bornée » sur base locale isolée (un passage échoue pour certains noms, le suivant réussit).
+  if (mode === 'selon-env') {
+    const noms = String(process.env.SNY_FAKE_ECHECS || '').split(',').map((s) => s.trim()).filter(Boolean);
+    return noms.some((n) => u.includes(n)) ? rep('indisponible', 503) : rep(flux([`${(/Exemple (\w+)/.exec(u) || [])[1] || 'X'} Exemple : audience annoncée`]));
+  }
   if (/Delta/i.test(u)) return rep('indisponible', 503);
   if (/Beta/i.test(u)) return appels.get(u) === 1 ? rep('indisponible', 503) : rep(flux(['Exemple Beta : enquête ouverte']));
   if (/Gamma/i.test(u)) return u.includes('"École Exemple Gamma"') ? rep(flux([])) : rep(flux(['Gamma Exemple : un animateur placé en garde à vue']));

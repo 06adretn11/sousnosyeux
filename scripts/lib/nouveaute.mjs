@@ -64,6 +64,19 @@ export function dejaConnu(fait, memoire = [], { pubDate = null } = {}) {
 }
 
 /**
+ * Un fait de portée TERRITOIRE (un rassemblement de parents de deux écoles du même quartier) appartient à tout le territoire : s'il est déjà consigné pour une AUTRE affaire de la même commune,
+ * le proposer à nouveau pour sa voisine dupliquerait la même information dans le Hub (cas BFMTV du 10/07/2026 : le rassemblement du 9 juillet devant l'école Baudin, déjà consigné pour Baudin,
+ * redevenait « nouveau » dès que l'article était lu pour Titon). Comparaison STRICTE : même type ET même jour explicite ; un fait sans date n'est jamais écarté par la mémoire d'une voisine.
+ * @param {{event_type:string, event_date?:string|null}} fait
+ * @param {{event_type:string, event_date?:string|null}[]} memoireVoisines  événements consignés pour les autres affaires de la même commune
+ */
+export function dejaConnuChezVoisines(fait, memoireVoisines = []) {
+  if (!fait?.event_date) return false;
+  const t = TYPE(fait.event_type);
+  return memoireVoisines.some((e) => TYPE(e.event_type) === t && jour(e.event_date) === jour(fait.event_date));
+}
+
+/**
  * @param {{statutAvant:string, statutPropose:string|null, faitJudiciaireConnu:boolean, reactionsNouvelles:{portee:string}[], sourceNouvelle:boolean}} o
  * @returns {{categorie:'STATE_CHANGE'|'CASE_ENRICHMENT'|'TERRITORIAL_ENRICHMENT'|'SOURCE_ONLY'|'NO_ACTION', clic:boolean}}
  */

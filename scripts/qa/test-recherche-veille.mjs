@@ -107,13 +107,15 @@ test('10. un flux vide n’est pas une erreur : etat FLUX_VIDE, compteur dédié
   const vide = lancer('mixte', []);   // T-ALPHA..DELTA ; FLUX_VIDE absent du lot mixte → vérifié par le compteur
   vrai(typeof vide.rapport.flux_vides === 'number', 'compteur flux_vides absent');
 });
-test('11. flux vides en rafale (limitation silencieuse type 12/10) : au-delà de 8 affaires d’affilée, ERREUR et non « rien trouvé »', () => {
+test('11. flux vides en rafale (limitation silencieuse type 12/10) : au-delà de 8 affaires d’affilée, DEGRADATION_SUSPECTEE (ni « rien trouvé », ni panne établie)', () => {
   const douze = { cases: Array.from({ length: 12 }, (_, i) => ({ case_id: `T-V${i}`, etablissement: `École Exemple Vide${i}`, commune: 'Exemple-sur-Mer', statut_judiciaire: 'enquête', role_mis_en_cause: 'animateur', sources: [] })) };
   writeFileSync(join(dir, 'cases.json'), JSON.stringify(douze));
   const compte = join(dir, 'compte-vide.json');
   const v = lancer('vide', [], { SNY_FAKE_COMPTE: compte });
   const etats = v.rapport.results.map((x) => x.etat_recherche);
-  vrai(etats.filter((e) => e === 'FLUX_VIDE').length === 8 && etats.filter((e) => e === 'ERREUR').length === 4, JSON.stringify(etats));
+  vrai(etats.filter((e) => e === 'FLUX_VIDE').length === 8 && etats.filter((e) => e === 'DEGRADATION_SUSPECTEE').length === 4 && !etats.includes('ERREUR'), JSON.stringify(etats));
+  // Quatre états DISTINCTS dans le rapport : les 8 premiers flux vides sont des tentatives RÉUSSIES (« rien trouvé »), jamais comptés comme échecs ; la suspicion n'est pas une erreur technique.
+  vrai(v.rapport.flux_vides === 8 && v.rapport.degradations_suspectees === 4 && v.rapport.searches_failed === 0, JSON.stringify({ f: v.rapport.flux_vides, d: v.rapport.degradations_suspectees, e: v.rapport.searches_failed }));
   // La rafale ARRÊTE la veille (les affaires restantes ne sont pas cherchées) et le passage sort INCOMPLET (code 3) : le jour n'est pas consigné, un créneau suivant reprend.
   vrai(v.code === 3, `code ${v.code} : une rafale de flux vides est un passage incomplet`);
   // Pas de repli pendant la rafale : 3 affaires × 4 requêtes (avant, ouverte, 2 replis) puis 6 × 2 requêtes ; la 9e déclenche l'arrêt. Avant correction : 60 requêtes pour 20 affaires.

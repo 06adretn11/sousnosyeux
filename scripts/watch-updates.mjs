@@ -67,6 +67,8 @@ const NOTABLE_ACTORS_KEYWORDS = [
   'rebecca royer',
   'laure beccuau',
   'beccuau',
+  // Porte-parole d'un collectif de familles (registre : data/associations-watchlist.json, id metooecole) — nom public, rôle public ; aucun parent.
+  'barka zerouali',
 ];
 
 // Requêtes libres lancées indépendamment des affaires.
@@ -78,6 +80,9 @@ const CONTEXT_QUERIES = [
   '"Arié Alimi" animateur',
   '"Hannah Kopp" enfants Paris',
   '"Rebecca Royer" enfants Paris',
+  // Collectif de familles #MeTooÉcole et sa porte-parole (testées le 23/11/2026 : 24 et 11 résultats) — graphie sans accent, la plus utilisée par la presse
+  '"MeTooEcole" périscolaire',
+  '"Barka Zerouali"',
   // Magistrature
   '"Laure Beccuau" mineurs',
   '"Laure Beccuau" périscolaire',
@@ -429,7 +434,7 @@ async function main() {
     results: [],
   };
 
-  let echecsConsecutifs = 0, interrompu = false, videsConsecutifs = 0;
+  let echecsConsecutifs = 0, interrompu = false, videsConsecutifs = 0, causeInterruption = null;
   for (let i = 0; i < cases.length; i++) {
     const c = cases[i];
     const queries = buildSearchQuery(c);
@@ -450,8 +455,9 @@ async function main() {
     // déjà réussies ne sont jamais refaites. Disjoncteur : après ECHECS_CONSECUTIFS_MAX échecs d'affilée (service indisponible : 05/11/2026, 77 affaires sur 77),
     // les affaires restantes sont consignées « non tentées » au lieu d'être martelées une à une pendant 45 minutes.
     if (interrompu) {
-      console.log('   ⚠️  Non tentée : service de recherche indisponible (échecs consécutifs)');
-      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: 'non tentée : échecs consécutifs', new_articles: [] });
+      // Même état que la cause de l'interruption : erreurs techniques (ERREUR) ou rafale de flux vides (DEGRADATION_SUSPECTEE, jamais présentée comme une panne établie).
+      console.log(`   ⚠️  Non tentée : ${causeInterruption === 'degradation' ? 'rafale de flux vides (dégradation suspectée)' : 'service de recherche indisponible (échecs consécutifs)'}`);
+      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: causeInterruption === 'degradation' ? 'DEGRADATION_SUSPECTEE' : 'ERREUR', error: causeInterruption === 'degradation' ? 'non tentée : rafale de flux vides' : 'non tentée : échecs consécutifs', new_articles: [] });
       continue;
     }
     let rech = null, derniereErreur = null;
@@ -461,7 +467,7 @@ async function main() {
     }
     if (!rech) {
       echecsConsecutifs++;
-      if (echecsConsecutifs >= ECHECS_CONSECUTIFS_MAX) interrompu = true;
+      if (echecsConsecutifs >= ECHECS_CONSECUTIFS_MAX) { interrompu = true; causeInterruption ||= 'technique'; }
       report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: derniereErreur?.message || 'erreur', new_articles: [] });
       await sleep(DELAY_BETWEEN_SEARCHES_MS);
       continue;
@@ -473,9 +479,10 @@ async function main() {
     videsConsecutifs = rech.articles.length ? 0 : videsConsecutifs + 1;
     if (videsConsecutifs > VIDES_EN_RAFALE_MAX) {
       // Arrêt : les affaires restantes ne sont PAS cherchées (non tentées) ; le passage sort « incomplet » (code 3) et un créneau suivant reprend.
-      interrompu = true;
-      console.log('   ⚠️  Flux vide en rafale : limitation suspectée, recherche non retenue, veille interrompue');
-      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: 'flux vides consécutifs (limitation suspectée)', new_articles: [] });
+      // État DISTINCT d'une erreur technique : aucune panne n'est établie (le flux a répondu, il est vide) ; la recherche n'est simplement pas retenue comme « rien trouvé ».
+      interrompu = true; causeInterruption ||= 'degradation';
+      console.log('   ⚠️  Flux vide en rafale : dégradation suspectée (non prouvée), recherche non retenue, veille interrompue');
+      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'DEGRADATION_SUSPECTEE', error: 'flux vides consécutifs (dégradation suspectée, non prouvée)', new_articles: [] });
       continue;
     }
     const articles = rech.articles;
@@ -584,18 +591,20 @@ async function main() {
 
   if (!DRY_RUN) {
     // Compteurs d'état de recherche (aucun titre, aucune URL : le journal est public).
-    const echecs = report.results.filter((r) => r.etat_recherche === 'ERREUR').length;
-    const fluxVides = report.results.filter((r) => r.etat_recherche === 'FLUX_VIDE').length;
+    const erreurs = report.results.filter((r) => r.etat_recherche === 'ERREUR').length;           // erreur technique
+    const degradations = report.results.filter((r) => r.etat_recherche === 'DEGRADATION_SUSPECTEE').length;   // rafale de flux vides : suspicion, pas une panne établie
+    const echecs = erreurs + degradations;                                                        // recherches SANS résultat retenu (à reprendre)
+    const fluxVides = report.results.filter((r) => r.etat_recherche === 'FLUX_VIDE').length;      // tentative réussie qui ne ramène rien : « rien trouvé »
     const replis = report.results.filter((r) => r.repli).length;
-    report.searches_failed = echecs; report.flux_vides = fluxVides; report.replis = replis;
+    report.searches_failed = erreurs; report.degradations_suspectees = degradations; report.flux_vides = fluxVides; report.replis = replis;
     await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
     console.log(`\n✅ Rapport écrit : data/watch-report.json`);
     console.log(`   ${report.cases_with_updates}/${report.total_cases_checked} affaire(s) avec nouveaux articles`);
-    console.log(`   recherches en erreur : ${echecs} · flux vides : ${fluxVides} · replis utilisés : ${replis}`);
+    console.log(`   recherches en erreur : ${erreurs} · dégradation suspectée : ${degradations} · flux vides : ${fluxVides} · replis utilisés : ${replis}`);
     // Aucune recherche n'a abouti : la veille est inutilisable. Sortie non nulle (la maintenance ne tourne pas, le passage du jour n'est pas consigné).
     // En échec PARTIEL la veille continue : les affaires en erreur sont consignées NON_EXAMINE par la maintenance et reprises au prochain passage
     // (la requête ouverte de 45 jours et la requête « en avant » couvrent l'intervalle) — aucune reprise ne refait les recherches réussies.
-    if (cases.length && echecs === cases.length) {
+    if (cases.length && erreurs === cases.length) {
       console.log('   ❌ aucune recherche n\'a abouti : passage non valide');
       await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
       process.exitCode = 2;

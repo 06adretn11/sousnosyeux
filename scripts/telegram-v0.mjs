@@ -25,6 +25,7 @@ import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { dejaPublie } from './lib/fait-deja-publie.mjs';
 import { detecterActesProcéduraux, faitDeInstitutionnel } from './lib/acte-procedural.mjs';
+import { signauxNonRetenus } from './lib/signaux-actes.mjs';
 import { memeFait } from './lib/nouveaute.mjs';
 import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
 import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
@@ -278,7 +279,9 @@ async function decisionInstitutionnelle(cle) {
   // un fait judiciaire nouveau est une proposition ARBITRABLE (VALIDATE → case_events), jamais « source seule » (audit du 21/11/2026, FR-2026-0133).
   // Le circuit est celui des faits structurés : dédoublonnage au niveau du FAIT (planReactions), fiche déjà à jour, même fait déjà soumis.
   const memoire = p.rat === 'OK' ? await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null` : [];
-  const proc = p.rat === 'OK' ? detecterActesProcéduraux(citationsDe(p), { pubDate: p.pd, courant: p.courant, memoire }) : [];
+  // Établissements voisins (même commune) : une citation qui ne nomme que l'un d'eux parle d'une autre procédure (article à plusieurs écoles) — jamais attribuée à cette affaire.
+  const voisins = p.rat === 'OK' && p.commune ? await sql`select etablissement from cases where commune = ${p.commune} and case_id <> ${p.case_id} and etablissement is not null` : [];
+  const proc = p.rat === 'OK' ? detecterActesProcéduraux(citationsDe(p), { pubDate: p.pd, courant: p.courant, memoire, etablissements: { propre: p.etablissement, autres: voisins.map((v) => v.etablissement) } }) : [];
   if (proc.length) return decisionReactions(cle, p, [...proc, ...(inst ? [faitDeInstitutionnel(inst, p.ed)] : [])]);
   // Aucun fait nouveau à décider (nouvelle source, rappel, rejeu) : AUCUN message — jamais un clic ni une information inutile.
   if (!inst) throw new Error('aucune information nouvelle à décider (source seule) : aucun message');
@@ -574,6 +577,13 @@ async function notifier(max = 10) {
       if (/^Telegram /.test(String(e.message))) { console.log(`échec d'envoi ${r.k} : ${e.message} — retentée au prochain cycle`); continue; }
       // périmée / ambiguë : on le note pour ne plus la reconsidérer, sans message
       console.log(`écartée ${r.k} : ${e.message}`);
+      // Règle opérationnelle (lib/acte-procedural.mjs) : un acte vu mais non retenu comme fait ne disparaît pas — le MOTIF et le SIGNAL (code d'acte + état, jamais une citation) sont consignés
+      // avec la proposition (colonne existante payload), la source et les citations y restent déjà. Relisible par scripts/rejeu-ecartees.mjs.
+      if (!process.env.SNY_DRY && r.aa === 'ENRICHMENT') {
+        const cites = (Array.isArray(r.facts) ? r.facts : []).flatMap((x) => x?.evidence || []);
+        const trace = { motif: String(e.message).slice(0, 200), signaux: signauxNonRetenus(cites, detecterActesProcéduraux(cites)), le: new Date().toISOString().slice(0, 10) };
+        await sql`update state_proposals set payload = coalesce(payload, '{}'::jsonb) || ${JSON.stringify({ ecartee: trace })}::jsonb where proposal_id::text = ${String(r.pid)} and decision is null`;
+      }
       await sql`insert into telegram_envois (kind, cle) values ('info', ${r.pid}) on conflict do nothing`;
       // Une information déjà envoyée (ligne « info » avec message) ne reçoit pas de nouveau marqueur : la suite écartée est notée à part, une fois.
       if (r.decl) await sql`insert into telegram_envois (kind, cle) values ('info', ${r.pid + '#suite'}) on conflict do nothing`;

@@ -58,7 +58,7 @@ import {
 import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
 import { suivrePistes, estFaitDeTerritoireNomme, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
 import { extraireReactions, dateEcrite, separerParPortee } from './lib/evenement-institutionnel.mjs';
-import { dejaConnu } from './lib/nouveaute.mjs';
+import { dejaConnu, dejaConnuChezVoisines } from './lib/nouveaute.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const A = process.argv.slice(2);
@@ -421,8 +421,10 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   // Deux affaires au MÊME établissement (même commune) : un fait ne se rattache pas à « la procédure » de l'une plutôt que de l'autre.
   const cleEtab = (e) => String(e || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\b(?:ecole|maternelle|elementaire|primaire|college|lycee)\b/g, '').replace(/\s+/g, ' ').trim();
   const soeursMemeEtablissement = fiches.some((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune && cleEtab(f.etablissement) && cleEtab(f.etablissement) === cleEtab(fiche.etablissement));
+  // Mémoire des AUTRES affaires de la même commune : un fait de portée territoire déjà consigné pour l'une d'elles n'est pas reproposé pour sa voisine (dejaConnuChezVoisines).
+  const voisines = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).flatMap((f) => memoireFaits.get(f.case_id) || []);
   const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
-    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && (!viaPiste || estFaitDeTerritoireNomme(x)));
+    .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   F.reactions_nouvelles += r.length;
   return r;
 }
@@ -870,11 +872,14 @@ for (const r of rapport.results) {
   F.affaires++;
   // RECHERCHE EN ERREUR (audit du 21/11/2026). Une recherche qui a échoué n'est jamais « rien de nouveau » : la ligne `case_checks` porte NON_EXAMINE (valeur
   // existante : « rien n'a été lu ») et le marqueur [RECHERCHE_EN_ERREUR] dans `strategy` ; ni mémoire, ni routage, ni preuve ne sont touchés.
-  if (r.etat_recherche === 'ERREUR' || (r.error && r.etat_recherche === undefined)) {
-    F.recherches_en_erreur = (F.recherches_en_erreur || 0) + 1;
+  // DÉGRADATION SUSPECTÉE (rafale de flux vides) : même valeur NON_EXAMINE (rien n'a été retenu, à reprendre), marqueur DISTINCT — le flux a répondu, aucune panne n'est établie.
+  if (r.etat_recherche === 'ERREUR' || r.etat_recherche === 'DEGRADATION_SUSPECTEE' || (r.error && r.etat_recherche === undefined)) {
+    const marqueur = r.etat_recherche === 'DEGRADATION_SUSPECTEE' ? '[DEGRADATION_SUSPECTEE]' : '[RECHERCHE_EN_ERREUR]';
+    if (r.etat_recherche === 'DEGRADATION_SUSPECTEE') F.degradations_suspectees = (F.degradations_suspectees || 0) + 1;
+    else F.recherches_en_erreur = (F.recherches_en_erreur || 0) + 1;
     if (!DRY) {
       await sql`insert into case_checks (case_id, strategy, primitive_version, engine, n_resultats, n_deja_vus, n_doublons, n_non_pertinents, n_candidats, n_bloques, resultat, vus)
-                values (${r.case_id}, ${`[RECHERCHE_EN_ERREUR] ${[r.query, r.query_open].filter(Boolean).join(' | ')}`.slice(0, 900)}, ${PRIMITIVE_VERSION}, ${MOTEUR}, 0, 0, 0, 0, 0, 0, 'NON_EXAMINE', '[]')`;
+                values (${r.case_id}, ${`${marqueur} ${[r.query, r.query_open].filter(Boolean).join(' | ')}`.slice(0, 900)}, ${PRIMITIVE_VERSION}, ${MOTEUR}, 0, 0, 0, 0, 0, 0, 'NON_EXAMINE', '[]')`;
     }
     continue;
   }
