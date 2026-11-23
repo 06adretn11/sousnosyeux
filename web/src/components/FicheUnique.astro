@@ -14,7 +14,8 @@ import Paroles from './Paroles.astro';
 import { ficheDe, evenementsDe, fichePubliee, matiereFiche } from '../lib/fiche';
 import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
 import { dateLongue } from '../lib/etat-wording';
-import { trierSources, cleDate } from '../../../scripts/lib/chronologie.mjs';
+import { trierSources, cleDate, publicationCorrigee } from '../../../scripts/lib/chronologie.mjs';
+import reperesDoc from '../../../data/chronologie-reperes.json';
 
 interface Props { id: string; verifieLe: string }
 const { id, verifieLe } = Astro.props;
@@ -52,7 +53,7 @@ const ajoute = (s: any, date: string | null) => {
   if (vues.has(s.url)) { const deja = sources.find((x) => x.url === s.url); if (deja && !deja.date && date) deja.date = date; return; } // une référence vue d'abord sans date reprend la date de publication d'une autre occurrence
   vues.add(s.url); sources.push({ media: s.media, date, url: s.url });
 };
-for (const s of c.sources ?? []) ajoute(s, s.publication_date ?? null);
+for (const s of c.sources ?? []) ajoute(s, publicationCorrigee(reperesDoc, s.url, s.publication_date ?? null));
 for (const e of deroule) { ajoute(e.source, e.source?.publie_le ?? null); for (const s of e.sources_complementaires ?? []) ajoute(s, s?.publie_le ?? null); }
 for (const r of paroles) ajoute(r.source, r.source?.publie_le ?? null);
 // Articles : ordre de publication ascendant ; sans date de publication exploitable → en dernier, signalés (scripts/lib/chronologie.mjs).

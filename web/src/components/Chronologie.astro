@@ -30,6 +30,7 @@ const lignes = trierChrono(items).map((e: any) => ({ e, r: repere(e) }));
               : <span>{e.source?.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} (lien non conservé)</span>}
             {e.source?.acces === 'paywall' && <span class="limite"> · article réservé aux abonnés</span>}
             {r.nature === 'information' && <span class="limite"> · date des faits non établie</span>}
+            {r.sourceRepere && <span class="limite"> · première publication connue de ce fait : <a href={r.sourceRepere.url} target="_blank" rel="noopener noreferrer">{r.sourceRepere.media}, {dateLongue(r.sourceRepere.publie_le)} ↗</a></span>}
             {r.nature === 'aucune' && <span class="limite"> · aucune date de publication exploitable</span>}
           </p>
           {aussi(e).length > 0 && (
