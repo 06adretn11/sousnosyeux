@@ -703,6 +703,84 @@
       }
     },
     {
+      "id": "29408e4dee68",
+      "nature": "parole",
+      "libelle": "Parole attribuée — BFMTV, motivation du jugement du 7 juillet rapportée : « le président du tribunal a notamment estimé que les témoignages des jeunes victimes avaient pu être influencés par leurs parents et qu'aucun adulte n'avait fait état de gestes à caractère sexuel sur des enfants de l'école »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "BFMTV",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "BFMTV",
+        "qualite": "motivation du jugement du 7 juillet rapportée par le média",
+        "citations": [
+          {
+            "texte": "le président du tribunal a notamment estimé que les témoignages des jeunes victimes avaient pu être influencés par leurs parents et qu'aucun adulte n'avait fait état de gestes à caractère sexuel sur des enfants de l'école"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "Selon BFMTV (article du 10 juillet 2026) : le jugement n’est pas public, ses motifs ne sont connus que par la presse ; position rapportée, aucun changement du statut judiciaire."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "355798771c64",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Barka Zerouali, du collectif #MeToo École : « Ces parents ne se connaissaient pas et ont été réunis par le malheur, et cette solidarité, on l'a retournée contre eux »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Barka Zerouali",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "Barka Zerouali",
+        "qualite": "du collectif #MeToo École",
+        "citations": [
+          {
+            "texte": "Ces parents ne se connaissaient pas et ont été réunis par le malheur, et cette solidarité, on l'a retournée contre eux"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "47242a094799",
       "nature": "mesure",
       "libelle": "Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.",
@@ -781,6 +859,45 @@
       }
     },
     {
+      "id": "6883b47debf0",
+      "nature": "parole",
+      "libelle": "Parole attribuée — les avocates Me Hannah Kopp et Rebecca Royer : « Nous croyons en la justice, mais cette décision nous révolte, c'est une erreur grave »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "les avocates Me Hannah Kopp et Rebecca Royer",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "les avocates Me Hannah Kopp et Rebecca Royer",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Nous croyons en la justice, mais cette décision nous révolte, c'est une erreur grave"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits ; rattachement du locuteur (registre des acteurs) : avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "6ecb33b283ba",
       "nature": "parole",
       "libelle": "Parole attribuée — Pénélope, maman d'une élève scolarisée, elle, à l'école Titon dans le 11ème arrondissement : « Alors qu'un casseur écope de dix mois de prison pour des dégâts matériels, ces hommes qui ont altéré la vie de nos enfants sont relaxés par la justice, institution d'une indulgence coupable. La justice accorde moins de valeurs aux enfants qu'aux objets »",
@@ -820,6 +937,48 @@
       }
     },
     {
+      "id": "7295a3f7b720",
+      "nature": "parole",
+      "libelle": "Parole attribuée — les avocates Me Hannah Kopp et Rebecca Royer : « Un enfant ne simule pas. Les corps de ces enfants ont parlé. Nous respectons le doute, mais le doute doit être raisonnable. […] Ces enfants méritent d'être crus. Il est temps que la justice les considère. »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "les avocates Me Hannah Kopp et Rebecca Royer",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "les avocates Me Hannah Kopp et Rebecca Royer",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Un enfant ne simule pas. Les corps de ces enfants ont parlé. Nous respectons le doute, mais le doute doit être raisonnable."
+          },
+          {
+            "texte": "Ces enfants méritent d'être crus. Il est temps que la justice les considère."
+          }
+        ],
+        "extrait_partiel": true,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits ; rattachement du locuteur (registre des acteurs) : avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "74a7bfd3b196",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont annoncé un rassemblement.",
@@ -840,6 +999,45 @@
       "destinations": {
         "fiche": "FR-2026-0133",
         "hubs": []
+      }
+    },
+    {
+      "id": "7d21873b28b7",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Mélanie*, la maman de l'un des enfants ayant dénoncé des violences sexuelles : « Moi, je n'ai jamais reparlé à mon fils de tout ça. Je lui ai juste fait toute la prévention possible sur l'intimité. On se sent trahis, ridiculisés de s'être battus autant de temps. On n'est pas respectés »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Mélanie*",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "Mélanie*",
+        "qualite": "la maman de l'un des enfants ayant dénoncé des violences sexuelles",
+        "citations": [
+          {
+            "texte": "Moi, je n'ai jamais reparlé à mon fils de tout ça. Je lui ai juste fait toute la prévention possible sur l'intimité. On se sent trahis, ridiculisés de s'être battus autant de temps. On n'est pas respectés"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "Prénom suivi d’un astérisque dans l’article ; propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
