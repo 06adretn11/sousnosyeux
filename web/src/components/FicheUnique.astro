@@ -14,6 +14,7 @@ import Paroles from './Paroles.astro';
 import { ficheDe, evenementsDe, fichePubliee, matiereFiche } from '../lib/fiche';
 import { STATUT_LABELS, statutCat, statutCourant, libre } from '../lib/territoires';
 import { dateLongue } from '../lib/etat-wording';
+import { trierSources, cleDate } from '../../../scripts/lib/chronologie.mjs';
 
 interface Props { id: string; verifieLe: string }
 const { id, verifieLe } = Astro.props;
@@ -46,10 +47,16 @@ const points: Record<string, string> = d.points ?? {};
 
 // 5. Sources : fiche + déroulé + paroles, dédoublonnées par URL, médias payants exclus.
 const vues = new Set<string>(); const sources: { media: string; date: string | null; url: string }[] = [];
-const ajoute = (s: any, date: string | null) => { if (!s?.url || vues.has(s.url) || !libre(s.media)) return; vues.add(s.url); sources.push({ media: s.media, date, url: s.url }); };
+const ajoute = (s: any, date: string | null) => {
+  if (!s?.url || !libre(s.media)) return;
+  if (vues.has(s.url)) { const deja = sources.find((x) => x.url === s.url); if (deja && !deja.date && date) deja.date = date; return; } // une référence vue d'abord sans date reprend la date de publication d'une autre occurrence
+  vues.add(s.url); sources.push({ media: s.media, date, url: s.url });
+};
 for (const s of c.sources ?? []) ajoute(s, s.publication_date ?? null);
 for (const e of deroule) { ajoute(e.source, e.source?.publie_le ?? null); for (const s of e.sources_complementaires ?? []) ajoute(s, s?.publie_le ?? null); }
 for (const r of paroles) ajoute(r.source, r.source?.publie_le ?? null);
+// Articles : ordre de publication ascendant ; sans date de publication exploitable → en dernier, signalés (scripts/lib/chronologie.mjs).
+const sourcesOrdonnees = trierSources(sources, (s: any) => s.date);
 const inconnues: string[] = d.inconnues ?? [];
 // Événements validés (Neon) que la rédaction du dossier ne porte pas : ils sont AJOUTÉS au déroulé, mais les blocs de situation sont rédigés → on le dit.
 const portes = new Set((d.deroule ?? []).map((e: any) => e.event_id).filter(Boolean));
@@ -119,7 +126,7 @@ const blocs = ['situation', reperes.length ? 'reperes' : null, paroles.length ? 
 
   <section id="sources" aria-label="Sources et inconnues">
     <h2>Sources et inconnues</h2>
-    <ul class="sources">{sources.map((s) => <li><a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${lib(s.date)}` : ''} ↗</a></li>)}</ul>
+    <ul class="sources">{sourcesOrdonnees.map((s: any) => <li data-cle={cleDate(s.date) ?? ''}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{s.date ? `, ${lib(s.date)}` : ' (non datée)'} ↗</a></li>)}</ul>
     {inconnues.length > 0 && (<><p class="sous">Ce que l’on ne sait pas</p><ul class="inconnues">{inconnues.map((i) => <li>{i}</li>)}</ul></>)}
   </section>
 

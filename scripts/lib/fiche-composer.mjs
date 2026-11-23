@@ -345,7 +345,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   if (verdict) signale('majeur', 'DECISION_SANS_ISSUE_ETABLIE', `La chronologie rapporte une décision de fond (« ${verdict.texte.slice(0, 120)} ») que la synthèse n'établit pas : à vérifier avant toute proposition.`);
   if (contribuent.length === 1) signale('mineur', 'SOURCE_UNIQUE', 'Le dossier repose sur un seul article lu.');
   const partielles = deroule.filter((d) => d.date_nature === 'article').length;
-  if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées « Date non établie » (la date de parution reste dans la référence de la source, jamais présentée comme celle de l’événement).`);
+  if (partielles) signale('mineur', 'DATES_NON_ECRITES', `${partielles} étape(s) sans date d’événement écrite dans la source : affichées « Information datée du … » (date de publication de la source citée, jamais présentée comme celle de l’événement ; « Date non établie » seulement si la source n’a pas de date de publication exploitable) et classées dans l’ordre chronologique (scripts/lib/chronologie.mjs).`);
 
   // Une FONCTION UNIQUE au sein d'un établissement (« le chef des animateurs », « le directeur ») rattachée à une accusation ou à une mesure disciplinaire identifie
   // la personne sans la nommer : pas un blocage (une direction peut aussi agir ou parler), mais jamais READY sans regard humain.

@@ -189,6 +189,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Chronologie des fiches — repère temporel (date d’événement ≠ date de publication), ordre croissant du Déroulé, des Paroles et des Sources, couverture du corpus, aucune perte (`--dist web/dist` : HTML produit)',
+    script: 'scripts/qa/test-chronologie.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Sitemap et canonicals — population = pages générées indexables (jamais le catalogue), exclusions motivées, canonical propre à chaque page, déclaration dans robots.txt',
     script: 'scripts/qa/test-sitemap-canonical.mjs',
     bloquant: true,

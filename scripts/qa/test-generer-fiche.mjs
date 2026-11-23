@@ -709,10 +709,10 @@ t('prochaine étape ANNONCÉE ≠ issue inconnue : une audience annoncée (FR-20
   const sansAudience = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [mee] })], aujourdhui: '2026-11-16' });
   assert.ok(sansAudience.dossier.inconnues.some((i) => /la suite de la procédure est inconnue/.test(i)));
 });
-t('dates : le signalement « sans date d’événement » dit « Date non établie » + référence de la source, jamais « affichées avec la date de parution »', () => {
+t('dates : le signalement « sans date d’événement » dit « Information datée du … » (date de publication de la source), jamais « affichées avec la date de parution »', () => {
   const r = composer({ c: carte('mise en examen'), extractions: [ext(doc(), { evenements: [E({ type: 'mesure_etablissement', acteur: 'Rectorat', texte: 'Le rectorat suspend l’enseignant.', date: null, date_nature: 'article', realisation: 'realisee', citation: 's' })] })] });
   const a = r.attention.find((x) => x.code === 'DATES_NON_ECRITES');
-  assert.ok(a && /Date non établie/.test(a.texte) && /référence de la source/.test(a.texte) && !/affichées avec la date de parution/.test(a.texte), JSON.stringify(a));
+  assert.ok(a && /Information datée/.test(a.texte) && /date de publication de la source/.test(a.texte) && /jamais présentée comme celle de l’événement/.test(a.texte) && !/affichées avec la date de parution/.test(a.texte), JSON.stringify(a));
 });
 t('aperçu de revue : fidèle à la page — blocs `situation` rendus, jamais de fausse absence de faits ni de mesures, réaction sans citation (paraphrase seule) acceptée', () => {
   const d = { situation: { decision: { label: 'Décision', titre: 'Relaxe', texte: 'Le tribunal a relaxé.' }, suite: { label: 'Suite', titre: 'Jugement sur le fond non documenté', lignes: ['Appel annoncé.'] } },

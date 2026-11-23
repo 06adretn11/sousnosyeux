@@ -17,7 +17,7 @@
 //   — seule 'evenement' autorise à afficher la date comme celle de l'événement.
 // =====================================================================
 
-import { dateLongue } from './etat-wording';
+import { repere } from '../../../scripts/lib/chronologie.mjs';
 import evenementsDoc from '../../../data/evenements.json';
 
 const publics = import.meta.glob('../../../data/hub-matiere/*.json', { eager: true });
@@ -107,16 +107,10 @@ function inserer(items: any[], cartes: any[]): any[] {
   return out;
 }
 
-const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-
-/** « 2026-06-16 » → « 16 juin 2026 » · « 2026-06 » → « juin 2026 » · approx → « vers … » · sinon « date non établie ». */
+/** Date d'ÉVÉNEMENT seule (« 16 juin 2026 » · « juin 2026 » · « 2026 » · approx → « Vers … ») ; sans date d'événement : « Date non établie ».
+ *  Pour un élément portant une source (déroulé, paroles), utiliser `repere` (scripts/lib/chronologie.mjs) : il replie sur la date de publication. */
 export function libelleDate(date: string | null | undefined, nature: string | null | undefined): string {
-  if (!date || nature === 'article' || nature === 'inconnue') return 'Date non établie';
-  const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(date);
-  if (!m) return 'Date non établie';
-  const txt = m[3] ? dateLongue(date) : `${MOIS[Number(m[2]) - 1]} ${m[1]}`;
-  return nature === 'approximative' ? `Vers ${txt}` : txt[0].toUpperCase() + txt.slice(1);
+  return repere({ date, date_nature: nature }).libelle;
 }
 
 export const TYPE_LABELS: Record<string, string> = {
