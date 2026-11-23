@@ -368,6 +368,19 @@
           "url": "https://enfantbleu.org/violences-dans-le-periscolaire-comment-lenfant-bleu-accompagne-les-collectivites/",
           "publie_le": "2026-07-21"
         }
+      },
+      {
+        "event_id": "a2309d79-f615-4685-b2de-1a4fb52d22b1",
+        "date": null,
+        "type": "mobilisation",
+        "statut": null,
+        "libelle": "Selon la presse, un collectif ou une association a tenu un rassemblement.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "L'Humanité",
+          "url": "https://www.humanite.fr/societe/agressions-sexuelles/agressions-sexuelles-dans-le-periscolaire-un-animateur-juge-a-paris-suite-aux-plaintes-de-huit-familles",
+          "publie_le": "2026-05-27"
+        }
       }
     ],
     "POC-08": [
@@ -966,6 +979,34 @@
       "destinations": {
         "fiche": "FR-2026-0133",
         "hubs": []
+      }
+    },
+    {
+      "id": "f8cc8968e26b",
+      "nature": "mobilisation",
+      "libelle": "Selon la presse, un collectif ou une association a tenu un rassemblement.",
+      "realisation": "réalisée",
+      "portee": "établissement",
+      "acteur": "collectif",
+      "territoire": "Paris",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "L'Humanité",
+        "url": "https://www.humanite.fr/societe/agressions-sexuelles/agressions-sexuelles-dans-le-periscolaire-un-animateur-juge-a-paris-suite-aux-plaintes-de-huit-familles",
+        "publie_le": "2026-05-27"
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": "a2309d79-f615-4685-b2de-1a4fb52d22b1",
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     }
   ],
