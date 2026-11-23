@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle } from '../lib/chronologie.mjs';
+import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle, appliquerRelectures, publicationCorrigee, correspondEtape, correspondParole } from '../lib/chronologie.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 let ko = 0, ok = 0;
@@ -87,16 +87,58 @@ t('sources : publication ascendante, sans date en dernier, ex æquo conservés d
   assert.deepEqual(trierParCle([], () => null), []);
 });
 
+console.log('1 bis. Relectures documentées (source antérieure, date explicite, parution corrigée)');
+t('repère_source : une source antérieure date l’information, le texte reste attribué à la source citée', () => {
+  const e = { texte: 'Selon TF1 Info, X.', date: null, date_nature: 'article', source: src('2026-02-12'), repere_source: { media: '20 Minutes', url: 'https://exemple.test/b', publie_le: '2026-02-11' } };
+  const r = repere(e); assert.equal(r.libelle, 'Information datée du 11 février 2026'); assert.equal(r.sourceRepere.media, '20 Minutes'); assert.equal(e.source.publie_le, '2026-02-12');
+  assert.equal(repere({ ...e, repere_source: { publie_le: 'n’importe quoi' } }).date, '2026-02-12', 'repère_source invalide ignoré');
+});
+t('appliquerRelectures : étape (repère ou date explicite), parole, parution corrigée — sans modifier l’original, sans effet hors correspondance', () => {
+  const table = { reperes: [{ case_id: 'X', texte: 'Selon A, le fait un', repere_source: { media: 'B', url: 'https://b', publie_le: '2026-01-01' } }, { case_id: 'X', texte: 'Selon A, le fait deux', date: '2026-03', date_nature: 'evenement' }, { case_id: 'AUTRE', texte: 'Selon A, le fait un', date: '2020-01-01' }],
+    paroles: [{ case_id: 'X', acteur: 'Maire', cle: 'la mesure', date: '2026-04-21', date_nature: 'evenement' }], publications: [{ url: 'https://a/1', publie_le: '2026-11-16' }] };
+  const d = { deroule: [{ texte: 'Selon A, le fait un.', date: null, date_nature: 'article', source: { url: 'https://a/1', publie_le: '2026-11-15' } }, { texte: 'Selon A, le fait deux.', date: null, date_nature: 'article', source: src('2026-05-05') }, { texte: 'Autre.', source: src('2026-05-06') }],
+    reactions: [{ acteur: 'Maire', a_propos: 'la mesure prise', date: null, date_nature: 'article', source: src('2026-05-07') }] };
+  const copie = JSON.stringify(d); const o = appliquerRelectures('X', d, table);
+  assert.equal(JSON.stringify(d), copie, 'original intact');
+  assert.equal(o.deroule[0].repere_source.publie_le, '2026-01-01'); assert.equal(o.deroule[0].source.publie_le, '2026-11-16', 'parution corrigée');
+  assert.equal(o.deroule[1].date, '2026-03'); assert.equal(repere(o.deroule[1]).libelle, 'Mars 2026');
+  assert.equal(o.deroule[2].date, undefined, 'étape sans correspondance : inchangée'); assert.equal(o.reactions[0].date, '2026-04-21');
+  assert.equal(publicationCorrigee(table, 'https://a/1', 'x'), '2026-11-16'); assert.equal(publicationCorrigee(table, 'https://z', 'x'), 'x');
+  assert.equal(appliquerRelectures('Y', d, { reperes: table.reperes }).deroule[0].repere_source, undefined, 'autre affaire : rien');
+});
+
 console.log('2. Couverture sur le corpus écrit (hubs + dossiers de fiches)');
 const lire = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
-const dossiers = [];
-for (const dir of ['data/hub-matiere', 'data/hub-approuve']) {
+const TABLE = lire('data/chronologie-reperes.json');
+const dossiers = []; const rendus = {}; // rendus[id] = dossier tel que servi (version approuvée d'abord, sinon matière publique)
+for (const dir of ['data/hub-approuve', 'data/hub-matiere']) {
   if (!fs.existsSync(path.join(ROOT, dir))) continue;
   for (const f of fs.readdirSync(path.join(ROOT, dir)).filter((x) => x.endsWith('.json'))) {
     const h = lire(`${dir}/${f}`);
-    for (const [id, d] of Object.entries(h.dossiers ?? {})) dossiers.push({ id, d, fichier: `${dir}/${f}` });
+    for (const [id, d0] of Object.entries(h.dossiers ?? {})) {
+      const d = appliquerRelectures(id, d0, TABLE); // la règle s'évalue sur le rendu (relectures comprises), pas sur la donnée brute
+      dossiers.push({ id, d, fichier: `${dir}/${f}` }); rendus[id] ??= d0;
+    }
   }
 }
+// Chaque relecture documentée correspond à UN élément du dossier servi (sinon : dossier réécrit, relecture à refaire) et reste étayée par ses références.
+const relecturesKo = [];
+for (const r of TABLE.reperes) {
+  const d = rendus[r.case_id]; const m = (d?.deroule ?? []).filter((e) => correspondEtape(e, r));
+  if (m.length !== 1) { relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : ${m.length} correspondance(s)`); continue; }
+  const e = m[0];
+  if (r.repere_source) {
+    if (!(e.sources_complementaires ?? []).some((s) => s.url === r.repere_source.url)) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : source de repère absente des références de l'étape`);
+    if (!(cleDate(r.repere_source.publie_le) < cleDate(e.source.publie_le))) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : la source de repère n'est pas antérieure à la source citée`);
+  } else {
+    if (!analyserDate(r.date) || r.date_nature !== 'evenement') relecturesKo.push(`${r.case_id} : date explicite invalide (${r.date})`);
+    if (analyserDate(e.date) && !['article', 'inconnue'].includes(e.date_nature)) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : l'étape a déjà une date d'événement`);
+  }
+  if (!r.motif) relecturesKo.push(`${r.case_id} : motif manquant`);
+}
+for (const r of TABLE.paroles) { const d = rendus[r.case_id]; const m = [...(d?.reactions ?? []), ...(d?.paroles ?? [])].filter((p) => correspondParole(p, r)); if (m.length !== 1) relecturesKo.push(`${r.case_id} parole ${r.acteur} : ${m.length} correspondance(s)`); }
+for (const r of TABLE.publications) { if (!Object.values(rendus).some((d) => JSON.stringify(d).includes(r.url))) relecturesKo.push(`publication ${r.url.slice(0, 50)} : aucune source concernée`); if (!(r.publie_le && r.stockee && r.motif)) relecturesKo.push(`publication ${r.url.slice(0, 50)} : champ manquant`); }
+t(`relectures documentées (${TABLE.reperes.length} étapes, ${TABLE.paroles.length} paroles, ${TABLE.publications.length} parution) : chacune correspond à un élément du dossier servi et reste étayée`, () => assert.deepEqual(relecturesKo, []));
 const stats = { dossiers: dossiers.length, etapes: 0, evenement: 0, information: 0, aucune: 0, paroles: 0, paroles_info: 0, paroles_aucune: 0 };
 const exceptions = [];
 const ECRIT_ARTICLE = new Set(['article', 'inconnue']);
@@ -137,7 +179,7 @@ if (dist || site) {
     const r = await fetch(new URL(p, site)); return r.ok ? await r.text() : null;
   };
   const att = (h, n) => [...h.matchAll(new RegExp(`${n}="([^"]*)"`, 'g'))].map((m) => m[1]);
-  const defauts = []; let nbPages = 0, nbEtapes = 0, nbSansDateEv = 0, nbAucune = 0;
+  const defauts = []; let nbPages = 0, nbSources = 0, nbEtapes = 0, nbSansDateEv = 0, nbAucune = 0;
   const verifOrdre = (page, nom, cles) => { let prec = null, vu = false; for (const k of cles) { if (k === '') vu = true; else { if (vu || (prec !== null && k < prec)) { defauts.push(`${page} : ${nom} hors ordre chronologique (${k} après ${vu ? 'un élément sans date' : prec})`); return; } prec = k; } } };
   for (const p of pages) {
     const h = await charger(p); if (h === null) { if (p.startsWith('/affaires/')) defauts.push(`${p} : page introuvable`); continue; }
@@ -156,10 +198,12 @@ if (dist || site) {
     }
     const pa = [...h.matchAll(/<article class="parole c"[^>]*data-cle="([^"]*)"/g)].map((m) => m[1]);
     verifOrdre(p, 'Paroles et réactions', pa);
-    const so = [...h.matchAll(/<li data-cle="([^"]*)"><a href/g)].map((m) => m[1]);
+    const so = [...h.matchAll(/<li data-cle="([^"]*)"[^>]*><a href/g)].map((m) => m[1]);
+    if (p.startsWith('/affaires/') && so.length === 0) defauts.push(`${p} : liste de sources introuvable (contrôle d’ordre vide)`);
+    nbSources += so.length;
     verifOrdre(p, 'Sources', so);
   }
-  t(`${nbPages} pages lues : ${nbEtapes} étapes de déroulé (${nbSansDateEv} datées par l’information, ${nbAucune} sans date), ordre et libellés conformes`, () => { assert.ok(nbPages > 0); assert.ok(defauts.length === 0, `${defauts.length} défaut(s) : ${defauts.slice(0, 12).join(" ; ")}`); });
+  t(`${nbPages} pages lues : ${nbEtapes} étapes de déroulé et ${nbSources} références de sources (${nbSansDateEv} datées par l’information, ${nbAucune} sans date), ordre et libellés conformes`, () => { assert.ok(nbPages > 0); assert.ok(defauts.length === 0, `${defauts.length} défaut(s) : ${defauts.slice(0, 12).join(" ; ")}`); });
 }
 
 console.log(`\n${ko ? '❌' : '✅'} ${ok} contrôle(s) OK, ${ko} en échec`);

@@ -17,8 +17,9 @@
 //   — seule 'evenement' autorise à afficher la date comme celle de l'événement.
 // =====================================================================
 
-import { repere } from '../../../scripts/lib/chronologie.mjs';
+import { repere, appliquerRelectures } from '../../../scripts/lib/chronologie.mjs';
 import evenementsDoc from '../../../data/evenements.json';
+import reperesDoc from '../../../data/chronologie-reperes.json';
 
 const publics = import.meta.glob('../../../data/hub-matiere/*.json', { eager: true });
 const prives = import.meta.glob('../../../data/hub-prive/*.json', { eager: true });
@@ -81,10 +82,13 @@ function ajusterInconnues(m: any, id: string): any {
   return out;
 }
 
-/** Matière d'un Hub pour l'affichage : la version approuvée (sinon publique), puis les inconnues ajustées par une information validée. */
+/** Matière d'un Hub pour l'affichage : la version approuvée (sinon publique), puis les inconnues ajustées par une information validée,
+ *  puis les relectures de datation documentées (data/chronologie-reperes.json) — à l'affichage seulement : `chargerHubBrut` (empreinte approuvée) n'est pas touché. */
 export function chargerHub(id: string): { matiere: any; prive: any | null } {
   const r = chargerHubBrut(id);
-  return { ...r, matiere: ajusterInconnues(r.matiere, id) };
+  const m = ajusterInconnues(r.matiere, id);
+  const dossiers = m?.dossiers ? Object.fromEntries(Object.entries(m.dossiers).map(([cid, d]) => [cid, appliquerRelectures(cid, d, reperesDoc)])) : undefined;
+  return { ...r, matiere: dossiers ? { ...m, dossiers } : m };
 }
 export function chargerHubBrut(id: string): { matiere: any; prive: any | null } {
   const m = A[id] ?? P[id];

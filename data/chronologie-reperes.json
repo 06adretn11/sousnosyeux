@@ -1,0 +1,306 @@
+{
+  "_meta": {
+    "doc": "docs/industrialisation/CHRONOLOGIE_FICHES.md",
+    "regle": "scripts/lib/chronologie.mjs",
+    "note": "Relectures de datation appliquées à l’AFFICHAGE (hub-matiere.ts → chargerHub), jamais écrites dans les dossiers approuvés : l’empreinte approuvée est inchangée. Un renseignement sans correspondance dans le dossier est ignoré et fait échouer scripts/qa/test-chronologie.mjs.",
+    "relu_le": "2026-11-23"
+  },
+  "reperes": [
+    {
+      "case_id": "POC-02",
+      "texte": "Selon Ouest-France, dans le cadre de l'enquête, tous les autres enfants de la classe ont é",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/seine-saint-denis-93/la-courneuve-suspendu-un-professeur-des-ecoles-accuse-dagression-sexuelle-par-trois-fillettes-sera-juge-en-mars-17-12-2025-4KGGPSVVCJH6NEDTADF2KZ2FEU.php",
+        "publie_le": "2025-12-17"
+      },
+      "motif": "Le Parisien (17/12/2025) : « les enquêteurs se rendent à l’école pour entendre la vingtaine d’enfants de la classe » — même fait."
+    },
+    {
+      "case_id": "FR-2026-0124",
+      "texte": "Selon Le Figaro, les investigations ont été confiées à la Brigade territoriale de protecti",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/violences-sexuelles-dans-le-periscolaire-deux-plaintes-deposees-a-colombes-polemique-apres-laudition-des-enfants-09-06-2026-4RSM42ZMA5CS3E7K2KHM43EEP4.php",
+        "publie_le": "2026-06-09"
+      },
+      "motif": "Le Parisien (09/06) : des officiers de la brigade territoriale de protection de la famille des Hauts-de-Seine mènent les auditions à l’école — même brigade, même enquête."
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "texte": "Selon TF1 Info, une enquête administrative a été lancée.",
+      "repere_source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4201023-20260211-nice-animateur-centre-loisirs-soupconne-viols-enfants-3-6-ans",
+        "publie_le": "2026-02-11"
+      },
+      "motif": "20 Minutes (11/02) : « Une enquête administrative a été lancée » (communiqué de la mairie) — même fait ; le texte reste attribué à TF1 Info."
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "texte": "Selon Nice-Matin, l'animateur du centre de loisirs est mis en examen des chefs de viols et",
+      "repere_source": {
+        "media": "TF1 Info",
+        "url": "https://www.tf1info.fr/justice-faits-divers/nice-un-animateur-de-centre-de-loisirs-soupconne-de-viols-sur-des-enfants-ages-de-3-a-6-ans-2424288.html",
+        "publie_le": "2026-02-12"
+      },
+      "motif": "TF1 Info (12/02) : l’homme de 40 ans « a été mis en examen mercredi à Nice » des mêmes chefs (agressions sexuelles, viols sur mineures de moins de 15 ans, par personne ayant autorité, harcèlement sexuel) et placé en détention — même fait."
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "texte": "Selon 20 Minutes, trois plaintes avaient été déposées contre un animateur qui travaillait ",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+        "publie_le": "2026-02-11"
+      },
+      "motif": "Le Parisien (11/02) : « Visé par trois plaintes », animateur du centre de loisirs de l’école maternelle Terra Amata — même fait (même texte dans 20 Minutes le 11/02)."
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "texte": "Selon Le Parisien, un animateur travaillant dans le centre de loisirs qui accueille hors t",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/sports/cyclisme/paris-nice/vise-par-trois-plaintes-un-animateur-de-centre-de-loisir-soupconne-de-viol-sur-mineur-a-nice-11-02-2026-VOYZCUDQ4BBK5P7G63NQYQYII4.php",
+        "publie_le": "2026-02-11"
+      },
+      "motif": "Le Parisien (11/02) : l’animateur du centre de loisirs de l’école Terra Amata « placé en garde à vue lundi » (propos de la procureure adjointe) — même fait."
+    },
+    {
+      "case_id": "FR-2026-0123",
+      "texte": "Selon France 3 Provence-Alpes-Côte d’Azur, la ville de Nice a sanctionné plusieurs agents ",
+      "repere_source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/alpes-maritimes/nice/soupcons-de-viols-et-d-agressions-sexuelles-sur-des-enfants-un-animateur-licencie-4-agents-de-la-ville-de-nice-sanctionnes-et-des-parents-decus-3426684.html",
+        "publie_le": "2026-10-02"
+      },
+      "motif": "France 3 Régions (02/10) : directeur de l’enfance suspendu trois mois et mis à la retraite anticipée, blâme, directrice suspendue deux mois, rappel à l’ordre — mêmes sanctions, même média que l’attribution."
+    },
+    {
+      "case_id": "FR-2026-0036",
+      "texte": "Selon Lyon Capitale, le groupe People & Baby devrait déposer plainte contre le salarié.",
+      "repere_source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18"
+      },
+      "motif": "France 3 Régions (18/06/2025) : « La direction, elle, annonce vouloir porter plainte contre le salarié » — même fait ; le texte reste attribué à Lyon Capitale."
+    },
+    {
+      "case_id": "FR-2026-0035",
+      "texte": "Selon Magic Maman, People & Baby avait informé les services de la protection maternelle et",
+      "repere_source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18"
+      },
+      "motif": "France 3 Régions (18/06/2025) : People&Baby « affirme avoir signalé les faits à la PMI et à la CRIP » — même fait (présenté comme l’affirmation du groupe) ; le texte reste attribué à Magic Maman."
+    },
+    {
+      "case_id": "FR-2026-0035",
+      "texte": "Selon Magic Maman, une enquête de la brigade de protection des mineurs a été menée.",
+      "repere_source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/auvergne-rhone-alpes/rhone/lyon/soupcons-de-violences-sexuelles-dans-deux-creches-lyonnaises-people-baby-de-nouveau-dans-la-tourmente-3173124.html",
+        "publie_le": "2025-06-18"
+      },
+      "motif": "France 3 Régions (18/06/2025) : « l’enquête préliminaire, confiée à la brigade des mineurs » — même fait ; le texte reste attribué à Magic Maman."
+    },
+    {
+      "case_id": "FR-2026-0120",
+      "texte": "Selon BFMTV Lyon, l'animateur du centre périscolaire de Charly avait été suspendu par la m",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/rhone-un-animateur-dun-centre-periscolaire-mis-en-examen-pour-viol-et-agressions-sexuelles-11-06-2026-KDGV36X675BUPBKETF52SPTD3M.php",
+        "publie_le": "2026-06-11"
+      },
+      "motif": "Le Parisien (11/06) : « Le fonctionnaire a été suspendu par la mairie de Charly » — même fait ; le texte reste attribué à BFMTV Lyon."
+    },
+    {
+      "case_id": "FR-2026-0133",
+      "texte": "Selon les parents mobilisés, des signalements de familles avaient été faits dès le printem",
+      "repere_source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+        "publie_le": "2026-11-16"
+      },
+      "motif": "ICI (page : « Publié le lundi 16 novembre 2026 à 6h32 ») : les familles reprochent à la municipalité d’avoir eu connaissance de premiers faits « dès le printemps » — même fait ; le texte reste attribué à Actu.fr (17/11). Date prise sur la page, non sur la date conservée (15/11)."
+    },
+    {
+      "case_id": "FR-2026-0024",
+      "texte": "Selon Le Parisien et Le Figaro, l’animateur avait déjà été visé en 2024 par une plainte de",
+      "repere_source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/paris-un-animateur-periscolaire-mis-en-examen-pour-agression-sexuelle-avait-deja-ete-vise-par-une-plainte-en-2024-20260518",
+        "publie_le": "2026-05-18"
+      },
+      "motif": "Le Figaro (18/05) : « avait déjà fait l’objet d’une plainte en 2024 » à l’école Belzunce, « selon nos confrères du Parisien » — même fait, source citée dans l’attribution."
+    },
+    {
+      "case_id": "FR-2026-0029",
+      "texte": "Selon MidiLibre, l’enseignant avait été placé en garde à vue pour viol, avant que les fait",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/faits-divers/aisne-un-enseignant-juge-pour-agressions-sexuelles-sur-une-collegienne-de-14-ans-07-01-2026-YFU7KRP3WRDZRCCADQQQH6L45E.php",
+        "publie_le": "2026-01-07"
+      },
+      "motif": "Le Parisien (07/01) : « initialement placé lundi soir en garde à vue pour viol », faits requalifiés en agressions sexuelles et corruption de mineure — même fait."
+    },
+    {
+      "case_id": "FR-2026-0029",
+      "texte": "Selon le procureur de Laon, l’enseignant du collège Saint-Charles à Chauny devait être jug",
+      "repere_source": {
+        "media": "lamontagne.fr",
+        "url": "https://www.lamontagne.fr/chauny-02300/faits-divers/un-professeur-d-histoire-geographie-juge-pour-agressions-sexuelles-sur-une-eleve-en-classe-de-troisieme_14809862/",
+        "publie_le": "2026-01-07"
+      },
+      "motif": "La Montagne / AFP (07/01) : « sera jugé le 3 mars pour agressions sexuelles sur l’une de ses élèves, a annoncé mercredi le procureur de Laon » — même fait."
+    },
+    {
+      "case_id": "FR-2026-0047",
+      "texte": "Selon L’indépendant, la mère de l’enfant a déposé plainte.",
+      "repere_source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+        "publie_le": "2025-09-29"
+      },
+      "motif": "La Dépêche (29/09/2025) : « La mère de famille a directement porté plainte » — même fait ; le texte reste attribué à L’Indépendant."
+    },
+    {
+      "case_id": "FR-2026-0113",
+      "texte": "Selon le parquet de Bordeaux, cité par France 3 et Le Figaro, plusieurs plaintes de parent",
+      "repere_source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/bordeaux/bordeaux-des-parents-d-eleve-deposent-plainte-pour-des-soupcons-de-viols-et-agressions-sexuels-dans-une-ecole-maternelle-20260701",
+        "publie_le": "2026-07-01"
+      },
+      "motif": "Le Figaro (01/07) : « Sept plaintes ont été déposées par leurs parents, selon le parquet de Bordeaux » — même fait, Le Figaro figure dans l’attribution. (Page marquée modifiée le 02/07 : rien ne montre que ce passage y a été ajouté.)"
+    },
+    {
+      "case_id": "POC-03",
+      "texte": "Selon Europe 1, le professeur était suspendu de ses fonctions depuis le signalement d'une ",
+      "repere_source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/yvelines-78/yvelines-un-professeur-des-ecoles-soupconne-dagression-sexuelle-sur-deux-fillettes-21-06-2024-DHIFPCXNWRFI3E6BZ64W2VARM4.php",
+        "publie_le": "2024-06-21"
+      },
+      "motif": "Le Parisien (21/06/2024) : le professeur « est mis à pied par sa hiérarchie » après le signalement — même fait ; le texte reste attribué à Europe 1."
+    },
+    {
+      "case_id": "FR-2026-0144",
+      "texte": "Selon Tendance Ouest, une enquête menée par la police nationale est en cours à Saint-Aubin",
+      "repere_source": {
+        "media": "Actu.fr",
+        "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+        "publie_le": "2026-11-06"
+      },
+      "motif": "Actu.fr (06/11) : enquête ouverte « pilotée depuis le commissariat de Rouen » contre un animateur périscolaire de l’école Marcel-Touchard — même fait."
+    },
+    {
+      "case_id": "FR-2026-0144",
+      "texte": "La Ville de Saint-Aubin-lès-Elbeuf indique avoir suspendu à titre conservatoire l'agent co",
+      "repere_source": {
+        "media": "Actu.fr",
+        "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+        "publie_le": "2026-11-06"
+      },
+      "motif": "Actu.fr (06/11) : l’animateur « actuellement suspendu de ses fonctions » (courriel de la commune aux parents) — même fait ; le texte reste attribué à Tendance Ouest."
+    },
+    {
+      "case_id": "FR-2026-0043",
+      "texte": "Selon Le Dauphiné Libéré, l'enseignant était à la barre du tribunal correctionnel de Priva",
+      "date": "2025-07-01",
+      "date_nature": "evenement",
+      "motif": "Texte : l’enseignant « à la barre du tribunal correctionnel de Privas, mardi 1er juillet » (mardi 1er juillet 2025 : jour de la semaine concordant avec la parution du 01/07/2025)."
+    },
+    {
+      "case_id": "FR-2026-0046",
+      "texte": "Selon ICI, lors du jugement rendu en janvier, les juges ont déclaré l'ancien animateur pér",
+      "date": "2026-01",
+      "date_nature": "evenement",
+      "motif": "Texte : « lors du jugement rendu en janvier » ; le dossier date la condamnation du 22 janvier 2026 (étape France 3 Régions). Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0133",
+      "texte": "Selon le procureur de Caen, une enquête pour agression sexuelle a été ouverte et les inves",
+      "date": "2026-09",
+      "date_nature": "evenement",
+      "motif": "Texte : investigations « ont débuté fin septembre » (parution du 07/10/2026). Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0133",
+      "texte": "Selon ici, Fin septembre, plusieurs familles ont déposé plainte contre un animateur du cen",
+      "date": "2026-09",
+      "date_nature": "evenement",
+      "motif": "Texte : « Fin septembre, plusieurs familles ont déposé plainte » (parution de novembre 2026). Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0133",
+      "texte": "Selon ici, Début octobre, le parquet de Caen a confirmé l'ouverture d'une enquête pour agr",
+      "date": "2026-10",
+      "date_nature": "evenement",
+      "motif": "Texte : « Début octobre, le parquet de Caen a confirmé l’ouverture d’une enquête » (parution de novembre 2026). Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0149",
+      "texte": "Selon Le Bien Public, une enquête préliminaire avait été ouverte début octobre après un si",
+      "date": "2026-10",
+      "date_nature": "evenement",
+      "motif": "Texte : enquête préliminaire « ouverte début octobre » (parution du 19/11/2026). Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0005",
+      "texte": "Selon des parents cités par Commons Média, au moins une plainte anonyme ou plainte contre ",
+      "date": "2025-05",
+      "date_nature": "evenement",
+      "motif": "Texte : plainte « déposée en mai 2025 ». Précision retenue : le mois."
+    },
+    {
+      "case_id": "FR-2026-0005",
+      "texte": "Selon Le Journal du Dimanche, 16 personnes ont été placées en garde à vue pour des faits d",
+      "date": "2026-05-20",
+      "date_nature": "evenement",
+      "motif": "Texte : gardes à vue de 16 personnes « ce mercredi matin » (JDD du 20/05/2026) ; l’étape voisine du dossier cite « les gardes à vue du 20 mai »."
+    },
+    {
+      "case_id": "FR-2026-0023",
+      "texte": "Plainte déposée « samedi » (le samedi précédant l'article du lundi 8 décembre) pour agress",
+      "date": "2025-12-06",
+      "date_nature": "evenement",
+      "motif": "Texte : « samedi (le samedi précédant l’article du lundi 8 décembre) » : samedi 6 décembre 2025, déduction écrite dans le texte approuvé."
+    },
+    {
+      "case_id": "POC-06",
+      "texte": "Une plainte pour viol aggravé avec constitution de partie civile, destinée à faire désigne",
+      "date": "2025-11-13",
+      "date_nature": "evenement",
+      "motif": "Texte : plainte « annoncée à l’AFP le 13 novembre » par l’avocat : date de l’ANNONCE (le texte ne dit pas la date du dépôt)."
+    }
+  ],
+  "paroles": [
+    {
+      "case_id": "FR-2026-0046",
+      "acteur": "l'avocat général",
+      "cle": "la déclaration de culpabilité en appel",
+      "date": "2026-04-21",
+      "date_nature": "evenement",
+      "motif": "Contexte : propos tenus « lors de l’audience d’appel du 21 avril 2026 » (France 3 Régions)."
+    },
+    {
+      "case_id": "FR-2026-0046",
+      "acteur": "l'avocat général",
+      "cle": "l'interrogation des enfants victimes par leurs parents",
+      "date": "2026-04-21",
+      "date_nature": "evenement",
+      "motif": "Contexte : propos tenus « lors de l’audience d’appel du 21 avril 2026 » (France 3 Régions)."
+    }
+  ],
+  "publications": [
+    {
+      "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+      "publie_le": "2026-11-16",
+      "stockee": "2026-11-15",
+      "motif": "La page porte « Publié le lundi 16 novembre 2026 à 6h32 » (lue le 23/11/2026) ; la date conservée (15/11) la précède d’un jour."
+    }
+  ]
+}

@@ -78,16 +78,55 @@ export function repere(e, opt = {}) {
       libelle: approx ? `Vers ${valeur}` : maj(valeur), date: e.date, precision: dEv.precision, cle: cleDate(e.date), sansDateEvenement: false };
   }
   // Repli : publication de la source citée ; à défaut, une `date` marquée « article » (c'est alors une date de parution, jamais des faits).
-  const pub = analyserDate(e?.source?.publie_le) ? e.source.publie_le : (nature === 'article' && analyserDate(e?.date) ? e.date : null);
+  // `repere_source` (relecture documentée, data/chronologie-reperes.json) : une source ANTÉRIEURE qui rapporte effectivement le même fait date l'information ; le texte reste attribué à `source`.
+  const srcRepere = analyserDate(e?.repere_source?.publie_le) ? e.repere_source : null;
+  const pub = srcRepere ? srcRepere.publie_le : analyserDate(e?.source?.publie_le) ? e.source.publie_le : (nature === 'article' && analyserDate(e?.date) ? e.date : null);
   if (pub) {
     const dp = analyserDate(pub);
     const valeur = dateFr(pub);
     const prefixe = opt.parole
       ? (dp.precision === 'jour' ? 'Propos rapportés dans un article du' : 'Propos rapportés dans un article de')
       : (dp.precision === 'jour' ? 'Information datée du' : 'Information datée de');
-    return { nature: 'information', prefixe, valeur, libelle: `${prefixe} ${valeur}`, date: pub, precision: dp.precision, cle: cleDate(pub), sansDateEvenement: true };
+    return { nature: 'information', prefixe, valeur, libelle: `${prefixe} ${valeur}`, date: pub, precision: dp.precision, cle: cleDate(pub), sansDateEvenement: true, sourceRepere: srcRepere };
   }
   return { nature: 'aucune', prefixe: '', valeur: null, libelle: 'Date non établie', date: null, precision: null, cle: null, sansDateEvenement: true };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+// RELECTURES DOCUMENTÉES (data/chronologie-reperes.json) — appliquées à l'AFFICHAGE, jamais écrites dans les dossiers approuvés
+// (l'empreinte approuvée d'un dossier porte sur le fichier de matière : elle ne bouge pas, aucune fiche n'est dépubliée).
+//   reperes[]      { case_id, texte (début EXACT du texte de l'étape), repere_source:{media,url,publie_le} | date + date_nature:'evenement', motif }
+//   paroles[]      { case_id, acteur, cle (début de a_propos, sinon paraphrase, sinon contexte), date, date_nature:'evenement', motif }
+//   publications[] { url, publie_le, stockee, motif } : date de parution lue sur la page elle-même, différente de celle conservée.
+// Un renseignement qui ne correspond plus à aucun élément (dossier réécrit) est IGNORÉ à l'affichage et fait échouer le test QA.
+// ---------------------------------------------------------------------------------------------------------------------------------
+const cleTexte = (e) => String(e?.texte ?? '');
+export const correspondEtape = (e, r) => cleTexte(e).startsWith(r.texte);
+export const correspondParole = (p, r) => p?.acteur === r.acteur && String(p?.a_propos ?? p?.paraphrase ?? p?.contexte ?? '').startsWith(r.cle);
+
+/** Date de parution corrigée d'une source (par adresse) ; sans correction : la date conservée. */
+export const publicationCorrigee = (table, url, date) => (table?.publications ?? []).find((x) => x.url === url)?.publie_le ?? date;
+
+/** Applique les relectures à UN dossier { deroule, reactions, paroles } : retourne un nouveau dossier (l'original n'est pas modifié). */
+export function appliquerRelectures(caseId, dossier, table) {
+  if (!dossier || !table) return dossier;
+  const pubs = table.publications ?? [];
+  const src = (s) => (s && pubs.length ? { ...s, publie_le: publicationCorrigee(table, s.url, s.publie_le) } : s);
+  const etapes = (table.reperes ?? []).filter((r) => r.case_id === caseId);
+  const paroles = (table.paroles ?? []).filter((r) => r.case_id === caseId);
+  if (!etapes.length && !paroles.length && !pubs.length) return dossier;
+  const deroule = (dossier.deroule ?? []).map((e) => {
+    let out = { ...e, source: src(e.source), ...(e.sources_complementaires ? { sources_complementaires: e.sources_complementaires.map(src) } : {}) };
+    const r = etapes.find((x) => correspondEtape(e, x));
+    if (r?.date) out = { ...out, date: r.date, date_nature: r.date_nature ?? 'evenement' };
+    if (r?.repere_source) out = { ...out, repere_source: r.repere_source };
+    return out;
+  });
+  const lisse = (liste) => (liste ?? []).map((p) => {
+    const r = paroles.find((x) => correspondParole(p, x));
+    return { ...p, source: src(p.source), ...(r?.date ? { date: r.date, date_nature: r.date_nature ?? 'evenement' } : {}) };
+  });
+  return { ...dossier, deroule, ...(dossier.reactions ? { reactions: lisse(dossier.reactions) } : {}), ...(dossier.paroles ? { paroles: lisse(dossier.paroles) } : {}) };
 }
 
 /** Tri chronologique ascendant, STABLE : datés (par clé, puis rang d'écriture), puis sans date (rang d'écriture). `cleDe(x)` → clé ou null. */
