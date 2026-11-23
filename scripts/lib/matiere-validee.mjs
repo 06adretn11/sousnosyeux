@@ -39,7 +39,7 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
     id: createHash('sha1').update(`${r.case_id}|${r.fait.libelle_public}|${r.fait.event_date ?? r.fait.event_period ?? ""}`).digest('hex').slice(0, 12),
     proposal_id: r.proposal_id, case_id: r.case_id, nature: r.fait.nature || 'mesure', mesure: r.fait.mesure, libelle: r.fait.libelle_public,
     realisation: r.fait.realisation ?? 'inconnue', portee: r.fait.portee || 'établissement', ajustements: r.fait.ajustements_inconnues ?? null, acteur: r.fait.acteur_nomme || r.fait.acteur || null, territoire: r.fait.territoire || null,
-    date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null,
+    date: r.fait.event_date || null, periode: r.fait.event_period || null, citation: (r.fait.evidence || [])[0] || null, parole: r.fait.nature === 'parole' ? r.fait.parole ?? null : null,
     source: r.url ? { media: r.media, url: r.url, publie_le: r.publie_le } : null, applied_event_id: r.applied_event_id, event_id: r.applied_event_id, etablissement: r.etablissement, _commune: r.commune, _dep: r.departement,
   }));
   // Une information validée plusieurs fois (deux articles, même libellé, même affaire, MÊME jour ou période) ne compte qu'une fois : la plus ancienne fait foi.

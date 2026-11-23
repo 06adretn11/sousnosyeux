@@ -59,6 +59,7 @@ import { trouverSources, canonique, lirePage } from './lib/preuve-claim.mjs';
 import { suivrePistes, estFaitDeTerritoireNomme, PISTES_PAR_SOURCE } from './lib/pistes.mjs';
 import { extraireReactions, dateEcrite, separerParPortee } from './lib/evenement-institutionnel.mjs';
 import { dejaConnu, dejaConnuChezVoisines } from './lib/nouveaute.mjs';
+import { extraireParoles, PAROLES_VERSION } from './lib/paroles-attribuees.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const A = process.argv.slice(2);
@@ -393,6 +394,8 @@ const detail = [];
 const t0 = Date.now();
 const cacheDocs = new Map();       // url → page lue, partagé entre claims et affaires
 const cacheAnalyses = new Map();   // (affaire|url) → sortie, un même document ne paie qu'une lecture
+// Registre des acteurs suivis (data/associations-watchlist.json) : sert seulement à rattacher une parole dont l'article ne dit pas l'affaire (affaires_rattachees).
+const REGISTRE_ACTEURS = (() => { try { return JSON.parse(readFileSync(resolve(ROOT, 'data/associations-watchlist.json'), 'utf8')).organismes || []; } catch { return []; } })();
 
 /**
  * Qualifie UNE source pour UNE affaire. Le corps est déjà lu (`page`) ou
@@ -425,16 +428,26 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const voisines = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).flatMap((f) => memoireFaits.get(f.case_id) || []);
   const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
     .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)) && (!viaPiste || estFaitDeTerritoireNomme(x)));
+  // PAROLES ATTRIBUÉES (même lecture, même corps, aucun appel supplémentaire) : déclarations entre guillemets d'un locuteur nommé ou anonymisé par le média. Jamais via une piste
+  // (un article lié ne nomme pas l'établissement) ; la mémoire des affaires voisines ne compare que le libellé (locuteur + extrait), jamais type + jour.
+  const paroles = viaPiste ? [] : extraireParoles(corps, { etablissement: fiche.etablissement, autres, commune: fiche.commune, caseId: fiche.case_id, anneeRef: pub, registre: REGISTRE_ACTEURS }).faits
+    .filter((x) => !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)));
+  F.paroles_nouvelles = (F.paroles_nouvelles || 0) + paroles.length;
   F.reactions_nouvelles += r.length;
-  return r;
+  return [...r, ...paroles];
 }
 /** Proposition ENRICHMENT SÉPARÉE (version « +reactions ») : décision et effets distincts du changement d'état ; idempotente. */
 async function ecrireReactions(base, reactions) {
   if (DRY || !reactions.length) return;
+  // Les PAROLES ont leur propre proposition (version `.p1+reactions`) : un article déjà qualifié pour ses mobilisations et mesures (clé d'idempotence identique) peut ainsi l'être, UNE fois, pour ses
+  // paroles, sans rejouer les autres faits ; une seconde lecture de la même page retombe sur la même clé (`deja_presente`) — jamais de doublon.
+  const paroles = reactions.filter((f) => f.nature === 'parole');
+  if (paroles.length && paroles.length < reactions.length) { await ecrireReactions(base, reactions.filter((f) => f.nature !== 'parole')); return ecrireReactions(base, paroles); }
   // UNE PROPOSITION PAR PORTÉE (evenement-institutionnel.separerParPortee) : des faits de portées ou de territoires différents ne se décident pas ensemble (cas du
   // 12/11/2026 : une mobilisation à « Montreuil » et une mesure de « Paris » dans UNE proposition, annoncée sous le seul territoire du premier fait). Le premier groupe garde
   // la clé d'idempotence d'origine ; les suivants portent un suffixe d'empreinte (la clé unique est (affaire, article, empreinte, version)).
-  const groupes = separerParPortee(reactions);
+  // Une PAROLE = une décision : l'éditeur valide ou écarte chaque déclaration (locuteur + extrait) séparément, jamais cinq paroles d'un seul clic.
+  const groupes = paroles.length ? reactions.map((f) => ({ cle: `parole|${norm(f.libelle_public).slice(0, 60)}`, faits: [f] })) : separerParPortee(reactions);
   for (const [i, g] of groupes.entries()) {
     const faits = g.faits.map((x) => ({ ...x, resulting_state: null, finality: null, appeal: 'UNKNOWN' }));
     const r2 = await enregistrerProposition(sql, {
@@ -443,12 +456,13 @@ async function ecrireReactions(base, reactions) {
     // `.q3` (06/11/2026) : « mobilisation » n'est plus un « rassemblement » (libellé = preuve : « des parents se sont mobilisés »), « a manifesté » est un fait accompli, le territoire nommé par
     // « devant le tribunal de Paris » / « à travers Paris » est lu, et un fait rapporté à « cette procédure » est lié à l'affaire. Les lignes `.q2` (REVIEW compris) restent telles quelles ;
     // celles encore sans décision sont remplacées par scripts/reprendre-sans-perte.mjs (jamais approuvées à la place de leur version corrigée).
-    ...base, version: `${base.version || PRIMITIVE_VERSION}.q3+reactions`,
-    ...(i > 0 && base.content_fingerprint ? { content_fingerprint: `${base.content_fingerprint}~${i + 1}` } : {}),
+    ...base, version: paroles.length ? `${PAROLES_VERSION}+reactions` : `${base.version || PRIMITIVE_VERSION}.q3+reactions`,   // la version d'une parole ne dépend ni du moteur ni du contrat : même clé que l'analyse soit neuve ou réutilisée
+    // Une parole porte l'empreinte de SON texte (et non son rang) : qu'une autre déclaration soit décidée entre deux passages ne la renumérote pas, donc ne la duplique pas.
+    ...(base.content_fingerprint && (paroles.length || i > 0) ? { content_fingerprint: paroles.length ? `${base.content_fingerprint}~p${fingerprint(g.faits[0].libelle_public).slice(0, 8)}` : `${base.content_fingerprint}~${i + 1}` } : {}),
     engine: MOTEUR, analysis_action: 'ENRICHMENT', facts: faits, _facts: faits,
     PROPOSED_CHANGE: 'NO_CHANGE', statut_propose: null, EVENT_DATE: null, transition: null, _action_modele: 'ENRICHMENT',
     _evidence: faits.flatMap((x) => x.evidence), NEW_EVIDENCE: { events: [] }, surveillance: [], inconnues: [],
-    RATIONALE: `ENRICHMENT institutionnel — ${faits.map((x) => `${x.mesure} (${x.realisation}, ${x.portee}${x.territoire ? ' · ' + x.territoire : ''})`).join(' ; ')}`,
+    RATIONALE: `${paroles.length ? 'ENRICHMENT paroles attribuées' : 'ENRICHMENT institutionnel'} — ${faits.map((x) => `${x.mesure} (${x.realisation ?? 'prise de parole'}, ${x.portee}${x.territoire ? ' · ' + x.territoire : ''})`).join(' ; ')}`,
     });
     if (!r2.deja_presente) F.propositions_reactions++;
   }

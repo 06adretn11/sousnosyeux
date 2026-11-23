@@ -388,7 +388,7 @@ async function main() {
 
   // `--cases A,B,C` : lot BORNÉ (rattrapage ciblé) — seules ces affaires du stock sont cherchées, rien d'autre n'est refait.
   // Valeur obligatoire et validée (revue du 23/11/2026) : « --cases » en dernier argument, une valeur vide ou un identifiant mal formé n'est PAS un lot vide silencieux.
-  let LOT = null;
+  let LOT = null, REPRISE_DU_JOUR = false;
   if (ARGS.includes('--cases')) {
     const brut = ARGS[ARGS.indexOf('--cases') + 1];
     const ids = brut === undefined || brut.startsWith('--') ? [] : brut.split(',').map((s) => s.trim()).filter(Boolean);
@@ -414,6 +414,7 @@ async function main() {
     const avant = cases.length;
     cases = cases.filter((c) => !faites.has(c.case_id));
     console.log(`   ↩️  reprise bornée : ${avant - cases.length} affaire(s) déjà examinée(s) aujourd'hui ignorée(s), ${cases.length} restante(s)`);
+    REPRISE_DU_JOUR = avant - cases.length > 0;   // un passage de reprise : les requêtes contextuelles ont déjà été faites au premier passage du jour
   }
   if (CASE_FILTER) {
     cases = cases.filter(c => c.case_id === CASE_FILTER);
@@ -552,7 +553,8 @@ async function main() {
   }
 
   // ── Requêtes de contexte libre ────────────────────────────────────────
-  if (!DRY_RUN && !CASE_FILTER && !NO_CONTEXT) {
+  // Requêtes CONTEXTUELLES (acteurs, institutions) : une fois par jour, au premier passage ; une reprise bornée ne rejoue pas ce qui a déjà abouti.
+  if (!DRY_RUN && !CASE_FILTER && !NO_CONTEXT && !REPRISE_DU_JOUR) {
     console.log('\n📡 Requêtes de contexte libre...\n');
     const contextResults = [];
 
@@ -615,6 +617,13 @@ async function main() {
       console.log(`   ⚠️  passage incomplet : ${echecs}/${cases.length} recherche(s) sans résultat${interrompu ? ', veille interrompue' : ''}`);
       process.exitCode = 3;
     }
+    // BILAN du passage — une journée CLOSE AVEC ERREURS n'est pas une veille INTÉGRALEMENT réussie : le workflow le consigne (garde-quotidien marquer --bilan) et les affaires
+    // en erreur (NON_EXAMINE) sont reprises au cycle suivant, qui cherche tout le stock (la reprise bornée ne retient que les réussites du JOUR).
+    //   complet · clos_avec_erreurs (échec minoritaire : jour consigné) · incomplet (code 3 : jour NON consigné, reprise bornée) · echec (code 2)
+    const bilan = !cases.length ? 'complet' : erreurs === cases.length ? 'echec' : (interrompu || echecs * 2 > cases.length) ? 'incomplet' : echecs ? 'clos_avec_erreurs' : 'complet';
+    report.bilan = bilan;
+    await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
+    console.log(`   bilan : ${bilan}${echecs ? ` (${echecs}/${cases.length} recherche(s) sans résultat retenu${bilan === 'clos_avec_erreurs' ? ' : jour consigné AVEC ERREURS, ces affaires sont reprises au cycle suivant' : ''})` : ''}`);
     if (report.declarations_officielles_count > 0) {
       console.log(`   📢 ${report.declarations_officielles_count} déclaration(s) officielle(s) détectée(s)`);
     }

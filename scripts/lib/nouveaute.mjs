@@ -14,6 +14,7 @@ const ts = (d) => Date.parse(jour(d));
  */
 export function memeFait(a, b) {
   if (!a?.libelle_public || !b?.libelle_public) return false;
+  if (a.nature === 'parole' || b.nature === 'parole') return a.libelle_public === b.libelle_public;   // une parole = locuteur + extrait : jamais confondue avec une autre du même jour
   // Même FAIT sous deux libellés fermés d'une même famille (« interpellée » / « placée en garde à vue » ; « un appel a été formé » / « le parquet a fait appel »).
   if (a.libelle_public !== b.libelle_public && !memeMesure(a.mesure || mesureDeLibelle(a.libelle_public), b.mesure || mesureDeLibelle(b.libelle_public))) return false;
   const ja = a.event_date ? jour(a.event_date) : null, jb = b.event_date ? jour(b.event_date) : null, pa = a.event_period || null, pb = b.event_period || null;
@@ -37,6 +38,8 @@ const TYPE = (t) => (t === 'réaction_publique' ? 'mobilisation' : t);
  */
 export function dejaConnu(fait, memoire = [], { pubDate = null } = {}) {
   const t = TYPE(fait.event_type);
+  // Une PAROLE attribuée a pour identité son libellé (locuteur + extrait) : deux déclarations de personnes différentes le même jour sont deux faits, jamais « le même type, la même semaine ».
+  if (t === 'parole' || fait.nature === 'parole') return memoire.some((e) => e.libelle_public === fait.libelle_public);
   // Un acte procédural à libellé fermé se compare par MESURE (famille) et non par type : une remise en liberté n'est pas « déjà connue » parce qu'une détention du même jour
   // est consignée, et un appel de la défense n'est pas « déjà connu » parce que celui du parquet l'est.
   const mesureFait = fait.mesure && MESURES_PROCEDURALES.includes(fait.mesure) ? fait.mesure : mesureDeLibelle(fait.libelle_public);
@@ -71,6 +74,7 @@ export function dejaConnu(fait, memoire = [], { pubDate = null } = {}) {
  * @param {{event_type:string, event_date?:string|null}[]} memoireVoisines  événements consignés pour les autres affaires de la même commune
  */
 export function dejaConnuChezVoisines(fait, memoireVoisines = []) {
+  if (fait?.nature === 'parole' || fait?.event_type === 'parole') return memoireVoisines.some((e) => e.libelle_public === fait.libelle_public);   // identité = locuteur + extrait, pas type + jour
   if (!fait?.event_date) return false;
   const t = TYPE(fait.event_type);
   return memoireVoisines.some((e) => TYPE(e.event_type) === t && jour(e.event_date) === jour(fait.event_date));

@@ -49,9 +49,12 @@ Statut : **présent** = déjà dans la fiche/mémoire ; **nouveau** = absent ; d
 
 | Passage | Auteur | Affaire | Date | Statut | Destination / traitement |
 |---|---|---|---|---|---|
-| Désaccord avec la relaxe (« erreur grave ») ; « Ces enfants méritent d'être crus. » (§3) | Me Hannah Kopp et Me Rebecca Royer, avocates de familles de Baudin (rattachement : franceinfo, Le Média) | POC-05 | jour non indiqué (article du 10/07) | **nouveau** | `reactions[]` de POC-05, `POSITION_ATTRIBUEE`, 2 citations courtes vérifiées ; la phrase qui contient le nombre d'enfants est écartée |
-| « Cette solidarité, on l'a retournée contre eux » ; victimisation secondaire (§7) | Barka Zerouali, porte-parole du collectif #MeToo École | POC-05 (+ Hub) | jour non indiqué | **partiellement présent** : la fiche cite déjà, sans la nommer, la critique de la cofondatrice (franceinfo) ; le nom, le rôle et la position « victimisation secondaire » sont nouveaux | `reactions[]` de POC-05, `POSITION_ATTRIBUEE` |
-| Paroles de trois parents (prénoms d'emprunt dans l'article) (§6, §8, §9, §10) | parents | POC-05 / POC-09 | 9–10/07 | **nouveau, non retenu** | témoignages anonymisés : exclus de « Ce que dit la presse » ; ni citation, ni prénom, **aucune identité recherchée** |
+| Désaccord avec la relaxe (« erreur grave ») ; « Ces enfants méritent d'être crus. » (§3) | Me Hannah Kopp et Me Rebecca Royer, avocates de familles de Baudin (rattachement : franceinfo, Le Média ; l'article ne dit pas pour quelle école) | POC-05 | jour non indiqué (article du 10/07) | **nouveau** | **2 propositions** (une par déclaration), rattachées à Baudin par le registre des acteurs, `POSITION_ATTRIBUEE` ; la phrase qui contient le nombre d'enfants est écartée |
+| « Cette solidarité, on l'a retournée contre eux » ; victimisation secondaire (§7) | Barka Zerouali, du collectif #MeToo École (qualité telle qu'écrite) | POC-05 | jour non indiqué | **partiellement présent** : la fiche cite déjà, sans la nommer, la critique de la cofondatrice (franceinfo) ; le nom, la qualité et le propos sont nouveaux | **1 proposition**, `POSITION_ATTRIBUEE` |
+| Mère d'un enfant qui a dénoncé des faits à Baudin, prénom suivi d'un astérisque (§6) : « Moi, je n'ai jamais reparlé à mon fils… On se sent trahis, ridiculisés… » | prénom d'emprunt à astérisque, « la maman de l'un des enfants ayant dénoncé des violences sexuelles » (qualité coupée avant le nom de la personne poursuivie) | POC-05 | jour non indiqué (colère exprimée lors du rassemblement du 9 juillet selon le chapô) | **nouveau** | **1 proposition**, anonymisation et qualité conservées, propos intégral conservé (force du propos préservée) |
+| Père d'une enfant plaignante, prénom à astérisque (§8) : « On est heureux qu'il y ait un appel, mais… l'appel ne concerne pas notre enfant » | prénom d'emprunt à astérisque, « père d'une enfant ayant porté plainte » | POC-05 | idem | **nouveau** (le caractère partiel de l'appel est déjà connu) | **1 proposition** |
+| Mère d'une élève de Titon (§10–§11) : « Alors qu'un casseur écope de dix mois de prison… » | prénom non modifié par le média, « maman d'une élève scolarisée à l'école Titon », « lors d'une prise de parole » (rassemblement évoqué par l'article) | **POC-09** | 9 juillet (rassemblement) : jour du propos non écrit | **nouveau** | **1 proposition**, rattachée à Titon par son contenu (l'école est nommée) |
+| Déclaration « Pour nous, c'est un coup de grâce… » (§9) | **aucun locuteur indiqué** par l'article | — | — | **bloquée** | motif précis : déclaration sans attribution ; jamais attribuée à un locuteur deviné |
 
 ### 3.3 Mobilisation commune
 
@@ -69,11 +72,11 @@ Statut : **présent** = déjà dans la fiche/mémoire ; **nouveau** = absent ; d
 | Barka Zerouali | cofondatrice et porte-parole | BFMTV ; Le Média ; franceinfo (prénom seul) | **ajoutée** au registre |
 | Me Hannah Kopp, Me Rebecca Royer (cabinet Kopp & Royer) | avocates de familles de Baudin | **franceinfo** (« avocates qui représentent six des enfants d'Alphonse-Baudin ») et **Le Média** — pas BFMTV seul | **ajoutées** au registre ; déjà suivies par la presse |
 | Parquet de Paris | autorité de poursuite (appels) | article | institution, déjà suivie |
-| Parents anonymisés | — | — | **jamais** retenus, aucune recherche d'identité |
+| Parents anonymisés (prénoms à astérisque) | parents d'élèves | cités par le média | **retenus** : paroles attribuées avec l'anonymat du média ; **aucune** recherche d'identité ni de compte |
 
 ## 4. Enrichissements prêts (rien appliqué)
 
-- **POC-05** : 2 entrées `reactions[]` (avocates ; porte-parole), citations courtes littérales, `POSITION_ATTRIBUEE`, « n'établit pas le contenu du jugement ». Circuit : génération de fiche (`generer-fiche --sources-extra`) → aperçu → GO unique → promotion.
+- **POC-05 : 5 propositions de paroles** (avocates ×2, porte-parole, deux parents à prénom d'emprunt) et **POC-09 : 1** (la mère d'une élève de Titon), produites par le circuit existant à la lecture de l'article (voir `LOT_CORRECTIF_MAINTENANCE_23_11.md` §11) ; **une décision par parole**. La motivation du tribunal est reprise **directement « Selon BFMTV… »**, en position attribuée (proposition éditoriale hors circuit Telegram : état actuel de POC-05). Fichier prêt (hors dépôt) : `PAROLES_PROPOSEES_BFM.json`.
 - **POC-05 et POC-09** : BFMTV en **source à rattacher** (même format que `data/fiches-sources-extra.json`), sans fait ajouté.
 - **Aucun** événement `case_events` n'est proposé : tout ce qui est factuel dans l'article est déjà en mémoire. L'information « Titon à la prise de parole du 9 juillet » est déjà dans la fiche Baudin.
 

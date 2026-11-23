@@ -48,6 +48,13 @@ export function sourceDejaReferencee(dossier, urlArticle) {
  * Sinon : fait déjà publié ; `sourceDejaRattachee` dit s'il reste quelque chose à faire (rattacher l'article) ou rien du tout.
  */
 export function dejaPublie(dossier, fait, urlArticle) {
+  // Une PAROLE est déjà publiée si la fiche porte la même déclaration (extrait mot pour mot, à la ponctuation d'apostrophe près) : un article qui ne dit rien de plus n'est, au plus, qu'une source à rattacher.
+  if (fait?.nature === 'parole') {
+    const plat = (t) => String(t || '').replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim().toLowerCase();
+    const cites = (fait.parole?.citations || []).map((c) => plat(c.texte)).filter(Boolean);
+    const dedans = (dossier?.reactions || []).concat(dossier?.paroles || []).find((r) => (r.citations || []).some((c) => cites.some((t) => plat(c.texte).includes(t.slice(0, 80)) || t.includes(plat(c.texte).slice(0, 80)))));
+    return dedans ? { etape: dedans, sourceDejaRattachee: sourceDejaReferencee(dossier, urlArticle) } : null;
+  }
   const etape = etapeDejaPublie(dossier, fait);
   return etape ? { etape, sourceDejaRattachee: sourceDejaReferencee(dossier, urlArticle) } : null;
 }

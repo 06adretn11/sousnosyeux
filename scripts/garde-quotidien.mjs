@@ -51,6 +51,12 @@ if (cmd === 'verifier') {
 } else {
   await sql`insert into discovery_etat (cle, valeur) values (${cle}, ${aujourdhui})
             on conflict (cle) do update set valeur = excluded.valeur, maj = now()`;
-  console.log(`${nom} : passage du ${aujourdhui} consigné`);
+  // BILAN du passage (--bilan complet|clos_avec_erreurs) : un jour CLOS AVEC ERREURS (échec minoritaire de la veille) n'est pas une veille intégralement réussie. Le bilan est consigné à part
+  // (`quotidien:<nom>:bilan` = AAAA-MM-JJ:<bilan>) ; les affaires en erreur (NON_EXAMINE) sont reprises au cycle suivant, qui cherche tout le stock.
+  const b = process.argv.includes('--bilan') ? process.argv[process.argv.indexOf('--bilan') + 1] : null;
+  const bilan = b && /^(complet|clos_avec_erreurs|inconnu)$/.test(b) ? b : null;
+  if (bilan) await sql`insert into discovery_etat (cle, valeur) values (${`quotidien:${nom}:bilan`}, ${`${aujourdhui}:${bilan}`})
+                       on conflict (cle) do update set valeur = excluded.valeur, maj = now()`;
+  console.log(`${nom} : passage du ${aujourdhui} consigné${bilan === 'clos_avec_erreurs' ? ' — CLOS AVEC ERREURS (ce n’est pas une veille intégralement réussie : les affaires en erreur sont reprises au cycle suivant)' : bilan ? ` — bilan : ${bilan}` : ''}`);
 }
 process.exit(0);

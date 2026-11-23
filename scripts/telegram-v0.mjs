@@ -273,6 +273,11 @@ async function decisionInstitutionnelle(cle) {
   const p = await charger(cle);
   if (p.decision) throw new Error(`déjà décidée (${p.decision}) — rien envoyé`);
   const structures = faitsStructures(p.facts);
+  // HOLD : aucune écriture automatique n'est possible pour un fait PROPRE à l'affaire (appliquer-decisions la refuse). Une demande de décision serait sans effet : elle n'est pas envoyée, son motif
+  // est consigné avec la proposition (payload.ecartee). Un fait de TERRITOIRE suit sa propre portée (destinations.mjs) et reste proposable.
+  let holds = new Set();
+  try { holds = new Set((JSON.parse(readFileSync(new URL('../data/publication-holds.json', import.meta.url), 'utf8')).holds || []).map((h) => h.case_id)); } catch { /* fichier absent : aucun HOLD */ }
+  if (holds.has(p.case_id) && !(structures.length && structures.every((f) => f.portee === 'territoire'))) throw new Error('affaire sous HOLD : aucune écriture automatique possible, demande non envoyée');
   if (p.rat === 'OK' && structures.length) return decisionReactions(cle, p, structures);
   const inst = p.rat === 'OK' ? detecterInstitutionnel(citationsDe(p)) : null;
   // ACTES PROCÉDURAUX sans changement de statut (garde à vue, présenté au juge sans mise en examen, appel, détention, remise en liberté, audience annoncée) :

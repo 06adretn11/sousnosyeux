@@ -59,6 +59,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Paroles attribuées d’une source lue — locuteur et anonymat tels qu’écrits, rattachement, extrait littéral, identité, aucune proposition artificielle (cas BFMTV)',
+    script: 'scripts/qa/test-paroles-attribuees.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Règle opérationnelle du fait incertain — aucun fait inscrit comme établi, signal conservé (« Il a fait appel », acte nié, envisagé, rappelé)',
     script: 'scripts/qa/test-signaux-actes.mjs',
     bloquant: true,

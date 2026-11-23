@@ -68,6 +68,10 @@ jobs:
           grep -E "affaire\(s\) à surveiller|affaire\(s\) avec nouveaux articles|reprise bornée|passage incomplet" "$RUNNER_TEMP/watch.log"
           echo "erreurs de recherche : $(grep -c 'Erreur recherche' "$RUNNER_TEMP/watch.log")"
           echo "watch-updates : code de sortie $code"
+          # Bilan (complet · clos_avec_erreurs · incomplet · echec) : transmis à l'étape Z, qui consigne un jour CLOS AVEC ERREURS autrement qu'un jour intégralement réussi.
+          bilan=$(grep -E "^   bilan : " "$RUNNER_TEMP/watch.log" | head -1 | sed -E "s/^   bilan : ([a-z_]+).*/\1/")
+          echo "bilan=${bilan:-inconnu}" >> "$GITHUB_OUTPUT"
+          echo "bilan de la veille : ${bilan:-inconnu}"
           if [ "$code" = "3" ]; then
             echo "incomplet=true" >> "$GITHUB_OUTPUT"
             echo "passage incomplet : le passage du jour ne sera pas consigné"
@@ -97,4 +101,4 @@ jobs:
         run: node scripts/appliquer-nouvelles-affaires.mjs --ecrire
       - name: Z. consigner le passage du jour
         if: ${{ github.event_name != 'workflow_dispatch' && steps.garde.outputs.skip != 'true' && steps.veille.outputs.incomplet != 'true' && success() }}
-        run: node scripts/garde-quotidien.mjs marquer maintenance
+        run: node scripts/garde-quotidien.mjs marquer maintenance --bilan "${{ steps.veille.outputs.bilan }}"

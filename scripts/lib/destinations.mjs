@@ -18,7 +18,7 @@ const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toL
 
 // Blocs EXISTANTS des Hubs (titres de `reponses`) : une mobilisation va aux familles/associations, une mesure de collectivité à son bloc.
 const BLOC = { mobilisation: /familles|parents|associations|mobilisation/i, mesure: /ville|mairie|collectivit|municipal|rectorat|education/i };
-const blocDe = (nature, groupes) => (groupes || []).find((g) => (nature === 'mobilisation' ? BLOC.mobilisation : BLOC.mesure).test(g)) ?? null;
+const blocDe = (nature, groupes) => (groupes || []).find((g) => (nature === 'mobilisation' || nature === 'parole' ? BLOC.mobilisation : BLOC.mesure).test(g)) ?? null;
 
 /** La portée (territoire nommé par la SOURCE) est-elle contenue dans le périmètre d'un Hub ? Échec fermé si inconnu. */
 export function territoireDansHub(territoire, zone, departementDeCommune) {
@@ -132,7 +132,7 @@ export function construireMatiere(faits, ctx) {
     if (!d.fiche && !d.hubs.length) { if (!d.bloques.length) conservees.push(id_); continue; }
     matiere.push({
       id: f.id, nature: f.nature, libelle: f.libelle, realisation: f.realisation, portee: f.portee, acteur: f.acteur, territoire: f.territoire ?? null,
-      date: f.date ?? null, periode: f.periode ?? null, source: f.source, ...(f.ajustements?.length ? { ajustements: f.ajustements } : {}), ...(f.portee === 'territoire' ? {} : { etablissement: ctx.cases.get(f.case_id)?.etablissement ?? null }), case_id: terr && ctx.holds.has(f.case_id) ? null : f.case_id, event_id: f.event_id ?? null, destinations: { fiche: d.fiche, hubs: d.hubs },
+      date: f.date ?? null, periode: f.periode ?? null, source: f.source, ...(f.nature === 'parole' && f.parole ? { parole: { acteur: f.parole.acteur, qualite: f.parole.qualite ?? null, citations: f.parole.citations, extrait_partiel: !!f.parole.extrait_partiel, contexte: f.parole.contexte } } : {}), ...(f.ajustements?.length ? { ajustements: f.ajustements } : {}), ...(f.portee === 'territoire' ? {} : { etablissement: ctx.cases.get(f.case_id)?.etablissement ?? null }), case_id: terr && ctx.holds.has(f.case_id) ? null : f.case_id, event_id: f.event_id ?? null, destinations: { fiche: d.fiche, hubs: d.hubs },
     });
   }
   matiere.sort((a, b) => a.id.localeCompare(b.id));

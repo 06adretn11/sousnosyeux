@@ -488,6 +488,8 @@
    ],
    "role": "avocates_de_familles",
    "portee": "affaire (Alphonse-Baudin, Paris 11e) ; paroles nationales sur les procès du périscolaire parisien",
+   "affaires_rattachees": ["POC-05"],
+   "qualite_registre": "avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)",
    "themes": [
     "violences sexuelles dans le périscolaire parisien",
     "procès et décisions de justice à Paris"

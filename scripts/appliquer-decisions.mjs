@@ -182,7 +182,10 @@ if (process.argv.includes('--generique')) {
     if (!REPLAY && p.aa === 'ENRICHMENT') {
       // HOLD : une affaire sous HOLD ne reçoit AUCUNE mutation publique automatique (un événement consigné serait projeté sur sa fiche). L'ACCEPT reste enregistré et NON appliqué :
       // il sera appliqué (ou écarté) par un humain à la levée du HOLD. Mesuré le 23/11/2026 (parcours isolé) : sans cette garde, un ACCEPT sur une affaire sous HOLD écrivait ses événements.
-      if (holds.has(p.case_id)) {
+      // Portée exacte du HOLD (FR-2026-0004, décision du 25/09/2026 : « VALIDATE le fait documentaire uniquement… Aucune mutation de cases ») : il gèle l'ÉTAT GLOBAL et toute écriture NOUVELLE propre à
+      // l'affaire ; il n'efface pas le fait documentaire déjà autorisé (case_events, conservé) et ne concerne pas un fait de TERRITOIRE (sa propre portée, sa propre preuve : aucune écriture ici).
+      const faitsDuHold = faitsStructures(p.facts);
+      if (holds.has(p.case_id) && !(faitsDuHold.length && faitsDuHold.every((x) => x.portee === 'territoire'))) {
         special++;
         dire(`  ${p.k} | ${p.case_id} | ENRICHMENT | NOT_APPLICABLE_AUTOMATICALLY — HOLD actif sur la fiche : aucune écriture (l'ACCEPT reste enregistré, non appliqué)`);
         continue;
@@ -192,7 +195,8 @@ if (process.argv.includes('--generique')) {
       const structures = faitsStructures(p.facts);
       const memoireProc = p.rat === 'OK' && !structures.length ? await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null` : [];
       const insts = p.rat !== 'OK' ? []
-        : structures.length ? structures.filter((x) => x.portee !== 'territoire').map((x) => ({ ...x, ed: x.event_date || null }))
+        // Une PAROLE attribuée n'est jamais un événement `case_events` (aucune valeur d'énumération, aucune migration) : sa mémoire est `state_proposals.facts` (ACCEPT), lue par la matière validée.
+        : structures.length ? structures.filter((x) => x.portee !== 'territoire' && x.nature !== 'parole').map((x) => ({ ...x, ed: x.event_date || null }))
         : (() => {
           const cites = (Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || []);
           // Mêmes faits que ceux montrés à l'éditeur (telegram-v0.decisionInstitutionnelle) : mesure institutionnelle + actes procéduraux sans changement de statut.
@@ -202,7 +206,7 @@ if (process.argv.includes('--generique')) {
           ];
         })();
       if (p.rat === 'OK' && structures.length && !insts.length) {
-        dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | PORTÉE TERRITORIALE : aucune écriture (matière conservée dans state_proposals.facts)`);
+        dire(`  ${p.k} | ${p.case_id} | ${structures.every((x) => x.nature === 'parole') ? 'ENRICHMENT paroles attribuées | AUCUNE ÉCRITURE case_events : parole conservée dans state_proposals.facts (matière validée → « Paroles et réactions »)' : 'ENRICHMENT institutionnel | PORTÉE TERRITORIALE : aucune écriture (matière conservée dans state_proposals.facts)'}`);
         continue;
       }
       if (insts.length) {

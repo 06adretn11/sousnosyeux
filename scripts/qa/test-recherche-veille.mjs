@@ -97,11 +97,14 @@ test('8. échec définitif : ERREUR consignée, jamais « rien de nouveau » ; l
   const d = par('T-DELTA'); vrai(d?.etat_recherche === 'ERREUR' && d.error && d.new_articles.length === 0, JSON.stringify(d));
   vrai(mixte.code === 0, `code de sortie ${mixte.code} en échec partiel`);
   vrai(mixte.rapport.searches_failed === 1, `searches_failed=${mixte.rapport.searches_failed}`);
+  // Un échec minoritaire clôt le jour AVEC ERREURS : le bilan le dit (≠ « complet »), la sortie aussi.
+  vrai(mixte.rapport.bilan === 'clos_avec_erreurs' && /bilan : clos_avec_erreurs/.test(mixte.out), `bilan=${mixte.rapport.bilan}`);
 });
 const bas = lancer('down');
 test('9. service indisponible : disjoncteur (affaires restantes « non tentées »), aucune recherche réussie → sortie 2', () => {
   vrai(bas.code === 2, `code=${bas.code}\n${bas.out.slice(-300)}`);
   vrai(bas.rapport.results.every((x) => x.etat_recherche === 'ERREUR'), 'une affaire n’est pas en ERREUR');
+  vrai(bas.rapport.bilan === 'echec', `bilan=${bas.rapport.bilan}`);
 });
 test('10. un flux vide n’est pas une erreur : etat FLUX_VIDE, compteur dédié', () => {
   const vide = lancer('mixte', []);   // T-ALPHA..DELTA ; FLUX_VIDE absent du lot mixte → vérifié par le compteur
@@ -129,6 +132,7 @@ test('11b. service qui se dégrade (1 affaire OK puis 503) : disjoncteur, code 3
   vrai(v.code === 3, `code ${v.code} : 9 recherches sur 10 en échec ne sont pas un passage valide`);
   vrai(v.rapport.results[0].etat_recherche === 'RESULTATS' && v.rapport.results.slice(1).every((x) => x.etat_recherche === 'ERREUR'), 'états inattendus');
   vrai(/passage incomplet/.test(v.out), 'le passage incomplet n’est pas dit dans la sortie');
+  vrai(v.rapport.bilan === 'incomplet', `bilan=${v.rapport.bilan}`);
 });
 test('11c. --cases sans valeur, vide ou mal formé : erreur explicite (jamais un lot vide silencieux ni un TypeError)', () => {
   for (const extra of [['--cases'], ['--cases', '--no-context'], ['--cases', ' , '], ['--cases', 'T-ALPHA;rm -rf']]) {
