@@ -10,6 +10,7 @@ import { phrasesEtat, sourceAffichee, dateLongue } from '../lib/etat-wording';
 import { STATUT_LABELS, statutCat, statutCourant, derniereSource, libre, dossierDepasse } from '../lib/territoires';
 import { derouleCommun, fichePubliee } from '../lib/fiche';
 import { urlFicheRevue } from '../lib/revue';
+import { trierSources } from '../../../scripts/lib/chronologie.mjs';
 
 interface Props { c: any; d?: any; titre?: string }
 const { c, d: dossier = {}, titre } = Astro.props;
@@ -35,14 +36,16 @@ const der = derniereSource(c);
 const fmt = (x: string | null) => (x ? dateLongue(x) : 'date non précisée');
 
 const vues = new Set<string>();
-const liens: { media: string; date: string | null; url: string | null }[] = [];
+const liensBruts: { media: string; date: string | null; url: string | null }[] = [];
 for (const s of c.etat?.sources ?? []) {
   const k = s.url ?? `${s.media}|${s.date}`;
-  if (!vues.has(k)) { vues.add(k); liens.push({ media: s.media, date: s.date ?? null, url: s.url ?? null }); }
+  if (!vues.has(k)) { vues.add(k); liensBruts.push({ media: s.media, date: s.date ?? null, url: s.url ?? null }); }
 }
 for (const s of sourcesLibres) {
-  if (!vues.has(s.url)) { vues.add(s.url); liens.push({ media: s.media, date: s.publication_date ?? null, url: s.url }); }
+  if (!vues.has(s.url)) { vues.add(s.url); liensBruts.push({ media: s.media, date: s.publication_date ?? null, url: s.url }); }
 }
+// Articles : ordre de publication ascendant, sans date en dernier (scripts/lib/chronologie.mjs).
+const liens = trierSources(liensBruts, (s: any) => s.date);
 ---
 
 <article class={`dossier ${cat}`} id={c.case_id.toLowerCase()} data-statut={statut} data-depasse={depasse ? 'oui' : undefined}>

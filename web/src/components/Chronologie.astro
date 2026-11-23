@@ -1,8 +1,9 @@
 ---
-// Déroulé d'un dossier : une entrée = un fait attribué à une source.
-// La date affichée est celle de l'ÉVÉNEMENT quand la source la donne ;
-// sinon « Date non établie » + la date de parution, jamais confondues.
-import { libelleDate, TYPE_LABELS } from '../lib/hub-matiere';
+// Déroulé d'un dossier : une entrée = un fait attribué à une source, classé du plus ancien au plus récent.
+// Repère (scripts/lib/chronologie.mjs) : date de l'ÉVÉNEMENT quand la source la donne ; sinon « Information datée du … » = date de
+// PUBLICATION de la source citée (jamais présentée comme la date des faits) ; sinon « Date non établie » (exception, classée en dernier).
+import { TYPE_LABELS } from '../lib/hub-matiere';
+import { repere, trierChrono, trierSources } from '../../../scripts/lib/chronologie.mjs';
 import { dateLongue } from '../lib/etat-wording';
 import { libre } from '../lib/territoires';
 
@@ -10,15 +11,15 @@ interface Props { items: any[] }
 const { items } = Astro.props;
 const pub = (s: any) => (s?.publie_le ? dateLongue(s.publie_le) : null);
 // Références COMPLÉMENTAIRES d'une étape : une même étape peut avoir plusieurs sources ; la principale n'efface pas les autres (une source devenue secondaire reste consultable).
-const aussi = (e: any) => (e.sources_complementaires ?? []).filter((s: any) => s?.url && libre(s.media) && s.url !== e.source?.url);
+const aussi = (e: any) => trierSources((e.sources_complementaires ?? []).filter((s: any) => s?.url && libre(s.media) && s.url !== e.source?.url), (s: any) => s?.publie_le);
+const lignes = trierChrono(items).map((e: any) => ({ e, r: repere(e) }));
 ---
 
 <ol class="chrono">
-  {items.map((e) => {
-    const sansDate = !e.date || e.date_nature === 'article' || e.date_nature === 'inconnue';
+  {lignes.map(({ e, r }) => {
     return (
-      <li class={`${sansDate ? 'sans-date ' : ''}t-${e.type}`}>
-        <div class="quand">{libelleDate(e.date, e.date_nature)}</div>
+      <li class={`${r.sansDateEvenement ? 'sans-date ' : ''}t-${e.type}`} data-repere={r.nature} data-cle={r.cle ?? ''}>
+        <div class="quand">{r.nature === 'information' ? <><span class="pfx">{r.prefixe}</span> <time datetime={r.date}>{r.valeur}</time></> : r.libelle}</div>
         <div class="quoi">
           <span class="type">{TYPE_LABELS[e.type] ?? e.type}</span>
           {e.acteur && <span class="acteur">{e.acteur}</span>}
@@ -28,7 +29,8 @@ const aussi = (e: any) => (e.sources_complementaires ?? []).filter((s: any) => s
               ? <a href={e.source.url} target="_blank" rel="noopener noreferrer">{e.source.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} ↗</a>
               : <span>{e.source?.media}{pub(e.source) ? `, ${pub(e.source)}` : ''} (lien non conservé)</span>}
             {e.source?.acces === 'paywall' && <span class="limite"> · article réservé aux abonnés</span>}
-            {sansDate && pub(e.source) && <span class="limite"> · Date de l’événement non établie</span>}
+            {r.nature === 'information' && <span class="limite"> · date des faits non établie</span>}
+            {r.nature === 'aucune' && <span class="limite"> · aucune date de publication exploitable</span>}
           </p>
           {aussi(e).length > 0 && (
             <p class="src aussi">Aussi : {aussi(e).map((s: any, k: number) => (<>{k > 0 ? ' · ' : ''}<a href={s.url} target="_blank" rel="noopener noreferrer">{s.media}{pub(s) ? `, ${pub(s)}` : ''} ↗</a></>))}</p>
@@ -49,6 +51,7 @@ const aussi = (e: any) => (e.sources_complementaires ?? []).filter((s: any) => s
   .chrono li.t-appel::before { border-color: var(--orange); background: var(--orange); }
   .quand { font: 0.74rem/1.4 var(--mono); color: #3d3d42; padding-top: 2px; }
   .sans-date .quand { color: var(--muted); }
+  .quand .pfx { display: inline; } .quand time { white-space: nowrap; }
   .type { display: inline-block; font: 0.64rem var(--mono); text-transform: uppercase; letter-spacing: 0.08em;
     color: #55555b; background: #efefec; padding: 1px 6px; margin-right: 6px; }
   .acteur { font-size: 0.78rem; color: var(--muted); }

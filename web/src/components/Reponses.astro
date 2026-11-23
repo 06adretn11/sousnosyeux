@@ -1,7 +1,7 @@
 ---
 // Réponses institutionnelles : ce que les institutions ONT DIT ou FAIT,
 // attribué. Jamais une conclusion de SNY sur leur responsabilité.
-import { libelleDate } from '../lib/hub-matiere';
+import { repere } from '../../../scripts/lib/chronologie.mjs';
 import { dateLongue } from '../lib/etat-wording';
 
 interface Props { groupes: { titre: string; items: any[] }[] }
@@ -15,7 +15,7 @@ const { groupes } = Astro.props;
       <ul>
         {g.items.map((r) => (
           <li>
-            <span class="quand">{libelleDate(r.date, r.date_nature)}</span>
+            <span class="quand">{repere(r).libelle}</span>
             <span class="acteur">{r.acteur}</span>
             <p>{r.texte}</p>
             <p class="src">
