@@ -84,7 +84,7 @@ Revue indépendante en lecture seule (phrases synthétiques, veille avec faux fe
 
 ## 6. Rejeu des propositions écartées avec le code final — borné, limites exactes
 
-> **Remplacé par le §10** (rejeu complet, lecture Neon autorisée). Ce paragraphe garde la trace du premier rejeu, borné aux exports locaux : ses écarts de classe (POC-10, FR-2026-0048, FR-2026-0122) étaient des artefacts du contexte absent.
+> **Remplacé par le §10, lui-même actualisé au §13** (rejeu complet, lecture Neon autorisée). Ce paragraphe garde la trace du premier rejeu, borné aux exports locaux : ses écarts de classe (POC-10, FR-2026-0048, FR-2026-0122) étaient des artefacts du contexte absent.
 
 **Source :** exports locaux du 21/11 (non versionnés) : 88 propositions ouvertes écartées sans message (75 `ENRICHMENT`, 13 `STATE_CHANGE` ; le rejeu précédent en comptait 91, trois sont postérieures à l'export). Les 13 `STATE_CHANGE` ne relèvent pas du lot (circuit d'état non modifié) : **75 relues**, avec le code de cette branche.
 
@@ -149,9 +149,9 @@ Voir `CAS_BFM_BAUDIN_TITON_23_11.md` (diagnostic, tableau par élément, enrichi
 
 | | Propositions | `NOUVEAU` | `SANS_APPORT` | `DEJA_SOUMIS` | `PERIMEE` | `RATTACHEMENT` | `DEJA_CONSIGNE` | `INDETERMINEE` |
 |---|---|---|---|---|---|---|---|---|
-| **Référence (91)** | 91 (76 `ENRICHMENT` + 15 `STATE_CHANGE`, circuit d'état non modifié) | 9 propositions / 11 faits | 58 | 12 | 9 | 1 | 0 | 2 |
-| **Arrivées ultérieures** | 6 (toutes `ENRICHMENT`, 23/11 au matin) | 1 (FR-2026-0133 : « pas de mise en examen » + appel du parquet) | 3 | 1 | 0 | 0 | 1 | 0 |
-| **Total** | 97 | 10 | 61 | 13 | 9 | 1 | 1 | 2 |
+| **Référence (91)** | 91 (76 `ENRICHMENT` + 15 `STATE_CHANGE`, circuit d'état non modifié) | ~~9 propositions / 11 faits~~ → **4 / 6** (§13) | 58 | 10 | 9 | 1 | 7 | 2 |
+| **Arrivées ultérieures** | 6 (toutes `ENRICHMENT`, 23/11 au matin) | 1 (FR-2026-0133 : appel annoncé du parquet ; la « non-mise en examen » recouvre `e75935cc`) | 3 | 1 | 0 | 0 | 1 | 0 |
+| **Total** | 97 | **5 propositions / 7 libellés distincts** | 61 | 11 | 9 | 1 | 8 | 2 |
 
 - **Couverture de l'export (§6) vs Neon :** l'export couvrait 88 propositions (75 `ENRICHMENT` relues). Neon couvre les 97 ; **aucune** proposition de référence n'a quitté l'ensemble écarté.
 - **Contextes complets :** 97 sur 97 ont un verdict de rattachement (94 `OK`, 3 `DOUTEUX`), une mémoire lue (28 affaires sans aucun événement consigné — un état réel, plus une donnée absente), les faits déjà soumis, l'article et sa date. 6 propositions appartiennent à une affaire sous HOLD (FR-2026-0004, FR-2026-0048) : aucune n'est `NOUVEAU`.
@@ -161,6 +161,8 @@ Voir `CAS_BFM_BAUDIN_TITON_23_11.md` (diagnostic, tableau par élément, enrichi
 - **Ce que ce rejeu ne fait pas :** il ne **représente** rien à l'éditeur (ces 10 propositions restent écartées sans message : la reproposition est le rattrapage de production, hors de cette étape).
 
 **Date de publication de l'article BFMTV (réconciliée).** Neon, `articles.publication_date` = **2026-07-09** (colonne lue en texte : pas un décalage d'export) ; la page écrit « ce vendredi 10 juillet » et sa métadonnée dit 2026-07-10. Cause : la date enregistrée est celle de la **découverte** (flux de la veille), la page n'étant lue qu'à défaut (`maintenance-cycle`, « date de PUBLICATION… celle de la découverte »). Ce n'est **pas** la date de la mobilisation (jeudi 9 juillet, fait distinct) ; la coïncidence des deux jours ne doit pas les confondre. Conséquence : la source s'affiche « 09/07/2026 » dans les messages ; aucune date de fait n'en dépend (les paroles n'ont pas de date établie). Non modifié ici (règle de priorité de la date : décision de conception).
+
+> **Actualisation (§13).** Les « 10 propositions nouvelles / 13 libellés » de ce tableau ont été ramenées à **5 / 7** après vérification fait par fait : 5 faits étaient déjà dans les fiches publiées, 1 recouvrement entre deux propositions de FR-2026-0133. Les anciens totaux ne sont pas une cible.
 
 ## 11. Paroles attribuées — le circuit existant les traite désormais
 
@@ -187,10 +189,35 @@ Rejeu du même rapport : **0 doublon** (10 propositions avant et après ; une ve
 
 **Échec minoritaire : bilan distinct.** `watch-updates` écrit `bilan : complet | clos_avec_erreurs | incomplet | echec` (rapport et sortie) ; `garde-quotidien marquer --bilan` le consigne (`quotidien:<nom>:bilan`) ; le workflow le transmet de l'étape A à l'étape Z. Scénario (base isolée) : jour 1 — 1 recherche sur 3 échoue → code 0, **`clos_avec_erreurs`**, jour consigné ; jour 2 (simulé) — « 0 ignorée, 3 cherchées » (les réussites d'hier ne comptent pas), l'affaire en erreur est reprise, **`complet`**.
 
-## 13. Vérifications finales
+## 13. Paroles jusqu'aux fiches, source connue non qualifiée, deux rapprochements du rejeu
 
-`run-all` : voir la PR (CI du commit final). Tests propres au lot : `test-faux-faits-revue` 22, `test-acte-procedural` 18, `test-negation-actes` 13, `test-signaux-actes` 8, `test-reprise-bornee` 8, `test-recherche-veille` 19, `test-article-multi-affaires` 12, `test-paroles-attribuees` 12, `test-sources-suivies` 25 (acteurs).
+### 13.1 Pourquoi aucune fiche n'était indiquée (journal des paroles : `fiches [—]`, `fiche=—`)
+**Cause : montage de test incomplet — aucun défaut de code.** La destination « fiche » exige une fiche **approuvée** : revue « validé » d'Adrien `[Fiche approuvée <8 hex>] <id> hash=<empreinte du dossier actuel>` (`fiche-page.ficheApprouvee` / `empreinteApprouvee`, lue par `project-evenements`). La base isolée n'en portait aucune : la projection ne pouvait pas désigner de fiche. Les fiches de production POC-05 et POC-09 **sont** approuvées (`data/evenements.json`). Le message de l'éditeur annonçait déjà la fiche (il lit l'artefact du dépôt) — la divergence annoncé/effectif venait du seul montage. Complété avec les conditions réelles (empreinte calculée sur le dossier courant), sans affaiblir aucune garde.
+
+### 13.2 Parcours jusqu'au rendu local (base isolée, mêmes scripts, `astro build` local)
+Source connue → proposition → message → `VALIDATE` de deux paroles (une Baudin, une Titon) → matière validée → fiche approuvée → **rendu des deux pages** :
+- **POC-05** : « Paroles et réactions » affiche le parent à prénom d'emprunt à astérisque, sa qualité telle qu'écrite, l'extrait mot pour mot, « Propos rapportés dans un article du 10 juillet 2026 » (repli existant : la date de la déclaration n'est pas établie, seule la publication l'est), « Position de son auteur, rapportée par le média : elle n'établit ni les faits ni le contenu de la décision », source BFMTV. **POC-09** : idem pour la mère d'une élève de Titon, après les deux réactions déjà publiées (ministre, parents parties civiles).
+- **Non validées : absentes** (porte-parole, avocates, second parent de Baudin ; source synthétique). **Destinations annoncées = effectives** : fiche + bloc « Familles, avocats, syndicats, associations » du Hub Paris 11e, pour chacune des deux.
+- **Second passage complet** (veille, notifier, application, projection, nouveau build) : état identique (matière de paroles, propositions, envois), **rendu des deux fiches identique octet pour octet**, une seule occurrence de chaque parole.
+
+### 13.3 Source déjà connue, jamais qualifiée pour ses paroles — traitement ordinaire
+**Défaut établi :** la preuve par claim ne relit pas une page dont le claim est déjà vérifié (« déjà vérifiés (mémoire) 4, claims à prouver 0 »). Un article de réaction sur une relaxe déjà établie n'était donc jamais relu : ses paroles n'étaient jamais lues, même redécouvert.
+**Complément minimal (même fichier, aucun moteur, aucun connecteur, aucune règle propre à une affaire) :**
+- **Nouvelles sources réellement lues** : inchangé — la lecture produit les paroles (branches « analyse neuve » et « analyse réutilisée »).
+- **Sources connues** : quand une affaire a de l'activité dans le rapport du jour, ses sources connues (`articles` liés à ses propositions + `sources`) **jamais qualifiées pour leurs paroles** le sont, **au plus 3 par affaire et par cycle**, **une seule fois** (marqueur `discovery_etat` `paroles|<version>|<affaire>|<article>` ; une page inaccessible est réessayée après 7 jours). Aucun retraitement quotidien de l'historique.
+- **Reprise ponctuelle des anciennes sources** : `node scripts/maintenance-cycle.mjs --paroles-connues FR-…,POC-…` (sans veille ni rapport, hors workflow, 12 sources au plus par affaire).
+**Exercé, chemin ordinaire (faux Bing, pages locales, aucun pont manuel, aucune proposition insérée à la main) :** A — l'ancien code (extraction retirée d'une copie locale) lit et analyse les 3 sources, 0 parole, 0 marqueur ; B — le code final, même rapport, mémoire de la veille conservée : **4 sources connues qualifiées, 7 paroles proposées** ; B2 — second passage : 0 source, 0 proposition (**11 → 11**). F — une ancienne source connue d'une autre affaire (septembre) : `--paroles-connues` → 1 qualifiée, 1 parole ; rejouée → 0.
+
+### 13.4 Deux rapprochements du rejeu
+**FR-2026-0133 — `e75935cc` (Ouest-France, 20/11) et `3856733a` (ici, 20/11).** Même épisode : l'animateur présenté au juge d'instruction le 19 novembre, **non mis en examen** ; mêmes lieux, même jour. La « non-mise en examen » de `3856733a` **recouvre** la « présentation au juge sans mise en examen » de `e75935cc` (même famille de mesures, le libellé générique est compatible avec le précis). L'apport **distinct** de `3856733a` est **l'appel annoncé du parquet**. Aucune proposition n'est supprimée : le rejeu retire seulement le recouvrement du compte (1 proposition, 1 fait nouveau), et le notifier — qui dédoublonne déjà au niveau du fait — ne redemanderait que l'appel. Test ajouté (`test-acte-procedural` 7).
+**FR-2026-0114 — `0984d0e6` (audience du 22/02/2027).** Source déjà citée : Sud Ouest (30/09), référencée dans la fiche approuvée. Mémoire `case_events` : l'audience n'y est pas (un seul événement). **Contenu publié : l'étape « audience, 2027-02-22 » figure dans le déroulé de la fiche.** Le diagnostic de l'audit initial (« connue ») était **exact** ; le classement « nouvelle » du rejeu était le défaut : `dejaPublie` ne reconnaissait que les mesures d'institution, jamais un acte procédural déjà publié. **Correction minimale** (`fait-deja-publie`) : un acte procédural **daté** est déjà publié quand le déroulé porte une étape du même genre **le même jour** (audience, garde à vue, appel ; la détention se lit dans le texte de l'étape) ; **sans date, jamais** (doute = à décider). Test ajouté (`test-acte-procedural` 8). Même correction pour 4 détentions provisoires du rejeu (FR-2026-0137, POC-07, FR-2026-0122, FR-2026-0011), chacune vérifiée contre l'étape publiée du même jour.
+
+**Bilan actualisé (rejeu Neon, 97 propositions) :** voir le tableau du §10. Distinction : **5 propositions nouvelles**, **7 libellés distincts**, **7 faits distincts** (garde à vue FR-2026-0145 ; garde à vue + non-mise en examen FR-2026-0146 ; appel générique FR-2026-0046 ; garde à vue + présentation sans mise en examen FR-2026-0133 ; appel annoncé du parquet FR-2026-0133). Restent **douteux ou indéterminés** : les 2 `INDETERMINEE`, la 1 `RATTACHEMENT`, et les gardes à vue sans date (jamais tenues pour publiées).
+
+## 14. Vérifications finales
+
+`run-all` : voir la PR (CI du commit final). Tests propres au lot : `test-faux-faits-revue` 22, `test-acte-procedural` 20, `test-negation-actes` 13, `test-signaux-actes` 8, `test-reprise-bornee` 8, `test-recherche-veille` 19, `test-article-multi-affaires` 12, `test-paroles-attribuees` 12, `test-sources-suivies` 25 (acteurs).
 
 **Parcours sur base locale isolée rejoués avec le code final** (hors dépôt : dépendance PGlite non ajoutée ; journaux dans le dossier interne) : paroles (3 cas) · passage incomplet et reprise bornée · échec minoritaire et lendemain · contexte changé, interruption, HOLD (cas FR-2026-0004). Les parcours déjà prouvés (gel des faits, reprise après interruption) n'ont pas été reconstruits.
 
-**Limites déclarées.** (1) Les paroles ne sont pas rejouables sur les 97 propositions écartées (corps d'article requis) : elles passent à la prochaine lecture de chaque page. (2) La requalification d'une URL qui ne revient pas dans la veille passe par le pont manuel existant et un rapport ciblé : aucune option nouvelle. (3) Les 10 propositions `NOUVEAU` du §10 restent écartées : leur reproposition est le rattrapage de production, non exécuté. (4) Le rattachement d'une parole par le contenu s'arrête aux établissements de la même commune présents en base ; une déclaration dont ni le paragraphe, ni le contexte, ni le registre ne désignent une affaire est proposée en portée territoire, jamais devinée.
+**Limites déclarées.** (1) Les paroles ne sont pas rejouables sur les 97 propositions écartées (corps d'article requis) : elles passent à la prochaine lecture de chaque page. (2) La requalification d'une URL qui ne revient pas dans la veille passe par le pont manuel existant et un rapport ciblé : aucune option nouvelle. (3) Les 5 propositions `NOUVEAU` du §10 (actualisé au §13) restent écartées : leur reproposition est le rattrapage de production, non exécuté. (4) Le rattachement d'une parole par le contenu s'arrête aux établissements de la même commune présents en base ; une déclaration dont ni le paragraphe, ni le contexte, ni le registre ne désignent une affaire est proposée en portée territoire, jamais devinée.

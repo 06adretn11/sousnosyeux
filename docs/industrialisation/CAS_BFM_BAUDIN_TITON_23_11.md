@@ -118,3 +118,7 @@ Registre unique : `data/associations-watchlist.json`. Trois niveaux distincts, j
 | Me Kopp, Me Rebecca Royer | oui (rattachement : franceinfo + Le Média) | site professionnel (`kr-avocates.com`) ouvert : identité des deux avocates **confirmée**, **aucune** actualité ni réseau social | recherche de presse : 9 et 10 résultats |
 
 Ajouts au code existant : `data/associations-watchlist.json` (champs `porte_parole`, `canaux`, `collecte_reelle`, entrée `kopp-royer`, alias `MeTooÉcole`), mots-clés d'acteurs notables et deux requêtes contextuelles dans `scripts/watch-updates.mjs`. Aucun connecteur, aucune inscription, aucun abonnement, aucun compte créé. Une requête de ce test a répondu « sans flux » (consentement/limitation Google), non comptée.
+
+## 8. Du circuit à la fiche (23/11, soir)
+
+Le parcours complet — source connue non qualifiée → propositions → message → `VALIDATE` → matière validée → fiche approuvée → rendu local des deux fiches (Baudin, Titon) → second passage identique — est décrit au §13 de `LOT_CORRECTIF_MAINTENANCE_23_11.md`. La cause de l'absence de destination « fiche » dans le premier journal était un montage de test sans fiche approuvée, non un défaut de code.

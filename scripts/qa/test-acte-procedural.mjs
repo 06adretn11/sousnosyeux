@@ -9,6 +9,7 @@ import { detecterActesProcéduraux, libelleProcedural, MESURES_PROCEDURALES } fr
 import { memeFait, dejaConnu } from '../lib/nouveaute.mjs';
 import { faitsStructures, planReactions } from '../lib/evenement-institutionnel.mjs';
 import { classerEcartee } from '../lib/rejeu-ecartees.mjs';
+import { dejaPublie } from '../lib/fait-deja-publie.mjs';
 
 let ok = 0, ko = 0;
 const test = (nom, fn) => { try { fn(); ok++; console.log(`  ✔ ${nom}`); } catch (e) { ko++; console.log(`  ✘ ${nom}\n      ${String(e.message).split('\n').join('\n      ')}`); } };
@@ -117,6 +118,31 @@ test('14. rejeu : classement au niveau du fait (nouveau / sans apport / rattache
   vrai(classerEcartee({ ...base, rat: 'DOUTEUX', facts: [{ evidence: [PRESENTE] }] }, {}).classe === 'RATTACHEMENT', 'rattachement douteux proposé');
   const soumis = nouveau.faits;
   vrai(classerEcartee({ ...base, facts: [{ evidence: [PRESENTE, PAS_MEE] }] }, { soumis }).classe === 'DEJA_SOUMIS', 'même fait déjà soumis non reconnu');
+});
+
+// --- Recouvrement entre deux propositions du MÊME épisode (rejeu du 23/11, FR-2026-0133) : deux presses, deux jours, un seul fait « pas de mise en examen » ---
+const EPISODE_A = ['Un animateur de la commune, près de Caen, a été présenté à un juge d’instruction, jeudi 19 novembre 2026, à l’issue de sa garde à vue démarrée mardi.', 'Le juge n’a pas mis en examen le trentenaire, au vu des premiers éléments recueillis.'];
+const EPISODE_B = ['L’animateur, mis en cause pour violences sexuelles sur des enfants, n’a finalement pas été mis en examen par le juge d’instruction le 19 novembre 2026.', 'Le procureur annonce qu’il fait appel.'];
+test('7. même épisode, deux sources : « présenté à un juge, pas mis en examen » et « n’a pas été mis en examen » sont UN fait ; l’appel annoncé du parquet reste l’apport DISTINCT', () => {
+  const a = detecterActesProcéduraux(EPISODE_A, { pubDate: '2026-11-20', courant: 'enquête' }), b = detecterActesProcéduraux(EPISODE_B, { pubDate: '2026-11-20', courant: 'enquête' });
+  const pres = a.find((f) => f.mesure === 'presentation_sans_mise_en_examen'), nonMee = b.find((f) => f.mesure === 'non_mise_en_examen'), appel = b.find((f) => f.mesure === 'appel_parquet');
+  vrai(pres && nonMee && appel, `${a.map((f) => f.mesure)} / ${b.map((f) => f.mesure)}`);
+  vrai(memeFait(pres, nonMee), 'la non-mise en examen de la seconde source recouvre la présentation au juge de la première (même jour, même épisode)');
+  vrai(!memeFait(pres, appel) && appel.realisation === 'annoncée', 'l’appel annoncé est un fait distinct, jamais retiré avec le recouvrement');
+  // Ce que voit l’éditeur : le fait déjà soumis par la première proposition n’est pas redemandé ; seul l’appel reste (une proposition n’est pas supprimée pour une partie redondante).
+  const restants = b.filter((f) => !a.some((s) => memeFait(f, s)));
+  vrai(restants.length === 1 && restants[0].mesure === 'appel_parquet', `restants : ${restants.map((f) => f.mesure)}`);
+});
+
+test('8. fait procédural DATÉ déjà dans le déroulé de la fiche publiée : « déjà publié » (cas FR-2026-0114, audience du 22/02/2027) ; sans date ou un autre jour : à décider', () => {
+  const dossier = { deroule: [{ type: 'garde_a_vue', date: '2026-08-26', texte: 'L’animateur est replacé en garde à vue.' }, { type: 'audience', date: '2027-02-22', texte: 'Date fixée pour l’audience.' }, { type: 'decision', date: '2026-09-02', texte: 'L’animateur est placé en détention provisoire.' }] };
+  const f = (mesure, event_date) => ({ mesure, event_date, realisation: 'annoncée' });
+  vrai(dejaPublie(dossier, f('audience_annoncee', '2027-02-22'), 'https://exemple.invalid/a') !== null, 'audience du même jour = déjà publiée');
+  vrai(dejaPublie(dossier, f('audience_annoncee', '2027-03-01'), 'https://exemple.invalid/a') === null, 'une autre date d’audience est un autre fait');
+  vrai(dejaPublie(dossier, f('garde_a_vue', null), 'https://exemple.invalid/a') === null, 'une garde à vue SANS date n’est jamais tenue pour publiée');
+  vrai(dejaPublie(dossier, f('garde_a_vue', '2026-09-30'), 'https://exemple.invalid/a') === null && dejaPublie(dossier, f('garde_a_vue', '2026-08-26'), 'https://exemple.invalid/a') !== null, 'garde à vue : même jour seulement');
+  vrai(dejaPublie(dossier, f('detention_provisoire', '2026-09-02'), 'https://exemple.invalid/a') !== null, 'détention lue dans le texte de l’étape du même jour');
+  vrai(dejaPublie(dossier, f('appel_parquet', '2026-09-05'), 'https://exemple.invalid/a') === null, 'aucun appel dans le déroulé : à décider');
 });
 
 console.log(`\n  ${ok} réussis · ${ko} en échec\n`);

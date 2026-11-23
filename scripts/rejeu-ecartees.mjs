@@ -50,17 +50,25 @@ const resultats = lignes.map((l) => {
   if (l.aa === 'ENRICHMENT' && l.rat == null && classe !== 'DEJA_CONSIGNE') { classe = 'INDETERMINEE'; motif = 'verdict de rattachement absent : rien n’est établi'; }
   // Un rattachement NON ÉTABLI (DOUTEUX) : aucun fait détecté n'établit pas que l'article n'apporte rien à CETTE affaire — il n'a simplement pas été lu pour elle.
   else if (l.aa === 'ENRICHMENT' && l.rat !== 'OK' && classe === 'SANS_APPORT') { classe = 'INDETERMINEE'; motif = `rattachement ${l.rat} : l’absence de fait n’établit pas l’absence d’apport`; }
+  let faitsRetenus = r.faits, redondants = [];
   if (classe === 'NOUVEAU') {
     const neufs = r.faits.filter((f) => !vusNouveaux.some((v) => v.case_id === l.case_id && memeFait(v.f, f)));
     r.faits.forEach((f) => vusNouveaux.push({ case_id: l.case_id, f }));
-    if (!neufs.length) { classe = 'DEJA_SOUMIS'; motif = 'même fait déjà proposé par une autre écartée du rejeu (un fait = une demande)'; }
+    if (!neufs.length) { classe = 'DEJA_SOUMIS'; motif = 'même fait déjà proposé ou consigné par une autre écartée du rejeu (un fait = une demande)'; }
+    // Une proposition n'est jamais retirée pour une PARTIE redondante : seuls les faits distincts sont comptés comme nouveaux, le recouvrement est dit.
+    else { faitsRetenus = neufs; redondants = r.faits.filter((f) => !neufs.includes(f)); if (redondants.length) motif = `${motif} — recouvre ${redondants.length} fait(s) déjà proposé(s) par une autre écartée (retiré(s) du compte)`; }
   }
+  // Un fait DÉJÀ PUBLIÉ (daté) couvre aussi sa version sans date proposée par une autre écartée : il entre dans la mémoire du rejeu au même titre qu'un fait nouveau.
+  if (classe === 'DEJA_CONSIGNE') r.faits.forEach((f) => vusNouveaux.push({ case_id: l.case_id, f }));
   return { k, case_id: l.case_id, action: l.aa, cree: l.cree, classe, motif, reference: reference ? reference.has(k) : null, contexte,
-    faits: r.faits.map((f) => ({ mesure: f.mesure, libelle: f.libelle_public, date: f.event_date, periode: f.event_period, realisation: f.realisation })) };
+    faits: faitsRetenus.map((f) => ({ mesure: f.mesure, libelle: f.libelle_public, date: f.event_date, periode: f.event_period, realisation: f.realisation })),
+    redondants: redondants.map((f) => ({ mesure: f.mesure, date: f.event_date })) };
 });
 const compte = (liste) => { const c = {}; for (const r of liste) c[r.classe] = (c[r.classe] || 0) + 1; return c; };
 console.log(`propositions écartées sans message (rejeu) : ${resultats.length}${reference ? ` · dans le périmètre de référence : ${resultats.filter((r) => r.reference).length} · arrivées depuis : ${resultats.filter((r) => !r.reference).length}` : ''}`);
 for (const [k, v] of Object.entries(compte(resultats)).sort()) console.log(`  ${k.padEnd(14)} ${v}`);
+const nouveaux = resultats.filter((r) => r.classe === 'NOUVEAU');
+console.log(`  NOUVEAU : ${nouveaux.length} proposition(s) · ${nouveaux.reduce((n, r) => n + r.faits.length, 0)} libellé(s) distinct(s) · ${nouveaux.reduce((n, r) => n + r.redondants.length, 0)} recouvrement(s) retiré(s)`);
 let sorties = [];
 if (reference) {
   const dedans = new Set(resultats.map((r) => r.k));

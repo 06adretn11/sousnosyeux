@@ -47,7 +47,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { connecter } from './lib/neon.mjs';
 import { extraireCorps } from './lib/corps-article.mjs';
-import { etatAffaire, fingerprint, PRIMITIVE_VERSION } from './lib/etat-affaire.mjs';
+import { etatAffaire, fingerprint, PRIMITIVE_VERSION, rattacher } from './lib/etat-affaire.mjs';
 import { comprendre, evidenceLitterale, contratVersion } from './lib/comprendre-source.mjs';
 import { assurerArticle, enregistrerProposition } from './lib/persist-etat-affaire.mjs';
 import {
@@ -106,7 +106,9 @@ const domaine = (u) => { try { return new URL(u).hostname.replace(/^www\./, '');
 const cle = (a) => `${norm(a.title)}|${domaine(a.source_domain || a.url || '')}`;
 
 // --- entrées ----------------------------------------------------------
-const rapport = JSON.parse(readFileSync(RAPPORT ? resolve(ROOT, RAPPORT) : resolve(ROOT, 'data/watch-report.json'), 'utf8'));
+// `--paroles-connues FR-…,POC-…` : REPRISE PONCTUELLE des sources déjà connues de ces affaires, jamais qualifiées pour leurs paroles (aucune veille, aucun rapport). Hors workflow : un appel humain, une fois.
+const PAROLES_CONNUES = new Set((val('--paroles-connues') || '').split(',').map((x) => x.trim()).filter((x) => /^[A-Za-z0-9-]{3,30}$/.test(x)));
+const rapport = PAROLES_CONNUES.size ? { results: [] } : JSON.parse(readFileSync(RAPPORT ? resolve(ROOT, RAPPORT) : resolve(ROOT, 'data/watch-report.json'), 'utf8'));
 const pontPath = resolve(ROOT, 'data/maintenance-urls.json');
 const pont = existsSync(pontPath) ? JSON.parse(readFileSync(pontPath, 'utf8')) : {};
 
@@ -376,7 +378,7 @@ const F = {
   url_non_resolue: 0, fetch_echoue: 0, qualifies: 0,
   NO_CHANGE: 0, NEW_SOURCE_NO_STATE_CHANGE: 0, STATE_CHANGE_CANDIDATE: 0,
   AMBIGUOUS: 0, SOURCE_ACCESS_BLOCKED: 0, SOURCE_REVIEW_REQUIRED: 0,
-  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, pistes_suivies: 0, pistes_inaccessibles: 0, faits_deja_connus: 0,
+  propositions_ecrites: 0, propositions_deja_presentes: 0, reactions_nouvelles: 0, propositions_reactions: 0, sources_connues_qualifiees: 0, sources_connues_inaccessibles: 0, pistes_suivies: 0, pistes_inaccessibles: 0, faits_deja_connus: 0,
   appels_llm: 0, fetches: 0, octets: 0,
   analyses_ecrites: 0, analyses_reutilisees: 0, evidence_inventee: 0,
   input_tokens: 0, output_tokens: 0, cout_usd: 0,
@@ -414,8 +416,49 @@ const dateCoherente = (eventDate, fenetre) => {
   return e >= Date.parse(fenetre.debut) - 30 * JOUR_MS && e <= Date.parse(fenetre.fin || fenetre.debut) + 10 * JOUR_MS;
 };
 
+// --- SOURCES DÉJÀ CONNUES, JAMAIS QUALIFIÉES POUR LEURS PAROLES -------------------------------------------------------------------------------------------------------
+// La preuve par claim ne relit pas une page dont le claim est déjà vérifié (article de réaction sur une relaxe déjà établie) : ses paroles n'étaient donc jamais lues. Une fois par source et par
+// affaire (marqueur `discovery_etat`, aucun nouveau stockage), le cycle qualifie pour leurs paroles — SEULEMENT — les sources connues d'une affaire qui a de l'activité aujourd'hui (un résultat
+// dans le rapport de la veille), au plus PAROLES_PAR_AFFAIRE par affaire et par cycle ; la reprise ponctuelle (--paroles-connues) en traite davantage, sans veille. Aucun historique rescanné chaque jour :
+// une source qualifiée (ou inaccessible depuis moins de 7 jours) n'est jamais relue.
+const PAROLES_PAR_AFFAIRE = 3, PAROLES_PONCTUEL = 12;
+const marquesParoles = new Map();
+for (const m of await sql`select cle, valeur, maj::text maj from discovery_etat where cle like ${'paroles|' + PAROLES_VERSION + '|%'}`) marquesParoles.set(m.cle, { valeur: m.valeur, maj: m.maj });
+const cleParoles = (case_id, article_id) => `paroles|${PAROLES_VERSION}|${case_id}|${article_id}`;
+const aMarquerParoles = new Set();
+const marquee = (case_id, article_id) => { const m = marquesParoles.get(cleParoles(case_id, article_id)); return !!m && (m.valeur !== 'inaccessible' || Date.now() - Date.parse(m.maj) < 7 * 864e5); };
+async function marquerParoles(case_id, article_id, valeur = 'qualifiée') {
+  marquesParoles.set(cleParoles(case_id, article_id), { valeur, maj: new Date().toISOString() });
+  if (DRY) return;
+  await sql`insert into discovery_etat (cle, valeur) values (${cleParoles(case_id, article_id)}, ${valeur}) on conflict (cle) do update set valeur = excluded.valeur, maj = now()`;
+}
+async function qualifierParolesConnues(fiche, { max }) {
+  const connues = await sql`select distinct a.article_id, a.url, a.media, a.publication_date::text pd from state_proposals p join articles a on a.article_id = p.article_id
+                            where p.case_id = ${fiche.case_id} and a.url is not null`;
+  const sources = (fiche.sources || []).filter((x) => x?.url).map((x) => ({ article_id: 'ART-' + fingerprint(x.url).slice(0, 10), url: x.url, media: x.media, pd: x.publication_date ? String(x.publication_date).slice(0, 10) : null }));
+  const vues = new Set(), liste = [];
+  for (const x of [...connues, ...sources]) { if (!x.url || x.url.includes('news.google.com') || vues.has(x.url)) continue; vues.add(x.url); liste.push(x); }
+  const aTraiter = liste.filter((x) => !marquee(fiche.case_id, x.article_id)).sort((a, b) => String(a.pd || '').localeCompare(String(b.pd || ''))).slice(0, max);
+  for (const x of aTraiter) {
+    const page = await lirePage(x.url, cacheDocs);
+    F.fetches++; F.octets += page.octets || 0;
+    if (!page.ok) { F.sources_connues_inaccessibles++; await marquerParoles(fiche.case_id, x.article_id, 'inaccessible'); continue; }
+    F.sources_connues_qualifiees++;
+    const att = rattacher(fiche, page.corps);
+    if (att.rattachement !== 'OK') { await marquerParoles(fiche.case_id, x.article_id, 'non_rattachee'); continue; }   // une page qui ne nomme pas l'affaire n'a pas de parole à lui attribuer
+    const article = { article_id: x.article_id, media: x.media || null, publication_date: x.pd || page.publie_le || null, url: x.url, body: page.corps, content_fingerprint: fingerprint(page.corps) };
+    const rx = reactionsDe(fiche, article, page.corps, { seulementParoles: true }).filter((f) => f.nature === 'parole');
+    if (rx.length && !DRY) {
+      await assurerArticle(sql, article);
+      await ecrireReactions({ case_id: fiche.case_id, article_id: article.article_id, content_fingerprint: article.content_fingerprint, version: PRIMITIVE_VERSION, rattachement: 'OK',
+        CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, SOURCE_DATE: article.publication_date, finalite: 'inconnue', REQUIRES_HUMAN_REVIEW: true, source_connue: true }, rx);
+    }
+    await marquerParoles(fiche.case_id, x.article_id, 'qualifiée');
+  }
+}
+
 /** Réponses publiques NOUVELLES d'un article (absentes de la mémoire de l'affaire). Pas de modèle : vocabulaire et libellés fermés. */
-function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
+function reactionsDe(fiche, article, corps, { viaPiste = false, seulementParoles = false } = {}) {
   const memoire = memoireFaits.get(fiche.case_id) || [];
   const pub = String(article.publication_date || '').slice(0, 10) || null;
   const autres = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).map((f) => f.etablissement);
@@ -426,13 +469,14 @@ function reactionsDe(fiche, article, corps, { viaPiste = false } = {}) {
   const soeursMemeEtablissement = fiches.some((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune && cleEtab(f.etablissement) && cleEtab(f.etablissement) === cleEtab(fiche.etablissement));
   // Mémoire des AUTRES affaires de la même commune : un fait de portée territoire déjà consigné pour l'une d'elles n'est pas reproposé pour sa voisine (dejaConnuChezVoisines).
   const voisines = fiches.filter((f) => f.case_id !== fiche.case_id && f.commune === fiche.commune).flatMap((f) => memoireFaits.get(f.case_id) || []);
-  const r = extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
+  const r = seulementParoles ? [] : extraireReactions(corps, { etablissement: fiche.etablissement, anneeRef: pub, autres, titre: String(corps).split('\n\n')[0], lieAffaire: !viaPiste, commune: fiche.commune, soeursMemeEtablissement }) // le corps commence par le titre de la page
     .filter((x) => x.libelle_public && !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)) && (!viaPiste || estFaitDeTerritoireNomme(x)));
   // PAROLES ATTRIBUÉES (même lecture, même corps, aucun appel supplémentaire) : déclarations entre guillemets d'un locuteur nommé ou anonymisé par le média. Jamais via une piste
   // (un article lié ne nomme pas l'établissement) ; la mémoire des affaires voisines ne compare que le libellé (locuteur + extrait), jamais type + jour.
   const paroles = viaPiste ? [] : extraireParoles(corps, { etablissement: fiche.etablissement, autres, commune: fiche.commune, caseId: fiche.case_id, anneeRef: pub, registre: REGISTRE_ACTEURS }).faits
     .filter((x) => !dejaConnu(x, memoire, { pubDate: pub }) && !(x.portee === 'territoire' && dejaConnuChezVoisines(x, voisines)));
   F.paroles_nouvelles = (F.paroles_nouvelles || 0) + paroles.length;
+  if (!viaPiste && article.article_id) aMarquerParoles.add(`${fiche.case_id}|${article.article_id}`);   // cette source est qualifiée pour ses paroles : jamais relue pour cela
   F.reactions_nouvelles += r.length;
   return [...r, ...paroles];
 }
@@ -876,6 +920,8 @@ function fixturesLecteur(dossier, S) {
 // =====================================================================
 // BOUCLE PAR AFFAIRE
 // =====================================================================
+// REPRISE PONCTUELLE (--paroles-connues) : les sources connues de ces affaires, sans veille ni rapport.
+for (const id of PAROLES_CONNUES) { const base = parId.get(id); if (base && (!ONLY || ONLY === id)) await qualifierParolesConnues(base, { max: PAROLES_PONCTUEL }); }
 for (const r of rapport.results) {
   if (ONLY && r.case_id !== ONLY) continue;
   const base = parId.get(r.case_id);
@@ -897,6 +943,8 @@ for (const r of rapport.results) {
     }
     continue;
   }
+  // Affaire avec de l'ACTIVITÉ aujourd'hui : ses sources connues, jamais qualifiées pour leurs paroles, le sont maintenant (bornées, une fois).
+  if (!LEGACY && (r.new_articles || []).length) await qualifierParolesConnues(fiche, { max: PAROLES_PAR_AFFAIRE });
   const bruts = r.new_articles || [];
   F.bruts += bruts.length;
 
@@ -1222,7 +1270,10 @@ ligne('moteur', MOTEUR);
 ligne('appels LLM', F.appels_llm);
 ligne('documents lus par le modèle', F.docs_lus_par_modele);
 ligne('propositions écartées : fait déjà validé', F.decisions_deja_prises);
+for (const k of aMarquerParoles) { const [c, a] = k.split('|'); if (!marquee(c, a)) await marquerParoles(c, a); }
 ligne('analyses réutilisées', F.analyses_reutilisees);
+ligne('sources connues qualifiées (paroles)', F.sources_connues_qualifiees);
+ligne('paroles nouvelles proposées', F.paroles_nouvelles || 0);
 ligne('analyses NO_CHANGE écrites', F.analyses_ecrites);
 ligne('citations non littérales', F.evidence_inventee);
 ligne('tokens in/out', F.input_tokens + ' / ' + F.output_tokens);
