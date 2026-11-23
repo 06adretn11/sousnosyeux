@@ -868,6 +868,16 @@ for (const r of rapport.results) {
   const fiche = ETAT_DU_RAPPORT && r.statut_judiciaire ? { ...base, statut_judiciaire: r.statut_judiciaire } : base;
 
   F.affaires++;
+  // RECHERCHE EN ERREUR (audit du 21/11/2026). Une recherche qui a échoué n'est jamais « rien de nouveau » : la ligne `case_checks` porte NON_EXAMINE (valeur
+  // existante : « rien n'a été lu ») et le marqueur [RECHERCHE_EN_ERREUR] dans `strategy` ; ni mémoire, ni routage, ni preuve ne sont touchés.
+  if (r.etat_recherche === 'ERREUR' || (r.error && r.etat_recherche === undefined)) {
+    F.recherches_en_erreur = (F.recherches_en_erreur || 0) + 1;
+    if (!DRY) {
+      await sql`insert into case_checks (case_id, strategy, primitive_version, engine, n_resultats, n_deja_vus, n_doublons, n_non_pertinents, n_candidats, n_bloques, resultat, vus)
+                values (${r.case_id}, ${`[RECHERCHE_EN_ERREUR] ${[r.query, r.query_open].filter(Boolean).join(' | ')}`.slice(0, 900)}, ${PRIMITIVE_VERSION}, ${MOTEUR}, 0, 0, 0, 0, 0, 0, 'NON_EXAMINE', '[]')`;
+    }
+    continue;
+  }
   const bruts = r.new_articles || [];
   F.bruts += bruts.length;
 
@@ -1115,7 +1125,8 @@ for (const r of rapport.results) {
   const resultat = lus.length === 0
     ? (attenduLire ? 'NON_EXAMINE' : 'NO_NEW_INFORMATION')
     : (lus.some((s) => s.sortie !== 'NO_CHANGE') ? 'NOUVEAUTE_DETECTEE' : 'NO_NEW_INFORMATION');
-  const strategie = [r.query, r.query_open].filter(Boolean).join(' | ') || '(requête non consignée par la veille)';
+  // Tentative RÉUSSIE sans rien ramener = [FLUX_VIDE] (distinct d'une erreur) ; [REPLI] : la requête de repli sans guillemets a été utilisée.
+  const strategie = `${r.etat_recherche === 'FLUX_VIDE' ? '[FLUX_VIDE] ' : ''}${r.repli ? '[REPLI] ' : ''}${[r.query, r.query_open].filter(Boolean).join(' | ') || '(requête non consignée par la veille)'}`;
 
   if (!DRY) {
     await sql`

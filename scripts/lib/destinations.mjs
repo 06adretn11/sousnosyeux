@@ -58,6 +58,9 @@ export function destinationsDe(fait, ctx) {
   const lienFiche = fait.portee !== 'territoire' || communeDansTerritoire(c.commune, fait.territoire, c.departement);
   const out = { fiche: !gelee && ctx.approuvees.has(fait.case_id) && lienFiche ? fait.case_id : null, hubs: [], bloques: [] };
   const departementDeCommune = new Map([...ctx.cases.values()].map((x) => [norm(x.commune), x.departement]));
+  // Un acte procédural (garde à vue, appel, détention…) vit dans la CHRONOLOGIE de la fiche (case_events), jamais dans un Hub : aucun bloc de Hub n'a ce sens
+  // (le bloc « mesures » est celui des collectivités) et matiere-validee.mjs ne le projette pas. Le message n'annonce donc aucun Hub.
+  if (fait.nature === 'acte_procédural') return out;
   for (const [hub, p] of Object.entries(HUBS_PERIMETRES)) {
     if (!ctx.hubs[hub]?.publie) continue;
     const dedans = fait.portee === 'territoire'

@@ -46,7 +46,10 @@ export async function lireMatiereValidee(sql, { case_id = null, commune = null, 
   // Deux événements de jours différents au libellé identique (deux rassemblements) sont deux faits.
   const vus = new Set();
   const uniques = items.filter((i) => { const k = `${i.case_id}|${i.libelle}|${i.date ?? i.periode ?? ''}`; if (vus.has(k)) return false; vus.add(k); return true; });
-  return uniques.filter((i) => (case_id ? i.case_id === case_id : true)
+  // Un acte procédural validé (garde à vue, appel, détention…) est un ÉVÉNEMENT de l'affaire (case_events → chronologie de la fiche), pas une information de Hub :
+  // il ne rejoint jamais les blocs « mesures » d'un Hub par la matière validée.
+  return uniques.filter((i) => i.nature !== 'acte_procédural')
+    .filter((i) => (case_id ? i.case_id === case_id : true)
     && (commune ? norm(i._commune) === norm(commune) || (i.territoire && norm(i.territoire) === norm(commune)) : true)
     && (departement ? norm(i._dep) === norm(departement) || (i.territoire && norm(i.territoire) === norm(departement)) : true))
     .map(({ _commune, _dep, ...i }) => i);

@@ -24,6 +24,8 @@ import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonVala
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
 import { dejaPublie } from './lib/fait-deja-publie.mjs';
+import { detecterActesProcéduraux, faitDeInstitutionnel } from './lib/acte-procedural.mjs';
+import { memeFait } from './lib/nouveaute.mjs';
 import { pagesSiValide, pagesParFait } from './lib/destinations.mjs';
 import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mjs';
 import { portNeon } from './lib/relais-social-db.mjs';
@@ -212,12 +214,20 @@ async function decisionReactions(cle, p, faits) {
     select q.facts from state_proposals q
      where q.case_id = ${p.case_id} and q.proposal_id <> ${p.proposal_id} and q.decision is null and q.analysis_action = 'ENRICHMENT'
        and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = q.proposal_id::text)`;
-  const cleFait = (f) => `${f?.libelle_public}|${f?.event_date ?? f?.event_period ?? ''}`;
-  const dejaSoumis = new Set(soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []).map(cleFait)));
-  if (neufs.every((f) => dejaSoumis.has(cleFait(f)))) throw new Error('même information déjà soumise à décision : une seule demande');
+  // Déduplication au niveau du FAIT (libellé + dates non contradictoires), pas du couple libellé|date exact : « appel formé » sans date et le même daté du 18/11 sont un seul fait.
+  const dejaSoumis = soeurs.flatMap((q) => (Array.isArray(q.facts) ? q.facts : []));
+  // Un fait déjà soumis par une autre demande ouverte n'est pas redemandé, même quand d'autres faits de cette proposition restent à décider.
+  const montres = neufs.filter((f) => !dejaSoumis.some((s) => memeFait(f, s)));
+  if (!montres.length) throw new Error('même information déjà soumise à décision : une seule demande');
+  const propresMontres = propres.filter((f) => montres.includes(f));
+  // FAITS MONTRÉS = FAITS ÉCRITS (revue du 23/11/2026). Une proposition dont les faits sont des actes procéduraux détectés sur ses citations est GELÉE à ce qui est montré :
+  // `facts` devient la liste structurée des faits proposés (avec leur citation littérale). appliquer-decisions écrit exactement ceux-là, jamais une re-détection recalculée
+  // sur une mémoire ou un état qui ont pu changer entre l'envoi et le clic. Idempotent : une proposition déjà structurée n'est pas réécrite.
+  if (!process.env.SNY_DRY && montres.some((f) => f.nature === 'acte_procédural') && !faitsStructures(p.facts).length)
+    await sql`update state_proposals set facts = ${JSON.stringify(montres)}::jsonb where proposal_id = ${p.proposal_id} and decision is null`;
   const complement = await complementDeclaration(p);
-  const pv = pagesSiValidee(p.case_id, neufs);   // { flat, parFait } ou null : les pages sont dites FAIT PAR FAIT (chaque fait a sa portée, donc sa destination)
-  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, neufs, !propres.length, pv?.flat ?? null, pv?.parFait ?? null) + complement, boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
+  const pv = pagesSiValidee(p.case_id, montres);   // { flat, parFait } ou null : les pages sont dites FAIT PAR FAIT (chaque fait a sa portée, donc sa destination)
+  return envoyer(messageEnrichissement({ ...p, publication_date: p.pd }, montres, !propresMontres.length, pv?.flat ?? null, pv?.parFait ?? null) + complement, boutonsEtat(cle)); // `pd` = date AAAA-MM-JJ (texte), jamais l objet Date
 }
 /** Publication d'organisme suivi : ce que la proposition ne dit pas d'elle-même (attribution, rattachement, dates) + le lien de continuité avec l'information déjà envoyée. */
 async function complementDeclaration(p) {
@@ -264,6 +274,12 @@ async function decisionInstitutionnelle(cle) {
   const structures = faitsStructures(p.facts);
   if (p.rat === 'OK' && structures.length) return decisionReactions(cle, p, structures);
   const inst = p.rat === 'OK' ? detecterInstitutionnel(citationsDe(p)) : null;
+  // ACTES PROCÉDURAUX sans changement de statut (garde à vue, présenté au juge sans mise en examen, appel, détention, remise en liberté, audience annoncée) :
+  // un fait judiciaire nouveau est une proposition ARBITRABLE (VALIDATE → case_events), jamais « source seule » (audit du 21/11/2026, FR-2026-0133).
+  // Le circuit est celui des faits structurés : dédoublonnage au niveau du FAIT (planReactions), fiche déjà à jour, même fait déjà soumis.
+  const memoire = p.rat === 'OK' ? await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null` : [];
+  const proc = p.rat === 'OK' ? detecterActesProcéduraux(citationsDe(p), { pubDate: p.pd, courant: p.courant, memoire }) : [];
+  if (proc.length) return decisionReactions(cle, p, [...proc, ...(inst ? [faitDeInstitutionnel(inst, p.ed)] : [])]);
   // Aucun fait nouveau à décider (nouvelle source, rappel, rejeu) : AUCUN message — jamais un clic ni une information inutile.
   if (!inst) throw new Error('aucune information nouvelle à décider (source seule) : aucun message');
   const [deja] = await sql`select 1 x from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;

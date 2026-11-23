@@ -39,6 +39,26 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Sens des actes — négation, portée, rappel (« n’a pas été mis en examen » n’est pas une mise en examen)',
+    script: 'scripts/qa/test-negation-actes.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Actes procéduraux sans changement de statut — fait décidable, libellé fermé, dates, déduplication au niveau du fait, aucun faux fait',
+    script: 'scripts/qa/test-acte-procedural.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Revue contradictoire du 23/11 — refus, négations de sujet, auteur et date d’un appel, présentation au juge, discours rapporté, famille de faits, destinations',
+    script: 'scripts/qa/test-faux-faits-revue.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Recherche de la veille — repli ciblé, échec ≠ flux vide ≠ résultats, reprise bornée, disjoncteur (faux fetch)',
+    script: 'scripts/qa/test-recherche-veille.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Sources suivies — publications d’organismes (attribution, rattachement par le texte, mémoire, échecs visibles)',
     script: 'scripts/qa/test-sources-suivies.mjs',
     bloquant: true,

@@ -61,19 +61,20 @@ export const titreSansMedia = (t) => String(t || '')
 const ACTES = [
   // Un appel FORMÉ : acte d'interjection, jamais la seule juridiction.
   ['APPEL_FORME', 6,
-    /\b(?:fai\w*|font|fera|feront|ont fait|a fait|interjet\w*)\s+(?:un\s+)?appel\b(?!\s+(?:a|aux|au)\s)|\bappel\s+(?:de|du|contre)\s+(?:la|le|cette)\s+(?:relaxe|condamnation|decision|jugement|peine)|\bse\s+pourvoi\w*/],
-  ['VERDICT_RELAXE', 5, /\b(?:relax\w*|acquitt\w*|non-lieu|classe sans suite|classement sans suite)\b/],
+    /\b(?:fai\w*|font|fera|feront|ont fait|a fait|interjet\w*)\s+(?:un\s+)?appel\b(?!\s+(?:a|aux|au|d'offres?|d'urgence|public|national)\b)|\bappel\s+(?:de|du|contre)\s+(?:la|le|cette)\s+(?:relaxe|condamnation|decision|jugement|peine)|\bse\s+pourvoi\w*|\bappel\s+(?:a|ont)\s+(?:ete\s+)?(?:forme|interjete|releve|depose)\w*/],
+  // « classée sans suite » (féminin) et « non lieu » (sans trait d'union) n'étaient pas reconnus (audit du 21/11/2026).
+  ['VERDICT_RELAXE', 5, /\b(?:relax\w*|acquitt\w*|non[- ]lieu|classe(?:e|es|s)? sans suite|classement sans suite)\b/],
   ['VERDICT_CONDAMNATION', 5, /\b(?:condamn\w*|ecop\w*|reclusion criminelle)\b/],
   // Deux actes distincts : la demande n'est pas la mesure.
   ['DEMANDE_LIBERTE', 3, /\bdemand\w*\s+(?:sa\s+|une\s+|de\s+|la\s+)?(?:remise en liberte|mise en liberte|liberation)\b/],
-  ['REMISE_LIBERTE', 3, /\b(?:remise en liberte|remis(?:e|es)? en liberte|remettre en liberte|liberee?s?)\b/],
+  ['REMISE_LIBERTE', 3, /\b(?:remise en liberte|remis(?:e|es)? en liberte|remettre en liberte|liberee?s?(?!\s+(?:de|d')\s*(?:ses|son|sa|leurs|la|l'|le|les|des|cette|ce)\b))\b/],
   ['REQUISITION', 4, /\b(?:requis|requise|requises|requiert|requisitions?|requisitoire|reclam\w+\s+\d+)\b/],
   ['DELIBERE', 4, /\b(?:delibere|rend sa decision|decision attendue|verdict attendu)\b/],
   ['RENVOI', 4, /\brenvoy\w*\s+(?:devant|au tribunal|en correctionnelle|aux assises)|\brenvoi\s+devant\b/],
   ['AUDIENCE', 4, /\b(?:proces|comparait|comparution|audience|juge(?:e|es|s)?\b(?:\s+pour|\s+a|\s+ce|\s+mardi|\s+lundi)|s'ouvre)\b/],
   ['MISE_EN_EXAMEN', 3, /\bmis(?:e|es)?\s+en\s+examen\b|\bmise\s+en\s+examen\b/],
-  ['ECROU', 3, /\becroue?s?\b|\bdetention provisoire\b|\bplaces? en detention\b|\bmandat de depot\b/],
-  ['INTERPELLATION', 2, /\bgarde a vue\b|\binterpell\w*|\bdeferre?s?\b/],
+  ['ECROU', 3, /\becroue?s?\b|\bdetention provisoire\b|\bplac\w+ en detention\b|\bmandat de depot\b/],
+  ['INTERPELLATION', 2, /\bgarde a vue\b|\binterpell\w*|\bdefere\w*/],
   ['SUSPENSION', 2, /\bsuspendu\w*|\bsuspension\b|\becarte\w*|\blicenci\w*/],
   ['PLAINTE', 1, /\bplaintes?\b/],
   // Vocabulaire de la phase initiale : « soupçonné », « accusé », « visé par ».
@@ -85,12 +86,100 @@ const ACTES = [
   ['PEINE_NON_QUALIFIEE', null, /\b\d+\s+(?:ans?|mois)\s+de\s+prison\b|\bprison\s+(?:ferme|avec sursis)\b|\bans?\s+ferme\b/],
 ];
 export const STAGE_ACTE = Object.fromEntries(ACTES.map(([a, s]) => [a, s]));
+export const ACTES_REGEX = Object.fromEntries(ACTES.map(([a, , re]) => [a, re]));
 
 /**
  * Actes énoncés dans un texte, du plus prioritaire au moins.
  * Un verdict dans le texte l'emporte sur une réquisition qui y est rappelée
  * (« relaxé alors que le parquet avait requis »).
  */
+// ---------------------------------------------------------------------
+// NÉGATION ET RAPPEL (audit du 21/11/2026). Un acte n'est « énoncé » que s'il est AFFIRMÉ et COURANT dans sa proposition :
+//   « n'a pas été mis en examen », « présenté au juge sans mise en examen », « aucune mise en examen », « pas de condamnation »
+//   → l'acte est NIÉ (jamais dans la liste) ;
+//   « avait été mis en examen », « six mois après la mise en examen », « déjà condamné » → l'acte est RAPPELÉ : il date d'avant
+//   l'article et n'établit rien de nouveau (jamais dans la liste).
+// Portée : la négation ne couvre que la PROPOSITION qui la porte. Une virgule, « mais », « puis », « et a/est/ont… » ouvrent une
+// proposition neuve (« n'a pas été condamné mais a été mis en examen » → mise en examen AFFIRMÉE). Seuls des mots-outils peuvent
+// séparer la marque de négation de l'acte : « n'a pas contesté la condamnation » n'est PAS une négation de la condamnation.
+// ---------------------------------------------------------------------
+const FRONTIERE_PROPOSITION = /[.;:!?,]|\b(?:mais|puis|toutefois|cependant|alors que|tandis que|en revanche|et (?:a|ont|est|sont|va|vont)|et (?:l'|le |la |les )?\w+ (?:a|ont|est|sont|va|vont)|et (?:il|elle|ils|elles) \w+)\b/g;
+const FILLER = "(?:(?:a|ont|eu|ete|etre|est|sont|placement|en|mise|examen|mandat|depot|remise|liberte|encore|finalement|toujours|donc|meme|fait|l'objet|d'une?|une?|la|le|les|des?|du|pas|ni|sa|son|ses|leur|aucun|aucune|formellement|officiellement|non plus|plutot)\\s+){0,5}";
+const NEGATION_AVANT = new RegExp(`(?:\\bpas|\\bsans|\\baucune?s?|\\bjamais|\\bni|\\bnon|\\bnul(?:le)?)\\s+${FILLER}$`);
+// Incises courtes qui ne changent pas le sujet : « n'a pas, pour l'instant, été mis en examen » reste UNE proposition.
+const INCISE = /,\s*(?:pour l'instant|pour le moment|a ce stade|a ce jour|dans un premier temps|a priori|pour autant|officiellement|formellement|en l'etat|toutefois|d'ailleurs)\s*,/g;
+// Négation par le clitique « ne / n' » suivi de pas / jamais / plus avant l'acte, quels que soient les mots intercalés (même proposition, 80 caractères) :
+// « n'a pas été formellement mis en examen », « ne sera pas placé en garde à vue », « de ne pas le placer en garde à vue », « n'a pas ordonné sa remise en liberté ».
+const NEG_CLITIQUE = /(?:\bn'|\bne\s)(?:[a-z']+\s+){0,3}(?:pas|jamais|plus|point|guere)\b/;
+// Un verbe de parole ou d'attitude entre la négation et l'acte nie le COMMENTAIRE, pas l'acte : « n'a pas souhaité commenter sa mise en examen », « n'a pas contesté la mise en examen »,
+// « ne conteste pas sa mise en examen mais nie les faits » → la mise en examen a bien eu lieu.
+const ATTITUDE = /\b(?:comment\w*|contest\w*|nie|nier|nient|niee|souhait\w*|regrett\w*|confirm\w*|evoqu\w*|oppos\w*|reconna\w*|dement\w*|discut\w*|critiqu\w*|reproch\w*)\b/;
+/** Un verbe de parole ou d'attitude figure-t-il APRÈS le dernier « ne / n' » de la proposition (« ne conteste pas sa mise en examen ») ? */
+function attitudeApresClitique(avant) {
+  let idx = -1;
+  for (const m of avant.matchAll(/\bn'|\bne\s/g)) idx = m.index;
+  return idx >= 0 && ATTITUDE.test(avant.slice(idx));
+}
+// Sujet négatif : « Aucun des deux hommes n'a été mis en examen », « Personne n'a été placé… », « Ni l'un ni l'autre n'ont été… ».
+const NEG_SUJET = /\b(?:aucun\w*|nul(?:le)?|ni)\b[^.;:!?]{0,40}?(?:\bn'|\bne\s)|\bpersonne\s+(?:n'|ne\s)/;
+// Refus, rejet, renonciation, requête ou demande : l'acte est VOULU, REFUSÉ ou REQUIS, jamais constaté (« a refusé de le placer en détention provisoire »,
+// « a requis son placement en détention », « renonce à faire appel », « plutôt qu'en détention provisoire »). Ni affirmé ni rappelé.
+const ECARTEMENT = /\b(?:refus\w*|rejet\w*|ecart\w*|renonc\w*|abandonn\w*|requis\w*|requer\w*|souhait\w*|intention|entend\w*|pas question|pourr\w+|peut|peuvent|droit de|possibilite|delai pour)\b|\bplutot qu|\b(?:a|ont|avait|va|vont)\s+(?:\w+\s+)?demand\w*|\bdemand(?:ent|era\w*|ant)\b/;
+/** Négation par clitique ou sujet négatif, sauf si un verbe de parole ou d'attitude s'intercale (le commentaire est nié, pas l'acte). */
+function nieParClitique(avant) {
+  for (const re of [NEG_CLITIQUE, NEG_SUJET]) {
+    const m = re.exec(avant);
+    if (m && !ATTITUDE.test(avant.slice(m.index))) return true;
+  }
+  return false;
+}
+// Actes dont la négation / l'écartement se lit sur le clitique ou le refus qui précède (participes d'une mesure à l'égard d'une personne).
+const CODES_MESURE = new Set(['MISE_EN_EXAMEN', 'ECROU', 'INTERPELLATION', 'REMISE_LIBERTE', 'APPEL_FORME', 'PRESENTATION']);
+// « avait + participe » ne rappelle PAS un fait ancien quand il est rapporté au plus-que-parfait d'un discours du jour
+// (« Le parquet a indiqué que l'animateur avait été mis en examen jeudi ») : verbe de report dans la proposition, ou jour de semaine écrit juste après.
+const REPORT = /\b(?:indiqu\w*|precis\w*|annonc\w*|confirm\w*|declar\w*|explic\w*|affirm\w*|assur\w*|fait savoir|selon|d'apres)\b/;
+const JOUR_RECENT_APRES = /^\W*(?:\w+\s+){0,4}?(?:lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche|hier|aujourd'hui|ce matin|ce soir|cette nuit)\b/;
+// « après la relaxe » SEUL n'est pas un rappel : un titre de réaction du lendemain parle de la décision du jour. Seules les marques
+// d'ancienneté explicites rappellent : plus-que-parfait, « déjà », durée écoulée (« six mois après »), « depuis sa/la ».
+const RAPPEL_AVANT = new RegExp("(?:\\b(?:avait|avaient)\\s+(?:deja\\s+)?(?:ete\\s+)?(?:[a-z']+\\s+){0,2}|\\bdeja\\s+(?:ete\\s+)?|\\bdepuis\\s+(?:la\\s+|sa\\s+|son\\s+|leur\\s+)|\\b(?:mois|semaines?|jours?|ans?)\\s+apres\\s+(?:l'|la\\s+|sa\\s+|son\\s+)?)$");
+const PLUS_QUE_PARFAIT = /\b(?:avait|avaient)\s+(?:deja\s+)?(?:ete\s+)?(?:[a-z']+\s+){0,2}$/;
+/** Ce qui, dans SA proposition, précède l'occurrence (borné à 80 caractères). */
+function avantDansProposition(t, indice) {
+  const debut = t.slice(Math.max(0, indice - 80), indice).replace(INCISE, ' ');
+  let coupe = 0;
+  for (const m of debut.matchAll(FRONTIERE_PROPOSITION)) coupe = m.index + m[0].length;
+  return debut.slice(coupe).replace(/\s+/g, ' ');
+}
+const global = (re) => new RegExp(re.source, re.flags.includes('g') ? re.flags : `${re.flags}g`);
+/**
+ * Polarité de chaque occurrence d'un acte : au moins une occurrence AFFIRMÉE et COURANTE suffit.
+ * `nie` : négation (la phrase dit que l'acte n'a PAS eu lieu) ; `ecarte` : refusé / requis / demandé / abandonné (ni fait, ni nié) ; `rappele` : acte ancien.
+ */
+export function polarites(re, t, code = null) {
+  const p = { affirme: false, nie: false, rappele: false, ecarte: false };
+  for (const m of t.matchAll(global(re))) {
+    const avant = avantDansProposition(t, m.index);
+    const mesure = CODES_MESURE.has(code);
+    if ((NEGATION_AVANT.test(avant) && !(mesure && attitudeApresClitique(avant))) || (mesure && nieParClitique(avant))) p.nie = true;
+    else if (mesure && ECARTEMENT.test(avant)) p.ecarte = true;
+    // Une DEMANDE passée (« avait fait une demande de remise en liberté ») reste énoncée : le rappel ne s'applique qu'aux actes de procédure.
+    else if (code !== 'DEMANDE_LIBERTE' && RAPPEL_AVANT.test(avant) && !(PLUS_QUE_PARFAIT.test(avant) && (REPORT.test(avant) || JOUR_RECENT_APRES.test(t.slice(m.index + m[0].length, m.index + m[0].length + 60))))) p.rappele = true;
+    else p.affirme = true;
+  }
+  return p;
+}
+/** Détail pour l'audit et les tests : actes affirmés, niés (et jamais affirmés), rappelés (et jamais affirmés). */
+export function actesDetail(texte) {
+  const t = aplat(texte);
+  // demande ≠ mesure, comme dans actes() : « pour demander sa remise en liberté » n'est PAS une remise en liberté (faux fait trouvé à la revue du 23/11/2026).
+  const sansDemande = t.replace(/\bdemand\w*\s+(?:sa\s+|une\s+|de\s+|la\s+)?(?:remise en liberte|mise en liberte|liberation)\b/g, ' ');
+  const out = { affirmes: [], nies: [], rappeles: [], ecartes: [] };
+  for (const [a, , re] of ACTES) {
+    const p = polarites(re, a === 'REMISE_LIBERTE' ? sansDemande : t, a);
+    if (p.affirme) out.affirmes.push(a); else if (p.nie) out.nies.push(a); else if (p.ecarte) out.ecartes.push(a); else if (p.rappele) out.rappeles.push(a);
+  }
+  return out;
+}
 export function actes(texte) {
   const t = aplat(texte);
   // demande ≠ mesure : « demande sa remise en liberté » n'est pas une remise en liberté. On retire les
@@ -98,7 +187,7 @@ export function actes(texte) {
   // un corps qui rappelle la demande ET rapporte la mesure (Vic-la-Gardiole : « accepté de remettre en
   // liberté ») énonce bien les deux.
   const sansDemande = t.replace(/\bdemand\w*\s+(?:sa\s+|une\s+|de\s+|la\s+)?(?:remise en liberte|mise en liberte|liberation)\b/g, ' ');
-  const trouves = ACTES.filter(([a, , re]) => re.test(a === 'REMISE_LIBERTE' ? sansDemande : t)).map(([a]) => a);
+  const trouves = ACTES.filter(([a, , re]) => polarites(re, a === 'REMISE_LIBERTE' ? sansDemande : t, a).affirme).map(([a]) => a);
   const set = new Set(trouves);
   // La peine chiffrée n'est qualifiée que par le verbe qui l'accompagne.
   if (set.has('REQUISITION') || set.has('VERDICT_CONDAMNATION') || set.has('VERDICT_RELAXE')) set.delete('PEINE_NON_QUALIFIEE');
@@ -463,6 +552,9 @@ export function estLibelleGenerique(etab, commune) {
   return !!etab && !aplat(etab).split(/[^a-z0-9]+/).some((j) => j.length >= 3 && !GENERIQUES.has(j) && !GEN_LIBELLE.has(j) && !tokCommune.has(j));
 }
 
+// Rôles trop génériques pour fonder une requête de repli (« bordeaux autre », « saint valery en caux tiers ») : une requête absurde ne trouve rien ou trouve du bruit.
+const ROLES_GENERIQUES = ['scolaire', 'public', 'prive', 'autre', 'autres', 'tiers', 'parent', 'parents', 'direction', 'personnel', 'agent', 'agents', 'salarie', 'salaries', 'inconnu', 'precise'];
+const TERME_AFFAIRE = /\b(?:enquete|garde a vue|mis(?:e|es)? en examen|condamn\w*|proces|plaintes?|suspendu\w*|suspension|interpell\w*|agressions?|violences?|soupcon\w*|accus\w*|tribunal|parquet|signalements?|ecroue\w*|relax\w*|poursuivi\w*|licenci\w*|detention)\b/;
 export function requetesVeille(c, { fenetreJours = 45 } = {}) {
   // Un établissement ANONYME (« Centre périscolaire de Charly (non nommé) », « École non nommée ») ne se
   // cherche pas entre guillemets : la phrase exacte n'existera dans aucun article, la requête ne ramène
@@ -474,14 +566,46 @@ export function requetesVeille(c, { fenetreJours = 45 } = {}) {
   const libelleGenerique = estLibelleGenerique(etab, c.commune);
   const anonyme = /non nomm|\(/i.test(etab) || libelleGenerique;
   const nomCherche = libelleGenerique ? '' : etab.replace(/\(.*?\)/g, ' ').replace(/non nomm[ée]e?s?/gi, ' ').replace(/[/,]/g, ' ').replace(/\s+/g, ' ').trim();
-  const base = [etab ? (anonyme ? nomCherche : `"${etab}"`) : '', (c.commune || '').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim()].filter(Boolean).join(' ');
+  // Un SUBSTITUT de commune (« commune non précisée », « inconnue ») n'est pas un lieu : l'injecter dans la requête exige que ces mots figurent dans l'article (audit du 21/11/2026,
+  // FR-2026-0026 : 0 résultat). Le placeholder reste en base (anonymat conservé) ; il ne part jamais dans la recherche.
+  const communeBrute = (c.commune || '').replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
+  const commune = /\b(?:non precis|inconnu|non renseign|non nomm)/.test(aplat(communeBrute)) ? '' : communeBrute;
+  const base = [etab ? (anonyme ? nomCherche : `"${etab}"`) : '', commune].filter(Boolean).join(' ');
   const b = BOOSTERS[c.statut_judiciaire] || BOOSTERS['à qualifier'];
   const bq = b.map((x) => (/\s/.test(x) ? `"${x}"` : x)).join(' OR ');
+  // REPLI (jamais systématique : la veille ne le lance que si « avant » et « ouverte » ramènent 0 résultat, flux vide, sans erreur) : les mots DISTINCTIFS du nom, sans guillemets
+  // (la presse écrit « Saint-Jean-de-Passy », pas « Collège-lycée Saint-Jean-de-Passy ») + la commune. Un nom anonyme ou générique n'a pas de repli : rien de distinctif à chercher.
+  const jetons = anonyme ? [] : jetonsEtab(etab, { saint: true });
+  const repli = jetons.length ? `${jetons.join(' ')} ${racineCommune(commune)} (${bq})`.replace(/\s+/g, ' ').replace(/\s\(/, ' (') : null;
   // La requête ouverte est BORNÉE DANS LE TEMPS : sans borne, elle remonte tout l'historique
   // de l'établissement (mesuré : 686 résultats bruts contre 140, dont un club de foot et un
   // menu de restaurant). La requête « en avant » n'est, elle, jamais bornée : c'est elle qui
   // retrouve un appel déposé il y a trois mois.
-  return { avant: `${base} (${bq})`, ouverte: `${base} when:${fenetreJours}d` };
+  // REPLI COMMUNE : la presse titre souvent sur la COMMUNE et le rôle (« à Courbevoie, l'angoisse des parents après la suspension d'un animateur ») sans nommer l'école — FR-2026-0143 :
+  // l'article du 11/11 n'apparaissait qu'avec « Courbevoie animateur périscolaire ». Réservé aux communes SANS arrondissement (« Paris » + « animateur » ramène la capitale entière) ;
+  // borné dans le temps ; la lecture de la page vérifie ensuite que l'établissement est bien nommé (sinon SANS_PREUVE, jamais rattaché).
+  const roleMots = aplat(c.role_mis_en_cause || '').split(/[^a-z]+/).filter((m) => m.length >= 5 && !ROLES_GENERIQUES.includes(m)).join(' ');
+  const repliCommune = commune && !/\d/.test(commune) && !/\b(?:paris|lyon|marseille)\b/.test(aplat(commune)) && roleMots ? `${racineCommune(commune)} ${roleMots} when:${fenetreJours}d` : null;
+  return { avant: `${base} (${bq})`, ouverte: `${base} when:${fenetreJours}d`, repli, repliCommune,
+    repliCtx: { jetons, commune: racineCommune(commune), roleMots: roleMots.split(' ').filter(Boolean) } };
+}
+
+/**
+ * Les résultats d'un REPLI ne sont gardés que s'ils parlent de CETTE affaire dans leur TITRE (mesuré le 23/11/2026 : sans ce filtre le repli ajoutait jusqu'à 51 résultats hors sujet pour
+ * « Accueil de loisirs Jardin des petits » — « Père Jacques Hamel », « vol de carburant »).
+ *   · repli « distinctif » : au moins min(2, n) mots distinctifs du nom dans le titre, et pour un nom d'un seul mot distinctif, la commune aussi ;
+ *   · repli « commune »    : la commune ET un mot du rôle (« animateur ») dans le titre.
+ * Ne remplace ni le routage ni la lecture de la page (qui doit nommer l'établissement) : il évite seulement de leur envoyer le bruit.
+ */
+export function titreDeRepli(titre, forme, ctx) {
+  const t = aplat(titreSansMedia(titre));
+  const commune = ctx?.commune && ` ${t.replace(/[^a-z0-9]+/g, ' ')} `.includes(` ${ctx.commune} `);
+  // Le titre doit en outre DIRE une affaire (enquête, suspension, mis en examen…) : « Les animateurs de Courbevoie en grève » ou « Courbevoie : un animateur recrute » ne sont pas la même affaire.
+  if (forme === 'commune') return !!commune && (ctx.roleMots || []).some((m) => t.includes(m)) && TERME_AFFAIRE.test(t);
+  const jetons = ctx?.jetons || [];
+  if (!jetons.length) return false;
+  const presents = jetons.filter((j) => t.includes(j)).length;
+  return presents >= Math.min(2, jetons.length) && (jetons.length >= 2 || !!commune);
 }
 
 const MOTS_ACTE = {

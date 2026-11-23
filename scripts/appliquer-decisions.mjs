@@ -125,6 +125,8 @@ if (process.argv.includes('--generique')) {
   const { classer } = await import('./lib/appliquer-contrat.mjs');
   const { evenementDejaValide } = await import('./lib/routage-veille.mjs');
   const { detecterInstitutionnel, faitsStructures } = await import('./lib/evenement-institutionnel.mjs');
+  const { detecterActesProcéduraux, MESURES_PROCEDURALES } = await import('./lib/acte-procedural.mjs');
+  const { dejaConnu } = await import('./lib/nouveaute.mjs');
   const { schemaBoucle } = await import('./lib/telegram-clics.mjs');
   const { prevenir, prevenirUneFois, phrasePublication, phraseEnrichissement, esc } = await import('./lib/prevenir.mjs');
   const S = await schemaBoucle(sql);
@@ -181,9 +183,17 @@ if (process.argv.includes('--generique')) {
       // Faits structurés (proposition « +reactions ») : un événement par mesure de PORTÉE « établissement » ; une mesure « territoire »
       // (politique de collectivité visant plusieurs structures) n'est jamais écrite comme événement de cette affaire.
       const structures = faitsStructures(p.facts);
+      const memoireProc = p.rat === 'OK' && !structures.length ? await sql`select event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null` : [];
       const insts = p.rat !== 'OK' ? []
         : structures.length ? structures.filter((x) => x.portee !== 'territoire').map((x) => ({ ...x, ed: x.event_date || null }))
-        : [detecterInstitutionnel((Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || []))].filter(Boolean).map((x) => ({ ...x, ed: p.ed }));
+        : (() => {
+          const cites = (Array.isArray(p.facts) ? p.facts : []).flatMap((x) => x?.evidence || []);
+          // Mêmes faits que ceux montrés à l'éditeur (telegram-v0.decisionInstitutionnelle) : mesure institutionnelle + actes procéduraux sans changement de statut.
+          return [
+            ...[detecterInstitutionnel(cites)].filter(Boolean).map((x) => ({ ...x, ed: p.ed })),
+            ...detecterActesProcéduraux(cites, { pubDate: p.pd, courant: p.courant, memoire: memoireProc }).map((x) => ({ ...x, ed: x.event_date || null })),
+          ];
+        })();
       if (p.rat === 'OK' && structures.length && !insts.length) {
         dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | PORTÉE TERRITORIALE : aucune écriture (matière conservée dans state_proposals.facts)`);
         continue;
@@ -191,10 +201,19 @@ if (process.argv.includes('--generique')) {
       if (insts.length) {
         auto++;
         dire(`  ${p.k} | ${p.case_id} | ENRICHMENT institutionnel | AUTO_APPLICABLE`);
+        // Les faits écrits sont ceux qui ont été MONTRÉS (proposition gelée par le notifier : `facts` structurés). applied_event_id n'est posé qu'APRÈS tous les faits : un échec
+        // au deuxième laisse la proposition ouverte, et la reprise ne double rien (identité du fait ci-dessous).
+        let premierEvenement = null;
         for (const inst of insts) {
           dire(`      écriture prévue : événement ${inst.event_type} (${inst.mesure}, ${inst.realisation ?? 'prise de parole'}) · état judiciaire INCHANGÉ (${p.courant}) · libellé « ${inst.libelle_public} »`);
           if (DRY) continue;
-          const [deja] = await sql`select event_id from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
+          // Identité du fait : un acte procédural (libellé fermé) est le MÊME fait si sa mesure est de la même famille et que les dates ne se contredisent pas
+          // (un second appel d'une autre date, une seconde garde à vue ne sont pas avalés) ; une mesure institutionnelle garde l'identité (affaire, libellé).
+          const [deja] = MESURES_PROCEDURALES.includes(inst.mesure)
+            ? (await sql`select event_id, event_type::text event_type, event_date::text event_date, null::text event_period, libelle_public from case_events where case_id = ${p.case_id} and libelle_public is not null`)
+                // dejaConnu : famille de mesure pour les libellés fermés, repli par type et jour pour un événement rédigé à la main (comme le notifier).
+                .filter((e) => dejaConnu({ event_type: inst.event_type, mesure: inst.mesure, libelle_public: inst.libelle_public, event_date: inst.ed, event_period: inst.event_period }, [e], { pubDate: p.pd }))
+            : await sql`select event_id from case_events where case_id = ${p.case_id} and libelle_public = ${inst.libelle_public} limit 1`;
           let ev = deja?.event_id ?? null;
           if (ev) dire(`      = mesure déjà consignée (${String(ev).slice(0, 8)}) : preuve rattachée, aucun doublon`);
           else {
@@ -206,9 +225,10 @@ if (process.argv.includes('--generique')) {
             ev = r.event_id;
             dire(`      + événement ${inst.event_type} → ${String(ev).slice(0, 8)}${S.realisation ? '' : ' (colonne realisation absente : migration 019 non appliquée)'}`);
           }
-          await sql`update state_proposals set applied_event_id = coalesce(applied_event_id, ${ev}) where proposal_id = ${p.proposal_id} and decision = 'ACCEPT'`;
+          premierEvenement ??= ev;
           await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉvénement institutionnel consigné : ${esc(inst.libelle_public)} (${inst.realisation ?? 'prise de parole'}). L’état judiciaire ne change pas (${esc(p.courant)}).\n${phraseEnrichissement()}`);
         }
+        if (!DRY && premierEvenement) await sql`update state_proposals set applied_event_id = coalesce(applied_event_id, ${premierEvenement}) where proposal_id = ${p.proposal_id} and decision = 'ACCEPT'`;
         continue;
       }
     }
@@ -225,7 +245,7 @@ if (process.argv.includes('--generique')) {
         dire(`      écriture prévue : preuve rattachée à l'événement ${String(deja.event_id).slice(0, 8)} (${deja.event_type} du ${String(deja.event_date).slice(0, 10)}${deja.rapproche_par_publication ? ', rapproché par la date de publication' : ''}) · aucun nouvel événement · aucune transition · aucune écriture sur la fiche`);
         if (!DRY) {
           await sql`update state_proposals set applied_event_id = ${deja.event_id} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
-          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nCe fait (${esc(p.ap)}) était déjà consigné : la source est rattachée à l’événement existant, sans doublon ni nouvelle transition.\n${phrasePublication(p.pub)}`);
+          await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nCe fait (${esc(p.ap)}) était déjà consigné : la source est rattachée à l’événement existant, sans doublon ni nouvelle transition.${holds.has(p.case_id) ? `\n⚠️ <b>HOLD actif</b> sur cette affaire : le FAIT est en mémoire (événement) mais l’état global de la fiche reste « ${esc(p.courant)} » tant que le HOLD n’est pas levé par une décision humaine.` : ''}\n${phrasePublication(p.pub)}`);
         }
         continue;
       }

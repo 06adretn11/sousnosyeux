@@ -20,12 +20,12 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { requetesVeille } from './lib/routage-veille.mjs';
+import { requetesVeille, titreDeRepli } from './lib/routage-veille.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const CASES_PATH = resolve(ROOT, 'data/cases.json');
-const REPORT_PATH = resolve(ROOT, 'data/watch-report.json');
+const CASES_PATH = process.env.SNY_WATCH_CASES ? resolve(process.env.SNY_WATCH_CASES) : resolve(ROOT, 'data/cases.json');   // surcharge : tests isolés (avec --json)
+const REPORT_PATH = process.env.SNY_WATCH_REPORT ? resolve(process.env.SNY_WATCH_REPORT) : resolve(ROOT, 'data/watch-report.json');   // surcharge : tests isolés
 
 const ARGS = process.argv.slice(2);
 const DRY_RUN = ARGS.includes('--dry-run');
@@ -40,7 +40,7 @@ const NO_CONTEXT = ARGS.includes('--no-context');
 const USE_JSON = ARGS.includes('--json');
 
 const ARTICLE_SERVER = 'http://localhost:3456';
-const DELAY_BETWEEN_SEARCHES_MS = 2000;
+const DELAY_BETWEEN_SEARCHES_MS = process.env.SNY_DELAI_RECHERCHE_MS !== undefined ? Number(process.env.SNY_DELAI_RECHERCHE_MS) : 2000;
 
 // Les mots-clés de progression par état courant vivent dans
 // `lib/routage-veille.mjs` (BOOSTERS) : ce sont des BOOSTERS de recherche,
@@ -198,7 +198,10 @@ async function fetchRss(url, retries = 2) {
         },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.text();
+      const texte = await res.text();
+      // Une page de consentement ou de blocage répond 200 sans flux : ce n'est pas « zéro résultat » (hypothèse pour le 12/10/2026, non prouvée).
+      if (!/<rss[\s>]|<feed[\s>]/i.test(texte)) throw new Error('réponse sans flux RSS');
+      return texte;
     } catch (err) {
       if (i === retries) throw err;
       await sleep(1000 * (i + 1));
@@ -206,6 +209,45 @@ async function fetchRss(url, retries = 2) {
   }
 }
 
+
+const REPRISE_PAUSE_MS = process.env.SNY_DELAI_RECHERCHE_MS !== undefined ? Number(process.env.SNY_DELAI_RECHERCHE_MS) : 20000;
+const ECHECS_CONSECUTIFS_MAX = 5;
+const VIDES_EN_RAFALE_MAX = 8;
+const VIDES_AVANT_SANS_REPLI = 3;
+
+// Une recherche « maigre » (< SEUIL_MAIGRE résultats distincts, libellé entre guillemets) n'a pas démontré qu'elle trouve l'affaire : FR-2026-0143 (Courbevoie) ramenait UN
+// article déjà cité alors que l'article du 11/11 n'apparaissait qu'avec les mots distinctifs. À partir de SEUIL_MAIGRE résultats la requête a prouvé qu'elle atteint le sujet :
+// pas de repli. Le repli ne part donc ni à chaque absence de nouveauté, ni quand la recherche est riche.
+const SEUIL_MAIGRE = 3;
+
+/**
+ * Recherche d'UNE affaire : « avant » + « ouverte » ; REPLI (mots distinctifs sans guillemets) seulement si la recherche est maigre ET n'a rien de nouveau, sans erreur.
+ * Lève en cas d'échec technique.
+ * @param q  requêtes {avant, ouverte, repli}
+ * @param sources  sources déjà citées (pour savoir si un résultat est nouveau)
+ */
+async function chercherAffaire(q, sources = [], { repli: repliAutorise = true } = {}) {
+  const articles = parseRssItems(await fetchRss(googleNewsRssUrl(q.avant)));
+  await sleep(DELAY_BETWEEN_SEARCHES_MS);
+  const ouverts = parseRssItems(await fetchRss(googleNewsRssUrl(q.ouverte)));
+  // Union dédupliquée par (titre, média) : la requête ouverte n'ajoute que ce que la requête « en avant » n'a pas remonté.
+  const vus = new Set(articles.map((a) => `${a.title}|${a.media}`));
+  for (const a of ouverts) if (!vus.has(`${a.title}|${a.media}`)) articles.push(a);
+  let repli = false;
+  const maigre = () => articles.length < SEUIL_MAIGRE && !filterNewArticles(articles, sources).length;
+  // Repli 1 : mots distinctifs du nom, sans guillemets. Repli 2 (communes sans arrondissement) : commune + rôle, borné dans le temps. Chacun seulement si la recherche reste maigre et sans nouveauté.
+  for (const [forme, requete] of [['distinctif', q.repli], ['commune', q.repliCommune]]) {
+    // Jamais de repli pendant une rafale de flux vides (≥ VIDES_AVANT_SANS_REPLI consécutifs) : ce serait doubler la charge au moment même où une limitation est suspectée (12/10/2026).
+    if (!repliAutorise || !requete || !maigre()) continue;
+    await sleep(DELAY_BETWEEN_SEARCHES_MS);
+    const vusRepli = new Set(articles.map((a) => `${a.title}|${a.media}`));
+    const ajout = parseRssItems(await fetchRss(googleNewsRssUrl(requete)));
+    // Seuls les résultats dont le TITRE parle de cette affaire sont gardés (titreDeRepli) : le repli ne déverse pas le bruit de la commune dans le routage.
+    for (const a of ajout) if (!vusRepli.has(`${a.title}|${a.media}`) && titreDeRepli(a.title, forme, q.repliCtx)) articles.push(a);
+    repli = true;
+  }
+  return { articles, ouverts, repli };
+}
 
 async function analyzeArticle(url, caseContext) {
   try {
@@ -339,6 +381,35 @@ async function main() {
     console.log(`   source du stock : Neon (${cases.length} affaires : publiées + réexamens planifiés + candidates validées)`);
   }
 
+  // `--cases A,B,C` : lot BORNÉ (rattrapage ciblé) — seules ces affaires du stock sont cherchées, rien d'autre n'est refait.
+  // Valeur obligatoire et validée (revue du 23/11/2026) : « --cases » en dernier argument, une valeur vide ou un identifiant mal formé n'est PAS un lot vide silencieux.
+  let LOT = null;
+  if (ARGS.includes('--cases')) {
+    const brut = ARGS[ARGS.indexOf('--cases') + 1];
+    const ids = brut === undefined || brut.startsWith('--') ? [] : brut.split(',').map((s) => s.trim()).filter(Boolean);
+    if (!ids.length || ids.some((id) => !/^[A-Za-z0-9-]{3,30}$/.test(id))) {
+      console.error('❌ --cases attend une liste d\'identifiants séparés par des virgules (ex. --cases FR-2026-0012,FR-2026-0143)');
+      process.exit(1);
+    }
+    LOT = new Set(ids);
+  }
+  if (LOT) {
+    const hors = [...LOT].filter((id) => !cases.some((c) => c.case_id === id));
+    if (hors.length) console.log(`   ℹ️  hors stock (ignorées, jamais ajoutées au stock) : ${hors.length}`);
+    cases = cases.filter((c) => LOT.has(c.case_id));
+  }
+  // Reprise BORNÉE à l'échec : un créneau suivant du même jour ne refait PAS les affaires dont la recherche a déjà abouti aujourd'hui (case_checks : NO_NEW_INFORMATION ou
+  // NOUVEAUTE_DETECTEE, hors marqueur d'erreur). Sans l'option, comportement inchangé (stock entier).
+  if (ARGS.includes('--sauter-reussies-du-jour') && !USE_JSON) {
+    const { connecter } = await import('./lib/neon.mjs');
+    const { sql } = connecter();
+    const faites = new Set((await sql`select distinct case_id from case_checks
+                                       where (checked_at at time zone 'Europe/Paris')::date = (now() at time zone 'Europe/Paris')::date
+                                         and resultat in ('NO_NEW_INFORMATION', 'NOUVEAUTE_DETECTEE') and strategy not like '[RECHERCHE_EN_ERREUR]%'`).map((r) => r.case_id));
+    const avant = cases.length;
+    cases = cases.filter((c) => !faites.has(c.case_id));
+    console.log(`   ↩️  reprise bornée : ${avant - cases.length} affaire(s) déjà examinée(s) aujourd'hui ignorée(s), ${cases.length} restante(s)`);
+  }
   if (CASE_FILTER) {
     cases = cases.filter(c => c.case_id === CASE_FILTER);
     if (!cases.length) {
@@ -358,6 +429,7 @@ async function main() {
     results: [],
   };
 
+  let echecsConsecutifs = 0, interrompu = false, videsConsecutifs = 0;
   for (let i = 0; i < cases.length; i++) {
     const c = cases[i];
     const queries = buildSearchQuery(c);
@@ -373,30 +445,41 @@ async function main() {
       continue;
     }
 
-    let articles = [];
-    try {
-      articles = parseRssItems(await fetchRss(googleNewsRssUrl(queries.avant)));
-      await sleep(DELAY_BETWEEN_SEARCHES_MS);
-      const ouverts = parseRssItems(await fetchRss(googleNewsRssUrl(queries.ouverte)));
-      // Union dédupliquée par (titre, média) : la requête ouverte n'ajoute que
-      // ce que la requête « en avant » n'a pas remonté.
-      const vus = new Set(articles.map((a) => `${a.title}|${a.media}`));
-      for (const a of ouverts) if (!vus.has(`${a.title}|${a.media}`)) articles.push(a);
-      console.log(`   → ${articles.length} résultat(s) Google News (${ouverts.length} en requête ouverte)`);
-    } catch (err) {
-      console.log(`   ⚠️  Erreur recherche : ${err.message}`);
-      report.results.push({
-        case_id: c.case_id,
-        etablissement: c.etablissement,
-        commune: c.commune,
-        statut_judiciaire: c.statut_judiciaire,
-        query,
-        error: err.message,
-        new_articles: [],
-      });
+    // TENTATIVE, SUCCÈS, ERREUR (audit du 21/11/2026). Une recherche en échec n'est JAMAIS « rien de nouveau » : elle est consignée `etat_recherche: 'ERREUR'`
+    // (maintenance-cycle l'écrit NON_EXAMINE + marqueur). Reprise BORNÉE à l'échec : une seule nouvelle tentative de CETTE affaire après une pause ; les affaires
+    // déjà réussies ne sont jamais refaites. Disjoncteur : après ECHECS_CONSECUTIFS_MAX échecs d'affilée (service indisponible : 05/11/2026, 77 affaires sur 77),
+    // les affaires restantes sont consignées « non tentées » au lieu d'être martelées une à une pendant 45 minutes.
+    if (interrompu) {
+      console.log('   ⚠️  Non tentée : service de recherche indisponible (échecs consécutifs)');
+      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: 'non tentée : échecs consécutifs', new_articles: [] });
+      continue;
+    }
+    let rech = null, derniereErreur = null;
+    for (let essai = 1; essai <= 2 && !rech; essai++) {
+      try { rech = await chercherAffaire(queries, c.sources || [], { repli: videsConsecutifs < VIDES_AVANT_SANS_REPLI }); }
+      catch (err) { derniereErreur = err; console.log(`   ⚠️  Erreur recherche (essai ${essai}/2) : ${err.message}`); if (essai === 1) await sleep(REPRISE_PAUSE_MS); }
+    }
+    if (!rech) {
+      echecsConsecutifs++;
+      if (echecsConsecutifs >= ECHECS_CONSECUTIFS_MAX) interrompu = true;
+      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: derniereErreur?.message || 'erreur', new_articles: [] });
       await sleep(DELAY_BETWEEN_SEARCHES_MS);
       continue;
     }
+    echecsConsecutifs = 0;
+    // FLUX VIDES EN RAFALE (anomalie du 12/10/2026 : après ~20 affaires normales, 28 affaires d'affilée à zéro résultat, run 2,3 fois plus long, aucune erreur comptée — limitation
+    // de Google suspectée, NON PROUVÉE). Sur les jours normaux de la période (08/10→21/11) la plus longue série d'affaires sans NOUVEL article est de 4 ; un flux brut vide est un cas
+    // plus étroit encore. À VIDES_EN_RAFALE_MAX (8 = deux fois le maximum observé) flux vides consécutifs, les suivants ne valent plus « rien trouvé » : ERREUR consignée, reprise au prochain passage.
+    videsConsecutifs = rech.articles.length ? 0 : videsConsecutifs + 1;
+    if (videsConsecutifs > VIDES_EN_RAFALE_MAX) {
+      // Arrêt : les affaires restantes ne sont PAS cherchées (non tentées) ; le passage sort « incomplet » (code 3) et un créneau suivant reprend.
+      interrompu = true;
+      console.log('   ⚠️  Flux vide en rafale : limitation suspectée, recherche non retenue, veille interrompue');
+      report.results.push({ case_id: c.case_id, etablissement: c.etablissement, commune: c.commune, statut_judiciaire: c.statut_judiciaire, query, etat_recherche: 'ERREUR', error: 'flux vides consécutifs (limitation suspectée)', new_articles: [] });
+      continue;
+    }
+    const articles = rech.articles;
+    console.log(`   → ${articles.length} résultat(s) Google News (${rech.ouverts.length} en requête ouverte${rech.repli ? ' ; REPLI sans guillemets utilisé' : ''})`);
 
     const existingSources = c.sources || [];
     const latestDate = existingSources.map(s => s.publication_date).filter(Boolean).sort().pop() || '?';
@@ -450,6 +533,10 @@ async function main() {
       statut_judiciaire: c.statut_judiciaire,
       query,
       query_open: queries.ouverte,
+      // Succès de la tentative : FLUX_VIDE = la recherche a abouti et n'a rien ramené (distinct d'une erreur, d'un hors-sujet et d'un « déjà connu »).
+      etat_recherche: articles.length ? 'RESULTATS' : 'FLUX_VIDE',
+      n_flux: articles.length,
+      repli: rech.repli,
       new_articles: newArticles,
     });
 
@@ -496,9 +583,29 @@ async function main() {
   }
 
   if (!DRY_RUN) {
+    // Compteurs d'état de recherche (aucun titre, aucune URL : le journal est public).
+    const echecs = report.results.filter((r) => r.etat_recherche === 'ERREUR').length;
+    const fluxVides = report.results.filter((r) => r.etat_recherche === 'FLUX_VIDE').length;
+    const replis = report.results.filter((r) => r.repli).length;
+    report.searches_failed = echecs; report.flux_vides = fluxVides; report.replis = replis;
     await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
     console.log(`\n✅ Rapport écrit : data/watch-report.json`);
     console.log(`   ${report.cases_with_updates}/${report.total_cases_checked} affaire(s) avec nouveaux articles`);
+    console.log(`   recherches en erreur : ${echecs} · flux vides : ${fluxVides} · replis utilisés : ${replis}`);
+    // Aucune recherche n'a abouti : la veille est inutilisable. Sortie non nulle (la maintenance ne tourne pas, le passage du jour n'est pas consigné).
+    // En échec PARTIEL la veille continue : les affaires en erreur sont consignées NON_EXAMINE par la maintenance et reprises au prochain passage
+    // (la requête ouverte de 45 jours et la requête « en avant » couvrent l'intervalle) — aucune reprise ne refait les recherches réussies.
+    if (cases.length && echecs === cases.length) {
+      console.log('   ❌ aucune recherche n\'a abouti : passage non valide');
+      await writeFile(REPORT_PATH, JSON.stringify(report, null, 2), 'utf-8');
+      process.exitCode = 2;
+    } else if (cases.length && (interrompu || echecs * 2 > cases.length)) {
+      // PASSAGE INCOMPLET (code 3) : la veille a été interrompue (disjoncteur, rafale de flux vides) ou plus de la moitié des recherches ont échoué. La maintenance consigne ce qui
+      // a été trouvé et marque les autres NON_EXAMINE, mais le passage du jour n'est PAS consigné (workflow : sortie `incomplet`) : un créneau suivant reprend, borné aux échecs
+      // (--sauter-reussies-du-jour). Avant ce code, 9 affaires sur 10 en erreur sortaient en code 0 et le jour était marqué fait.
+      console.log(`   ⚠️  passage incomplet : ${echecs}/${cases.length} recherche(s) sans résultat${interrompu ? ', veille interrompue' : ''}`);
+      process.exitCode = 3;
+    }
     if (report.declarations_officielles_count > 0) {
       console.log(`   📢 ${report.declarations_officielles_count} déclaration(s) officielle(s) détectée(s)`);
     }
