@@ -293,9 +293,12 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     if (liberation) etat_actuel.push(`Évolution rapportée : ${liberation.texte}`);
     // DÉVELOPPEMENTS POSTÉRIEURS (décision du juge, appel du parquet, audience de la chambre de l'instruction…) : l'information principale d'une mise à jour ne reste pas cachée dans la chronologie (REVIEW de l'éditeur, FR-2026-0133, 23/11/2026).
     const DEV_RANG = { decision: 0, appel: 1, audience: 2 }, DEV = new Set(Object.keys(DEV_RANG));
-    developpements = dernier ? deroule.filter((d) => d !== dernier && DEV.has(d.type) && d._tri >= dernier._tri && !(d.type === 'audience' && d.date && d.date <= aujourdhui && /tribunal correctionnel|cour d['’]assises|cour criminelle|tribunal pour enfants|jugé|procès/i.test(d.texte)))
-      // Ordre de lecture : la décision d'abord, puis l'appel qui la conteste, puis l'audience qui en découle (un appel sans date ne se place pas par la date).
-      .sort((x, y) => DEV_RANG[x.type] - DEV_RANG[y.type]).slice(-3) : [];
+    // Plancher = DÉBUT de la phase en cours (première garde à vue ou mise en examen rapportée ; à défaut, l'étape qui fait l'état) : la phrase d'état peut être une étape récente (auditions, contrôle…) sans que la décision
+    // du juge qui la précède de quelques jours disparaisse du bloc du haut (défaut constaté sur la régénération de Rots, 23/11/2026).
+    const plancher = [...deroule].filter((d) => d.type === 'garde_a_vue' || d.type === 'mise_en_examen').map((d) => d._tri).sort()[0] ?? dernier?._tri ?? '';
+    const candidats = dernier ? deroule.filter((d) => d !== dernier && DEV.has(d.type) && d._tri >= plancher && d.texte !== liberation?.texte && !(d.type === 'audience' && d.date && d.date <= aujourdhui && /tribunal correctionnel|cour d['’]assises|cour criminelle|tribunal pour enfants|jugé|procès/i.test(d.texte))) : [];
+    // Un seul développement par nature (le plus récent), puis ordre de lecture : la décision d'abord, puis l'appel qui la conteste, puis l'audience qui en découle (un appel sans date ne se place pas par la date).
+    developpements = Object.keys(DEV_RANG).map((t) => candidats.filter((d) => d.type === t).sort((a, b) => a._tri.localeCompare(b._tri)).pop()).filter(Boolean);
     for (const d of developpements) etat_actuel.push(`Évolution rapportée : ${d.texte}`);
   }
   // ---- synthèse visuelle (composants existants de FicheUnique : `dossier.situation`, comme les pilotes) ---------------------------------
