@@ -73,6 +73,21 @@
         }
       }
     ],
+    "FR-2026-0012": [
+      {
+        "event_id": "5caddcf9-4cf0-4336-ba51-d9e1d6f8a2a9",
+        "date": null,
+        "type": "voie_de_recours",
+        "statut": null,
+        "libelle": "Selon la presse, un appel a été formé contre la décision.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "franceinfo",
+          "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/l-etablissement-catholique-stanislas-n-a-pas-tenu-compte-d-accusations-de-violences-sexuelles-visant-l-un-de-ses-professeurs-selon-mediapart_8274278.html",
+          "publie_le": "2026-11-09"
+        }
+      }
+    ],
     "FR-2026-0027": [
       {
         "event_id": "46766808-26d3-4f0b-bf28-7018fb43110f",
@@ -889,6 +904,45 @@
       "destinations": {
         "fiche": "FR-2026-0139",
         "hubs": []
+      }
+    },
+    {
+      "id": "bd3aa2b9e72a",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Philippe*, père d'une enfant ayant porté plainte : « On est heureux qu'il y ait un appel, mais à ce stade, l'appel ne concerne pas notre enfant »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Philippe*",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/on-se-sent-trahis-ridiculises-la-colere-des-parents-des-ecoles-titon-et-baudin-apres-la-relaxe-de-deux-animateurs-du-periscolaire_AN-202607100672.html",
+        "publie_le": "2026-07-10"
+      },
+      "parole": {
+        "acteur": "Philippe*",
+        "qualite": "père d'une enfant ayant porté plainte",
+        "citations": [
+          {
+            "texte": "On est heureux qu'il y ait un appel, mais à ce stade, l'appel ne concerne pas notre enfant"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "Prénom suivi d’un astérisque dans l’article ; propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
