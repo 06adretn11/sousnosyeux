@@ -548,13 +548,74 @@ async function clicEtat(cb, d, cle) {
   return 'double_clic';
 }
 
+// --- PAQUET PAR AFFAIRE (éditeur, 23/11/2026 : « 2 maintenance sur Rots et 6 sur Baudin : il faut absolument regrouper, sinon je ne sais plus ce que je valide ») ----------------
+// UN message par affaire pour les ENRICHISSEMENTS à décider : une ligne numérotée par proposition (libellé, qui / quand, source, preuve), UNE rangée de boutons par ligne.
+// Chaque bouton reste celui d'UNE proposition (sny:ACTION:clé) : la décision, l'idempotence et l'accusé sont ceux du circuit existant ; rien n'est validé en bloc.
+const jjmm = (d) => String(d).slice(0, 10).split('-').reverse().join('/');
+function ligneDuPaquet(i, p) {
+  const f = (Array.isArray(p.facts) ? p.facts : []).find((x) => x?.libelle_public) || {};
+  const quand = f.event_date ? jjmm(f.event_date) : f.event_period ? String(f.event_period) : `date non écrite · article du ${jour(p.publication_date)}`;
+  const parole = f.nature === 'parole';
+  const preuve = parole ? null : (f.evidence || []).find((e) => /[.!?]["»”]?\s*$/.test(String(e))) ?? (f.evidence || [])[0];
+  return [
+    `<b>${i}. ${esc(cut(f.libelle_public || 'information', 330))}</b>${f.realisation ? ` (${esc(f.realisation)})` : ''}`,
+    `   ${parole ? '' : `${esc(f.acteur_nomme || f.acteur || 'acteur non précisé')} · `}${esc(quand)}`,
+    ...(preuve ? [`   « ${esc(cut(String(preuve).replace(/\s+/g, ' '), 200))} »`] : []),
+  ].join('\n');
+}
+/** @param {string[]} ks clés (8 hex) de propositions ENRICHMENT d'UNE affaire, non décidées ; les messages individuels déjà envoyés perdent leurs boutons. */
+async function envoyerPaquet(ks) {
+  const ps = [];
+  for (const k of ks) { const p = await charger(k); if (!p.decision && p.analysis_action === 'ENRICHMENT') ps.push({ k, p }); }
+  if (ps.length < 2) return [];
+  if (new Set(ps.map((x) => x.p.case_id)).size !== 1) throw new Error('un paquet ne réunit que des propositions d’une même affaire');
+  ps.sort((a, b) => String(a.p.url).localeCompare(String(b.p.url))); // lignes d'une même source côte à côte (tri stable)
+  const p0 = ps[0].p, ids = [];
+  const entetePaquet = (n) => `🔄 <b>MAINTENANCE</b> · 📦 ${n} PROPOSITIONS À DÉCIDER\n<b>${esc(p0.etablissement)}</b> — ${esc(p0.commune)} · état judiciaire inchangé (${esc(p0.courant)})\n`
+    + 'Une ligne = une décision : les boutons d’une ligne ne concernent que cette ligne. VALIDATE ne publie rien immédiatement (pages concernées calculées ensuite, avec confirmation).\n';
+  // Les lignes d'une même SOURCE se suivent sous UN intitulé de source (média, parution, adresse) : jamais répété ligne à ligne.
+  const sourceDe = (p) => `\n📰 <b>${esc(p.media || 'source inconnue')}</b> · parue le ${jour(p.publication_date)}${/^https?:\/\//.test(p.url || '') ? `\n${esc(p.url)}` : ''}`;
+  const corps = (lot) => entetePaquet(lot.length) + lot.map((y, i) => `${i === 0 || lot[i - 1].p.url !== y.p.url ? sourceDe(y.p) + '\n' : ''}\n${ligneDuPaquet(i + 1, y.p)}`).join('\n');
+  // Telegram refuse plus de 4096 caractères : paquets successifs, jamais de ligne tronquée.
+  const lots = []; let cur = [];
+  for (const x of ps) { if (cur.length && corps([...cur, x]).length > 3800) { lots.push(cur); cur = [x]; } else cur = [...cur, x]; }
+  if (cur.length) lots.push(cur);
+  for (const lot of lots) {
+    const clavier = { inline_keyboard: lot.map((y, i) => [
+      { text: `✅ ${i + 1}`, callback_data: `sny:VALIDATE:${y.k}` }, { text: `🟡 ${i + 1}`, callback_data: `sny:REVIEW:${y.k}` }, { text: `⛔ ${i + 1}`, callback_data: `sny:REJECT:${y.k}` }]) };
+    const mid = await envoyer(corps(lot), clavier);
+    if (process.env.SNY_DRY) continue;
+    for (const y of lot) {
+      const pid = String(y.p.proposal_id);
+      const avant = await sql`select message_id from telegram_envois where cle = ${pid} and message_id is not null and kind = 'decision'`;
+      // Le message individuel déjà envoyé n'a plus de raison d'avoir des boutons : un seul endroit où décider.
+      for (const a of avant) await tg('editMessageReplyMarkup', { chat_id: ALLOWED, message_id: a.message_id, reply_markup: { inline_keyboard: [] } }).catch(() => {});
+      if (!avant.length) await sql`insert into telegram_envois (kind, cle, message_id) values ('decision', ${pid}, ${mid}) on conflict do nothing`;
+      ids.push(y.k);
+    }
+  }
+  return ids;
+}
+/** grouper <CASE_ID | clé,clé,…> : réunit en un paquet les enrichissements déjà présentés d'une affaire (ou les clés données). */
+async function grouper(arg) {
+  let ks;
+  if (/^[0-9a-f]{8}(,[0-9a-f]{8})*$/.test(arg || '')) ks = arg.split(',');
+  else {
+    const r = await sql`select left(p.proposal_id::text, 8) k from state_proposals p where p.case_id = ${arg} and p.decision is null and p.analysis_action = 'ENRICHMENT'
+      and exists (select 1 from telegram_envois t where t.cle = p.proposal_id::text and t.kind = 'decision' and t.message_id is not null) order by p.created_at`;
+    ks = r.map((x) => x.k);
+  }
+  const ids = await envoyerPaquet(ks);
+  console.log(`grouper : ${ids.length} proposition(s) réunie(s) en paquet${process.env.SNY_DRY ? ' (à blanc : aucune écriture, les ids ci-dessus ne sont pas comptés)' : ''}`);
+}
+
 // --- mode autonome (GitHub Actions) ------------------------------------
 // notifier : envoie, une seule fois par proposition, la matière traitée par la maintenance.
 //   STATE_CHANGE établi par une citation → décision (boutons) ; le reste → information.
 //   Ne sont pas envoyés : NO_CHANGE, propositions sans aucune citation, propositions périmées.
 async function notifier(max = 10) {
   const rows = await sql`
-    select left(p.proposal_id::text, 8) k, p.proposal_id::text pid, p.analysis_action aa,
+    select left(p.proposal_id::text, 8) k, p.proposal_id::text pid, p.case_id, p.analysis_action aa,
            p.statut_propose::text ap, p.facts, (p.payload ? 'declaration') decl, p.engine,
            coalesce((select array_agg(t.kind || ':' || (t.message_id is not null)::text) from telegram_envois t
                       where t.cle in (p.proposal_id::text, p.proposal_id::text || '#suite')), '{}') envois,
@@ -563,6 +624,8 @@ async function notifier(max = 10) {
      where p.decision is null
      order by p.created_at desc`;
   let envoyes = 0, ecartes = 0, bruit = 0;
+  const lotParAffaire = new Map(); // case_id → enrichissements à décider, envoyés en paquet après la boucle
+  const reelDry = process.env.SNY_DRY;
   for (const r0 of rows) {
     // Sans décision et sans aucun envoi : comme toujours. SUITE d'une information d'organisme suivi devenue décidable : une seule demande (lib/sources-suivies : aSolliciter).
     if (!aSolliciter({ decision: null, engine: r0.engine, decidable: r0.decidable, envois: r0.envois })) continue;
@@ -572,6 +635,12 @@ async function notifier(max = 10) {
     if (!utile) { bruit++; continue; } // déchet technique : jamais envoyé, réexaminé au prochain cycle sans coût
     let mid;
     try {
+      // Un ENRICHISSEMENT qui serait envoyé avec boutons est d'abord ÉVALUÉ à blanc (mêmes contrôles, aucune écriture, aucun envoi) : s'il est décidable, il rejoint le paquet de son affaire.
+      if (!reelDry && r.aa === 'ENRICHMENT' && !(r.decl && !(Array.isArray(r.facts) && r.facts.some((f) => f?.libelle_public)))) {
+        process.env.SNY_DRY = '1';
+        try { await decisionInstitutionnelle(r.k); } finally { delete process.env.SNY_DRY; }
+        if (dernierAvecBoutons) { lotParAffaire.set(r.case_id, [...(lotParAffaire.get(r.case_id) || []), { k: r.k, pid: r.pid }]); envoyes++; continue; }
+      }
       mid = r.decl && !(Array.isArray(r.facts) && r.facts.some((f) => f?.libelle_public)) ? await info(r.k) // publication d'organisme sans fait décidable : information
         : r.aa === 'STATE_CHANGE' && r.ap ? await decision(r.k)
         : r.aa === 'ENRICHMENT' ? await decisionInstitutionnelle(r.k) // décision si une mesure d'institution est établie, sinon information
@@ -600,6 +669,15 @@ async function notifier(max = 10) {
     await sql`insert into telegram_envois (kind, cle, message_id)
               values (${dernierAvecBoutons ? 'decision' : 'info'}, ${r.pid}, ${mid}) on conflict do nothing`;
     envoyes++;
+  }
+  // Paquets : plusieurs enrichissements d'une même affaire = UN message ; un seul reste un message individuel (comportement d'avant).
+  for (const [, lot] of lotParAffaire) {
+    const ids = lot.length >= 2 ? await envoyerPaquet(lot.map((x) => x.k)) : [];
+    for (const x of lot) {
+      if (ids.includes(x.k)) continue;
+      try { const mid = await decisionInstitutionnelle(x.k); await sql`insert into telegram_envois (kind, cle, message_id) values (${dernierAvecBoutons ? 'decision' : 'info'}, ${x.pid}, ${mid}) on conflict do nothing`; }
+      catch (e) { console.log(`écartée ${x.k} : ${e.message}`); }
+    }
   }
   console.log(`notifier : ${envoyes} envoyé(s), ${ecartes} écarté(s), ${bruit} sans matière utile, ${rows.length - envoyes - ecartes - bruit} en attente (plafond ${max}/cycle)`);
 }
@@ -720,6 +798,7 @@ try {
   else if (cmd === 'nouvelle') await nouvelle(arg);
   else if (cmd === 'poll') await poll(Number(arg) || 600);
   else if (cmd === 'notifier') await notifier(Number(arg) || 10);
+  else if (cmd === 'grouper') await grouper(arg);
   else if (cmd === 'notifier-nouvelles') await notifierNouvelles(Number(arg) || 5);
   else if (cmd === 'recevoir') await recevoir();
   else if (cmd === 'traiter') await traiter();
