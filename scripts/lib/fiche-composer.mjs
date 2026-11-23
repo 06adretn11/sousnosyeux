@@ -162,10 +162,24 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   }
   const deroule = [];
   const contradictions = [];
+  // PRÉFÉRENCE ENTRE DEUX ARTICLES D'UN MÊME MÉDIA pour un même fait (éditeur, 23/11/2026) : le plus RÉCENT représente le fait, à ces seules conditions :
+  //  - même média et même fait (les membres d'un groupe parlent du même fait de la même affaire) ;
+  //  - la DATE DE PUBLICATION ne départage que des membres sans date d'événement contradictoire : deux dates d'événement écrites et différentes, ou des valeurs chiffrées qui se
+  //    contredisent, sont une CONTRADICTION PERSISTANTE — jamais résolue par la seule récence (elle est signalée comme avant) ;
+  //  - une date d'événement écrite l'emporte déjà sur la parution (ordre précédent) : un article récent qui RAPPELLE un épisode ancien sans le dater ne remplace pas la source qui le date ;
+  //  - l'article antérieur reste cité (sources_complementaires, _preuves) : la traçabilité n'est jamais perdue ; un développement ULTÉRIEUR (décision, appel…) est une autre étape, jamais absorbée.
+  const actualisation = (a, b) => {
+    if (!a.doc.media || a.doc.media !== b.doc.media || a.doc.url === b.doc.url) return 0;
+    if (a.date && b.date && a.date_nature === 'evenement' && b.date_nature === 'evenement' && a.date !== b.date) return 0;
+    if (quantitesNonAttestees(a.texte, b.citation).length && quantitesNonAttestees(b.texte, a.citation).length && valeursDivergentes(a.texte, b.texte)) return 0;
+    return String(b.doc.publication_date).localeCompare(String(a.doc.publication_date));
+  };
   for (const g of groupes) {
     // Représentant : l'entrée DATÉE avec date attestée ; à défaut la plus ancienne publication.
     // Représentant : date écrite d'abord, puis la phrase la plus complète, puis la plus ancienne parution.
-    const ordre = [...g.membres].sort((a, b) => (b.date_nature === 'evenement') - (a.date_nature === 'evenement') || b.texte.length - a.texte.length || String(a.doc.publication_date).localeCompare(String(b.doc.publication_date)));
+    const ordre = [...g.membres].sort((a, b) => (b.date_nature === 'evenement') - (a.date_nature === 'evenement') ||
+      actualisation(a, b) ||
+      b.texte.length - a.texte.length || String(a.doc.publication_date).localeCompare(String(b.doc.publication_date)));
     const e = ordre[0];
     // « mars 2019 » et « 14 mars 2019 » ne divergent pas : une date moins précise qui contient la date plus précise est compatible avec elle.
     const toutes = new Set(g.membres.filter((m) => m.date).map((m) => m.date));
@@ -255,6 +269,7 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
   const ligneAppel = issue && issue.appel === 'OUI' ? ligneProcesEnAppel({ deroule, apres: issue.date, aujourdhui }) : null;
   const etat_actuel = [];
   let liberation = null;
+  let developpements = [];
   if (issue) {
     // Sans phrase de décision extraite : phrase STRUCTURÉE (nature + date écrite), jamais la citation brute (elle peut contenir un âge, un nom, un nombre d'enfants).
     const NOM_ISSUE = { condamnation: 'une condamnation', relaxe: 'une relaxe', non_lieu: 'un non-lieu', classement: 'un classement sans suite', acquittement: 'un acquittement' };
@@ -276,6 +291,12 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     // Une phrase d'état qui parle de détention (« écroué », « placée en détention provisoire ») ne doit pas rester seule quand une décision de remise en liberté est rapportée : l'état n'est plus celui de la phrase.
     liberation = dernier ? liberationPosterieure(dernier.texte, deroule) : null;
     if (liberation) etat_actuel.push(`Évolution rapportée : ${liberation.texte}`);
+    // DÉVELOPPEMENTS POSTÉRIEURS (décision du juge, appel du parquet, audience de la chambre de l'instruction…) : l'information principale d'une mise à jour ne reste pas cachée dans la chronologie (REVIEW de l'éditeur, FR-2026-0133, 23/11/2026).
+    const DEV_RANG = { decision: 0, appel: 1, audience: 2 }, DEV = new Set(Object.keys(DEV_RANG));
+    developpements = dernier ? deroule.filter((d) => d !== dernier && DEV.has(d.type) && d._tri >= dernier._tri && !(d.type === 'audience' && d.date && d.date <= aujourdhui && /tribunal correctionnel|cour d['’]assises|cour criminelle|tribunal pour enfants|jugé|procès/i.test(d.texte)))
+      // Ordre de lecture : la décision d'abord, puis l'appel qui la conteste, puis l'audience qui en découle (un appel sans date ne se place pas par la date).
+      .sort((x, y) => DEV_RANG[x.type] - DEV_RANG[y.type]).slice(-3) : [];
+    for (const d of developpements) etat_actuel.push(`Évolution rapportée : ${d.texte}`);
   }
   // ---- synthèse visuelle (composants existants de FicheUnique : `dossier.situation`, comme les pilotes) ---------------------------------
   // Tout vient de données déjà vérifiées : nature de l'issue ou état, date écrite, autorité qui agit, appel/finalité, mesures du déroulé.
@@ -300,9 +321,10 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
         : appelAnnonce ? { label: 'Suite · recours', titre: 'Appel annoncé', meta: `selon ${appelAnnonce.source.media}`, cat: 'orange', lignes: [etat_actuel[1]] }
         : issue.definitive === 'OUI' ? { label: 'Suite · recours', titre: 'Décision devenue définitive', meta: `selon ${issue.doc.media}`, cat: 'blue', lignes: [] }
           : { label: 'Suite · recours', titre: 'Aucun appel rapporté', meta: 'dans les sources consultées', cat: 'blue', lignes: [etat_actuel[1]].filter(Boolean) })
+      : developpements.some((d) => d.type === 'appel') ? { label: 'Suite · recours', titre: 'Appel rapporté', meta: `selon ${developpements.find((d) => d.type === 'appel').source.media}`, cat: 'orange', lignes: [] }
       : futureAudience ? { label: 'Prochaine étape', titre: `Audience le ${dateFr(futureAudience.date)}`, meta: 'à venir · le procès n’a pas eu lieu', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] }
         : { label: 'Suite', titre: 'Issue de la procédure à documenter', meta: 'dans les sources consultées', cat: 'blue', lignes: ['La personne mise en cause est présumée innocente.'] };
-    suite.lignes = [...(liberation ? [`Évolution rapportée : ${liberation.texte}`] : []), ...suite.lignes, ...mesures];
+    suite.lignes = [...(liberation ? [`Évolution rapportée : ${liberation.texte}`] : []), ...developpements.map((d) => `Évolution rapportée : ${d.texte}`), ...suite.lignes, ...mesures];
     if (!suite.lignes.length) delete suite.lignes;
     situation = { decision: { label: issue ? 'Décision' : 'Situation judiciaire', titre: issue ? NOM_ISSUE_TITRE[issue.nature] : NOM_ETAT_TITRE[etatSources], ...(meta ? { meta } : {}), cat: CAT[etatSources], texte: etat_actuel[0] }, suite };
   }

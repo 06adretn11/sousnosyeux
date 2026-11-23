@@ -743,6 +743,50 @@ t('état « mis en examen et écroué » + remise en liberté rapportée : la fi
   const sans = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(d1, { evenements: [avec[0]] })] });
   assert.equal(sans.dossier.etat_actuel.length, 1, 'pas de libération rapportée → rien n’est ajouté');
 });
+t('phase d’instruction : « pas de mise en examen » et « le parquet fait appel » montent dans le bloc du haut, pas seulement dans la chronologie (REVIEW de l’éditeur, Rots 23/11/2026)', () => {
+  const d1 = doc('ici', 'https://x.test/ici', '2026-11-20');
+  const evs = [E({ type: 'garde_a_vue', acteur: null, texte: 'Selon ici, l’animateur a été placé en garde à vue le 17 novembre 2026.', date: '2026-11-17', citation: 'g' }),
+    E({ type: 'enquete', acteur: 'Juge d’instruction', texte: 'Selon ici, l’animateur a été présenté à un juge d’instruction le 19 novembre 2026.', date: '2026-11-19', citation: 'e' }),
+    E({ type: 'decision', acteur: 'Juge d’instruction', texte: 'Selon ici, le juge n’a pas mis en examen l’animateur, ressorti libre.', date: '2026-11-19', citation: 'd' }),
+    E({ type: 'appel', acteur: 'Procureur de Caen', texte: 'Selon ici, le procureur de Caen a décidé de faire appel de la décision du juge d’instruction.', date: null, citation: 'a' })];
+  const r = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [ext(d1, { evenements: evs })] });
+  const haut = [...r.dossier.etat_actuel, ...(r.dossier.situation?.suite?.lignes ?? [])].join(' | ');
+  assert.match(haut, /n’a pas mis en examen/, 'la non-mise en examen est dans le bloc du haut');
+  assert.match(haut, /faire appel/, 'l’appel du parquet est dans le bloc du haut');
+  assert.equal(r.dossier.situation.suite.titre, 'Appel rapporté');
+  assert.ok(r.dossier.deroule.some((e) => e.type === 'appel'), 'la chronologie le porte toujours');
+  const sans = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [ext(d1, { evenements: evs.slice(0, 2) })] });
+  assert.ok(!/mis en examen|appel/.test(sans.dossier.etat_actuel.slice(1).join(' ')), 'sans décision ni appel, rien n’est ajouté');
+});
+t('même fait rapporté par deux articles du MÊME média : la source la plus récente le représente ; deux médias différents : règle inchangée', () => {
+  const ev = (texte) => [E({ type: 'garde_a_vue', acteur: null, texte, date: '2026-11-17', citation: 'g' })];
+  const ancien = ext(doc('ici', 'https://x.test/ancien', '2026-10-07'), { evenements: ev('Selon ici, l’animateur a été placé en garde à vue.') });
+  const recent = ext(doc('ici', 'https://x.test/recent', '2026-11-20'), { evenements: ev('Selon ici, l’animateur a été placé en garde à vue le 17 novembre.') });
+  const r = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [ancien, recent] });
+  const e = r.dossier.deroule.find((x) => x.type === 'garde_a_vue');
+  assert.equal(e.source.url, 'https://x.test/recent');
+  assert.ok((e.sources_complementaires || []).some((s) => s.url === 'https://x.test/ancien'), 'l’ancienne reste citée en complément');
+});
+t('même média : la récence ne tranche NI une contradiction de dates d’événement, NI un rappel non daté d’un épisode ancien daté ; la source antérieure reste tracée', () => {
+  const gav = (texte, date, nature) => [E({ type: 'garde_a_vue', acteur: null, texte, date, date_nature: nature, citation: 'g' })];
+  // (1) deux dates d’événement ÉCRITES et différentes : pas de préférence par la parution, contradiction signalée comme avant
+  const a1 = ext(doc('ici', 'https://x.test/a1', '2026-10-07'), { evenements: gav('Selon ici, l’animateur a été placé en garde à vue le 17 octobre 2026, après plusieurs auditions.', '2026-10-17', 'evenement') });
+  const a2 = ext(doc('ici', 'https://x.test/a2', '2026-11-20'), { evenements: gav('Selon ici, l’animateur a été placé en garde à vue le 18 novembre 2026.', '2026-11-18', 'evenement') });
+  const r1 = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [a1, a2] });
+  assert.equal(r1.dossier.deroule.find((x) => x.type === 'garde_a_vue').source.url, 'https://x.test/a1', 'phrase la plus complète (règle d’avant), pas la plus récente');
+  assert.ok(r1.dossier.inconnues.some((i) => /dates divergentes/.test(i)), 'la contradiction persiste et reste signalée');
+  // (2) un article récent RAPPELLE le fait sans le dater : la source qui date l’événement le représente
+  const b1 = ext(doc('ici', 'https://x.test/b1', '2026-10-07'), { evenements: gav('Selon ici, l’animateur a été placé en garde à vue le 17 novembre 2026.', '2026-11-17', 'evenement') });
+  const b2 = ext(doc('ici', 'https://x.test/b2', '2026-11-20'), { evenements: gav('Selon ici, l’animateur avait été placé en garde à vue.', null, 'article') });
+  const r2 = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [b1, b2] });
+  const e2 = r2.dossier.deroule.find((x) => x.type === 'garde_a_vue');
+  assert.equal(e2.source.url, 'https://x.test/b1'); assert.equal(e2.date, '2026-11-17');
+  assert.ok((e2.sources_complementaires || []).some((s) => s.url === 'https://x.test/b2'), 'le rappel récent reste cité');
+  // (3) un développement ultérieur (appel) n’est jamais absorbé dans l’étape du fait ancien
+  const c1 = ext(doc('ici', 'https://x.test/c1', '2026-11-20'), { evenements: [...gav('Selon ici, l’animateur a été placé en garde à vue.', '2026-11-17', 'evenement'), E({ type: 'appel', acteur: 'Procureur de Caen', texte: 'Selon ici, le procureur de Caen fait appel.', date: null, citation: 'a' })] });
+  const r3 = composer({ c: carte('enquête'), aujourdhui: '2026-11-23', extractions: [c1] });
+  assert.ok(r3.dossier.deroule.some((x) => x.type === 'appel') && r3.dossier.deroule.some((x) => x.type === 'garde_a_vue'));
+});
 t('« mars 2019 » et « 14 mars 2019 » ne sont pas une divergence ; « 10 juin » et « 21 juin » en sont une', () => {
   const ev = (date, media, url, texte) => ext(doc(media, url, '2025-12-05'), { evenements: [E({ type: 'garde_a_vue', acteur: null, texte, date, date_nature: date.length === 10 ? 'evenement' : 'approximative', citation: 'g' })] });
   const compatibles = composer({ c: carte('enquête'), aujourdhui: '2026-10-18', extractions: [ev('2019-03-14', 'A', 'https://x.test/1', 'L’animateur a été placé en garde à vue le 14 mars 2019.'), ev('2019-03', 'B', 'https://x.test/2', 'L’animateur a été placé en garde à vue en mars 2019.')] });
