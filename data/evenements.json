@@ -742,6 +742,40 @@
       }
     },
     {
+      "id": "31e7f4da8b74",
+      "nature": "parole",
+      "libelle": "Parole attribuée — l'UNAAPE : « &thinsp;Cette situation suscite légitimement une vive inquiétude parmi les familles. Confier son enfant à une structure périscolaire doit être un acte de confiance, jamais une source d'angoisse&thinsp; »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "l'UNAAPE",
+      "territoire": null,
+      "date": "2026-11-12",
+      "periode": null,
+      "source": {
+        "media": "Actu.fr",
+        "url": "https://actu.fr/ile-de-france/le-perreux-sur-marne_94058/une-vive-inquietude-parmi-les-familles-un-agent-periscolaire-soupconne-d-agressions-sexuelles-dans-le-val-de-marne_65053118.html",
+        "publie_le": "2026-11-13"
+      },
+      "parole": {
+        "acteur": "l'UNAAPE",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "&thinsp;Cette situation suscite légitimement une vive inquiétude parmi les familles. Confier son enfant à une structure périscolaire doit être un acte de confiance, jamais une source d'angoisse&thinsp;"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Germaine-Sablon",
+      "case_id": "FR-2026-0148",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0148",
+        "hubs": []
+      }
+    },
+    {
       "id": "355798771c64",
       "nature": "parole",
       "libelle": "Parole attribuée — Barka Zerouali, du collectif #MeToo École : « Ces parents ne se connaissaient pas et ont été réunis par le malheur, et cette solidarité, on l'a retournée contre eux »",
