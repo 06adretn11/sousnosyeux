@@ -1157,6 +1157,40 @@
       }
     },
     {
+      "id": "c559b2e77398",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Me Cailliez qui réclame l’ouverture d’une information judiciaire : « Plus le temps passe et plus le risque d’enfouissement traumatique est grand »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Me Cailliez qui réclame l’ouverture d’une information judiciaire",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Le Figaro",
+        "url": "https://www.lefigaro.fr/faits-divers/paris-un-animateur-periscolaire-vise-par-plusieurs-plaintes-pour-viols-sur-mineurs-20260311",
+        "publie_le": "2026-03-11"
+      },
+      "parole": {
+        "acteur": "Me Cailliez qui réclame l’ouverture d’une information judiciaire",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Plus le temps passe et plus le risque d’enfouissement traumatique est grand"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École Volontaires",
+      "case_id": "POC-10",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-10",
+        "hubs": []
+      }
+    },
+    {
       "id": "cd1652ab6f0a",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont annoncé une mobilisation.",
