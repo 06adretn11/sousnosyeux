@@ -2468,220 +2468,234 @@
       }
     },
     "FR-2026-0012": {
-      "etat_actuel": [
-        "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
-        "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
-      ],
       "appel": false,
       "faits": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy, un établissement privé réputé de Paris, a été condamné pour agression sexuelle sur un élève en 2021. Selon Le Dauphiné Libéré, l'ancien directeur a nié les faits au cours de l'audience.",
       "deroule": [
         {
           "date": null,
-          "date_nature": "article",
           "type": "audience",
-          "acteur": "procureure",
           "texte": "Selon Le Dauphiné Libéré, la procureure avait requis trois ans d'emprisonnement avec sursis.",
+          "acteur": "procureure",
           "source": {
-            "media": "Le Dauphiné Libéré",
             "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "BFMTV",
               "url": "https://www.bfmtv.com/paris/paris-l-ex-directeur-de-saint-jean-de-passy-condamne-a-cinq-ans-de-prison-avec-sursis-pour-agression-sexuelle_AD-202506060795.html",
-              "publie_le": "2025-06-06",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "BFMTV",
+              "publie_le": "2025-06-06"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "audience",
-          "acteur": "tribunal judiciaire de Nanterre",
           "texte": "Selon Le Dauphiné Libéré, la deuxième journée d'audience s'est tenue devant le tribunal judiciaire de Nanterre, après une première journée le 21 mai et une mise en continuation.",
-          "source": {
-            "media": "Le Dauphiné Libéré",
-            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          },
-          "sources_complementaires": [
-            {
-              "media": "BFMTV",
-              "url": "https://www.bfmtv.com/paris/paris-l-ex-directeur-de-saint-jean-de-passy-condamne-a-cinq-ans-de-prison-avec-sursis-pour-agression-sexuelle_AD-202506060795.html",
-              "publie_le": "2025-06-06",
-              "acces": "libre"
-            },
-            {
-              "media": "Le Figaro",
-              "url": "https://www.lefigaro.fr/actualite-france/3-ans-de-prison-avec-sursis-requis-contre-l-ancien-directeur-de-saint-jean-de-passy-20250606",
-              "publie_le": "2025-06-06",
-              "acces": "libre"
-            }
-          ]
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "decision",
           "acteur": "tribunal judiciaire de Nanterre",
-          "texte": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
           "source": {
-            "media": "Le Dauphiné Libéré",
             "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "BFMTV",
               "url": "https://www.bfmtv.com/paris/paris-l-ex-directeur-de-saint-jean-de-passy-condamne-a-cinq-ans-de-prison-avec-sursis-pour-agression-sexuelle_AD-202506060795.html",
-              "publie_le": "2025-06-06",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "BFMTV",
+              "publie_le": "2025-06-06"
             },
             {
-              "media": "Le Figaro",
               "url": "https://www.lefigaro.fr/actualite-france/3-ans-de-prison-avec-sursis-requis-contre-l-ancien-directeur-de-saint-jean-de-passy-20250606",
-              "publie_le": "2025-06-06",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2025-06-06"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
-          "type": "appel",
-          "acteur": "avocat de la défense",
-          "texte": "Selon Le Dauphiné Libéré, l'avocat de l'ancien directeur a annoncé immédiatement interjeter appel.",
+          "type": "decision",
+          "texte": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
+          "acteur": "tribunal judiciaire de Nanterre",
           "source": {
-            "media": "Le Dauphiné Libéré",
             "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.bfmtv.com/paris/paris-l-ex-directeur-de-saint-jean-de-passy-condamne-a-cinq-ans-de-prison-avec-sursis-pour-agression-sexuelle_AD-202506060795.html",
+              "acces": "libre",
+              "media": "BFMTV",
+              "publie_le": "2025-06-06"
+            },
+            {
+              "url": "https://www.lefigaro.fr/actualite-france/3-ans-de-prison-avec-sursis-requis-contre-l-ancien-directeur-de-saint-jean-de-passy-20250606",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2025-06-06"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "appel",
+          "texte": "Selon Le Dauphiné Libéré, l'avocat de l'ancien directeur a annoncé immédiatement interjeter appel.",
+          "acteur": "avocat de la défense",
+          "source": {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "appel",
+          "texte": "Selon franceinfo, la personne condamnée a fait appel.",
+          "acteur": "personne condamnée",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/l-etablissement-catholique-stanislas-n-a-pas-tenu-compte-d-accusations-de-violences-sexuelles-visant-l-un-de-ses-professeurs-selon-mediapart_8274278.html",
+            "acces": "libre",
+            "media": "franceinfo",
+            "publie_le": "2026-11-09"
+          },
+          "event_id": "5caddcf9-4cf0-4336-ba51-d9e1d6f8a2a9",
+          "date_nature": "article"
         }
       ],
-      "inconnues": [
-        "Appel : annoncé (Le Dauphiné Libéré) ; dépôt effectif et suites non confirmés dans les sources lues.",
-        "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
-        "Le dossier ne repose que sur 3 articles lus (Le Dauphiné Libéré, BFMTV, Le Figaro)."
-      ],
       "synthese": {
-        "decision": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
-        "ouvert": "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
+        "ouvert": "Un appel est rapporté (franceinfo) : la décision n’est pas définitive.",
+        "decision": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais)."
       },
+      "inconnues": [
+        "Audience d’appel et décision en appel : non documentées dans les sources lues.",
+        "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
+        "Le dossier ne repose que sur 4 articles lus (Le Dauphiné Libéré, BFMTV, Le Figaro, franceinfo)."
+      ],
       "reactions": [
         {
-          "acteur": "Céline Ballerini, présidente du tribunal",
-          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "date": "2025-06-06",
-          "date_nature": "article",
+          "acteur": "Céline Ballerini, présidente du tribunal",
+          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "a_propos": "la crédibilité de la version de la victime",
           "citations": [
             {
-              "texte": "Le tribunal a considéré que la version de [la victime] était plus vraisemblable que la vôtre",
-              "pour": "la crédibilité de la version de la victime"
+              "pour": "la crédibilité de la version de la victime",
+              "texte": "Le tribunal a considéré que la version de [la victime] était plus vraisemblable que la vôtre"
             }
           ],
-          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Dauphiné Libéré",
-            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "acteur": "Clotilde Lepetit, avocate",
-          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "date": "2025-06-06",
-          "date_nature": "article",
+          "acteur": "Clotilde Lepetit, avocate",
+          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "a_propos": "la crédibilité du récit du plaignant",
           "citations": [
             {
-              "texte": "Contrairement à ce qu'on va vous dire, ce n'est pas un dossier 50/50, [qui oppose] la vraisemblance d'un discours contre la vraisemblance d'un autre discours, [le plaignant] raconte dans le détail",
-              "pour": "la crédibilité du récit du plaignant"
+              "pour": "la crédibilité du récit du plaignant",
+              "texte": "Contrairement à ce qu'on va vous dire, ce n'est pas un dossier 50/50, [qui oppose] la vraisemblance d'un discours contre la vraisemblance d'un autre discours, [le plaignant] raconte dans le détail"
             }
           ],
-          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Dauphiné Libéré",
-            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "acteur": "le tribunal",
-          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "date": "2025-06-06",
-          "date_nature": "article",
+          "acteur": "le tribunal",
+          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "a_propos": "gravité des faits et exemplarité exigée d'un directeur d'établissement",
           "citations": [
             {
-              "texte": "On n'est pas sur une agression sexuelle simple, parce que vous êtes précisément un directeur d'établissement, et que [...] à partir du moment ou vous êtes un éducateur vous devez être exemplaire",
-              "pour": "gravité des faits et exemplarité exigée d'un directeur d'établissement"
+              "pour": "gravité des faits et exemplarité exigée d'un directeur d'établissement",
+              "texte": "On n'est pas sur une agression sexuelle simple, parce que vous êtes précisément un directeur d'établissement, et que [...] à partir du moment ou vous êtes un éducateur vous devez être exemplaire"
             }
           ],
-          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Dauphiné Libéré",
-            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "acteur": "Yassine Yakouti, avocat de la défense",
-          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "date": "2025-06-06",
-          "date_nature": "article",
+          "acteur": "Yassine Yakouti, avocat de la défense",
+          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
+            "acces": "libre",
+            "media": "Le Dauphiné Libéré",
+            "publie_le": "2025-06-06"
+          },
+          "qualite": "propos rapportés par Le Dauphiné Libéré",
           "a_propos": "l'absence d'éléments à charge selon la défense",
           "citations": [],
-          "etabli": "Établi : propos rapportés par Le Dauphiné Libéré. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Dauphiné Libéré",
-            "url": "https://www.ledauphine.com/faits-divers-justice/2025/06/06/agression-sexuelle-a-saint-jean-de-passy-trois-ans-de-sursis-requis-contre-l-ancien-directeur",
-            "publie_le": "2025-06-06",
-            "acces": "libre"
-          },
+          "paraphrase": "Selon son avocat, rapporté par Le Dauphiné Libéré, le dossier ne comportait ni élément matériel ni dénonciation autre que le récit du plaignant à sa mère, et ce récit a suffi à déclencher la garde à vue.",
           "validation": "POSITION_ATTRIBUEE",
-          "paraphrase": "Selon son avocat, rapporté par Le Dauphiné Libéré, le dossier ne comportait ni élément matériel ni dénonciation autre que le récit du plaignant à sa mère, et ce récit a suffi à déclencher la garde à vue."
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
-      "statut_affiche": "condamnation non définitive",
       "situation": {
-        "decision": {
-          "label": "Décision",
-          "titre": "Condamnation",
-          "meta": "Tribunal judiciaire de Nanterre",
-          "cat": "red",
-          "texte": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais)."
-        },
         "suite": {
-          "label": "Suite · recours",
-          "titre": "Appel annoncé",
-          "meta": "selon Le Dauphiné Libéré",
           "cat": "orange",
+          "meta": "selon franceinfo",
+          "label": "Suite · recours",
+          "titre": "Appel rapporté",
           "lignes": [
-            "Un appel est annoncé (Le Dauphiné Libéré) : son dépôt effectif n’est pas confirmé dans les sources lues ; appel formé et caractère définitif non documentés."
+            "Décision non définitive."
           ]
+        },
+        "decision": {
+          "cat": "red",
+          "meta": "Tribunal judiciaire de Nanterre",
+          "label": "Décision",
+          "texte": "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
+          "titre": "Condamnation"
         }
-      }
+      },
+      "etat_actuel": [
+        "Selon Le Dauphiné Libéré, l'ancien directeur de Saint-Jean-de-Passy a été reconnu coupable d'agression sexuelle sur un élève et condamné à cinq ans de prison avec sursis par le tribunal de Nanterre, ainsi qu'à une peine d'inéligibilité de cinq ans, une interdiction d'exercer une activité en lien avec les mineurs assortie de l'exécution provisoire et une inscription au fichier des auteurs d'infractions sexuelles ou violentes (Fijais).",
+        "Un appel est rapporté (franceinfo) : la décision n’est pas définitive."
+      ],
+      "statut_affiche": "condamnation non définitive"
     },
     "FR-2026-0046": {
       "appel": true,
