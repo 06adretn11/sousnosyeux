@@ -65,3 +65,6 @@ data/fiches-generees/
 
 # --- Sorties locales (banc d’essai éditorial social : jamais publiées) ---
 /out/
+
+# --- Preuves Business Discovery (réponses de tiers, locales) ---
+data/preuves-business-discovery/

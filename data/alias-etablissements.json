@@ -1,0 +1,33 @@
+{
+ "_meta": {
+  "role": "Alias PROPRES d'établissement, par affaire : une autre façon, vérifiée, dont la presse et les comptes suivis nomment la MÊME structure qu'une fiche. Lu par scripts/lib/alias-etablissements.mjs ; appliqué uniquement à la veille « sources suivies » (jamais à Discovery ni à la Maintenance des affaires).",
+  "regles": [
+   "Un alias désigne UNE structure et UNE seule affaire connue de SNY : vérifié par test contre toutes les autres fiches.",
+   "L'alias contient la commune de la fiche ; l'expression doit figurer TELLE QUELLE dans le texte (pas de rapprochement par mots épars).",
+   "Un alias identifie l'établissement, pas la personne mise en cause : sans le rôle, le rattachement reste « à confirmer » (jamais une affaire forcée).",
+   "Si une seconde affaire apparaît dans la même structure, l'alias devient ambigu : le rattachement est suspendu (arbitrage humain)."
+  ],
+  "controle_documentaire": "2026-11-23"
+ },
+ "alias": {
+  "FR-2026-0115": {
+   "etablissement_fiche": "Centre de loisirs municipal de Tarnos",
+   "commune": "Tarnos",
+   "alias": [
+    "centre de loisirs de Tarnos"
+   ],
+   "verifie_le": "2026-11-23",
+   "verification": [
+    "Matière SNY (hub Landes, dossier FR-2026-0115) : La Dépêche et Sud Ouest écrivent « le centre de loisirs de Tarnos » pour la structure de l'affaire ; le parquet de Dax écrit « centre de loisirs municipal de Tarnos » ; la matière nomme aussi « Centre de loisirs Pierrette-Fontenas de Tarnos » (même structure).",
+    "Aucune autre fiche SNY ne porte sur Tarnos (cases.json au 23/11/2026) ; aucune autre fiche dont l'établissement serait rapproché par l'alias (contrôle automatique dans test-alias-etablissements).",
+    "Site de la ville de Tarnos (consulté le 23/11/2026) : l'accueil de loisirs est tenu par une seule association gestionnaire, « Association pour le Centre de Loisirs », site élémentaire Pierrette-Fontenas et site maternelle à l'école Robert-Lasplacettes : « le centre de loisirs de Tarnos » désigne cet organisme, pas une autre structure."
+   ],
+   "ne_designe_pas": [
+    "la maison de quartier du Pissot (espace de vie sociale, structure distincte, que le collectif cite séparément) ;",
+    "les écoles de Tarnos ;",
+    "un centre de loisirs d'une autre commune."
+   ],
+   "limites": "L'alias nomme la structure : un texte qui la cite sans parler de l'affaire (programme, inscriptions) n'est pas pour autant un texte sur l'affaire ; il doit en outre passer le filtre thématique. Le nom de la structure existe depuis 1983 : un fait antérieur ou étranger à l'affaire de 2026 qui la citerait resterait « à confirmer »."
+  }
+ }
+}

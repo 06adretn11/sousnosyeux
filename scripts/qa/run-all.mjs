@@ -84,6 +84,31 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Business Discovery Instagram — requête bornée, panne d’accès ≠ vide, aucun jeton en sortie (réponses SIMULÉES)',
+    script: 'scripts/qa/test-business-discovery.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Sonde Business Discovery — plafond d’appels cumulé, arrêt sur panne d’accès, identité vérifiée avant lecture, aucun jeton écrit (fetch SIMULÉ)',
+    script: 'scripts/qa/test-sonde-business-discovery.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Pilote Instagram de la veille — budget d’appels par cycle, dédoublonnage par identifiant, historique non couvert dit, panne d’accès ≠ rien de nouveau, témoignages anonymes écartés, rattachement par le texte seul, jamais activé (publications SIMULÉES)',
+    script: 'scripts/qa/test-veille-instagram.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Alias propre d’établissement (FR-2026-0115) — une structure, une affaire ; signal « rattachement à confirmer » examinable (jamais une affaire forcée) ; contre-exemples de faux rattachements ; hors périmètre erronés (légendes FICTIVES)',
+    script: 'scripts/qa/test-alias-etablissements.mjs',
+    bloquant: true,
+  },
+  {
+    nom: 'Pistes à qualifier (comptes suivis) — une signature seule ne déclenche rien, la déclaration du texte oui ; aucune affaire, aucune fiche ; UNE notification groupée ; table absente tolérée ; pilote inactif (légendes FICTIVES)',
+    script: 'scripts/qa/test-pistes-a-qualifier.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Déclarations d’organismes — information décidable (fait structuré, libellé fermé, attribution), continuité d’une proposition, application et projection (jamais sans ACCEPT, jamais sous HOLD)',
     script: 'scripts/qa/test-declaration-organisme.mjs',
     bloquant: true,

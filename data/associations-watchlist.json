@@ -10,7 +10,16 @@
   ],
   "historique": "Entrées du 09/06/2026 conservées (L'Enfant Bleu, Innocence en Danger, CDP-Enfance, CVM, Une Vie) ; périmètre étendu le 05/11/2026 (kit d'exécution veille associative).",
   "controle_documentaire": "2026-11-05",
-  "cadences": "index : à chaque cycle quotidien de sny-cycle ; pages de service : relues au plus une fois tous les 7 jours (mémoire source_resolutions)."
+  "cadences": "index : à chaque cycle quotidien de sny-cycle ; pages de service : relues au plus une fois tous les 7 jours (mémoire source_resolutions).",
+  "instagram": {
+   "etat": "PILOTE PRÉPARÉ, NON ACTIVÉ : les comptes de type « instagram » ne sont lus que par maintenance-cycle.mjs avec --sources-suivies ET --instagram-pilote ; aucun workflow ne passe cette option.",
+   "ig_user_id": "17841480706234777",
+   "compte_sny": "sousnosyeux_org",
+   "parcours": "unified",
+   "version_graph": "v27.0",
+   "budget_appels_par_cycle": 4,
+   "doctrine": "Budget pilote : 4 appels par cycle (une première page par compte, puis jusqu'à deux pages supplémentaires si la dernière page lue ne contient aucune publication déjà connue). Légende seule. Rattachement à une affaire par le TEXTE seulement. Témoignages anonymes sensibles écartés. À ajuster uniquement après mesure des appels réels et des propositions utiles."
+  }
  },
  "organismes": [
   {
@@ -583,7 +592,8 @@
    "note": "Source propre identifiée ; zéro ligne lisible par le lecteur public existant (page application JavaScript). Aucun contact, flux ou contenu ne doit être déduit du titre.",
    "suivi": {
     "domaines": [
-     "sosperiscolaire.fr"
+     "sosperiscolaire.fr",
+     "instagram.com"
     ],
     "pages": [
      {
@@ -591,6 +601,41 @@
       "type": "service",
       "cadence": "hebdomadaire",
       "emetteur": "SOS Périscolaire"
+     },
+     {
+      "url": "https://www.instagram.com/sosperiscolaire/",
+      "type": "instagram",
+      "compte": "sosperiscolaire",
+      "cadence": "quotidienne",
+      "emetteur": "SOS Périscolaire (compte Instagram)",
+      "note": "Compte lu par Business Discovery le 23/11/2026. Son lien avec le site sosperiscolaire.fr est probable (le texte du compte se désigne « sosperiscolaire ») mais non démontré. Témoignages anonymes : écartés. Une lettre adressée à la Ville de Paris ne relève pas automatiquement du hub Paris 11e : le rattachement se fait par le texte, jamais par l'adresse du destinataire."
+     }
+    ]
+   }
+  },
+  {
+   "id": "leurs-voix-notre-combat-tarnos",
+   "nom": "Leurs voix, notre combat – Tarnos",
+   "alias": [
+    "Leurs voix, notre combat",
+    "Leurs voix notre combat"
+   ],
+   "description": "Collectif de familles qui se présente sous ce nom sur le compte Instagram professionnel leursvoixnotrecombat40 (légendes signées « Leurs voix, notre combat – Tarnos »).",
+   "role": "organisme",
+   "portee": "inconnue",
+   "verifie_le": "2026-11-23",
+   "note": "Identité déduite du seul nom du compte et de ses légendes. PORTÉE DE L'ACTEUR ≠ PORTÉE DES PUBLICATIONS : le nom du compte (« … – Tarnos ») ne prouve ni le lieu d'une publication ni son lien avec une affaire ; seul le texte lu compte. À NE PAS CONFONDRE : ni avec le collectif de familles non nommé cité par ici le 07/10/2026 dans la matière du hub Landes, ni avec le collectif auditionné par le Sénat : aucun de ces rapprochements n'est établi. Ses publications sont des déclarations du collectif : elles n'établissent ni les faits dénoncés, ni une étape judiciaire. Aucun contact, aucun message privé.",
+   "suivi": {
+    "domaines": [
+     "instagram.com"
+    ],
+    "pages": [
+     {
+      "url": "https://www.instagram.com/leursvoixnotrecombat40/",
+      "type": "instagram",
+      "compte": "leursvoixnotrecombat40",
+      "cadence": "quotidienne",
+      "emetteur": "Leurs voix, notre combat – Tarnos (Instagram)"
      }
     ]
    }
