@@ -162,6 +162,15 @@ const page = (id, { dossier = dossierFiche(id).d, evt = EVT, sansEmpreinte = fal
 };
 const ancienDossier = (id) => { const d = JSON.parse(JSON.stringify(dossierFiche(id).d)); d.deroule[0].texte = `Version précédente — ${d.deroule[0].texte}`; return d; };
 
+t('fiche servie : une parole attribuée est reconnue par sa citation (le libellé « Parole attribuée — … » n’est pas affiché) — faux écart du 23/11', () => {
+  const x = (EVT.matiere || []).find((m) => m.nature === 'parole' && m.parole?.citations?.[0]?.texte);
+  assert.ok(x, 'une parole attribuée réelle est présente dans le dépôt');
+  const evt = { affaires: {}, matiere: [x] }, id = x.destinations.fiche;
+  const html = `<article data-fiche="${id}" data-evenements="0" data-matiere="1"><p>${x.parole.acteur} — ${x.parole.qualite}</p><blockquote>« ${x.parole.citations[0].texte} »</blockquote></article>`;
+  assert.ok(!ecartsFiche(html, id, { evenements: evt, dossier: null }).some((e) => /information .* absente/.test(e)), 'la parole servie sous forme de citation est reconnue');
+  assert.ok(ecartsFiche(html.replace(x.parole.citations[0].texte, 'autre chose'), id, { evenements: evt, dossier: null }).some((e) => /information .* absente/.test(e)), 'une parole réellement absente reste signalée');
+});
+
 t('fiche servie : la version autorisée est confirmée ; une version précédente encore servie, ou sans empreinte, ne l’est jamais', () => {
   const dossier = dossierFiche(IDA).d;
   assert.deepEqual(ecartsFiche(page(IDA), IDA, { evenements: EVT, dossier }), [], 'version autorisée servie ⇒ conforme');

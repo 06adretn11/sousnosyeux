@@ -44,6 +44,15 @@ export function analyserArguments(argv) {
 export const plat = (s) => String(s).replace(/<[^>]+>/g, ' ').replace(/&#39;|&#x27;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/’/g, "'").replace(/\s+/g, ' ');
 
 /**
+ * Texte d'une information validée TEL QU'AFFICHÉ sur la fiche. Une parole attribuée est rendue en bloc « locuteur — qualité » + citation :
+ * son libellé (« Parole attribuée — … ») n'est pas affiché, c'est donc la première citation qui sert de repère. Les autres natures sont rendues par leur libellé.
+ */
+export function texteAffiche(x) {
+  const citation = x?.parole?.citations?.[0]?.texte;
+  return x?.nature === 'parole' && citation ? citation : x.libelle;
+}
+
+/**
  * Écarts d'une fiche servie par rapport à la VERSION AUTORISÉE actuelle : [] = conforme.
  * `dossier` = le dossier approuvé présent dans data/hub-matiere (celui dont l'empreinte est approuvée) ; `evenements` = data/evenements.json.
  *  · `data-dossier` doit porter l'empreinte (hashDossier, neuf champs) de CE dossier : une version précédente encore servie n'est jamais confirmée ;
@@ -58,7 +67,7 @@ export function ecartsFiche(html, id, { evenements, dossier }) {
   const matiere = (evenements?.matiere || []).filter((x) => x.destinations?.fiche === id);
   if (!html.includes(`data-matiere="${matiere.length}"`)) out.push(`fiche ${id} : informations validées différentes de la projection (${matiere.length} attendues)`);
   const page = plat(html);
-  for (const x of matiere) if (!page.includes(plat(x.libelle).slice(0, 40))) out.push(`fiche ${id} : information ${x.id} absente de la page servie`);
+  for (const x of matiere) if (!page.includes(plat(texteAffiche(x)).slice(0, 40))) out.push(`fiche ${id} : information ${x.id} absente de la page servie`);
   if (!dossier) { out.push(`fiche ${id} : dossier approuvé introuvable dans data/hub-matiere`); return out; }
   const attendu = hashDossier(dossier);
   const servi = /data-dossier="([0-9a-f]{16})"/.exec(html)?.[1];
