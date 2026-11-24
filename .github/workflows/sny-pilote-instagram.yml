@@ -45,11 +45,11 @@ jobs:
           cache: npm
       - run: npm ci
 
-      - name: verifier-migration (transaction annulée : la base n'est pas modifiée)
+      - name: "verifier-migration (transaction annulée, la base n'est pas modifiée)"
         if: ${{ inputs.action == 'verifier-migration' }}
         run: node scripts/pilote-instagram-neon.mjs verifier-migration
 
-      - name: appliquer-migration (028 : additive, idempotente)
+      - name: "appliquer-migration (028, additive et idempotente)"
         if: ${{ inputs.action == 'appliquer-migration' }}
         env:
           CONFIRMATION: ${{ inputs.confirmation }}
