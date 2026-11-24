@@ -32,6 +32,7 @@ import { porteeRelais, evolutionSignificative } from './lib/diffusion-sociale.mj
 import { portNeon } from './lib/relais-social-db.mjs';
 import { enregistrerDecision, verifierActivation, ACTIONS_SOCIALES } from './lib/relais-social.mjs';
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
+import { envoyerPistes } from './lib/pistes-a-qualifier.mjs';
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -122,7 +123,7 @@ async function info(cle) {
   const q = citation(p);
   // Publication d'un organisme suivi (maintenance-cycle --sources-suivies) : information sans bouton, texte commun avec l'aperçu des essais.
   if (p.decl) return envoyer(apercuInformation({ etablissement: p.etablissement, commune: p.commune, media: p.media, publication_date: p.publication_date, url: p.url,
-    avant: p.avant, citation: q, limite: p.limite, emetteur: p.decl.emetteur }));
+    avant: p.avant, citation: q, limite: p.limite, emetteur: p.decl.emetteur, aConfirmer: p.decl.rattachement_a_confirmer === true }));
   const corps = p.analysis_action === 'STATE_CHANGE'
     ? `Évolution évoquée, mais la source ne l’établit pas assez : aucun changement proposé (état : ${esc(p.avant)}).`
     : `Nouvel article traité.\nAucun changement de la fiche (état : ${esc(p.avant)}).`;
@@ -680,8 +681,20 @@ async function notifier(max = 10) {
     }
   }
   console.log(`notifier : ${envoyes} envoyé(s), ${ecartes} écarté(s), ${bruit} sans matière utile, ${rows.length - envoyes - ecartes - bruit} en attente (plafond ${max}/cycle)`);
+  try { await notifierPistes(); } catch (e) { console.log(`pistes : envoi impossible (${String(e.message).slice(0, 80)}) — retenté au prochain cycle`); }
 }
 
+/**
+ * notifier-pistes : UNE notification pour toutes les pistes à qualifier en attente (table pistes_a_qualifier, migration 028), sans bouton, sans affaire, sans fiche.
+ * Une piste n'est envoyée qu'une fois (envoyee_le posée avec le message) ; un échec d'envoi la laisse en attente. Table absente : rien à envoyer.
+ */
+async function notifierPistes(max = 8) {
+  const r = await envoyerPistes({ sql, envoyer, max, dry: Boolean(process.env.SNY_DRY) });
+  if (r.statut === 'table_absente') console.log('pistes : migration 028 non appliquée — rien à envoyer');
+  else if (r.statut === 'aucune') console.log('pistes : aucune en attente');
+  else console.log(`pistes : ${r.envoyees} piste(s) en UNE notification${r.restantes ? ` (${r.restantes} en attente)` : ''}${r.statut === 'a_blanc' ? ' (à blanc : rien marqué)' : ''}`);
+  return r.envoyees || 0;
+}
 
 async function poll(secondes = 600) {
   const fin = Date.now() + secondes * 1000;
@@ -800,6 +813,7 @@ try {
   else if (cmd === 'notifier') await notifier(Number(arg) || 10);
   else if (cmd === 'grouper') await grouper(arg);
   else if (cmd === 'notifier-nouvelles') await notifierNouvelles(Number(arg) || 5);
+  else if (cmd === 'notifier-pistes') await notifierPistes(Number(arg) || 8);
   else if (cmd === 'recevoir') await recevoir();
   else if (cmd === 'traiter') await traiter();
   else if (cmd === 'test-clic') await testClic();

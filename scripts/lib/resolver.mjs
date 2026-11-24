@@ -29,6 +29,7 @@
 // =====================================================================
 
 import { rattacher, datesCompletes } from './etat-affaire.mjs';
+import { expressionPresente } from './alias-etablissements.mjs';
 
 export const RESOLVER_VERSION = 'resolver-0.2.0';
 export const STATUTS = Object.freeze(['MATCH', 'POSSIBLE_MATCH', 'NO_MATCH']);
@@ -118,6 +119,13 @@ const ANONYME = /non nomm|non pr[ée]cis/i;
 function examiner(fiche, texte) {
   const strict = rattacher(fiche, texte);
   if (strict.rattachement !== 'NON_RATTACHABLE') return strict;
+  // ALIAS PROPRE d'établissement (data/alias-etablissements.json) : l'EXPRESSION exacte nomme la même structure ; commune et rôle suivent les règles habituelles
+  // (sans le rôle : DOUTEUX, jamais OK). Aucun alias ne s'applique hors de la veille « sources suivies » (les autres appelants ne portent pas le champ).
+  for (const alias of fiche.etablissement_alias || []) {
+    if (!expressionPresente(texte, alias)) continue;
+    const r = rattacher({ ...fiche, etablissement: alias }, texte);
+    if (r.rattachement !== 'NON_RATTACHABLE') return { ...r, signaux: [...r.signaux, `alias d'établissement « ${alias} » (propre à ${fiche.case_id}) : même structure que « ${fiche.etablissement} »`] };
+  }
   const commune = String(fiche.commune || '').replace(/\(.*?\)/g, ' ').replace(/\s+/g, ' ').trim();
   if (commune.length < 4 || /pr[ée]cis/i.test(commune)) return strict;
   // La commune doit figurer dans le TITRE ou le début de l'article (900 car.) : sur la page entière, elle

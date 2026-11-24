@@ -22,11 +22,15 @@
 
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { extraireCorps, nettoyer, CHROME } from './corps-article.mjs';
 import { canonique } from './preuve-claim.mjs';
 import { filtrer, detecterTerritoire, aplatir, parserRSS } from './capteurs.mjs';
 import { resoudre } from './resolver.mjs';
 import { jetonsEtab } from './routage-veille.mjs';
+import { postVersDocument, verifierAliasDistincts } from './veille-instagram.mjs';
+import { expressionPresente } from './alias-etablissements.mjs';
+import { pisteDuTexte, corpsSansSignature, construireContexteTerritoire, MOTIFS as MOTIFS_PISTES } from './pistes-a-qualifier.mjs';
 
 export const SOURCES_SUIVIES_VERSION = 'sources-suivies-0.2.0';
 // Même agent que lirePage (preuve-claim.mjs) : un seul lecteur public, identifiable, sans déguisement.
@@ -58,6 +62,10 @@ export function chargerRegistre(chemin) {
       pages.set(url, { ...p, url, organismes: [o.id] });
     }
   }
+  // Les organismes à compte Instagram ne partagent AUCUN alias avec un autre organisme (de tout le registre) et n'en ont aucun de générique.
+  const idsIG = organismes.filter((o) => (o.suivi?.pages || []).some((p) => p.type === 'instagram')).map((o) => o.id);
+  const alias = verifierAliasDistincts(organismes).filter((p) => idsIG.some((id) => p.includes(`(${id}`) || p.includes(`/ ${id})`)));
+  if (alias.length) throw new Error(`registre : ${alias.join(' ; ')}`);
   return { organismes, pages: [...pages.values()] };
 }
 
@@ -232,7 +240,11 @@ export function natureDocument(doc, page, organisme) {
 // 5. CLASSEMENT (déterministe, sans modèle)
 // ---------------------------------------------------------------------
 // Lien thématique : violences et protection des mineurs. « victimes » seul (un incendie, un accident) ne suffit pas.
-const THEME = /(violences?|agressions? sexuel|abus sexuel|atteintes? sexuel|maltraitance|pedocrimin|inceste|harcelement|protection de l'?enfance|periscolaire|\bviols?\b|enfance en danger|recueil de (?:la )?parole)/;
+const THEME = /(violences?|agressions? sexuel|abus sexuel|atteintes? sexuel|maltraitance|pedocrimin|inceste|harcelement|protection de l'?enfance|periscolaire|\bviols?\b|enfance en danger|recueil de (?:la )?parole|protection de l'?enfant\b|(?:depot|refus) de plaintes?|signalements?|centres? de loisirs|tout[- ]petits|appel a temoins)/;
+// Thème des FAITS (sans les termes de structure) : exigé pour qu'une publication d'un compte devienne un signal « à confirmer » — nommer un centre de loisirs ne suffit pas.
+const THEME_FAITS = /(violences?|agressions? sexuel|abus sexuel|atteintes? sexuel|maltraitance|pedocrimin|inceste|harcelement|protection de l'?enfan(?:ce|t)\b|\bviols?\b|enfance en danger|recueil de (?:la )?parole|(?:depot|refus) de plaintes?|signalements?|appel a temoins)/;
+// Garde thématique des pistes : le THEME sans « appel à témoins » seul (un appel à témoins pour un objet perdu n'est pas le sujet).
+const THEME_PISTES = new RegExp(THEME.source.replace('|appel a temoins', ''));
 const JUDICIAIRE = /(plainte|mis(?:e)? en examen|garde a vue|ecroue|condamn|proces|audience|tribunal|parquet|enquete|signalement|suspendu)/;
 
 /**
@@ -284,6 +296,13 @@ export function zonePertinente(doc, organisme) {
   return communal ? `Commune de ${communal}.\n\n${z}` : z;
 }
 
+// Gazetteer de SNY (communes et départements des fiches, couverture des hubs de data/hub-matiere), construit une fois par jeu de fiches.
+const CONTEXTES_TERRITOIRE = new WeakMap();
+function contexteTerritoire(fiches) {
+  if (!CONTEXTES_TERRITOIRE.has(fiches)) CONTEXTES_TERRITOIRE.set(fiches, construireContexteTerritoire(fiches, fileURLToPath(new URL('../../data/hub-matiere', import.meta.url))));
+  return CONTEXTES_TERRITOIRE.get(fiches);
+}
+
 export function classer({ doc, page, organisme, fiches }) {
   const titre = String(doc.titre || '');
   const corps = zonePertinente(doc, organisme);
@@ -306,9 +325,28 @@ export function classer({ doc, page, organisme, fiches }) {
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
   if (douteux.length > 10) return { ...classerSansAffaire({ titre, corps, page }), indices_disperses: douteux.length };
+  // Publication d'un COMPTE suivi qui nomme, par son ALIAS PROPRE, la structure d'UNE seule affaire (commune présente, rôle de la personne non précisé) : ce n'est pas un
+  // rattachement (aucun case_id), c'est un SIGNAL À EXAMINER — une proposition d'information sans bouton, rattachement dit « à confirmer », jamais une affaire forcée.
+  if (doc.extraction === 'instagram-business-discovery' && douteux.length === 1 && (THEME_FAITS.test(aplatir(`${titre} ${corps.slice(0, 3000)}`)) || JUDICIAIRE.test(aplatir(`${titre} ${corps.slice(0, 3000)}`))) && (r.evidence || []).some((e) => e.startsWith(`${douteux[0]} — `) && e.includes('alias d\'établissement'))) {
+    return { destination: 'AFFAIRE_A_CONFIRMER', motif: 'la publication nomme la structure de cette affaire par son alias propre ; le rôle de la personne mise en cause n\'est pas précisé : rattachement À CONFIRMER, aucun lien établi', case_ids: [], suspendus: douteux, zone: corps };
+  }
   if (douteux.length) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'établissement nommé mais identification incomplète (commune ou rôle) : aucun lien sans arbitrage', case_ids: [], suspendus: douteux };
   const vois = voisins(corps, fiches);
   if (vois.length && vois.length <= 10) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'commune, rôle et fait concordent, établissement non nommé : aucun lien sans autre preuve', case_ids: [], suspendus: vois };
+  // PISTE À QUALIFIER (jamais un rattachement) : une action ou déclaration PUBLIQUE CONCRÈTE du compte (motif fermé), lue dans le TEXTE (hashtags et signature retirés).
+  // La portée du COMPTE (nom, siège, territoire annoncé) ne vaut ni lieu ni lien avec une affaire. Destination proposée d'après le texte : HUB si un territoire y est NOMMÉ,
+  // sinon piste thématique sans territoire. Aucun case_id, aucune proposition : une notification groupée, revue humaine. Le lien à une AFFAIRE est décidé plus haut.
+  // Garde thématique minimale (le THEME existant : violences, protection de l'enfance, plainte, signalement, centre de loisirs, périscolaire…) : une publication hors sujet (vide-grenier,
+  // cantine fermée) ne devient jamais une piste, même si elle contient « rassemblement » ou « communiqué ».
+  // La garde porte sur le texte SANS hashtags ni signature (le nom du compte, « SOS Périscolaire », ne vaut pas thème). Sont thématiques par construction : une déclaration sur
+  // l'accueil des plaintes, une lettre ouverte ou pétition d'un compte suivi, un appel à témoins qui parle d'enfants ; un rassemblement ou une démarche exigent le thème dans le texte.
+  if (doc.extraction === 'instagram-business-discovery') {
+    const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
+    const lu = aplatir(`${titre} ${corpsSansSignature(corps, organisme)}`);
+    const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
+      || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
+    if (thematique) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
+  }
   return { ...classerSansAffaire({ titre, corps, page }), ...(vois.length ? { indices_disperses: vois.length } : {}) };
 }
 
@@ -325,7 +363,7 @@ function classerSansAffaire({ titre, corps, page }) {
   // Une seule mention (souvent dans la présentation de l'organisme) ne fait pas une publication thématique : titre, ou deux mentions.
   const mentions = (t.match(new RegExp(THEME.source, 'g')) || []).length;
   if (THEME.test(aplatir(titre)) || mentions >= 2) return { destination: 'POSITION_GENERALE', motif: 'publication thématique sans affaire ni territoire identifié', case_ids: [], suspendus: [] };
-  return { destination: 'HORS_PERIMETRE', motif: 'sans lien avec les violences faites aux mineurs', case_ids: [], suspendus: [] };
+  return { destination: 'HORS_PERIMETRE', motif: 'aucun terme de la thématique (violences, protection de l\'enfant, plainte, signalement, centre de loisirs…) dans le texte lu : non classé, sans jugement sur le fond', case_ids: [], suspendus: [] };
 }
 
 // ---------------------------------------------------------------------
@@ -337,7 +375,7 @@ function classerSansAffaire({ titre, corps, page }) {
  *   3. à défaut de 1, phrases qui nomment la commune ET une structure ou un fait.
  * Une phrase sur l'ensemble d'une ville (« de nombreuses affaires à Paris ») n'est jamais retenue quand l'établissement est nommé ailleurs.
  */
-export function passages(corps, fiche, { max = 3, alias = [] } = {}) {
+export function passages(corps, fiche, { max = 3, alias = [], sansTitre = false } = {}) {
   const jetons = jetonsEtab(fiche.etablissement, { saint: true });
   const commune = aplatir(String(fiche.commune || '').replace(/\s+\d+\s*(?:er|e|eme)?$/i, ''));
   const etab = [], orga = [], communaux = [];
@@ -350,12 +388,12 @@ export function passages(corps, fiche, { max = 3, alias = [] } = {}) {
     if (/^Commune de [^\n]+\.$/.test(b)) continue; // contexte ajouté par zonePertinente : jamais une citation
     num++;
     // Titre de la page (1er bloc) et intertitres courts : ils annoncent, ils ne prouvent pas.
-    if (!pm && (num === 1 || b.length < 90)) continue;
+    if (!pm && ((num === 1 && !sansTitre) || b.length < 90)) continue;
     const phrases = b.replace(/^\[p\. \d+\]\n?/, '').replace(/\n/g, ' ').split(/(?<=[.!?»])\s+(?=[A-ZÀ-Ý«])/);
     for (const ph of phrases) {
       const n = aplatir(ph);
       const item = { texte: ph.trim().slice(0, 600), emplacement: page ? `page ${page}` : `paragraphe ${num}` };
-      if (jetons.length && jetons.every((j) => n.includes(j))) etab.push({ ...item, nomme_etablissement: true });
+      if ((jetons.length && jetons.every((j) => n.includes(j))) || (fiche.etablissement_alias || []).some((a) => expressionPresente(ph, a))) etab.push({ ...item, nomme_etablissement: true });
       else if (alias.some((a) => n.includes(a))) orga.push({ ...item, nomme_organisme: true });
       else if (commune.length > 3 && n.includes(commune) && /centre de loisirs|ecole|creche|animateur|periscolaire/.test(n) && FAIT_PROCHE.test(n)) communaux.push(item);
     }
@@ -606,9 +644,10 @@ export function chargerFaitsConnus(fichiers) {
 }
 
 /** Le passage rapporte-t-il un fait DÉJÀ publié (même organisme suivi nommé, ou même URL) ? */
-export function complementDe({ url, passagesTexte, faits, alias }) {
+export function complementDe({ url, passagesTexte, faits, alias, urlSeulement = false }) {
   const meme = faits.find((f) => f.url && canonique(f.url) === canonique(url));
   if (meme) return { type: 'DEJA_SOURCE', ref: meme };
+  if (urlSeulement) return null;
   const p = aplatir(passagesTexte);
   for (const f of faits) {
     const t = aplatir(f.texte);
@@ -642,7 +681,7 @@ export function aliasOrganismes(organismes) {
  * @returns {{ pages: object[], docs: object[], requetes: number }}
  */
 export async function parcourirSources({ registre, memoire, fiches, lire = lireDocument, lireRss = lireFlux, maintenant = new Date().toISOString(),
-  maxParIndex = 20, maxDocs = 120, journal = () => {} }) {
+  maxParIndex = 20, maxDocs = 120, journal = () => {}, lireInstagram = null }) {
   const parId = new Map(registre.organismes.map((o) => [o.id, o]));
   const pagesEtat = [];
   const docs = new Map();           // url canonique → { url, titre_index, publie_index, page, organisme }
@@ -654,7 +693,10 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     docs.set(u, { url: u, titre_index: d.titre || null, publie_index: d.publie_le || null, page, organisme: parId.get(page.organismes[0]), externe: !!d.externe });
   };
 
+  const pagesInstagram = [];
   for (const page of registre.pages) {
+    // Comptes Instagram : jamais lus par le lecteur HTTP public (aucun accès à instagram.com) ; traités plus bas, par le lecteur injecté du pilote.
+    if (page.type === 'instagram') { pagesInstagram.push(page); continue; }
     const org = parId.get(page.organismes[0]);
     const k = cleDocument(page.url);
     const memo = memoire.get(k);
@@ -688,16 +730,52 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     for (const it of entrees.slice(0, maxParIndex)) ajouterDoc(it, page);
   }
 
+  // ---- PILOTE INSTAGRAM (lecteur injecté, budget d'appels par cycle) : les publications arrivent DÉJÀ LUES, jamais relues par HTTP ----
+  let mesureInstagram = null;
+  if (pagesInstagram.length && !lireInstagram) {
+    for (const page of pagesInstagram) pagesEtat.push({ url: page.url, organismes: page.organismes, type: 'instagram', emetteur: page.emetteur, repli: false, issue: 'NON_DUE', motif: 'pilote Instagram non activé : aucune lecture' });
+  } else if (pagesInstagram.length) {
+    const res = await lireInstagram({ comptes: pagesInstagram.map((p) => ({ page: p, pseudo: p.compte })), connu: (permalien) => Boolean(memoire.get(cleDocument(permalien))), maintenant });
+    requetes += res.appels;
+    mesureInstagram = { appels: res.appels, budget: res.budget, arret: res.arret || null, comptes: [] };
+    for (const c of res.comptes) {
+      const page = c.page; const org = parId.get(page.organismes[0]);
+      const k = cleDocument(page.url); const memo = memoire.get(k);
+      const etat = { url: page.url, organismes: page.organismes, type: 'instagram', emetteur: page.emetteur, repli: false };
+      const couverture = { appels: c.appels, pages_lues: c.pages_lues, publications_lues: c.posts.length, plus_ancien_lu: c.plus_ancien_lu, historique_non_couvert: c.historique_non_couvert, incident_suite: c.incident_suite || null, sans_permalien: c.sans_permalien || 0, pagination_incoherente: Boolean(c.pagination_incoherente),
+        ecartes: c.posts.filter((p) => postVersDocument(p).ecarte).length };
+      mesureInstagram.comptes.push({ compte: c.pseudo, ok: c.ok, motif: c.motif, ...couverture });
+      if (!c.ok) {
+        // Une panne (jeton, quota, lecture, budget) n'est JAMAIS « aucune nouveauté » : incident consigné, dernier état réussi conservé.
+        memoire.noterEchec({ doc_key: k, raw_url: page.url, publisher_domain: 'instagram.com', fetch_status: c.http ? `HTTP ${c.http}` : (String(c.motif || '').split(':')[0] || 'RESEAU'), failure_reason: c.motif, maintenant });
+        pagesEtat.push({ ...etat, issue: 'ECHEC', motif: c.motif, dernier_succes: memo?.resolved_at || null, empreinte_conservee: memo?.content_fingerprint || null, couverture });
+        journal(`  ✗ compte Instagram — ${c.motif}`);
+        continue;
+      }
+      const empreinte = sha(c.posts.map((p) => p.id_post).sort().join(','));
+      pagesEtat.push({ ...etat, issue: comparer({ empreinte }, memo), destination: 'INDEX', empreinte, empreinte_precedente: memo?.content_fingerprint || null, liens: c.posts.length, couverture, organisme: org });
+      for (const p of c.posts) {
+        if (!p.url) continue;
+        const u = canonique(p.url);
+        if (docs.has(u)) continue; // même publication déjà vue dans ce cycle
+        const doc = postVersDocument(p);
+        docs.set(u, { url: u, titre_index: doc.titre || null, publie_index: doc.publie_le, page, organisme: org, externe: false, doc, id_post: p.id_post });
+      }
+    }
+  }
+
   // Documents signalés par les index : nouveaux → lus ; connus → relus au plus une fois par semaine (corrections substantielles).
   const sortie = [];
-  for (const d of [...docs.values()].slice(0, maxDocs)) {
+  const tousDocs = [...docs.values()];
+  for (const d of [...tousDocs.filter((x) => !x.doc).slice(0, maxDocs), ...tousDocs.filter((x) => x.doc)]) {
     const k = cleDocument(d.url);
     const memo = memoire.get(k);
     // Un document rattaché à une affaire est relu à chaque cycle (rares, bornés) : sa proposition doit rester décidable et à jour sans réimport ; les autres : au plus 1×/semaine.
     const rattache = (memo?.resolution_method || '').endsWith('/AFFAIRE');
-    if (memo && !rattache && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
-    requetes++;
-    const doc = await lire(d.url, {});
+    // Un document déjà lu (Instagram) ne coûte rien à comparer : sa légende modifiée est vue tout de suite, sans attendre la semaine.
+    if (!d.doc && memo && !rattache && !aRelire({ cadence: 'hebdomadaire' }, memo, Date.parse(maintenant))) { sortie.push({ ...d, issue: 'CONNU_RECENT', verifie_le: memo.checked_at, destination: memo.resolution_method?.split('/')[1] || null }); continue; }
+    let doc;
+    if (d.doc) doc = d.doc; else { requetes++; doc = await lire(d.url, {}); }
     if (!doc.ok) {
       memoire.noterEchec({ doc_key: k, raw_url: d.url, publisher_domain: hote(d.url), fetch_status: doc.statut_http ? `HTTP ${doc.statut_http}` : 'RESEAU', failure_reason: doc.motif, maintenant });
       sortie.push({ ...d, issue: 'ECHEC', motif: doc.motif, dernier_succes: memo?.resolved_at || null });
@@ -706,11 +784,13 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     doc.empreinte = empreinteSubstance(doc.corps);
     const issue = comparer(doc, memo);
     const nat = natureDocument(doc, d.externe ? null : d.page, d.organisme);
-    const cls = classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches });
+    // Témoignage anonyme sensible : écarté AVANT tout classement ; aucun texte conservé (corps vide), seul le marqueur de mémoire.
+    const cls = doc.ecarte ? { destination: 'ECARTE_TEMOIGNAGE', motif: 'témoignage anonyme sensible : écarté sans classement ni conservation du texte', case_ids: [], suspendus: [] }
+      : classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches });
     sortie.push({ ...d, issue, empreinte: doc.empreinte, empreinte_precedente: memo?.content_fingerprint || null, ...nat, ...cls, doc,
       publie_le: doc.publie_le || d.publie_index || doc.date_entete || null });
   }
-  return { pages: pagesEtat, docs: sortie, requetes };
+  return { pages: pagesEtat, docs: sortie, requetes, instagram: mesureInstagram };
 }
 
 // ---------------------------------------------------------------------
@@ -780,9 +860,11 @@ export function complementDecision({ decl, limite, publication_date, proposal_id
   return '\n' + l.join('\n');
 }
 
-export function apercuInformation({ etablissement, commune, media, publication_date, url, avant, citation, limite, emetteur }) {
+export function apercuInformation({ etablissement, commune, media, publication_date, url, avant, citation, limite, emetteur, aConfirmer = false }) {
   const entete = `<b>${esc(etablissement)}</b> — ${esc(commune)}\n${esc(media || 'source inconnue')} · ${jourFr(publication_date)}`
     + (/^https?:\/\//.test(url || '') ? `\n<a href="${esc(url).replace(/"/g, '&quot;')}">Ouvrir la publication</a>` : '');
+  if (aConfirmer) return `🔄 <b>MAINTENANCE</b> · 📣 ⚠️ <b>RATTACHEMENT À CONFIRMER</b> · ${entete}\n\nPublication de ${esc(emetteur || media)} qui nomme la structure de cette affaire ; le rôle de la personne mise en cause n’est pas précisé : le texte seul n’établit PAS le lien.\nDéclaration du compte (attribuée, non vérifiée) : elle ne change aucun statut judiciaire (état : ${esc(avant)}).\nAucun bouton : à examiner par l’éditeur ; sans suite, la publication reste consultable en mémoire (adresse ci-dessus).`
+    + (citation ? `\n\n« ${esc(couper(String(citation).replace(/\s+/g, ' '), 220))} »` : '') + (limite ? `\n\nLimite : ${esc(limite)}` : '');
   return `🔄 <b>MAINTENANCE</b> · 📣 ${entete}\n\nPublication de ${esc(emetteur || media)} rattachée à cette affaire.\nAucun changement de la fiche (état : ${esc(avant)}).\nAucune décision demandée : seule la déclaration de constitution de partie civile est intégrable aujourd’hui ; cette publication reste consultable en mémoire (adresse ci-dessus).`
     + (citation ? `\n\n« ${esc(couper(String(citation).replace(/\s+/g, ' '), 220))} »` : '') + (limite ? `\n\nLimite : ${esc(limite)}` : '');
 }

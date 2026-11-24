@@ -1,0 +1,80 @@
+# SNY — pilote Instagram (veille des comptes suivis) : vérification de la migration 028 et ESSAI MANUEL EN --dry-run.
+# MANUEL SEULEMENT (workflow_dispatch) : aucun cron, aucun déclencheur automatique, aucun envoi Telegram (aucun secret Telegram n'est fourni à ce workflow).
+# Documentation : docs/industrialisation/PILOTE_VEILLE_INSTAGRAM.md
+#
+#   action = verifier-migration   exécute 028 + assertions dans une transaction TOUJOURS ANNULÉE : la base n'est pas modifiée.
+#   action = appliquer-migration  applique 028 (additive, idempotente ; destructif refusé) puis la vérifie. confirmation = GO-028.
+#   action = essai-dry-run        empreinte de la base → maintenance-cycle --sources-suivies --instagram-pilote --dry-run → comparaison : AUCUNE écriture attendue.
+#                                 Budget : 4 appels Meta au plus (une première page par compte, puis au plus deux pages).
+#
+# Dépôt public ⇒ journaux publics : compteurs, dates et destinations seulement ; jamais de légende, d'adresse de publication, de jeton ni de ligne de base.
+name: sny-pilote-instagram
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "verifier-migration | appliquer-migration | essai-dry-run"
+        required: true
+        type: choice
+        options: [verifier-migration, appliquer-migration, essai-dry-run]
+      confirmation:
+        description: "appliquer-migration : saisir GO-028"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+# Un seul job SNY à la fois : le cycle quotidien et ce workflow ne s'exécutent jamais en même temps (la comparaison avant/après exige une base au repos).
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  pilote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+
+      - name: verifier-migration (transaction annulée : la base n'est pas modifiée)
+        if: ${{ inputs.action == 'verifier-migration' }}
+        run: node scripts/pilote-instagram-neon.mjs verifier-migration
+
+      - name: appliquer-migration (028 : additive, idempotente)
+        if: ${{ inputs.action == 'appliquer-migration' }}
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [ "$CONFIRMATION" != "GO-028" ]; then echo "refusé : confirmation attendue GO-028"; exit 2; fi
+          node scripts/pilote-instagram-neon.mjs appliquer-migration
+
+      - name: essai-dry-run — empreinte de la base AVANT
+        if: ${{ inputs.action == 'essai-dry-run' }}
+        run: node scripts/pilote-instagram-neon.mjs empreinte "$RUNNER_TEMP/avant.json"
+
+      - name: essai-dry-run — cycle --sources-suivies --instagram-pilote --dry-run
+        if: ${{ inputs.action == 'essai-dry-run' }}
+        env:
+          META_GRAPH_TOKEN: ${{ secrets.META_GRAPH_TOKEN }}
+        run: |
+          set +e
+          echo '{"results":[]}' > "$RUNNER_TEMP/rapport.json"
+          node scripts/maintenance-cycle.mjs --rapport "$RUNNER_TEMP/rapport.json" --sources-suivies --instagram-pilote --dry-run --apercu "$RUNNER_TEMP/apercu.json" > "$RUNNER_TEMP/cycle.log" 2>&1
+          code=$?
+          echo "maintenance-cycle : code de sortie $code"
+          grep -E "Sources suivies :|Instagram \(pilote\)|::warning::" "$RUNNER_TEMP/cycle.log" | sed -E 's#https?://[^ ]+#<adresse>#g'
+          if [ -f "$RUNNER_TEMP/apercu.json" ]; then node scripts/pilote-instagram-neon.mjs resume-apercu "$RUNNER_TEMP/apercu.json"; else echo "aucun aperçu écrit"; fi
+          exit $code
+
+      - name: essai-dry-run — comparaison de la base APRÈS (aucune écriture attendue)
+        if: ${{ inputs.action == 'essai-dry-run' && !cancelled() }}
+        run: node scripts/pilote-instagram-neon.mjs comparer "$RUNNER_TEMP/avant.json"

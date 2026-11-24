@@ -78,6 +78,8 @@ const RAPPORT = val('--rapport');
 const SOURCES_SUIVIES = A.includes('--sources-suivies');
 const MEMOIRE_SOURCES = val('--memoire-sources');
 const SOURCES_FIXTURES = val('--sources-fixtures');
+// PILOTE Instagram (Business Discovery) : DÉSACTIVÉ par défaut, aucun workflow ne le passe. Nécessite `--sources-suivies`, META_GRAPH_TOKEN et `_meta.instagram` du registre.
+const INSTAGRAM_PILOTE = A.includes('--instagram-pilote');
 // `rules` = déterministe local. Toute autre valeur = modèle OpenRouter.
 // Mesuré sur `docs/industrialisation/gold-set-v1.json` : rules 4/12,
 // gpt-5-nano 9/12. Le défaut reste `rules` tant que la décision n'est pas
@@ -756,6 +758,7 @@ async function qualifierSourceBrut({ r, fiche, c, url, mediaLu, page = null, act
 //   RESSOURCE / POSITION_GENERALE / SIGNAL_AFFAIRE_POSSIBLE / HORS_PERIMETRE → mémoire documentaire (aucune notification)
 // =====================================================================
 // Une panne de cette étape n'emporte JAMAIS la Maintenance des affaires : elle est dite (sans adresse : journaux CI publics) et le cycle continue.
+if (INSTAGRAM_PILOTE && !SOURCES_SUIVIES) console.error('  ! --instagram-pilote ignoré : il exige --sources-suivies (aucune lecture Instagram)');
 if (SOURCES_SUIVIES) {
   try { await etapeSourcesSuivies(); }
   catch (e) { F.sources_suivies = { erreur: String(e?.message || e).slice(0, 120) }; console.error(`  ! sources suivies : étape interrompue (${e?.name || 'erreur'}) — maintenance des affaires poursuivie`); }
@@ -763,14 +766,36 @@ if (SOURCES_SUIVIES) {
 
 async function etapeSourcesSuivies() {
   const S = await import('./lib/sources-suivies.mjs');
+  const { chargerAlias, enrichirFiches } = await import('./lib/alias-etablissements.mjs');
+  const P = await import('./lib/pistes-a-qualifier.mjs');
   const { readdirSync } = await import('node:fs');
+  // Alias PROPRES d'établissement (data/alias-etablissements.json) : appliqués à cette étape seulement ; les autres étapes gardent les fiches telles quelles.
+  const fichesSuivies = enrichirFiches(fiches, chargerAlias(resolve(ROOT, val('--alias-etablissements') || 'data/alias-etablissements.json')));
   const t1 = Date.now();
   const registre = S.chargerRegistre(resolve(ROOT, val('--registre') || 'data/associations-watchlist.json'));
   const memoire = MEMOIRE_SOURCES ? S.memoireFichier(resolve(ROOT, MEMOIRE_SOURCES)) : await S.memoireNeon(sql, { dry: DRY });
   const maintenant = val('--maintenant') || new Date().toISOString();
   const lire = SOURCES_FIXTURES ? fixturesLecteur(SOURCES_FIXTURES, S) : S.lireDocument;
   const lireRss = SOURCES_FIXTURES ? async () => ({ ok: false, motif: 'FIXTURES', items: [] }) : S.lireFlux;
-  const { pages, docs, requetes } = await S.parcourirSources({ registre, memoire, fiches, lire, lireRss, maintenant,
+  // Pilote Instagram : sans l'option, les comptes du registre ne sont jamais lus (état « non activé »). Avec l'option, un jeton ou une configuration manquants
+  // sont une PANNE consignée (ECHEC par compte), jamais « aucune nouveauté ». Budget d'appels par cycle : _meta.instagram.budget_appels_par_cycle (défaut 4).
+  let lireInstagram = null;
+  if (INSTAGRAM_PILOTE) {
+    const V = await import('./lib/veille-instagram.mjs');
+    let cfg = null; let cfgInvalide = false;
+    try { cfg = V.chargerConfigInstagram(resolve(ROOT, val('--registre') || 'data/associations-watchlist.json')); } catch { cfgInvalide = true; }
+    const jeton = process.env.META_GRAPH_TOKEN;
+    const panne = (motif) => V.lecteurEnPanne(motif, cfg?.budget || 0);
+    if (cfgInvalide) lireInstagram = panne('CONFIG_INVALIDE');
+    else if (!cfg) lireInstagram = panne('CONFIG_ABSENTE');
+    else if (!jeton) lireInstagram = panne('JETON_ABSENT');
+    else if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') lireInstagram = panne('TLS_NON_VALIDE');
+    else {
+      try { const appeler = V.appelerReel({ igUserId: cfg.ig_user_id, jeton, version: cfg.version }); lireInstagram = ({ comptes, connu, maintenant: m }) => V.lireComptes({ comptes, connu, appeler, budget: cfg.budget, collecteLe: m }); }
+      catch { lireInstagram = panne('JETON_INVALIDE'); }
+    }
+  }
+  const { pages, docs, requetes, instagram } = await S.parcourirSources({ registre, memoire, fiches: fichesSuivies, lire, lireRss, maintenant, lireInstagram,
     // Dépôt public ⇒ journaux CI publics : en CI, aucune adresse ni motif par document, seulement les compteurs de fin d'étape.
     maxParIndex: Number(val('--max-par-index') || 20), journal: (m) => { if (!process.env.CI) process.stderr.write(m + '\n'); } });
   const dirHubs = resolve(ROOT, 'data/hub-matiere');
@@ -780,7 +805,7 @@ async function etapeSourcesSuivies() {
   const X = { version: S.SOURCES_SUIVIES_VERSION, memoire: memoire.type, urls_lues: requetes, pages: pages.length, documents: docs.length,
     propositions_nouvelles: 0, propositions_deja_presentes: 0, preuves_complementaires: 0, rattrapages: 0, injectes_veille: 0, par_destination: {}, par_issue: {} };
   const lignes = [];
-  const parCase = new Map(fiches.map((f) => [f.case_id, f]));
+  const parCase = new Map(fichesSuivies.map((f) => [f.case_id, f]));
   const jour = maintenant.slice(0, 10);
 
   const vusUrl = new Set();
@@ -793,7 +818,7 @@ async function etapeSourcesSuivies() {
       dernier_succes: d.dernier_succes || null, nature: d.nature || null, emetteur: d.emetteur || null, origine_presse: d.origine_presse || null,
       destination: d.destination || null, motif: d.issue === 'ECHEC' ? null : d.motif || null, case_ids: d.case_ids || [], suspendus: d.suspendus || [],
       publie_le: d.publie_le || null, extraction: d.extraction || d.doc?.extraction || null, caracteres: d.doc?.corps?.length || d.caracteres || null,
-      empreinte: d.empreinte || null, empreinte_precedente: d.empreinte_precedente || null, contacts: d.contacts, rss: d.rss, liens: d.liens,
+      empreinte: d.empreinte || null, empreinte_precedente: d.empreinte_precedente || null, contacts: d.contacts, rss: d.rss, liens: d.liens, couverture: d.couverture, piste: d.piste ? { motif_code: d.piste.motif_code, destination: d.piste.destination, hub_id: d.piste.hub_id } : undefined,
       titre: d.doc?.titre || d.titre_index || null, indices_disperses: d.indices_disperses || null, propositions: [] };
     if (['ECHEC', 'NON_DUE', 'CONNU_RECENT'].includes(d.issue)) { lignes.push(ligne); continue; }
     // Inchangé : rien à examiner, sauf un document rattaché à une affaire — sa proposition doit rester décidable (continuité, jamais de doublon).
@@ -802,17 +827,21 @@ async function etapeSourcesSuivies() {
     // Rattachement suspendu (≤ 3 candidates) : AUCUNE proposition ; on dit seulement, pour l'arbitrage, si le document porterait un fait déjà publié.
     if (d.destination === 'RATTACHEMENT_SUSPENDU' && d.suspendus.length <= 3) {
       ligne.si_rattache = d.suspendus.map((id) => {
-        const ps = S.passages(S.zonePertinente(d.doc, d.organisme), parCase.get(id), { alias });
-        const comp = ps.length ? S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias }) : null;
+        const ig = d.doc?.extraction === 'instagram-business-discovery';
+        const ps = S.passages(S.zonePertinente(d.doc, d.organisme), parCase.get(id), { alias: ig ? [] : alias, sansTitre: ig });
+        const comp = ps.length ? S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias: ig ? [] : alias, urlSeulement: ig }) : null;
         return { case_id: id, passages: ps, complement: comp ? { type: comp.type, organismes: comp.organismes, media: comp.ref.media, publie_le: comp.ref.publie_le, url: comp.ref.url, texte: comp.ref.texte.slice(0, 300) } : null };
       });
     }
-    if (d.destination === 'AFFAIRE') {
-      for (const id of d.case_ids) {
+    if (d.destination === 'AFFAIRE' || d.destination === 'AFFAIRE_A_CONFIRMER') {
+      // AFFAIRE_A_CONFIRMER (publication d'un compte nommant la structure par son alias propre, rôle non précisé) : même circuit d'information sans bouton, rattachement dit « à confirmer ».
+      const aConfirmer = d.destination === 'AFFAIRE_A_CONFIRMER';
+      for (const id of (aConfirmer ? d.suspendus : d.case_ids)) {
         const fiche = parCase.get(id);
-        const ps = S.passages(d.zone || d.doc.corps, fiche, { alias });
+        const ig = d.doc?.extraction === 'instagram-business-discovery'; // publication d'un compte : se signe de son nom, ne vaut preuve complémentaire que par la MÊME adresse
+        const ps = S.passages(d.zone || d.doc.corps, fiche, { alias: ig ? [] : alias, sansTitre: ig });
         if (!ps.length) { ligne.propositions.push({ case_id: id, issue: 'SANS_PASSAGE_NOMMANT_L_AFFAIRE' }); continue; }
-        const comp = S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias });
+        const comp = S.complementDe({ url: d.url, passagesTexte: ps.map((p) => p.texte).join(' '), faits: faitsConnus.get(id) || [], alias: ig ? [] : alias, urlSeulement: ig });
         const ancien = !!d.publie_le && (Date.parse(jour) - Date.parse(d.publie_le)) / 864e5 > 30;
         const article0 = 'ART-' + fingerprint(d.url).slice(0, 10);
         // Proposition existante de ce document (même affaire, même article, même empreinte, même moteur) : lue AVANT le libellé, pour que la
@@ -831,6 +860,7 @@ async function etapeSourcesSuivies() {
           comp ? `${comp.type === 'DEJA_SOURCE' ? 'Source déjà rattachée' : 'Preuve complémentaire'} d'un fait déjà rapporté${comp.ref.media ? ` (${comp.ref.media}${comp.ref.publie_le ? `, ${comp.ref.publie_le}` : ''})` : ''} : pas un nouvel événement.` : null,
           !comp && ancien ? `Rattrapage documentaire : publication du ${d.publie_le}, découverte par SNY le ${premiere} ; à confronter aux sources plus récentes.` : null,
           d.issue === 'MODIFIE' ? 'Document déjà connu dont le texte a changé : réexamen.' : null,
+          aConfirmer ? 'RATTACHEMENT À CONFIRMER : la publication nomme la structure de cette affaire par son alias propre ; le rôle de la personne mise en cause n\'est pas précisé, aucun lien n\'est établi par le texte seul. Aucun statut ne change.' : null,
         ].filter(Boolean).join(' ');
         const article = { article_id: 'ART-' + fingerprint(d.url).slice(0, 10), media: emetteur, publication_date: d.publie_le || null, url: d.url, body: d.doc.corps, content_fingerprint: d.empreinte };
         const fait = { event_type: 'declaration_organisme', nature: d.nature, emetteur, organisme: d.organisme?.id, origine_presse: d.origine_presse || null, portee,
@@ -838,11 +868,11 @@ async function etapeSourcesSuivies() {
           complement_de: comp ? { type: comp.type, media: comp.ref.media, url: comp.ref.url, publie_le: comp.ref.publie_le } : null };
         // Information DÉCIDABLE : fait structuré du circuit « enrichissement » existant (libellé public fermé, attribué, sans date de démarche inventée).
         // Une preuve complémentaire d'un fait déjà rapporté n'est pas une information nouvelle : elle reste une information sans bouton.
-        const declares = comp ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le, fiche, contexte: contexteHub });
+        const declares = (comp || ig) ? [] : S.faitsDeclares({ passages: ps, organisme: d.organisme, emetteur, nature: d.nature, publie_le: d.publie_le, fiche, contexte: contexteHub });
         const facts = declares.length ? declares : [fait];
         const declaration = { emetteur, organisme: d.organisme?.id, nature: d.nature, origine_presse: d.origine_presse || null, portee, publie_le: d.publie_le || null,
           decouvert_le: premiere, issue: d.issue, complement: fait.complement_de, rattrapage: !comp && ancien,
-          decidable: declares.length > 0,
+          decidable: declares.length > 0, ...(aConfirmer ? { rattachement_a_confirmer: true } : {}),
           ...(declares[0]?.ajustements_inconnues ? { ajustements: declares[0].ajustements_inconnues } : {}),
           rattachement_motif: declares.length ? `${d.motif} — rattachement par le texte (établissement, commune et rôle) ; repère chronologique : ${declares[0].repere_chronologique} ; la publication ne précise ni la procédure ni son étape.` : undefined };
         const prop = {
@@ -850,7 +880,7 @@ async function etapeSourcesSuivies() {
           CURRENT_STATE: { statut_judiciaire: fiche.statut_judiciaire }, statut_propose: null, PROPOSED_CHANGE: 'NO_CHANGE', EVENT_DATE: null,
           SOURCE_DATE: d.publie_le || null, transition: null, finalite: null, surveillance: [], inconnues: d.publie_le ? [] : ['date de publication non indiquée par la source'],
           RATIONALE: `SOURCE_SUIVIE ${d.nature} — ${emetteur} · ${ps.map((p) => p.emplacement).join(', ')}`, REQUIRES_HUMAN_REVIEW: true, review_reasons: [],
-          rattachement: 'OK', note_limite: limite, declaration, engine: 'sources-suivies', analysis_action: 'ENRICHMENT', facts,
+          rattachement: aConfirmer ? 'DOUTEUX' : 'OK', note_limite: limite, declaration, engine: 'sources-suivies', analysis_action: 'ENRICHMENT', facts,
         };
         // CONTINUITÉ : la proposition existante de ce document (même affaire, même article, même empreinte, même moteur) garde son identité ;
         // tant qu'elle n'a reçu AUCUNE décision et n'était qu'une information, elle devient décidable sur place (mêmes proposal_id et historique).
@@ -872,7 +902,7 @@ async function etapeSourcesSuivies() {
         if (d.issue !== 'INCHANGE') { if (comp) X.preuves_complementaires++; else if (ancien) X.rattrapages++; }
         ligne.propositions.push({ case_id: id, decidable: declares.length > 0, faits_proposes: declares.map((f) => ({ mesure: f.mesure, libelle_public: f.libelle_public, acteur: f.acteur, evidence: f.evidence, emplacements: f.emplacements })), issue: reprise ? 'REPRISE_SUR_PLACE (decidable)' : r.deja_presente ? 'DEJA_PRESENTE' : (DRY ? 'A_ECRIRE (dry-run)' : 'ECRITE'), passages: ps, complement: fait.complement_de, rattrapage: declaration.rattrapage,
           apercu_telegram: S.apercuInformation({ etablissement: fiche.etablissement, commune: fiche.commune, media: emetteur, publication_date: d.publie_le, url: d.url,
-            avant: fiche.statut_judiciaire, citation: ps[0].texte, limite, emetteur }) });
+            avant: fiche.statut_judiciaire, citation: ps[0].texte, limite, emetteur, aConfirmer }) });
         // Un titre qui ÉNONCE un acte judiciaire rejoint la veille de l'affaire (chaîne par claim) : l'acte n'y devient une proposition
         // d'état que prouvé par une source de presse (recherche Bing, gardes habituelles). Sans acte : aucun claim, aucun coût de modèle.
         const titre = d.doc.titre || d.titre_index;
@@ -884,12 +914,26 @@ async function etapeSourcesSuivies() {
         }
       }
     }
+    // PISTE À QUALIFIER : ligne SANS case_id (table pistes_a_qualifier, migration 028) ; notification groupée par telegram-v0. Ni proposition, ni fiche, ni statut.
+    if (d.destination === 'PISTE_A_QUALIFIER' && d.piste) {
+      X.pistes_a_qualifier = (X.pistes_a_qualifier || 0) + 1;
+      if (!DRY) {
+        const r = await P.ecrirePiste(sql, { piste_id: P.pisteId(d.url, d.empreinte), doc_key: k, emetteur: d.emetteur || d.organisme?.nom, compte_url: d.page?.url || null,
+          url: d.url, publie_le: d.publie_le || null, motif: d.piste.motif_code, destination: d.piste.destination, territoire: d.piste.territoire, hub_id: d.piste.hub_id, classement: d.piste.classement, extrait: d.piste.passage });
+        if (r !== 'ecrite') {
+          // NON mémorisé : sinon le document serait « inchangé » au cycle suivant et la piste perdue pour toujours. Il reste à réexaminer.
+          X.pistes_erreur = r === 'table_absente' ? 'table absente (migration 028 non appliquée) : piste non écrite, document laissé à réexaminer' : 'écriture impossible : piste non écrite, document laissé à réexaminer';
+          ligne.incident = X.pistes_erreur; lignes.push(ligne); continue;
+        }
+      }
+    }
     memoire.noterSucces({ doc_key: k, case_ids: d.case_ids || [], titre: String(d.doc?.titre || d.titre_index || '').slice(0, 300), publisher_domain: (() => { try { return new URL(d.url).hostname; } catch { return null; } })(),
       raw_url: d.url, publisher_url: d.doc?.url_finale || d.url, resolution_method: `${S.METHODE}/${d.destination || 'INDEX'}`, content_fingerprint: d.empreinte, maintenant });
     lignes.push(ligne);
   }
   // Révision documentaire des ressources : contacts divergents entre pages d'un même organisme (signalés, jamais écrasés).
   X.divergences_contact = S.divergencesContact(pages);
+  if (instagram) X.instagram = instagram; // appels réellement faits, budget, couverture et historique non couvert par compte
   X.memoire_ecriture = await memoire.ecrire();
   X.duree_ms = Date.now() - t1;
   F.sources_suivies = X;
@@ -897,6 +941,13 @@ async function etapeSourcesSuivies() {
   if (val('--apercu')) writeFileSync(resolve(ROOT, val('--apercu')), JSON.stringify({ genere_le: new Date().toISOString(), dry_run: DRY, memoire: memoire.type, maintenant, compteurs: X, documents: lignes }, null, 1));
   console.log(`\n  Sources suivies : ${X.urls_lues} requêtes · ${lignes.length} documents/pages · ${X.propositions_nouvelles} proposition(s) nouvelle(s)${DRY ? ' (non écrites : dry-run)' : ''}`
     + ` · ${X.preuves_complementaires} preuve(s) complémentaire(s) · issues ${JSON.stringify(X.par_issue)}`);
+  if (instagram) {
+    const pannes = instagram.comptes.filter((c) => !c.ok).length; const nonCouverts = instagram.comptes.filter((c) => c.historique_non_couvert).length; const incidents = instagram.comptes.filter((c) => c.incident_suite).length;
+    const ecartes = instagram.comptes.reduce((s, c) => s + (c.ecartes || 0), 0);
+    if (process.env.CI) console.log(`  Instagram (pilote) : ${instagram.appels}/${instagram.budget} appel(s)${instagram.arret ? ` · arrêt ${instagram.arret}` : ''} · comptes ${instagram.comptes.length} (en panne ${pannes}, historique non couvert ${nonCouverts}, incident en cours de lecture ${incidents}) · écartés ${ecartes}`);
+    else console.log(`  Instagram (pilote) : ${instagram.appels}/${instagram.budget} appel(s)${instagram.arret ? ` · arrêt ${instagram.arret}` : ''} · ${instagram.comptes.map((c) => `${c.compte}: ${c.ok ? `${c.publications_lues} publication(s), ${c.ecartes || 0} écartée(s)${c.historique_non_couvert ? `, HISTORIQUE NON COUVERT avant le ${c.plus_ancien_lu}` : ''}${c.incident_suite ? `, incident ${c.incident_suite}` : ''}` : `PANNE ${c.motif}`}`).join(' · ')}`);
+    if (pannes || incidents) console.log(`::warning::Pilote Instagram : ${pannes} compte(s) en panne, ${incidents} incident(s) en cours de lecture — ce n'est pas « aucune nouveauté »`);
+  }
 }
 
 /** Lecteur des essais : documents RÉELS figés (fixtures) — `--sources-fixtures <dossier>` ; une URL absente rend un échec réseau. */
