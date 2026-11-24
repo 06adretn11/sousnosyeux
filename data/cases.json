@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-23"
+    "generated_at": "2026-11-24"
   },
   "cases": [
     {
@@ -2194,13 +2194,6 @@
           "is_primary": true
         },
         {
-          "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
-          "media": "Actu.fr",
-          "publication_date": "2026-10-07",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
           "media": "Actu.fr",
           "publication_date": "2026-11-17",
@@ -2208,9 +2201,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
-          "media": "Ouest-France",
-          "publication_date": "2026-11-20",
+          "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2222,6 +2215,13 @@
           "is_primary": false
         },
         {
+          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-20",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://france3-regions.franceinfo.fr/normandie/calvados/caen/suspicion-de-viol-ou-de-violence-comment-un-parent-peut-il-en-parler-avec-son-enfant-3450876.html",
           "media": "france3-regions.franceinfo",
           "publication_date": "2026-11-16",
@@ -2229,9 +2229,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+          "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
           "media": "ici",
-          "publication_date": "2026-10-07",
+          "publication_date": "2026-11-20",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2246,6 +2246,13 @@
           "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
           "media": "ici",
           "publication_date": "2026-11-15",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+          "media": "ici",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         }
@@ -2534,9 +2541,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/en-images-a-noyant-villages-une-centaine-de-personnes-dans-les-rues-contre-les-violences-sexuelles-faites-aux-enfants-b4b6590e-e437-11f1-9a72-32f9104dab1b",
           "media": "Ouest-France",
-          "publication_date": "2026-11-10",
+          "publication_date": "2026-11-19",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2548,9 +2555,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/en-images-a-noyant-villages-une-centaine-de-personnes-dans-les-rues-contre-les-violences-sexuelles-faites-aux-enfants-b4b6590e-e437-11f1-9a72-32f9104dab1b",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
           "media": "Ouest-France",
-          "publication_date": "2026-11-19",
+          "publication_date": "2026-11-10",
           "source_type": "presse",
           "is_primary": false
         },
@@ -3003,16 +3010,16 @@
           "is_primary": true
         },
         {
-          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
           "media": "franceinfo",
-          "publication_date": "2026-05-27",
+          "publication_date": "2026-07-07",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
           "media": "franceinfo",
-          "publication_date": "2026-07-09",
+          "publication_date": "2026-05-27",
           "source_type": "presse",
           "is_primary": false
         },
@@ -3024,9 +3031,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
           "media": "franceinfo",
-          "publication_date": "2026-07-07",
+          "publication_date": "2026-07-09",
           "source_type": "presse",
           "is_primary": false
         },
