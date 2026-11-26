@@ -225,6 +225,32 @@
           "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
           "publie_le": "2026-11-15"
         }
+      },
+      {
+        "event_id": "e6c4a844-9257-4b42-81de-b5676eba0bfc",
+        "date": "2026-11-19",
+        "type": "mesure_procédurale",
+        "statut": null,
+        "libelle": "Selon la presse, la personne mise en cause a été présentée à un juge, qui ne l’a pas mise en examen à ce stade.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "Ouest-France",
+          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
+          "publie_le": "2026-11-20"
+        }
+      },
+      {
+        "event_id": "824181e0-ae77-4b58-8b33-46f6b08cbeaf",
+        "date": null,
+        "type": "voie_de_recours",
+        "statut": null,
+        "libelle": "Selon la presse, un appel a été formé contre la décision.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "Actu.fr",
+          "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+          "publie_le": "2026-11-24"
+        }
       }
     ],
     "FR-2026-0137": [
@@ -546,7 +572,7 @@
       "hash": "1f72bdcf3086a8f9"
     },
     "FR-2026-0005": {
-      "hash": "3ab999ae475d3262"
+      "hash": "afdf95b9a5b5ff7e"
     },
     "FR-2026-0021": {
       "hash": "81e9ffd46ddb043f"

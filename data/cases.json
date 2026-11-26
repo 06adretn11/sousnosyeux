@@ -3,7 +3,7 @@
     "project": "sousnosyeux",
     "version": "projection",
     "seuil_publication": 8,
-    "total_cases": 69,
+    "total_cases": 70,
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
@@ -1634,6 +1634,57 @@
           "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
           "media": "Radio France",
           "publication_date": "2026-03-09",
+          "source_type": "presse",
+          "is_primary": false
+        }
+      ]
+    },
+    {
+      "case_id": "FR-2026-0048",
+      "etablissement": "Ecole maternelle Benezet",
+      "commune": "Toulouse",
+      "departement": "Haute-Garonne",
+      "type_structure": "maternelle",
+      "role_mis_en_cause": "animateur périscolaire",
+      "type_affaire": "mixte",
+      "statut_judiciaire": "mise en examen",
+      "statut_des_faits": "allégué",
+      "enfants_concernes_public": "plusieurs enfants",
+      "lat": 43.604082,
+      "lng": 1.433805,
+      "sources": [
+        {
+          "url": "https://actu.fr/occitanie/toulouse_31555/toulouse-poursuivi-pour-viol-et-atteintes-sexuelles-sur-des-enfants-l-animateur-d-un-centre-de-loisirs-mis-en-examen_64128097.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-04-10",
+          "source_type": "presse",
+          "is_primary": true
+        },
+        {
+          "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-03-17",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.leparisien.fr/haute-garonne-31/apres-la-suspension-dun-animateur-suspecte-dattouchements-des-parents-deleves-de-toulouse-inquiets-deventuelles-autres-victimes-14-04-2026-SQD2UZZ3EJHITD7YYOM37L4QKM.php",
+          "media": "Le Parisien",
+          "publication_date": "2026-04-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
+          "media": "Le nouveau detective",
+          "publication_date": "2026-04-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+          "media": "Mediacités",
+          "publication_date": "2026-07-06",
           "source_type": "presse",
           "is_primary": false
         }

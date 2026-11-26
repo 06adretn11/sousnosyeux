@@ -10458,7 +10458,7 @@
         {
           "date": "2025-04",
           "type": "fait_rapporte",
-          "texte": "Selon Sud Ouest, à compter d'avril 2025, une journaliste a filmé en caméra cachée, au sein de l'école, des animateurs périscolaires faisant subir à des enfants de trois à cinq ans des violences physiques et psychologiques, des privations et une agression sexuelle.",
+          "texte": "Selon Sud Ouest, des animateurs périscolaires de l'école maternelle Saint-Dominique (Paris 7e) ont fait subir à des enfants des violences physiques et psychologiques, des privations et une agression sexuelle, filmées en caméra cachée au sein de l'école à compter d'avril 2025.",
           "acteur": null,
           "source": {
             "url": "https://www.sudouest.fr/ile-de-france/paris/periscolaire-a-paris-plainte-contre-cash-investigation-pour-non-denonciation-d-agressions-28698788.php",
@@ -10536,7 +10536,7 @@
         {
           "date": "2026-01-29",
           "type": "mesure_collectivite",
-          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Commons Média, la Ville de Paris a annoncé la suspension conservatoire de neuf animateurs du périscolaire affectés à l'école maternelle publique Saint-Dominique (7e arrondissement), les premières suspensions ayant été prononcées le 29 janvier.",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Commons Média, la Ville de Paris a annoncé la suspension conservatoire de neuf animateurs du périscolaire affectés à l'école maternelle Saint-Dominique (Paris 7e), les premières ayant été prononcées après le visionnage des images de l'enquête télévisée.",
           "acteur": "Ville de Paris",
           "source": {
             "url": "https://commons-media.fr/local/violences-dans-le-periscolaire-a-paris-neuf-animateurs-suspendus-apres-une-enquete-en-camera-cachee-cash-investigation-enquetes-administratives-et-judiciaires-en-cours-audits-demandes-a-la-caspe/",
@@ -10545,6 +10545,39 @@
             "publie_le": "2026-02-01"
           },
           "date_nature": "evenement"
+        },
+        {
+          "date": "2026-01-29",
+          "type": "mesure_collectivite",
+          "texte": "Selon la communication municipale, les premières suspensions ont été prononcées immédiatement après le visionnage des images de l'enquête télévisée, le 29 janvier.",
+          "acteur": "Ville de Paris",
+          "source": {
+            "url": "https://commons-media.fr/local/violences-dans-le-periscolaire-a-paris-neuf-animateurs-suspendus-apres-une-enquete-en-camera-cachee-cash-investigation-enquetes-administratives-et-judiciaires-en-cours-audits-demandes-a-la-caspe/",
+            "acces": "libre",
+            "media": "Commons Média",
+            "publie_le": "2026-02-01"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.sudouest.fr/ile-de-france/paris/periscolaire-a-paris-plainte-contre-cash-investigation-pour-non-denonciation-d-agressions-28698788.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-04-15"
+            },
+            {
+              "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+              "acces": "libre",
+              "media": "CNEWS",
+              "publie_le": "2026-02-16"
+            },
+            {
+              "url": "https://www.ici.fr/ile-de-france/paris-75/paris/periscolaire-a-paris-de-nouvelles-familles-portent-plainte-dans-le-cadre-de-l-enquete-sur-les-violences-sexuelles-9444315",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-11"
+            }
+          ]
         },
         {
           "date": null,
@@ -10590,6 +10623,19 @@
             "acces": "libre",
             "media": "Commons Média",
             "publie_le": "2026-02-01"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon CNEWS, les neuf agents suspendus exerçaient à l'école publique Saint-Dominique, dans le 7e arrondissement de Paris.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+            "acces": "libre",
+            "media": "CNEWS",
+            "publie_le": "2026-02-16"
           },
           "date_nature": "article"
         },
@@ -10684,6 +10730,18 @@
               "acces": "libre",
               "media": "Le Journal du Dimanche",
               "publie_le": "2026-05-20"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+              "acces": "libre",
+              "media": "franceinfo",
+              "publie_le": "2026-05-22"
+            },
+            {
+              "url": "https://www.20minutes.fr/justice/4265801-20261125-periscolaire-paris-animateur-poursuivi-agressions-sexuelles-remis-liberte-sous-bracelet-electronique",
+              "acces": "libre",
+              "media": "20 Minutes",
+              "publie_le": "2026-11-25"
             }
           ]
         },
@@ -10732,6 +10790,60 @@
               "acces": "libre",
               "media": "Le Journal du Dimanche",
               "publie_le": "2026-05-23"
+            },
+            {
+              "url": "https://www.cnews.fr/france/2026-02-16/paris-neuf-animateurs-dune-ecole-maternelle-suspendus-pour-violences-physiques-et",
+              "acces": "libre",
+              "media": "CNEWS",
+              "publie_le": "2026-02-16"
+            }
+          ]
+        },
+        {
+          "date": "2026-05-20",
+          "type": "garde_a_vue",
+          "texte": "Selon Magic Maman, une série d'interpellations a eu lieu le 20 mai à l'école Saint-Dominique, dans le 7e arrondissement de Paris, et 16 personnes travaillant auprès d'enfants ont été placées en garde à vue, dont dix animateurs contractuels, trois Asem et trois responsables éducatifs de la Ville.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.magicmaman.com/violences-sexuelles-et-physiques-dans-le-periscolaire-16-personnes-interpellees-a-l-ecole-maternelle-saint-dominique-a-paris,3783071.asp",
+            "acces": "libre",
+            "media": "Magic Maman",
+            "publie_le": "2026-05-21"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lanouvellerepublique.fr/a-la-une/periscolaire-a-paris-seize-personnes-en-garde-a-vue-dans-le-cadre-de-l-affaire-de-l-ecole-saint-dominique-1779279883",
+              "acces": "libre",
+              "media": "la Nouvelle République",
+              "publie_le": "2026-05-20"
+            },
+            {
+              "url": "https://www.lejdd.fr/Societe/periscolaire-a-paris-la-mairie-accusee-davoir-maintenu-un-animateur-malgre-une-plainte-pour-agressions-sexuelles-174609",
+              "acces": "libre",
+              "media": "Le Journal du Dimanche",
+              "publie_le": "2026-05-23"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "communication_parquet",
+          "texte": "Le parquet de Paris a confirmé les faits à France Info, précisant que les interpellations avaient été effectuées dans le cadre de différentes enquêtes préliminaires et portaient sur des faits de natures et de gravités différentes.",
+          "acteur": "parquet de Paris",
+          "source": {
+            "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+            "acces": "libre",
+            "media": "Le Journal du Dimanche",
+            "publie_le": "2026-05-20"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lanouvellerepublique.fr/a-la-une/periscolaire-a-paris-seize-personnes-en-garde-a-vue-dans-le-cadre-de-l-affaire-de-l-ecole-saint-dominique-1779279883",
+              "acces": "libre",
+              "media": "la Nouvelle République",
+              "publie_le": "2026-05-20"
             }
           ]
         },
@@ -10747,6 +10859,39 @@
             "publie_le": "2026-05-22"
           },
           "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon franceinfo, l'enquête porte sur un service périscolaire accueillant des enfants des écoles Saint-Dominique, Rapp et La Rochefoucauld dans le 7e arrondissement de Paris.",
+          "acteur": "parquet de Paris",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "acces": "libre",
+            "media": "franceinfo",
+            "publie_le": "2026-05-22"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lanouvellerepublique.fr/a-la-une/periscolaire-a-paris-seize-personnes-en-garde-a-vue-dans-le-cadre-de-l-affaire-de-l-ecole-saint-dominique-1779279883",
+              "acces": "libre",
+              "media": "la Nouvelle République",
+              "publie_le": "2026-05-20"
+            },
+            {
+              "url": "https://www.20minutes.fr/justice/4265801-20261125-periscolaire-paris-animateur-poursuivi-agressions-sexuelles-remis-liberte-sous-bracelet-electronique",
+              "acces": "libre",
+              "media": "20 Minutes",
+              "publie_le": "2026-11-25"
+            },
+            {
+              "url": "https://www.lejdd.fr/Societe/violences-dans-le-periscolaire-parisien-16-personnes-en-garde-a-vue-pour-des-faits-commis-a-lecole-saint-dominique-174447",
+              "acces": "libre",
+              "media": "Le Journal du Dimanche",
+              "publie_le": "2026-05-20"
+            }
+          ]
         },
         {
           "date": "2026-05-22",
@@ -10772,6 +10917,12 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-10-11"
+            },
+            {
+              "url": "https://www.20minutes.fr/justice/4265801-20261125-periscolaire-paris-animateur-poursuivi-agressions-sexuelles-remis-liberte-sous-bracelet-electronique",
+              "acces": "libre",
+              "media": "20 Minutes",
+              "publie_le": "2026-11-25"
             }
           ]
         },
@@ -10808,6 +10959,32 @@
               "publie_le": "2026-05-20"
             }
           ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon 20 Minutes, l'animateur mis en cause, qui a travaillé à l'école Saint-Dominique, a quitté la détention provisoire et est désormais sous bracelet électronique.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.20minutes.fr/justice/4265801-20261125-periscolaire-paris-animateur-poursuivi-agressions-sexuelles-remis-liberte-sous-bracelet-electronique",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-11-25"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "decision",
+          "texte": "Selon 20 Minutes, la chambre de l'instruction de la cour d'appel de Paris a confirmé la décision de la juge d'instruction plaçant l'animateur sous contrôle judiciaire, alors que le parquet avait fait appel.",
+          "acteur": "chambre de l'instruction de la cour d'appel de Paris",
+          "source": {
+            "url": "https://www.20minutes.fr/justice/4265801-20261125-periscolaire-paris-animateur-poursuivi-agressions-sexuelles-remis-liberte-sous-bracelet-electronique",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-11-25"
+          },
+          "date_nature": "article"
         }
       ],
       "synthese": {
@@ -10994,6 +11171,54 @@
               "texte": "Oui, on aurait sans doute dû faire un signalement là, mais on nous dit qu'on fait trop de signalements."
             }
           ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-05-22",
+          "acteur": "Le collectif de parents d'élèves \"Les petits héros de Saint-Do\"",
+          "etabli": "Établi : propos rapportés par franceinfo. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "acces": "libre",
+            "media": "franceinfo",
+            "publie_le": "2026-05-22"
+          },
+          "qualite": "propos rapportés par franceinfo",
+          "a_propos": "l'absence de perquisition",
+          "citations": [
+            {
+              "pour": "l'absence de perquisition",
+              "texte": "aucune perquisition n'ait été diligentée immédiatement après les dépôts de plaintes"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (franceinfo) : Ils disent espérer que \"l\"enquête se poursuivra et qu'elle permettra de punir tous les auteurs d'actes ignobles\" et regretter qu' \"aucune perquisition n'ait été diligentée immédiatement après les dépôts de plaintes\" , et alors même que plusieurs enfants avaient \"signalé des captations vidéo\" , rappelle le collectif.",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-05-22",
+          "acteur": "Le collectif de parents d'élèves \"Les petits héros de Saint-Do\"",
+          "etabli": "Établi : propos rapportés par franceinfo. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-deux-animateurs-mis-en-examen-pour-des-faits-a-caractere-sexuel-et-places-en-detention-provisoire_8022545.html",
+            "acces": "libre",
+            "media": "franceinfo",
+            "publie_le": "2026-05-22"
+          },
+          "qualite": "propos rapportés par franceinfo",
+          "a_propos": "les signalements des enfants",
+          "citations": [
+            {
+              "pour": "les signalements des enfants",
+              "texte": "signalé des captations vidéo"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (franceinfo) : Ils disent espérer que \"l\"enquête se poursuivra et qu'elle permettra de punir tous les auteurs d'actes ignobles\" et regretter qu' \"aucune perquisition n'ait été diligentée immédiatement après les dépôts de plaintes\" , et alors même que plusieurs enfants avaient \"signalé des captations vidéo\" , rappelle le collectif.",
           "validation": "POSITION_ATTRIBUEE",
           "attribution": "POSITION_ATTRIBUEE",
           "date_nature": "article"
