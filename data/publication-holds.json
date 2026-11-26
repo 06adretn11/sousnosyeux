@@ -3,7 +3,14 @@
     "role": "Garde-fou de publication. Une affaire listée ici est EXCLUE de l'artefact public par scripts/project-public.mjs, quel que soit son publication_status en base.",
     "pourquoi": "Séparer le FAIT (qui reste en mémoire dans Neon) de son AFFICHAGE. Un HOLD ne corrige pas la donnée : il empêche une mutation publique automatique tant qu'une ambiguïté n'est pas tranchée par un humain.",
     "regle": "Toute entrée doit porter une raison, une date et un critère de levée. Un HOLD sans critère de levée est un oubli en puissance.",
-    "maj": "2026-09-21"
+    "maj": "2026-11-26",
+    "levees": [
+      {
+        "case_id": "FR-2026-0048",
+        "le": "2026-11-26",
+        "par": "Décision d'Adrien dans la conversation : « produis la fiche sur cette base et publie, je validerai en production ». Données corrigées par la migration 029 ; la projection exige en plus le GO consigné en base."
+      }
+    ]
   },
   "holds": [
     {
@@ -15,16 +22,6 @@
       "effet": "Aucune mutation publique automatique à partir de cette affaire. Elle reste dans Neon, avec son statut actuel.",
       "leve_par": "Décision humaine sur la granularité : une ligne par procédure, ou une ligne par établissement assumée comme agrégat.",
       "reference": "docs/industrialisation/LIVE_LOOP_1.md §6"
-    },
-    {
-      "case_id": "FR-2026-0048",
-      "etablissement": "Ecole maternelle Benezet, Toulouse",
-      "raison": "RETARD_DE_SYNCHRONISATION — passée `publiée` le 06/06/2026 à 16:58:58, soit APRÈS le dernier `sync-data.mjs` mais AVANT le commit de l'artefact (17:25:01). Absence comprise : course de synchronisation, jamais une décision éditoriale. Sa publication reste un acte éditorial distinct, à décider hors du release candidate.",
-      "pose_le": "2026-09-21",
-      "pose_par": "Public Loop #1 — release candidate atomique",
-      "effet": "Jamais publiée à ce jour : n'est donc pas ajoutée à l'artefact. Aucun retrait, aucun gel — elle n'a simplement pas encore d'existence publique.",
-      "leve_par": "Décision d'Adrien de publier ou non ces deux affaires. Une fois levée : `node scripts/project-public.mjs`, aucun développement.",
-      "reference": "docs/industrialisation/PUBLIC_LOOP_1.md §4"
     },
     {
       "case_id": "FR-2026-0049",

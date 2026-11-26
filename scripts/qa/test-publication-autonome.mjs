@@ -62,9 +62,16 @@ t('déjà dans l’artefact → IN_ARTEFACT (aucune duplication)', () => assert.
 t('Tarnos (0115) et Rots (0133) déjà en ligne → aucune action, quelle que soit leur revue', () => {
   for (const id of ['FR-2026-0115', 'FR-2026-0133']) assert.equal(publiee({ case_id: id }, { artefact, revues: [CREATE()] }).etat, 'IN_ARTEFACT');
 });
-t('FR-2026-0048 et FR-2026-0049 : HOLD réels → exclues, même « publiées » en base (cases_public) et même avec un GO', () => {
+t('FR-2026-0049 : HOLD réel → exclue, même « publiée » en base (cases_public) et même avec un GO', () => {
   const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
-  for (const id of ['FR-2026-0048', 'FR-2026-0049']) { assert.ok(holds.has(id)); assert.equal(publiee({ case_id: id }, { holds }).etat, 'HOLD'); }
+  assert.ok(holds.has('FR-2026-0049'));
+  assert.equal(publiee({ case_id: 'FR-2026-0049' }, { holds }).etat, 'HOLD');
+});
+t('FR-2026-0048 : HOLD levé le 26/11/2026 sur décision d’Adrien — sans GO consigné en base elle n’est toujours PAS projetée, avec le GO elle l’est', () => {
+  const holds = new Set((lire('data/publication-holds.json').holds || []).map((h) => h.case_id));
+  assert.ok(!holds.has('FR-2026-0048'), 'le HOLD de FR-2026-0048 doit être levé');
+  assert.equal(publiee({ case_id: 'FR-2026-0048' }, { holds, revues: [] }).etat, 'NO_GO');
+  assert.equal(publiee({ case_id: 'FR-2026-0048' }, { holds, revues: [GO('2026-11-26T12:00:00Z')] }).etat, 'NEEDS_PROJECTION');
 });
 
 // --- build en échec : jamais « publié » -------------------------------------------------------------------------------------------
