@@ -28,10 +28,12 @@ export function inventaire(registre, apercu = null) {
       const l = parPage.get(p.url);
       const mesure = !apercu ? 'NON_MESURE' : !l ? 'ABSENTE_DE_L_APERCU' : l.issue;
       sortie.push({ ...base, source: p.url, type: p.type, cadence: p.cadence || null, repli: Boolean(p.repli), mesure,
-        incident: l?.incident || null, dernier_succes: l?.dernier_succes || null,
+        incident: l?.incident ? court(l.incident, 60) : null, dernier_succes: l?.dernier_succes || null,
         derniere_publication_couverte: derniere,
         publications_lues: l?.couverture?.publications_lues ?? null, plus_ancien_lu: l?.couverture?.plus_ancien_lu ?? null,
-        historique_non_couvert: l?.couverture ? Boolean(l.couverture.historique_non_couvert) : null, // null = non applicable (page web) dernier_controle: apercu?.maintenant || apercu?.genere_le || null });
+        // null = non applicable (page web)
+        historique_non_couvert: l?.couverture ? Boolean(l.couverture.historique_non_couvert) : null,
+        dernier_controle: apercu?.maintenant || apercu?.genere_le || null });
     }
   }
   return sortie;

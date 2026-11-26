@@ -293,7 +293,8 @@ export function zonePertinente(doc, organisme) {
     z = gardees.join('\n\n');
   }
   const communal = /^communale:(.+)$/.exec(organisme?.portee || '')?.[1];
-  return communal ? `Commune de ${communal}.\n\n${z}` : z;
+  // jamais pour une légende Instagram : « Commune de Tarnos » rattacherait une offre d'emploi du centre de loisirs à l'affaire
+  return communal && doc.extraction !== 'instagram-business-discovery' ? `Commune de ${communal}.\n\n${z}` : z;
 }
 
 // Gazetteer de SNY (communes et départements des fiches, couverture des hubs de data/hub-matiere), construit une fois par jeu de fiches.
@@ -304,13 +305,18 @@ function contexteTerritoire(fiches) {
 }
 
 export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) {
-  const titre = String(doc.titre || '');
-  const corps = zonePertinente(doc, organisme);
+  const titre = String(doc.titre || '').normalize('NFKC');
+  const corps = zonePertinente(doc, organisme).normalize('NFKC'); // « 11ᵉ » = « 11e » pour le résolveur aussi
   // Une piste à qualifier ne naît que d'une publication d'un acteur SUIVI : un compte Instagram, ou une publication PROPRE (blog, communiqué, mise à jour de pétition) — jamais d'un article de presse référencé.
   const pistePossible = () => {
-    if (doc.extraction !== 'instagram-business-discovery' && !pisteOuverte) return null;
+    const ig = doc.extraction === 'instagram-business-discovery';
+    // Hors Instagram : seulement les acteurs qui l'ont explicitement demandé (pistes_propres) ; « article de presse cité » est la norme sur le site d'une association, jamais une piste.
+    if (!ig && !(pisteOuverte && organisme?.pistes_propres === true)) return null;
     const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
+    if (piste && !ig && piste.motif_code === 'ARTICLE_PRESSE_CITE') return null;
     const lu = aplatir(`${titre} ${corpsSansSignature(doc.corps, organisme)}`);
+    // Une commune (source_institutionnelle) publie sur tout : le thème des FAITS (violences, plainte, signalement…) est exigé, pas « centre de loisirs » ou « périscolaire » seuls.
+    if (piste && organisme?.source_institutionnelle === true && !(THEME_FAITS.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL')) return null;
     const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
       || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
     return thematique ? piste : null;
@@ -328,12 +334,16 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   const r = resoudre({ candidate: { title: titre }, index: fiches, corps });
   const ok = (r.detail || []).filter((d) => d.rattachement === 'OK').map((d) => d.case_id);
   const douteux = (r.detail || []).filter((d) => d.rattachement === 'DOUTEUX').map((d) => d.case_id);
+  // Source INSTITUTIONNELLE (commune) : un texte qui nomme le centre de loisirs sans aucun fait (offre d'emploi, inscriptions) n'est rattaché à aucune affaire ; le fait doit figurer dans le texte.
+  if (organisme?.source_institutionnelle === true && (ok.length || douteux.length) && !(THEME_FAITS.test(aplatir(`${titre} ${corps}`)) || JUDICIAIRE.test(aplatir(`${titre} ${corps}`)))) {
+    return { ...classerSansAffaire({ titre, corps, page }), motif: 'source institutionnelle : structure nommée sans aucun fait dans le texte (aucun rattachement)' };
+  }
   // Plusieurs STRUCTURES distinctes nommées dans une publication d'un acteur suivi (ex. les parents de six écoles d'un arrondissement) : une déclaration D'ENSEMBLE, jamais le fait d'une seule affaire.
   // Elle ne rattache aucune affaire (aucun case_id) ; si le texte porte un signal public concret, c'est une piste (hub si un territoire est nommé), sinon le rattachement reste suspendu.
   // Appliqué seulement quand aucun rattachement plein à UNE affaire n'est établi (ok vide, ou plusieurs, ou départage chronologique), jamais contre un rattachement plein.
   const nonPlein = ok.length ? (ok.length > 1 || r.resolution_status !== 'MATCH') : douteux.length >= 2;
   const nommees = [...new Set([...ok, ...douteux])];
-  const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
+  const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(`${x?.etablissement_alias || x?.etablissement || id}|${x?.commune || ''}`); })); // commune incluse : deux « École Jean-Jaurès » de communes différentes sont deux structures // alias déclaré = la structure (deux dossiers, une structure)
   // Pas de plafond : la base de production compte bien plus de fiches que le site (les structures « rapprochées » par la commune dépassent vite dix) ; la piste ne rattache AUCUNE affaire,
   // elle n'est donc pas affectée par la dispersion des indices.
   const pEnsemble = nonPlein ? pistePossible() : null;
@@ -364,8 +374,10 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   // cantine fermée) ne devient jamais une piste, même si elle contient « rassemblement » ou « communiqué ».
   // Garde thématique : voir pistePossible (texte SANS hashtags ni signature ; le nom du compte, « SOS Périscolaire », ne vaut pas thème).
   const piste = pistePossible();
-  if (piste) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
-  return { ...classerSansAffaire({ titre, corps, page }), ...(vois.length ? { indices_disperses: vois.length } : {}) };
+  const sans = classerSansAffaire({ titre, corps, page });
+  // Hors Instagram, un signal d'affaire possible (structure × fait localisé, sans affaire connue) reste plus spécifique qu'une piste : il garde sa destination.
+  if (piste && !(doc.extraction !== 'instagram-business-discovery' && sans.destination === 'SIGNAL_AFFAIRE_POSSIBLE')) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
+  return { ...sans, ...(vois.length ? { indices_disperses: vois.length } : {}) };
 }
 
 /** Destination d'un document qui ne se rattache à aucune affaire connue. */

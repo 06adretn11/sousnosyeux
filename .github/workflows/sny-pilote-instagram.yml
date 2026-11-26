@@ -5,7 +5,7 @@
 #   action = verifier-migration   exécute 028 + assertions dans une transaction TOUJOURS ANNULÉE : la base n'est pas modifiée.
 #   action = appliquer-migration  applique 028 (additive, idempotente ; destructif refusé) puis la vérifie. confirmation = GO-028.
 #   action = essai-dry-run        empreinte de la base → maintenance-cycle --sources-suivies --instagram-pilote --dry-run → comparaison : AUCUNE écriture attendue.
-#                                 Budget : 4 appels Meta au plus (une première page par compte, puis au plus deux pages).
+#                                 Budget : 18 appels Meta au plus par cycle (six comptes : une première page chacun, puis des pages d’historique).
 #
 # Dépôt public ⇒ journaux publics : compteurs, dates et destinations seulement ; jamais de légende, d'adresse de publication, de jeton ni de ligne de base.
 name: sny-pilote-instagram
@@ -75,7 +75,10 @@ jobs:
           if [ -f "$RUNNER_TEMP/apercu.json" ]; then
             node scripts/pilote-instagram-neon.mjs resume-apercu "$RUNNER_TEMP/apercu.json"
             echo "--- inventaire des acteurs (état de la lecture) ---"
-            node scripts/inventaire-acteurs.mjs --apercu "$RUNNER_TEMP/apercu.json" | sed -E 's#https?://[^ ]+#<adresse>#g'
+            # écrit dans un fichier puis affiché : un échec du script d'inventaire est dit (le code de sortie n'est pas masqué par le tube)
+            if node scripts/inventaire-acteurs.mjs --apercu "$RUNNER_TEMP/apercu.json" > "$RUNNER_TEMP/inventaire.md" 2> "$RUNNER_TEMP/inventaire.err"; then
+              sed -E 's#https?://[^ ]+#<adresse>#g' "$RUNNER_TEMP/inventaire.md"
+            else echo "ÉCHEC du script d'inventaire (code $?)"; code=1; fi
           else echo "aucun aperçu écrit"; fi
           exit $code
 

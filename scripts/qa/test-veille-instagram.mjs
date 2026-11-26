@@ -220,6 +220,16 @@ console.log('E. Registre de production : aucun mélange d\'organismes, aucune ac
   verifie('le collectif de Tarnos n\'a aucune portée territoriale déduite de son nom ou de sa commune (portée « inconnue »)', leurs.portee === 'inconnue' && !/communale:/.test(leurs.portee));
   const cfg = chargerConfigInstagram(chemin);
   verifie('configuration du pilote : parcours unified, budget de 18 appels par cycle (6 comptes : une première page chacun + 12 pages d’historique ; 25 publications par appel), taille de page 25, identifiant numérique', cfg.parcours === 'unified' && cfg.budget === 18 && cfg.budget <= BUDGET_CYCLE_MAX && cfg.taille_page === 25 && /^\d{5,25}$/.test(cfg.ig_user_id));
+  verifie('le budget du registre couvre TOUS les comptes (une première page chacun) avec une marge d\'historique : pas de rotation, donc pas de compte affamé', cfg.budget >= pagesIG.length + 2, `${cfg.budget} appels pour ${pagesIG.length} comptes`);
+  {
+    // taille de page : la valeur du registre arrive jusqu'à la requête Graph, et les valeurs hors bornes sont refusées
+    const urls = []; const fetchImpl = async (u) => { urls.push(String(u)); return { status: 200, json: async () => ({ business_discovery: { id: '1', username: 'x', media_count: 0, media: { data: [] } } }) }; };
+    await appelerReel({ igUserId: cfg.ig_user_id, jeton: 'J'.repeat(30), limite: cfg.taille_page, fetchImpl })('leursvoixnotrecombat40', null);
+    verifie('taille_page du registre ⇒ « media.limit(25) » dans la requête réellement envoyée (et 10 par défaut sans réglage)', /media\.limit\(25\)/.test(decodeURIComponent(urls[0])) && await (async () => { await appelerReel({ igUserId: cfg.ig_user_id, jeton: 'J'.repeat(30), fetchImpl })('leursvoixnotrecombat40', null); return /media\.limit\(10\)/.test(decodeURIComponent(urls[1])); })());
+    const tmpTaille = join(mkdtempSync(join(tmpdir(), 'sny-taille-')), 'r.json');
+    const regTaille = (t) => { writeFileSync(tmpTaille, JSON.stringify({ _meta: { instagram: { ig_user_id: '17841480706234777', budget_appels_par_cycle: 4, taille_page: t } }, organismes: [] })); return chargerConfigInstagram(tmpTaille); };
+    verifie('taille_page hors bornes (0, 51, 2,5) refusée ; 1 et 50 acceptées', [0, 51, 2.5].every((t) => { try { regTaille(t); return false; } catch { return true; } }) && regTaille(1).taille_page === 1 && regTaille(50).taille_page === 50);
+  }
   const dossierTmp = mkdtempSync(join(tmpdir(), 'sny-reg-')); const regTmp = join(dossierTmp, 'reg.json');
   const org = (id, alias) => ({ id, nom: alias[0], alias, role: 'organisme', portee: 'inconnue', suivi: { domaines: ['instagram.com'], pages: [{ url: `https://www.instagram.com/${id}/`, type: 'instagram', compte: id, emetteur: id, cadence: 'quotidienne' }] } });
   const ecrire = (organismes) => writeFileSync(regTmp, JSON.stringify({ organismes }), 'utf8');

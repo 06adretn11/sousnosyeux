@@ -795,7 +795,7 @@
    "implication_verifiee": true,
    "implication_detail": "Auteur de la pétition change.org de septembre 2024 (après la condamnation d'un ancien animateur toulousain) et de l'interpellation de la mairie du 7 mai 2026 (école maternelle Bénézet). Les demandes du collectif ne prouvent pas leur reprise par la Ville. Distinguer Lakanal/Matabiau (2024) de Bénézet (2026).",
    "implication_source": "change.org (pétition et mise à jour du 07/05/2026) ; France 3 Occitanie, 14/05/2026",
-   "note": "Aucune fiche ni hub SNY n'existe à Toulouse ; la fiche Bénézet (FR-2026-0048) est retenue en base, non publiée. Une publication de ce collectif documente ce qu'il demande ou déclare ; elle n'établit ni les faits ni une étape judiciaire. PORTÉE DE L'ACTEUR ≠ PORTÉE DES PUBLICATIONS.",
+   "note": "Aucune fiche ni hub SNY publié à Toulouse. Une publication de ce collectif documente ce qu'il demande ou déclare ; elle n'établit ni les faits ni une étape judiciaire. PORTÉE DE L'ACTEUR ≠ PORTÉE DES PUBLICATIONS.",
    "acces_testes": [
     {
      "reseau": "instagram",
@@ -825,7 +825,8 @@
       "emetteur": "Collectif Stop Tabou Pédocriminalité (mise à jour de pétition)"
      }
     ]
-   }
+   },
+   "pistes_propres": true
   },
   {
    "id": "parents-ecoles-11e-bullourde",
@@ -866,8 +867,14 @@
       "cadence": "hebdomadaire",
       "emetteur": "Des parents élu·es de l'école Bullourde (blog)"
      }
-    ]
-   }
+    ],
+    "filtre": {
+     "inclure": [
+      "des-parents-elu-es-de-lecole-bullourde"
+     ]
+    }
+   },
+   "pistes_propres": true
   },
   {
    "id": "ville-de-tarnos",
@@ -913,7 +920,9 @@
       "emetteur": "Ville de Tarnos"
      }
     ]
-   }
+   },
+   "pistes_propres": true,
+   "source_institutionnelle": true
   },
   {
    "id": "ville-de-merignac",
@@ -959,7 +968,9 @@
       "emetteur": "Ville de Mérignac"
      }
     ]
-   }
+   },
+   "pistes_propres": true,
+   "source_institutionnelle": true
   },
   {
    "id": "les-amies-de-romy",
@@ -968,11 +979,11 @@
     "Les Ami(e)s de Romy",
     "Les Amis de Romy"
    ],
-   "description": "Association de prévention basée à La Ciotat ; selon la presse, accompagne des parents après les signalements au centre de loisirs Françoise-Dolto à Hyères (article Var-matin non relu).",
+   "description": "Association de prévention basée à La Ciotat ; rôle éventuel à Hyères à confirmer (article d'origine non relu).",
    "role": "identite_a_confirmer",
    "portee": "inconnue",
    "verifie_le": "2026-11-26",
-   "note": "DÉCOUVERT, NON SUIVI : aucune fiche SNY à Hyères ; l'article d'origine (Var-matin) n'a pas pu être relu ; compte Facebook confirmé par le pied de page du site, aucun Instagram lié.",
+   "note": "DÉCOUVERT, NON SUIVI : aucun lien avec une affaire publiée n'est établi ; l'article d'origine n'a pas pu être relu ; compte Facebook confirmé par le pied de page du site, aucun Instagram lié.",
    "acces_testes": []
   }
  ]
