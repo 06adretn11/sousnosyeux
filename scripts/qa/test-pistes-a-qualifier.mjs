@@ -9,7 +9,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { detecterSignal, pisteDuTexte, construireContexteTerritoire, territoireDuPropos, corpsSansSignature, messagePistes, composerPistes, pisteId, ecrirePiste, envoyerPistes, MOTIFS, LONGUEUR_MESSAGE_MAX } from '../lib/pistes-a-qualifier.mjs';
-import { classer, chargerRegistre } from '../lib/sources-suivies.mjs';
+import { classer, chargerRegistre, parcourirSources, memoireFichier } from '../lib/sources-suivies.mjs';
 import { chargerAlias, enrichirFiches } from '../lib/alias-etablissements.mjs';
 import { postVersDocument } from '../lib/veille-instagram.mjs';
 
@@ -106,6 +106,15 @@ verifie('le MÊME texte reste un rattachement SUSPENDU (jamais une piste) quand 
 const declRoles = 'Un animateur périscolaire de l\'école maternelle Alphonse-Baudin (Paris 11e) et un animateur périscolaire de l\'école maternelle Bullourde (Paris 11e) ont été suspendus pour des violences sexuelles. Nous, parents, avons saisi le Défenseur des droits.';
 const rRoles = classeDoc(declRoles);
 verifie('DEUX écoles nommées AVEC leur rôle (rattachements pleins possibles, base de production qui contient plus de fiches) ⇒ toujours une déclaration d\'ensemble : piste HUB, aucun case_id ; hors publication propre ⇒ jamais une piste', rRoles.destination === 'PISTE_A_QUALIFIER' && rRoles.case_ids.length === 0 && rRoles.piste.hub_id === 'paris-11e' && classeDoc(declRoles, { propre: false }).destination !== 'PISTE_A_QUALIFIER', JSON.stringify(rRoles));
+// Chemin RÉEL d'une page « document » du registre (constat du dry-run CI du 26/11 : la porte pisteOuverte n'était pas passée à ce chemin-là)
+{
+  const page = { url: 'https://blog.example.invalid/billet', type: 'document', cadence: 'hebdomadaire', emetteur: 'Parents fictifs (blog)', organismes: ['parents-fictifs'] };
+  const registre = { organismes: [{ id: 'parents-fictifs', nom: 'Parents fictifs', alias: ['Parents fictifs'], role: 'organisme', portee: 'inconnue', suivi: { domaines: ['blog.example.invalid'], pages: [page] } }], pages: [page] };
+  const lire = async (url) => ({ ok: true, url, url_finale: url, publie_le: '2026-01-28', titre: 'Billet', corps: declEnsemble, extraction: 'html', statut_http: 200 });
+  const r = await parcourirSources({ registre, memoire: memoireFichier('/inexistant/m.json', { lectureSeule: true }), fiches: avecAlias, lire, lireRss: async () => ({ ok: false, items: [] }), maintenant: '2026-11-26T10:00:00Z' });
+  const l = r.pages.find((p) => p.url === page.url);
+  verifie('PAGE « document » du registre (chemin réel de parcourirSources) : déclaration d’ensemble d’un acteur suivi ⇒ PISTE_A_QUALIFIER (hub paris-11e), jamais un rattachement suspendu', l?.destination === 'PISTE_A_QUALIFIER' && l.piste?.hub_id === 'paris-11e' && l.case_ids.length === 0, JSON.stringify({ d: l?.destination, p: l?.piste?.hub_id }));
+}
 verifie('plusieurs écoles nommées SANS signal public concret ni thème ⇒ jamais une piste', classeDoc('Les écoles maternelles Alphonse Baudin, Bullourde et Faidherbe organisent leur kermesse commune.').destination !== 'PISTE_A_QUALIFIER');
 verifie('exposants et caractères de compatibilité : « 11ᵉ » = 11e, « 1ᵉʳ » = 1er', territoireDuPropos('école du 11ᵉ arrondissement de Paris', ctx)?.hub_id === 'paris-11e');
 

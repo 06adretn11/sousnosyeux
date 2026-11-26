@@ -739,7 +739,7 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     doc.empreinte = empreinteSubstance(doc.corps);
     const issue = comparer(doc, memo);
     const nat = natureDocument(doc, page, org);
-    const cls = page.type === 'index' ? { destination: 'INDEX', case_ids: [], suspendus: [] } : classer({ doc, page, organisme: org, fiches });
+    const cls = page.type === 'index' ? { destination: 'INDEX', case_ids: [], suspendus: [] } : classer({ doc, page, organisme: org, fiches, pisteOuverte: page.type === 'document' && !page.repli && ['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nat.nature) });
     pagesEtat.push({ ...etat, issue, extraction: doc.extraction, caracteres: doc.corps.length, empreinte: doc.empreinte, empreinte_precedente: memo?.content_fingerprint || null,
       liens: doc.liens?.length || 0, rss: page.rss ? (viaRss?.ok ? `valide (${viaRss.items.length} entrées)` : `non retenu (${viaRss?.motif})`) : null,
       contacts: page.type === 'service' ? contacts(doc.corps) : undefined, repli_utilise: doc.repli_utilise || null, ...nat, ...cls, doc: page.type === 'index' ? undefined : doc,
