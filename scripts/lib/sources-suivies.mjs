@@ -334,9 +334,11 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   const nonPlein = ok.length ? (ok.length > 1 || r.resolution_status !== 'MATCH') : douteux.length >= 2;
   const nommees = [...new Set([...ok, ...douteux])];
   const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
-  if (nonPlein && structures.size >= 2 && nommees.length <= 10) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
+  // Pas de plafond : la base de production compte bien plus de fiches que le site (les structures « rapprochées » par la commune dépassent vite dix) ; la piste ne rattache AUCUNE affaire,
+  // elle n'est donc pas affectée par la dispersion des indices.
+  if (nonPlein && structures.size >= 2) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
     const p = pistePossible();
-    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures nommées : déclaration d'ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
+    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures rapprochées par le texte : déclaration d’ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
   }
   // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
   if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
