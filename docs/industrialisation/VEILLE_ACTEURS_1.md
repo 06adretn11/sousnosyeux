@@ -45,9 +45,20 @@ Accès Instagram par Business Discovery (Graph v27.0), lecture seule, légende s
 | X | **non testé, volontairement** : les conditions consultées interdisent le crawl sans accord écrit ; l'API est payante (0,005 $ par publication tierce lue au tarif affiché) ; aucun budget autorisé | document Dot du 23/11 |
 | Newsletters | aucune source concrète identifiée ; non testé | — |
 
-## 5. Ce que la collecte fait maintenant
+## 5. Ce que la collecte fait
 
-Voir §8 (essais) et §9 (mise en service).
+- **Comptes Instagram** (6) : première page de 25 publications par compte et par cycle, pages d'historique dans la limite de 18 appels ; légende seule ; témoignages anonymes écartés sans conservation.
+- **Sources web d'un acteur** (blog, pétition, site de commune) : lues par le lecteur HTTP existant ; un acteur ne produit des **pistes** à partir de ses publications propres que s'il porte `pistes_propres: true` ; une commune porte `source_institutionnelle: true` (aucun rattachement ni piste sans fait de violence, plainte ou signalement dans le texte ; aucun « Commune de … » ajouté à une légende).
+- **Déclaration d'ensemble** : un texte d'un acteur suivi qui nomme **plusieurs structures distinctes** (clé : établissement ou alias + commune) et porte un signal public concret devient une **piste de hub** (territoire nommé dans le texte), jamais le fait d'une seule affaire. Un rattachement plein à UNE affaire n'est jamais détourné ; une même structure à deux dossiers reste un arbitrage humain.
+- **Piste** = table `pistes_a_qualifier` (migration 028, appliquée le 24/11) + une notification Telegram groupée (8 au plus par passage) ; aucune proposition d'état, aucune fiche, aucun statut. Le texte conservé est un extrait court, vidé après la notification.
+- **Journaux de CI (publics)** : compteurs par destination, pannes par domaine, inventaire des acteurs (état de la lecture) ; ni texte, ni adresse de publication, ni piste détaillée.
+
+## 5 bis. Limites connues de la classification
+
+- Les pistes sont des **signaux à qualifier**, pas des faits : « article de presse cité » et « mobilisation » restent bruyants sur les comptes de collectifs (à mesurer sur plusieurs cycles).
+- Au premier cycle, la lecture remonte jusqu'à environ 450 publications (juin à novembre) : **21 pistes** attendues d'un coup (8 par passage) ; ensuite le flux est incrémental.
+- Aucune rotation : le budget doit rester ≥ nombre de comptes + marge (testé).
+- Un billet de blog d'une plateforme (Mediapart) n'est la publication de l'acteur que si son adresse contient celle du blog (`suivi.filtre.inclure`).
 
 ## 6. Résultats publiables proposés (revue humaine, aucune publication)
 
@@ -89,9 +100,15 @@ Deux brouillons **utilisables maintenant** : la page SNY les contient déjà. Au
 
 **Toulouse : pas de brouillon.** Aucune page SNY ne couvre Toulouse (la fiche Bénézet n'est pas publiée) ; renvoyer vers une fiche étrangère serait trompeur. Destination honnête : décider la publication de FR-2026-0048, puis un hub Toulouse.
 
-## 8. Essais
+## 8. Essais observés (workflow manuel `sny-pilote-instagram`, `--dry-run`, empreinte de la base avant/après : **aucune écriture, aucun Telegram**)
 
-Voir `PILOTE_VEILLE_INSTAGRAM.md` pour le pilote initial. Essais `--dry-run` de cette mission (workflow manuel `sny-pilote-instagram`, empreinte avant/après de la base, aucune écriture, aucun Telegram) : voir le compte rendu final de la session.
+Dernier essai (26/11/2026, six comptes, 18 appels sur 18) :
+- 450 publications lues, 24 témoignages anonymes écartés, 6 comptes sur 6 lus, 0 en panne ; historique non couvert sur les 6 (budget).
+- Destinations des publications Instagram : 20 pistes, 24 écartées (témoignages), le reste en position générale, hors périmètre ou rattachements suspendus.
+- Sources web des acteurs : 1 piste de hub (billet des parents du 11ᵉ → hub `paris-11e`, aucune affaire), 2 rattachements suspendus (mise à jour de la pétition de Toulouse : fiche Bénézet non publiée ; page de la Ville de Tarnos : une fiche), 1 position générale (Mérignac) ; aucune de ces pages n'était en panne.
+- Pannes visibles préexistantes : fcpe75.org (404), metooecole.org (403 anti-robot), sosperiscolaire.fr (page vide), adavem40.fr (domaine introuvable), pav75.fr (erreur TLS).
+
+Défauts trouvés PAR cet essai et corrigés avant fusion : le billet de Bullourde restait « rattachement suspendu » parce que (1) la base de production contient bien plus de fiches que le site et (2) la porte « piste » n'était pas transmise aux pages « document » du registre.
 
 ## 9. Sécurité (note de livraison)
 
