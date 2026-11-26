@@ -15,7 +15,7 @@ const court = (s, n) => { const t = String(s || '').replace(/\s+/g, ' ').trim();
 /** @returns {object[]} une ligne par SOURCE d'un acteur (une ligne « sans source » si l'acteur n'a aucune page suivie) */
 export function inventaire(registre, apercu = null) {
   const lignes = apercu?.documents || [];
-  const parPage = new Map(lignes.filter((l) => l.type && l.type !== 'document').map((l) => [l.url, l]));
+  const parPage = new Map(lignes.map((l) => [l.url, l])); // pages d'index, de service, comptes Instagram ET documents suivis directement : même adresse que la page du registre
   const sortie = [];
   for (const o of registre.organismes || []) {
     const docs = lignes.filter((l) => (l.type || 'document') === 'document' && (l.organismes || []).includes(o.id) && l.publie_le);
@@ -31,7 +31,7 @@ export function inventaire(registre, apercu = null) {
         incident: l?.incident || null, dernier_succes: l?.dernier_succes || null,
         derniere_publication_couverte: derniere,
         publications_lues: l?.couverture?.publications_lues ?? null, plus_ancien_lu: l?.couverture?.plus_ancien_lu ?? null,
-        historique_non_couvert: l?.couverture ? Boolean(l.couverture.historique_non_couvert) : null, dernier_controle: apercu?.maintenant || apercu?.genere_le || null });
+        historique_non_couvert: l?.couverture ? Boolean(l.couverture.historique_non_couvert) : null, // null = non applicable (page web) dernier_controle: apercu?.maintenant || apercu?.genere_le || null });
     }
   }
   return sortie;
@@ -42,7 +42,7 @@ export function enMarkdown(lignes) {
   const out = ['| Acteur | Source | Type | État | Dernière publication couverte | Historique | Identité |', '|---|---|---|---|---|---|---|'];
   for (const l of lignes) {
     const hote = l.source ? new URL(l.source).host + (l.type === 'instagram' ? ` (@${new URL(l.source).pathname.split('/').filter(Boolean)[0]})` : '') : '—';
-    out.push(`| ${e(l.nom)} | ${e(hote)} | ${e(l.type || '—')} | ${e(l.mesure)}${l.incident ? ` (${e(l.incident)})` : ''} | ${e(l.derniere_publication_couverte || '—')} | ${l.historique_non_couvert === null ? '—' : l.historique_non_couvert ? `NON couvert avant ${e(l.plus_ancien_lu)}` : 'couvert'} | ${l.identite_verifiee ? 'vérifiée' : 'à confirmer'} |`);
+    out.push(`| ${e(l.nom)} | ${e(hote)} | ${e(l.type || '—')} | ${e(l.mesure)}${l.incident ? ` (${e(l.incident)})` : ''} | ${e(l.derniere_publication_couverte || '—')} | ${l.historique_non_couvert == null ? '—' : l.historique_non_couvert ? `NON couvert avant ${e(l.plus_ancien_lu)}` : 'couvert'} | ${l.identite_verifiee ? 'vérifiée' : 'à confirmer'} |`);
   }
   return out.join('\n');
 }

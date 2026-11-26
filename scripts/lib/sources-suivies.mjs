@@ -328,18 +328,21 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   const r = resoudre({ candidate: { title: titre }, index: fiches, corps });
   const ok = (r.detail || []).filter((d) => d.rattachement === 'OK').map((d) => d.case_id);
   const douteux = (r.detail || []).filter((d) => d.rattachement === 'DOUTEUX').map((d) => d.case_id);
+  // Plusieurs STRUCTURES distinctes nommées dans une publication d'un acteur suivi (ex. les parents de six écoles d'un arrondissement) : une déclaration D'ENSEMBLE, jamais le fait d'une seule affaire.
+  // Elle ne rattache aucune affaire (aucun case_id) ; si le texte porte un signal public concret, c'est une piste (hub si un territoire est nommé), sinon le rattachement reste suspendu.
+  // Appliqué seulement quand aucun rattachement plein à UNE affaire n'est établi (ok vide, ou plusieurs, ou départage chronologique), jamais contre un rattachement plein.
+  const nonPlein = ok.length ? (ok.length > 1 || r.resolution_status !== 'MATCH') : douteux.length >= 2;
+  const nommees = [...new Set([...ok, ...douteux])];
+  const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
+  if (nonPlein && structures.size >= 2 && nommees.length <= 10) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
+    const p = pistePossible();
+    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures nommées : déclaration d'ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
+  }
   // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
   if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
-  // Plusieurs structures nommées dans une publication d'un acteur suivi (ex. les parents de six écoles d'un arrondissement) : une déclaration D'ENSEMBLE, jamais le fait d'une seule affaire.
-  // Elle ne rattache aucune affaire (aucun case_id) ; si le texte porte un signal public concret, c'est une piste (hub si un territoire est nommé), sinon le rattachement reste suspendu.
-  const structures = new Set(douteux.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
-  if (structures.size >= 2 && douteux.length <= 10) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
-    const p = pistePossible();
-    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures nommées : déclaration d'ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
-  }
   if (douteux.length > 10) return { ...classerSansAffaire({ titre, corps, page }), indices_disperses: douteux.length };
   // Publication d'un COMPTE suivi qui nomme, par son ALIAS PROPRE, la structure d'UNE seule affaire (commune présente, rôle de la personne non précisé) : ce n'est pas un
   // rattachement (aucun case_id), c'est un SIGNAL À EXAMINER — une proposition d'information sans bouton, rattachement dit « à confirmer », jamais une affaire forcée.
