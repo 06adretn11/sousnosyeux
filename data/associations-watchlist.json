@@ -12,13 +12,14 @@
   "controle_documentaire": "2026-11-05",
   "cadences": "index : à chaque cycle quotidien de sny-cycle ; pages de service : relues au plus une fois tous les 7 jours (mémoire source_resolutions).",
   "instagram": {
-   "etat": "PILOTE PRÉPARÉ, NON ACTIVÉ : les comptes de type « instagram » ne sont lus que par maintenance-cycle.mjs avec --sources-suivies ET --instagram-pilote ; aucun workflow ne passe cette option.",
+   "etat": "EN SERVICE seulement si sny-cycle passe --instagram-pilote (voir docs/industrialisation/VEILLE_ACTEURS_1.md). Lecture incrémentale : une page de 25 publications par compte et par cycle, pages supplémentaires tant que la dernière page ne contient aucune publication déjà connue.",
    "ig_user_id": "17841480706234777",
    "compte_sny": "sousnosyeux_org",
    "parcours": "unified",
    "version_graph": "v27.0",
-   "budget_appels_par_cycle": 4,
-   "doctrine": "Budget pilote : 4 appels par cycle (une première page par compte, puis jusqu'à deux pages supplémentaires si la dernière page lue ne contient aucune publication déjà connue). Légende seule. Rattachement à une affaire par le TEXTE seulement. Témoignages anonymes sensibles écartés. À ajuster uniquement après mesure des appels réels et des propositions utiles."
+   "budget_appels_par_cycle": 18,
+   "doctrine": "Une première page de 25 publications par compte et par cycle, puis des pages d'historique (priorité au compte dont l'historique lu est le moins profond) dans la limite du budget. Légende seule. Rattachement à une affaire par le TEXTE seulement. Témoignages anonymes sensibles écartés. Un compte non lisible (erreur 110/2207013 : compte non professionnel, privé ou identifiant inexact) est consigné dans acces_testes, jamais traité comme « sans nouveauté ».",
+   "taille_page": 25
   }
  },
  "organismes": [
@@ -60,7 +61,16 @@
       "note": "communiqués propres + articles de presse référencés (émetteur = le média) : à distinguer"
      }
     ]
-   }
+   },
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "enfantbleunational",
+     "resultat": "non_lisible",
+     "code": "110/2207013",
+     "teste_le": "2026-11-26"
+    }
+   ]
   },
   {
    "id": "colosse",
@@ -151,7 +161,17 @@
       "note": "mise à jour affichée : 01/07/2024 — identité et contact de secours, jamais une preuve d'activité récente"
      }
     ]
-   }
+   },
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "adavemjp40",
+     "resultat": "non_lisible",
+     "code": "110/2207013",
+     "teste_le": "2026-11-26",
+     "attribution": "plaquette municipale (Forum Santé Jeunes de Mont-de-Marsan), pas l'association"
+    }
+   ]
   },
   {
    "id": "ose-paris",
@@ -460,16 +480,45 @@
     }
    ],
    "canaux": [
-    { "type": "site", "url": "https://www.metooecole.org/", "etat": "déclaré par le collectif · page déjà suivie (ci-dessous)", "collecte": "lecture bloquée par le contrôle anti-robot du site (constat du 05/11/2026 et du 23/11/2026) : aucune lecture automatique ; non contourné" },
-    { "type": "x", "compte": "@MeTooEcole", "url": "https://x.com/MeTooEcole", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
-    { "type": "instagram", "compte": "@metooecole", "url": "https://www.instagram.com/metooecole/", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
-    { "type": "facebook", "compte": "@metooecole", "url": "https://www.facebook.com/metooecole", "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte", "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici" },
-    { "type": "petition_change_org", "url": "https://www.change.org/p/metooecole-parce-qu-aucun-enfant-ne-devrait-avoir-peur-d-aller-à-l-école", "etat": "pétition du collectif et ses mises à jour (adresse retrouvée par recherche : titre « Petition update · Lettre ouverte à Emmanuel Macron… ») · non ouverte, sans compte ni signature", "collecte": "non testée — aucune inscription, aucun abonnement" }
+    {
+     "type": "site",
+     "url": "https://www.metooecole.org/",
+     "etat": "déclaré par le collectif · page déjà suivie (ci-dessous)",
+     "collecte": "lecture bloquée par le contrôle anti-robot du site (constat du 05/11/2026 et du 23/11/2026) : aucune lecture automatique ; non contourné"
+    },
+    {
+     "type": "x",
+     "compte": "@MeTooEcole",
+     "url": "https://x.com/MeTooEcole",
+     "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte",
+     "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici"
+    },
+    {
+     "type": "instagram",
+     "compte": "@metooecole",
+     "url": "https://www.instagram.com/metooecole/",
+     "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte",
+     "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici"
+    },
+    {
+     "type": "facebook",
+     "compte": "@metooecole",
+     "url": "https://www.facebook.com/metooecole",
+     "etat": "canal déclaré par le collectif (indiqué à SNY le 23/11/2026) · URL dérivée du compte, non ouverte",
+     "collecte": "non testée — collecte sociale : chantier dédié, aucun connecteur ici"
+    },
+    {
+     "type": "petition_change_org",
+     "url": "https://www.change.org/p/metooecole-parce-qu-aucun-enfant-ne-devrait-avoir-peur-d-aller-à-l-école",
+     "etat": "pétition du collectif et ses mises à jour (adresse retrouvée par recherche : titre « Petition update · Lettre ouverte à Emmanuel Macron… ») · non ouverte, sans compte ni signature",
+     "collecte": "non testée — aucune inscription, aucun abonnement"
+    }
    ],
    "collecte_reelle": "Recherche de presse (existante, requêtes contextuelles de scripts/watch-updates.mjs) testée le 23/11/2026 : nom du collectif sans accent 24 résultats, avec accent et « périscolaire » 4 résultats (Google Actualités RSS, titres seuls). Site : bloqué. Réseaux sociaux et Change.org : aucune collecte.",
    "suivi": {
     "domaines": [
-     "metooecole.org"
+     "metooecole.org",
+     "instagram.com"
     ],
     "pages": [
      {
@@ -484,9 +533,25 @@
       "cadence": "hebdomadaire",
       "emetteur": "Collectif MeTooEcole",
       "sans_date_publiee": true
+     },
+     {
+      "url": "https://www.instagram.com/metooecole/",
+      "type": "instagram",
+      "compte": "metooecole",
+      "cadence": "quotidienne",
+      "emetteur": "Collectif MeTooEcole (Instagram)"
      }
     ]
-   }
+   },
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "metooecole",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 230
+    }
+   ]
   },
   {
    "id": "kopp-royer",
@@ -497,7 +562,9 @@
    ],
    "role": "avocates_de_familles",
    "portee": "affaire (Alphonse-Baudin, Paris 11e) ; paroles nationales sur les procès du périscolaire parisien",
-   "affaires_rattachees": ["POC-05"],
+   "affaires_rattachees": [
+    "POC-05"
+   ],
    "qualite_registre": "avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)",
    "themes": [
     "violences sexuelles dans le périscolaire parisien",
@@ -611,7 +678,16 @@
       "note": "Compte lu par Business Discovery le 23/11/2026. Son lien avec le site sosperiscolaire.fr est probable (le texte du compte se désigne « sosperiscolaire ») mais non démontré. Témoignages anonymes : écartés. Une lettre adressée à la Ville de Paris ne relève pas automatiquement du hub Paris 11e : le rattachement se fait par le texte, jamais par l'adresse du destinataire."
      }
     ]
-   }
+   },
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "sosperiscolaire",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 150
+    }
+   ]
   },
   {
    "id": "leurs-voix-notre-combat-tarnos",
@@ -638,7 +714,16 @@
       "emetteur": "Leurs voix, notre combat – Tarnos (Instagram)"
      }
     ]
-   }
+   },
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "leursvoixnotrecombat40",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 117
+    }
+   ]
   },
   {
    "id": "couples-et-familles-tarnos",
@@ -689,6 +774,206 @@
    "suivi": {
     "pages": []
    }
+  },
+  {
+   "id": "stop-tabou-pedocriminalite",
+   "nom": "Collectif Stop Tabou Pédocriminalité (Toulouse)",
+   "alias": [
+    "Stop Tabou Pédocriminalité",
+    "Stop Tabou Pedocriminalite",
+    "Stop Tabou Pedo"
+   ],
+   "description": "Collectif de parents toulousains (soutenu par la FCPE 31 dans sa pétition de 2024) ; interpelle la Ville de Toulouse sur le périscolaire.",
+   "role": "organisme",
+   "portee": "Toulouse (Haute-Garonne)",
+   "themes": [
+    "protection des enfants dans le périscolaire toulousain",
+    "bilan des engagements municipaux de 2024",
+    "chaîne de signalement"
+   ],
+   "verifie_le": "2026-11-26",
+   "implication_verifiee": true,
+   "implication_detail": "Auteur de la pétition change.org de septembre 2024 (après la condamnation d'un ancien animateur toulousain) et de l'interpellation de la mairie du 7 mai 2026 (école maternelle Bénézet). Les demandes du collectif ne prouvent pas leur reprise par la Ville. Distinguer Lakanal/Matabiau (2024) de Bénézet (2026).",
+   "implication_source": "change.org (pétition et mise à jour du 07/05/2026) ; France 3 Occitanie, 14/05/2026",
+   "note": "Aucune fiche ni hub SNY n'existe à Toulouse ; la fiche Bénézet (FR-2026-0048) est retenue en base, non publiée. Une publication de ce collectif documente ce qu'il demande ou déclare ; elle n'établit ni les faits ni une étape judiciaire. PORTÉE DE L'ACTEUR ≠ PORTÉE DES PUBLICATIONS.",
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "stoptaboupedo",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 159
+    }
+   ],
+   "suivi": {
+    "domaines": [
+     "instagram.com",
+     "change.org"
+    ],
+    "pages": [
+     {
+      "url": "https://www.instagram.com/stoptaboupedo/",
+      "type": "instagram",
+      "compte": "stoptaboupedo",
+      "cadence": "quotidienne",
+      "emetteur": "Collectif Stop Tabou Pédocriminalité (Instagram)"
+     },
+     {
+      "url": "https://www.change.org/p/stop-au-tabou-de-la-p%C3%A9docriminalit%C3%A9-r%C3%A9agissons-maintenant-pour-nos-enfants/u/34567134",
+      "type": "document",
+      "cadence": "hebdomadaire",
+      "emetteur": "Collectif Stop Tabou Pédocriminalité (mise à jour de pétition)"
+     }
+    ]
+   }
+  },
+  {
+   "id": "parents-ecoles-11e-bullourde",
+   "nom": "Des parents élu·es de l'école Bullourde (blog Mediapart)",
+   "alias": [
+    "Des parents élu·es de l'école Bullourde",
+    "Parents élu·es de l'école Bullourde",
+    "Des parents élus de l'école Bullourde"
+   ],
+   "description": "Parents d'élèves signataires pour les écoles maternelles Alphonse Baudin, Bullourde, Faidherbe, 11 bis Parmentier et les élémentaires Titon, Keller, 11 bis Parmentier (Paris 11e).",
+   "role": "organisme",
+   "portee": "Paris 11e (six à sept écoles signataires ; pas une seule affaire)",
+   "themes": [
+    "violences sexuelles dans le périscolaire parisien",
+    "saisine du Défenseur des droits",
+    "réponse de la Ville de Paris"
+   ],
+   "verifie_le": "2026-11-26",
+   "implication_verifiee": true,
+   "implication_detail": "Billet du 28/01/2026 : les signataires déclarent avoir saisi le Défenseur des droits le 22/12/2025 et demandent un constat, une enquête indépendante, un audit organisationnel et un avis. Aucune réponse du Défenseur n'en découle ; une prise de parole d'ensemble ne vaut pour aucune affaire prise isolément.",
+   "implication_source": "Le Club de Mediapart (billet de blog personnel), 28/01/2026 et 20/11/2025",
+   "note": "Blog personnel : la rédaction de Mediapart n'est pas à l'origine du contenu. À NE PAS CONFONDRE : la déclaration vaut pour l'ensemble des écoles signataires, pas pour Bullourde seule.",
+   "acces_testes": [],
+   "suivi": {
+    "domaines": [
+     "blogs.mediapart.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://blogs.mediapart.fr/des-parents-elu-es-de-lecole-bullourde",
+      "type": "index",
+      "cadence": "quotidienne",
+      "emetteur": "Des parents élu·es de l'école Bullourde (blog)"
+     },
+     {
+      "url": "https://blogs.mediapart.fr/des-parents-elu-es-de-lecole-bullourde/blog/280126/violences-dans-le-periscolaire-nous-avons-saisi-le-defenseur-des-droits",
+      "type": "document",
+      "cadence": "hebdomadaire",
+      "emetteur": "Des parents élu·es de l'école Bullourde (blog)"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ville-de-tarnos",
+   "nom": "Ville de Tarnos",
+   "alias": [
+    "Ville de Tarnos",
+    "Mairie de Tarnos"
+   ],
+   "description": "Commune ; publie le point des actions municipales après l'affaire du centre de loisirs, les communiqués et les délibérations. Source documentaire uniquement.",
+   "role": "reserve_source_documentaire",
+   "portee": "communale:Tarnos",
+   "verifie_le": "2026-11-26",
+   "implication_verifiee": true,
+   "implication_detail": "Émetteur officiel (réunion publique du 15/07/2026, avenant n°1 à la délégation de service public voté le 10/11/2026 selon la presse). Une annonce municipale n'est pas une réalisation.",
+   "implication_source": "ville-tarnos.fr (point du 12/10/2026, mis à jour le 10/11)",
+   "note": "Mairie = source uniquement, jamais cible de contact.",
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "ville_de_tarnos",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 1766
+    }
+   ],
+   "suivi": {
+    "domaines": [
+     "instagram.com",
+     "ville-tarnos.fr"
+    ],
+    "pages": [
+     {
+      "url": "https://www.instagram.com/ville_de_tarnos/",
+      "type": "instagram",
+      "compte": "ville_de_tarnos",
+      "cadence": "quotidienne",
+      "emetteur": "Ville de Tarnos (Instagram)"
+     },
+     {
+      "url": "https://www.ville-tarnos.fr/actualites/les-actions-de-la-municipalite-a-la-suite-de-laffaire-du-centre-de-loisirs/",
+      "type": "document",
+      "cadence": "hebdomadaire",
+      "emetteur": "Ville de Tarnos"
+     }
+    ]
+   }
+  },
+  {
+   "id": "ville-de-merignac",
+   "nom": "Ville de Mérignac",
+   "alias": [
+    "Ville de Mérignac",
+    "Mairie de Mérignac"
+   ],
+   "description": "Commune de Gironde ; délibération 2026_174 (16/11/2026) autorisant la signature de deux chartes et point municipal du 19/11/2026. Source documentaire uniquement, sans rattachement à une affaire publiée.",
+   "role": "reserve_source_documentaire",
+   "portee": "communale:Mérignac",
+   "verifie_le": "2026-11-26",
+   "implication_verifiee": true,
+   "implication_detail": "Autorisation de signer deux chartes (pas de preuve de signature ni d'application) ; plan à soumettre au conseil au premier semestre 2027 ; cellule envisagée, non en place.",
+   "implication_source": "merignac.com (délibération 2026_174 ; point municipal du 19/11/2026)",
+   "note": "Prévention municipale sans affaire locale publiée : ne se rattache ni à Frida-Kahlo ni à Cenon. Mairie = source uniquement.",
+   "acces_testes": [
+    {
+     "reseau": "instagram",
+     "compte": "villedemerignac",
+     "resultat": "lisible",
+     "teste_le": "2026-11-26",
+     "media_declares": 3046
+    }
+   ],
+   "suivi": {
+    "domaines": [
+     "instagram.com",
+     "merignac.com"
+    ],
+    "pages": [
+     {
+      "url": "https://www.instagram.com/villedemerignac/",
+      "type": "instagram",
+      "compte": "villedemerignac",
+      "cadence": "quotidienne",
+      "emetteur": "Ville de Mérignac (Instagram)"
+     },
+     {
+      "url": "https://www.merignac.com/merignac-se-mobilise-contre-les-violences-faites-aux-enfants",
+      "type": "document",
+      "cadence": "hebdomadaire",
+      "emetteur": "Ville de Mérignac"
+     }
+    ]
+   }
+  },
+  {
+   "id": "les-amies-de-romy",
+   "nom": "Les Ami(e)s de Romy",
+   "alias": [
+    "Les Ami(e)s de Romy",
+    "Les Amis de Romy"
+   ],
+   "description": "Association de prévention basée à La Ciotat ; selon la presse, accompagne des parents après les signalements au centre de loisirs Françoise-Dolto à Hyères (article Var-matin non relu).",
+   "role": "identite_a_confirmer",
+   "portee": "inconnue",
+   "verifie_le": "2026-11-26",
+   "note": "DÉCOUVERT, NON SUIVI : aucune fiche SNY à Hyères ; l'article d'origine (Var-matin) n'a pas pu être relu ; compte Facebook confirmé par le pied de page du site, aucun Instagram lié.",
+   "acces_testes": []
   }
  ]
 }

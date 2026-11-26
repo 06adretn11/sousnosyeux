@@ -72,7 +72,11 @@ jobs:
           code=$?
           echo "maintenance-cycle : code de sortie $code"
           grep -E "Sources suivies :|Instagram \(pilote\)|::warning::" "$RUNNER_TEMP/cycle.log" | sed -E 's#https?://[^ ]+#<adresse>#g'
-          if [ -f "$RUNNER_TEMP/apercu.json" ]; then node scripts/pilote-instagram-neon.mjs resume-apercu "$RUNNER_TEMP/apercu.json"; else echo "aucun aperçu écrit"; fi
+          if [ -f "$RUNNER_TEMP/apercu.json" ]; then
+            node scripts/pilote-instagram-neon.mjs resume-apercu "$RUNNER_TEMP/apercu.json"
+            echo "--- inventaire des acteurs (état de la lecture) ---"
+            node scripts/inventaire-acteurs.mjs --apercu "$RUNNER_TEMP/apercu.json" | sed -E 's#https?://[^ ]+#<adresse>#g'
+          else echo "aucun aperçu écrit"; fi
           exit $code
 
       - name: essai-dry-run — comparaison de la base APRÈS (aucune écriture attendue)

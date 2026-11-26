@@ -26,10 +26,10 @@ const doc = (titre, ...p) => ({ titre, corps: [titre, ...p].join('\n\n'), url: '
 const ORG = { id: 'asso', nom: 'Association Test', portee: 'nationale', suivi: { domaines: ['asso.example'] } };
 
 console.log('\n  REGISTRE');
-await t('registre de production : 20 entrées (15 du kit + 3 historiques conservées + le cabinet d’avocates du 23/11 + le collectif de Tarnos, compte Instagram du pilote), identités uniques, chaque page a un type et un émetteur', () => {
+await t('registre de production : 25 entrées (15 du kit + 3 historiques conservées + le cabinet d’avocates du 23/11 + le collectif de Tarnos + Stop Tabou Toulouse, parents du 11e, villes de Tarnos et de Mérignac, Les Ami(e)s de Romy — découverts par Dot, vérifiés le 26/11), identités uniques, chaque page a un type et un émetteur', () => {
   const r = chargerRegistre(REG);
-  assert.equal(r.organismes.length, 20);
-  assert.equal(new Set(r.organismes.map((o) => o.id)).size, 20);
+  assert.equal(r.organismes.length, 25);
+  assert.equal(new Set(r.organismes.map((o) => o.id)).size, 25);
   for (const id of ['enfant-bleu', 'colosse', 'adavem-jp40', 'ose-paris', 'innocence-en-danger', 'fcpe-paris', 'fcpe-33', 'pav75', 'victaid', 'mediavic05', 'metooecole', 'kopp-royer',
     'mouvenfants', 'francas33', 'sos-periscolaire', 'couples-et-familles-tarnos', 'cdp-enfance', 'cvm', 'une-vie', 'leurs-voix-notre-combat-tarnos']) assert.ok(r.organismes.some((o) => o.id === id), id);
   for (const p of r.pages) { assert.ok(['index', 'service', 'document', 'instagram'].includes(p.type), p.url); assert.ok(p.emetteur, p.url); }

@@ -303,9 +303,18 @@ function contexteTerritoire(fiches) {
   return CONTEXTES_TERRITOIRE.get(fiches);
 }
 
-export function classer({ doc, page, organisme, fiches }) {
+export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) {
   const titre = String(doc.titre || '');
   const corps = zonePertinente(doc, organisme);
+  // Une piste à qualifier ne naît que d'une publication d'un acteur SUIVI : un compte Instagram, ou une publication PROPRE (blog, communiqué, mise à jour de pétition) — jamais d'un article de presse référencé.
+  const pistePossible = () => {
+    if (doc.extraction !== 'instagram-business-discovery' && !pisteOuverte) return null;
+    const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
+    const lu = aplatir(`${titre} ${corpsSansSignature(doc.corps, organisme)}`);
+    const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
+      || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
+    return thematique ? piste : null;
+  };
   const tete = aplatir(`${titre} ${doc.url_finale || doc.url}`);
   const f = organisme?.suivi?.filtre || {};
   for (const p of f.exclure || []) if (new RegExp(p, 'i').test(tete)) return { destination: 'HORS_PERIMETRE', motif: `filtre de l'organisme (${p})`, case_ids: [], suspendus: [] };
@@ -324,6 +333,13 @@ export function classer({ doc, page, organisme, fiches }) {
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
+  // Plusieurs structures nommées dans une publication d'un acteur suivi (ex. les parents de six écoles d'un arrondissement) : une déclaration D'ENSEMBLE, jamais le fait d'une seule affaire.
+  // Elle ne rattache aucune affaire (aucun case_id) ; si le texte porte un signal public concret, c'est une piste (hub si un territoire est nommé), sinon le rattachement reste suspendu.
+  const structures = new Set(douteux.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
+  if (structures.size >= 2 && douteux.length <= 10) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
+    const p = pistePossible();
+    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures nommées : déclaration d'ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
+  }
   if (douteux.length > 10) return { ...classerSansAffaire({ titre, corps, page }), indices_disperses: douteux.length };
   // Publication d'un COMPTE suivi qui nomme, par son ALIAS PROPRE, la structure d'UNE seule affaire (commune présente, rôle de la personne non précisé) : ce n'est pas un
   // rattachement (aucun case_id), c'est un SIGNAL À EXAMINER — une proposition d'information sans bouton, rattachement dit « à confirmer », jamais une affaire forcée.
@@ -338,15 +354,9 @@ export function classer({ doc, page, organisme, fiches }) {
   // sinon piste thématique sans territoire. Aucun case_id, aucune proposition : une notification groupée, revue humaine. Le lien à une AFFAIRE est décidé plus haut.
   // Garde thématique minimale (le THEME existant : violences, protection de l'enfance, plainte, signalement, centre de loisirs, périscolaire…) : une publication hors sujet (vide-grenier,
   // cantine fermée) ne devient jamais une piste, même si elle contient « rassemblement » ou « communiqué ».
-  // La garde porte sur le texte SANS hashtags ni signature (le nom du compte, « SOS Périscolaire », ne vaut pas thème). Sont thématiques par construction : une déclaration sur
-  // l'accueil des plaintes, une lettre ouverte ou pétition d'un compte suivi, un appel à témoins qui parle d'enfants ; un rassemblement ou une démarche exigent le thème dans le texte.
-  if (doc.extraction === 'instagram-business-discovery') {
-    const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
-    const lu = aplatir(`${titre} ${corpsSansSignature(corps, organisme)}`);
-    const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
-      || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
-    if (thematique) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
-  }
+  // Garde thématique : voir pistePossible (texte SANS hashtags ni signature ; le nom du compte, « SOS Périscolaire », ne vaut pas thème).
+  const piste = pistePossible();
+  if (piste) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
   return { ...classerSansAffaire({ titre, corps, page }), ...(vois.length ? { indices_disperses: vois.length } : {}) };
 }
 
@@ -786,7 +796,7 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     const nat = natureDocument(doc, d.externe ? null : d.page, d.organisme);
     // Témoignage anonyme sensible : écarté AVANT tout classement ; aucun texte conservé (corps vide), seul le marqueur de mémoire.
     const cls = doc.ecarte ? { destination: 'ECARTE_TEMOIGNAGE', motif: 'témoignage anonyme sensible : écarté sans classement ni conservation du texte', case_ids: [], suspendus: [] }
-      : classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches });
+      : classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches, pisteOuverte: !d.externe && ['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nat.nature) });
     sortie.push({ ...d, issue, empreinte: doc.empreinte, empreinte_precedente: memo?.content_fingerprint || null, ...nat, ...cls, doc,
       publie_le: doc.publie_le || d.publie_index || doc.date_entete || null });
   }

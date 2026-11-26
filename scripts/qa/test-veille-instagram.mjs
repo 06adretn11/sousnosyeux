@@ -76,7 +76,7 @@ console.log('A. Budget par cycle, pages supplémentaires, historique non couvert
   verifie('arrêt à la première page qui contient une publication déjà connue (page 2 ici) : 2 appels, historique couvert', r.appels === 2 && !r.comptes[0].historique_non_couvert);
   // 6. Budget et paramètres validés
   verifie('budget hors bornes ou pseudo invalide refusés avant tout appel', await leve(() => lireComptes({ comptes: cptes('cpt_a'), connu: tousInconnus, appeler: graph(donnees).appeler, budget: 0 })) && await leve(() => lireComptes({ comptes: cptes('cpt_a'), connu: tousInconnus, appeler: graph(donnees).appeler, budget: BUDGET_CYCLE_MAX + 1 })) && await leve(() => lireComptes({ comptes: [{ page: page('x'), pseudo: 'a}b' }], connu: tousInconnus, appeler: graph(donnees).appeler })));
-  verifie('budget par défaut du pilote = 4 ET plafond du pilote = 4 (le relever est une décision, après mesure)', BUDGET_CYCLE_DEFAUT === 4 && BUDGET_CYCLE_MAX === 4);
+  verifie('budget par défaut = 4 ; plafond relevé à 80 APRÈS mesure (26/11/2026) ; taille de page configurable (1 à 50)', BUDGET_CYCLE_DEFAUT === 4 && BUDGET_CYCLE_MAX === 80);
   // 8. Publication sans permalien : comptée, jamais « inconnue » (elle ne doit pas déclencher de page supplémentaire)
   g = graph({ cpt_a: { posts: compteSimule('cpt_a').posts.map((p, i) => (i < 10 ? { ...p, permalink: undefined } : p)) } });
   r = await lireComptes({ comptes: cptes('cpt_a'), connu: tousInconnus, appeler: g.appeler, budget: 4 });
@@ -211,7 +211,7 @@ console.log('E. Registre de production : aucun mélange d\'organismes, aucune ac
   const chemin = join(ROOT, 'data', 'associations-watchlist.json');
   const reg = chargerRegistre(chemin);
   const pagesIG = reg.pages.filter((p) => p.type === 'instagram');
-  verifie('deux comptes Instagram au registre : leursvoixnotrecombat40 et sosperiscolaire, chacun avec un pseudo valide et une URL cohérente', pagesIG.map((p) => p.compte).sort().join() === 'leursvoixnotrecombat40,sosperiscolaire' && pagesIG.every((p) => p.url === `https://www.instagram.com/${p.compte}/` && /^[A-Za-z0-9._]{1,30}$/.test(p.compte) && p.emetteur));
+  verifie('six comptes Instagram au registre (tous mesurés lisibles le 26/11/2026), chacun avec un pseudo valide et une URL cohérente', pagesIG.map((p) => p.compte).sort().join() === 'leursvoixnotrecombat40,metooecole,sosperiscolaire,stoptaboupedo,ville_de_tarnos,villedemerignac' && pagesIG.every((p) => p.url === `https://www.instagram.com/${p.compte}/` && /^[A-Za-z0-9._]{1,30}$/.test(p.compte) && p.emetteur));
   const leurs = reg.organismes.find((o) => o.id === 'leurs-voix-notre-combat-tarnos'); const sos = reg.organismes.find((o) => o.id === 'sos-periscolaire'); const autres = reg.organismes.filter((o) => !['leurs-voix-notre-combat-tarnos', 'sos-periscolaire'].includes(o.id));
   verifie('deux organismes DISTINCTS : « Leurs voix, notre combat » ≠ « SOS Périscolaire » ≠ tout autre organisme (alias jamais partagés, jamais génériques)', verifierAliasDistincts(reg.organismes).filter((p) => !/« (OSE|CVM) »/.test(p)).length === 0 && leurs.id !== sos.id);
   const norm = (s) => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
@@ -219,7 +219,7 @@ console.log('E. Registre de production : aucun mélange d\'organismes, aucune ac
   verifie('un alias générique ou partagé serait détecté', verifierAliasDistincts([{ id: 'x', nom: 'Collectif', alias: ['Collectif de familles'] }, { id: 'y', nom: 'Même Nom', alias: [] }, { id: 'z', nom: 'Même Nom', alias: [] }]).length >= 3);
   verifie('le collectif de Tarnos n\'a aucune portée territoriale déduite de son nom ou de sa commune (portée « inconnue »)', leurs.portee === 'inconnue' && !/communale:/.test(leurs.portee));
   const cfg = chargerConfigInstagram(chemin);
-  verifie('configuration du pilote : parcours unified, budget 4 appels par cycle (jamais plus), identifiant numérique', cfg.parcours === 'unified' && cfg.budget === 4 && cfg.budget <= 4 && /^\d{5,25}$/.test(cfg.ig_user_id));
+  verifie('configuration du pilote : parcours unified, budget de 18 appels par cycle (6 comptes : une première page chacun + 12 pages d’historique ; 25 publications par appel), taille de page 25, identifiant numérique', cfg.parcours === 'unified' && cfg.budget === 18 && cfg.budget <= BUDGET_CYCLE_MAX && cfg.taille_page === 25 && /^\d{5,25}$/.test(cfg.ig_user_id));
   const dossierTmp = mkdtempSync(join(tmpdir(), 'sny-reg-')); const regTmp = join(dossierTmp, 'reg.json');
   const org = (id, alias) => ({ id, nom: alias[0], alias, role: 'organisme', portee: 'inconnue', suivi: { domaines: ['instagram.com'], pages: [{ url: `https://www.instagram.com/${id}/`, type: 'instagram', compte: id, emetteur: id, cadence: 'quotidienne' }] } });
   const ecrire = (organismes) => writeFileSync(regTmp, JSON.stringify({ organismes }), 'utf8');
@@ -231,7 +231,7 @@ console.log('E. Registre de production : aucun mélange d\'organismes, aucune ac
   verifie('alias générique (« collectif de familles de … ») : chargement refusé', await leve(() => chargerRegistre(regTmp)));
   rmSync(dossierTmp, { recursive: true, force: true });
   const brut = JSON.parse(readFileSync(chemin, 'utf8'));
-  verifie('le registre dit explicitement « non activé » et rappelle la doctrine du budget', /NON ACTIVÉ/.test(brut._meta.instagram.etat) && /4 appels/.test(brut._meta.instagram.doctrine));
+  verifie('le registre dit explicitement dans quelles conditions le pilote est en service et rappelle la doctrine de lecture incrémentale', /EN SERVICE seulement si sny-cycle passe --instagram-pilote/.test(brut._meta.instagram.etat) && /25 publications/.test(brut._meta.instagram.doctrine));
   // Aucune activation : ni workflow, ni appel par défaut
   const wf = join(ROOT, '.github', 'workflows'); const fichiers = existsSync(wf) ? readdirSync(wf).filter((f) => /\.ya?ml$/.test(f)) : [];
   const MANUEL = 'sny-pilote-instagram.yml'; // essai MANUEL en --dry-run : seul workflow autorisé à passer l'option (voir test-pistes-a-qualifier : workflow_dispatch seul, sans cron)

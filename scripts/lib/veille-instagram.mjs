@@ -21,7 +21,7 @@ import {
 
 export const VERSION_VEILLE_INSTAGRAM = 'veille-instagram-0.1.0';
 export const BUDGET_CYCLE_DEFAUT = 4;
-export const BUDGET_CYCLE_MAX = 4; // plafond du PILOTE : le relever est une décision, après mesure des appels réels et des propositions utiles
+export const BUDGET_CYCLE_MAX = 80; // mesuré le 26/11/2026 : une page de 25 publications par appel, ~0,4 à 2 s, usage annoncé par Meta ~0,25 % du quota par appel ; 80 laisse de la marge pour ~60 comptes + pages d'historique
 
 /** Configuration du pilote : `_meta.instagram` du registre. Absente ou incomplète ⇒ pilote inutilisable (jamais de valeur par défaut pour l'identifiant). */
 export function chargerConfigInstagram(chemin) {
@@ -30,7 +30,9 @@ export function chargerConfigInstagram(chemin) {
   if (!c) return null;
   const budget = c.budget_appels_par_cycle ?? BUDGET_CYCLE_DEFAUT;
   if (!Number.isInteger(budget) || budget < 1 || budget > BUDGET_CYCLE_MAX) throw new Error(`budget_appels_par_cycle invalide (1 à ${BUDGET_CYCLE_MAX})`);
-  return { ig_user_id: validerIdNumerique(c.ig_user_id), version: c.version_graph || GRAPH_VERSION_DEFAUT, budget, parcours: c.parcours || 'unified' };
+  const taille = c.taille_page ?? 10;
+  if (!Number.isInteger(taille) || taille < 1 || taille > 50) throw new Error('taille_page invalide (1 à 50)');
+  return { ig_user_id: validerIdNumerique(c.ig_user_id), version: c.version_graph || GRAPH_VERSION_DEFAUT, budget, taille_page: taille, parcours: c.parcours || 'unified' };
 }
 
 // ---------------------------------------------------------------------
@@ -133,11 +135,11 @@ export async function lireComptes({ comptes, connu, appeler, budget = BUDGET_CYC
 // Appel réel (une seule tentative par appel, aucune relance)
 // ---------------------------------------------------------------------
 /** @returns {(pseudo:string, apres:string|null)=>Promise<{classe:object, corps:object|undefined, http:number}>} */
-export function appelerReel({ igUserId, jeton, version = GRAPH_VERSION_DEFAUT, fetchImpl = fetch, timeoutMs = 20000 }) {
+export function appelerReel({ igUserId, jeton, version = GRAPH_VERSION_DEFAUT, limite = 10, fetchImpl = fetch, timeoutMs = 20000 }) {
   if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') throw new Error('NODE_TLS_REJECT_UNAUTHORIZED=0 refusé : le jeton ne doit pas partir sans validation de certificat');
   validerJeton(jeton); validerIdNumerique(igUserId);
   return async (pseudo, apres) => {
-    const requete = construireRequete({ igUserId, pseudo, medias: true, apres, version });
+    const requete = construireRequete({ igUserId, pseudo, medias: true, limite, apres, version });
     const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeoutMs);
     try {
       const r = await fetchImpl(urlAvecJeton(requete, jeton), { signal: ctl.signal, redirect: 'error' });
