@@ -1309,6 +1309,45 @@
       }
     },
     {
+      "id": "9b7f73883c60",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le maire de Tarnos, Marc Mabillet : « Je ne suis pas forcément au courant de ce qui a été entrepris à Bayonne, à l'époque, nous avons appris de manière indirecte, par un usager du centre de loisirs de Tarnos, des agissements reprochés à cette personne dans son précédent poste »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le maire de Tarnos",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/pyrenees-atlantiques/pays-basque/violences-sexuelles-dans-un-centre-de-loisirs-de-tarnos-le-deuxieme-animateur-ecarte-avait-ete-exclu-du-periscolaire-de-bayonne-30608547.php",
+        "publie_le": "2026-09-13"
+      },
+      "parole": {
+        "acteur": "le maire de Tarnos",
+        "qualite": "Marc Mabillet",
+        "citations": [
+          {
+            "texte": "Je ne suis pas forcément au courant de ce qui a été entrepris à Bayonne, à l'époque, nous avons appris de manière indirecte, par un usager du centre de loisirs de Tarnos, des agissements reprochés à cette personne dans son précédent poste"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Centre de loisirs municipal de Tarnos",
+      "case_id": "FR-2026-0115",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0115",
+        "hubs": [
+          {
+            "hub": "landes",
+            "groupe": "Familles et associations d’aide aux victimes"
+          }
+        ]
+      }
+    },
+    {
       "id": "9ede007911ce",
       "nature": "mesure",
       "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
@@ -1617,6 +1656,40 @@
       "event_id": "ac1fa42f-f810-4b77-aaec-5650861cbde1",
       "destinations": {
         "fiche": "FR-2026-0133",
+        "hubs": []
+      }
+    },
+    {
+      "id": "d1bc0cd873d4",
+      "nature": "parole",
+      "libelle": "Parole attribuée — une mère : « Dans quelles structures de Cenon cet homme a-t-il travaillé ? »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "une mère",
+      "territoire": null,
+      "date": "2026-09-01",
+      "periode": null,
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/gironde/cenon/violences-sexuelles-dans-le-periscolaire-pres-de-bordeaux-une-deuxieme-plainte-contre-l-ex-animateur-30843245.php",
+        "publie_le": "2026-09-29"
+      },
+      "parole": {
+        "acteur": "une mère",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Dans quelles structures de Cenon cet homme a-t-il travaillé ?"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Centre de loisirs de Cenon (école Michelet)",
+      "case_id": "FR-2026-0114",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0114",
         "hubs": []
       }
     },
