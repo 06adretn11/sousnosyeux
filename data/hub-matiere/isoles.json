@@ -7828,6 +7828,19 @@
           "date_nature": "evenement"
         },
         {
+          "date": "2026-09-25",
+          "type": "fait_rapporte",
+          "texte": "Selon la maire de Rots, elle a été alertée par les gendarmes le 25 septembre.",
+          "acteur": "gendarmerie",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-10-07"
+          },
+          "date_nature": "evenement"
+        },
+        {
           "date": "2026-09-29",
           "type": "mesure_collectivite",
           "texte": "Selon ici, la maire de Rots a envoyé un mail aux parents d'élèves le 29 septembre 2026 pour les informer de la suspension de l'animateur.",
@@ -7881,6 +7894,12 @@
               "acces": "libre",
               "media": "Actu.fr",
               "publie_le": "2026-11-17"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
             }
           ]
         },
@@ -7947,6 +7966,12 @@
               "acces": "libre",
               "media": "Actu.fr",
               "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
             }
           ]
         },
@@ -8190,13 +8215,96 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-11-15"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
+            }
+          ]
+        },
+        {
+          "date": "2026-11-16",
+          "type": "fait_rapporte",
+          "texte": "Selon Actu.fr, Lundi 16 novembre, une centaine de parents et de soutiens se sont invités au conseil municipal de Rots afin de réclamer des explications à la mairie.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-24"
+          },
+          "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon france3-regions.franceinfo, les victimes présumées sont âgées entre 3 et 6 ans.",
+          "acteur": null,
+          "source": {
+            "url": "https://france3-regions.franceinfo.fr/normandie/calvados/caen/suspicion-de-viol-ou-de-violence-comment-un-parent-peut-il-en-parler-avec-son-enfant-3450876.html",
+            "acces": "libre",
+            "media": "france3-regions.franceinfo",
+            "publie_le": "2026-11-16"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon des parents, des signalements de famille pour des faits inappropriés remontent à avril dernier, et des signalements proviendraient de l'école primaire.",
+          "acteur": "des familles",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-17"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-11-20"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
             }
           ]
         },
         {
           "date": null,
-          "type": "signalement",
-          "texte": "Selon une mère d'un enfant concerné, des signalements de familles pour des faits inappropriés remontent à avril dernier.",
+          "type": "plainte",
+          "texte": "Selon Actu.fr, des plaintes de parents ont été déposées pour des agressions sexuelles présumées sur leurs enfants en bas âge.",
           "acteur": null,
           "source": {
             "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
@@ -8204,7 +8312,39 @@
             "media": "Actu.fr",
             "publie_le": "2026-11-17"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-20"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            }
+          ]
         },
         {
           "date": "2026-11-17",
@@ -8492,7 +8632,7 @@
           "date_nature": "article"
         },
         {
-          "date": null,
+          "date": "2026-10",
           "type": "communication_parquet",
           "texte": "Selon ici, Début octobre, le parquet de Caen a confirmé l'ouverture d'une enquête pour agression sexuelle et le dépôt d'une demi-douzaine de plaintes.",
           "acteur": "parquet de Caen",
@@ -8502,7 +8642,7 @@
             "media": "ici",
             "publie_le": "2026-11-15"
           },
-          "date_nature": "article"
+          "date_nature": "approximative"
         },
         {
           "date": "2026-11-16",
@@ -8561,6 +8701,12 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-11-15"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-20"
             }
           ]
         },
@@ -8630,6 +8776,12 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
             }
           ]
         },
@@ -8648,8 +8800,8 @@
         },
         {
           "date": "2026-11-19",
-          "type": "fait_rapporte",
-          "texte": "Selon Ouest-France, l'animateur a été présenté à un juge d'instruction le 19 novembre 2026, à l'issue de sa garde à vue.",
+          "type": "enquete",
+          "texte": "Selon Ouest-France, l'animateur a été présenté à un juge d'instruction du tribunal judiciaire de Caen le 19 novembre 2026, à l'issue de sa garde à vue.",
           "acteur": "juge d'instruction",
           "source": {
             "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
@@ -8664,6 +8816,60 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-20"
+            },
+            {
+              "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/un-animateur-de-centre-de-loisirs-dans-le-calvados-vise-par-une-enquete-pour-agression-sexuelle-deux-plaintes-deposees_8226919.html",
+              "acces": "libre",
+              "media": "France Info",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-17"
+            },
+            {
+              "url": "https://france3-regions.franceinfo.fr/normandie/calvados/caen/suspicion-de-viol-ou-de-violence-comment-un-parent-peut-il-en-parler-avec-son-enfant-3450876.html",
+              "acces": "libre",
+              "media": "france3-regions.franceinfo",
+              "publie_le": "2026-11-16"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-4108671",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-15"
             }
           ]
         },
@@ -8693,6 +8899,40 @@
               "publie_le": "2026-10-07"
             }
           ]
+        },
+        {
+          "date": "2026-11-19",
+          "type": "decision",
+          "texte": "Selon ici, le juge d'instruction n'a pas mis en examen l'animateur le 19 novembre 2026, considérant qu'il n'y avait pas suffisamment d'éléments.",
+          "acteur": "juge d'instruction",
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-20"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon ICI, l'affaire a éclaté fin septembre à Rots, commune située en périphérie de Caen.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-20"
+          },
+          "date_nature": "article"
         },
         {
           "date": null,
@@ -8779,7 +9019,7 @@
         {
           "date": null,
           "type": "appel",
-          "texte": "Le procureur de Caen a décidé de faire appel de la décision du juge d'instruction.",
+          "texte": "Le procureur de Caen a décidé de faire appel de cette décision ; la chambre de l'instruction de la cour d'appel de Caen se prononcera dans les prochains jours.",
           "acteur": "procureur de Caen",
           "source": {
             "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
@@ -8794,18 +9034,59 @@
               "acces": "libre",
               "media": "ici",
               "publie_le": "2026-10-07"
+            },
+            {
+              "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-24"
             }
           ]
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon Actu.fr, des parents ont signalé de potentielles agressions sexuelles sur leurs enfants au centre de loisirs.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-24"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/rots_14543/apres-des-signalements-dagressions-sexuelles-un-animateur-de-centre-de-loisirs-suspendu-pres-de-caen_64893972.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-10-07"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Selon Actu.fr, à l'issue de la garde à vue, le parquet de Caen avait réclamé la mise en examen du suspect, mais le juge d'instruction en charge du dossier n'y a pas accédé.",
+          "acteur": "parquet de Caen",
+          "source": {
+            "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-24"
+          },
+          "date_nature": "article"
         }
       ],
       "synthese": {
-        "ouvert": "Évolution rapportée : Selon Ouest-France, l'animateur a été présenté à un juge d'instruction le 19 novembre 2026, à l'issue de sa garde à vue démarrée mardi, et le juge ne l'a pas mis en examen au vu des premiers éléments recueillis.",
-        "decision": "Selon ici, les enfants sont auditionnés par les enquêteurs spécialisés de la Maison de protection des familles de la gendarmerie du Calvados, avec les enquêteurs de la brigade de recherche de Caen."
+        "ouvert": "Évolution rapportée : Selon ici, le juge d'instruction n'a pas mis en examen l'animateur le 19 novembre 2026, considérant qu'il n'y avait pas suffisamment d'éléments.",
+        "decision": "Selon Ouest-France, l'animateur a été présenté à un juge d'instruction du tribunal judiciaire de Caen le 19 novembre 2026, à l'issue de sa garde à vue."
       },
       "inconnues": [
         "Aucun acte judiciaire autre que l'ouverture de l'enquête n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
         "Les décomptes de plaintes rapportés le 7 octobre 2026 diffèrent selon les articles (deux plaintes, selon France Info et Actu.fr ; une demi-douzaine, dont toutes n'ont pas eu le temps d'être vérifiées, selon ICI) : tous deux sont attribués au procureur de Caen « pour l'instant » et les sources lues n'expliquent pas l'écart.",
-        "Le dossier ne repose que sur 5 articles lus (France Info, Actu.fr, Ouest-France, ici)."
+        "Le dossier ne repose que sur 5 articles lus (France Info, Actu.fr, Ouest-France, ici).",
+        "Divergence entre sources — enquête : dates divergentes selon les sources (septembre 2026 / 19 novembre 2026)."
       ],
       "reactions": [
         {
@@ -9064,6 +9345,29 @@
           "validation": "POSITION_ATTRIBUEE",
           "attribution": "POSITION_ATTRIBUEE",
           "date_nature": "article"
+        },
+        {
+          "date": "2026-11-20",
+          "acteur": "Joël Garrigue, procureur de Caen",
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-20"
+          },
+          "qualite": "propos rapportés par ici",
+          "a_propos": "position de l'animateur mis en cause",
+          "citations": [
+            {
+              "pour": "position de l'animateur mis en cause",
+              "texte": "Il continue de nier les faits qui lui sont reprochés"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
       "situation": {
@@ -9073,26 +9377,26 @@
           "label": "Suite · recours",
           "titre": "Appel rapporté",
           "lignes": [
-            "Évolution rapportée : Selon Ouest-France, l'animateur a été présenté à un juge d'instruction le 19 novembre 2026, à l'issue de sa garde à vue démarrée mardi, et le juge ne l'a pas mis en examen au vu des premiers éléments recueillis.",
-            "Évolution rapportée : Le procureur de Caen a décidé de faire appel de la décision du juge d'instruction.",
-            "Évolution rapportée : Selon ici, la chambre de l'instruction de la cour d'appel de Caen se prononcera dans les prochains jours.",
-            "Mesure institutionnelle (distincte de la décision judiciaire) : selon ICI Normandie, la maire de Rots a envoyé un mail aux parents d'élèves le 29 septembre 2026 pour les informer de la suspension de l'animateur.",
-            "Mesure institutionnelle (distincte de la décision judiciaire) : selon la maire de Rots, le contrat de l'animateur mis en cause, qui s'arrêtait au 30 septembre, n'a pas été renouvelé."
+            "Évolution rapportée : Selon ici, le juge d'instruction n'a pas mis en examen l'animateur le 19 novembre 2026, considérant qu'il n'y avait pas suffisamment d'éléments.",
+            "Évolution rapportée : Le procureur de Caen a décidé de faire appel de cette décision ; la chambre de l'instruction de la cour d'appel de Caen se prononcera dans les prochains jours.",
+            "Évolution rapportée : Selon Actu.fr, à l'issue de la garde à vue, le parquet de Caen avait réclamé la mise en examen du suspect, mais le juge d'instruction en charge du dossier n'y a pas accédé.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon ici, la maire de Rots a envoyé un mail aux parents d'élèves le 29 septembre 2026 pour les informer de la suspension de l'animateur.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : selon Actu.fr, le contrat de l'animateur mis en cause, qui s'arrêtait au 30 septembre, n'a pas été renouvelé."
           ]
         },
         "decision": {
           "cat": "blue",
-          "meta": "Maison de protection des familles de la gendarmerie du Calvados et brigade de recherche de Caen",
+          "meta": "Juge d'instruction",
           "label": "Situation judiciaire",
-          "texte": "Selon ici, les enfants sont auditionnés par les enquêteurs spécialisés de la Maison de protection des familles de la gendarmerie du Calvados, avec les enquêteurs de la brigade de recherche de Caen.",
+          "texte": "Selon Ouest-France, l'animateur a été présenté à un juge d'instruction du tribunal judiciaire de Caen le 19 novembre 2026, à l'issue de sa garde à vue.",
           "titre": "Enquête"
         }
       },
       "etat_actuel": [
-        "Selon ici, les enfants sont auditionnés par les enquêteurs spécialisés de la Maison de protection des familles de la gendarmerie du Calvados, avec les enquêteurs de la brigade de recherche de Caen.",
-        "Évolution rapportée : Selon Ouest-France, l'animateur a été présenté à un juge d'instruction le 19 novembre 2026, à l'issue de sa garde à vue démarrée mardi, et le juge ne l'a pas mis en examen au vu des premiers éléments recueillis.",
-        "Évolution rapportée : Le procureur de Caen a décidé de faire appel de la décision du juge d'instruction.",
-        "Évolution rapportée : Selon ici, la chambre de l'instruction de la cour d'appel de Caen se prononcera dans les prochains jours."
+        "Selon Ouest-France, l'animateur a été présenté à un juge d'instruction du tribunal judiciaire de Caen le 19 novembre 2026, à l'issue de sa garde à vue.",
+        "Évolution rapportée : Selon ici, le juge d'instruction n'a pas mis en examen l'animateur le 19 novembre 2026, considérant qu'il n'y avait pas suffisamment d'éléments.",
+        "Évolution rapportée : Le procureur de Caen a décidé de faire appel de cette décision ; la chambre de l'instruction de la cour d'appel de Caen se prononcera dans les prochains jours.",
+        "Évolution rapportée : Selon Actu.fr, à l'issue de la garde à vue, le parquet de Caen avait réclamé la mise en examen du suspect, mais le juge d'instruction en charge du dossier n'y a pas accédé."
       ],
       "statut_affiche": "enquête"
     },
@@ -9256,251 +9560,379 @@
       }
     },
     "POC-04": {
-      "etat_actuel": [
-        "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
-      ],
       "appel": false,
       "faits": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau, à Paris, est soupçonné d'agressions sexuelles envers plusieurs enfants de l'établissement. Selon 20 Minutes, l'homme a été mis en examen pour agression sexuelle et une instruction est en cours.",
       "deroule": [
         {
-          "date": "2023-10-04",
-          "date_nature": "evenement",
-          "type": "garde_a_vue",
-          "acteur": null,
-          "texte": "Selon Le Parisien (article du 12 octobre 2023), un agent de l'école élémentaire Émeriau a été interpellé sur son lieu de travail le 4 octobre 2023, puis placé en garde à vue.",
+          "date": "2023-10",
+          "type": "enquete",
+          "texte": "Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas.",
+          "acteur": "l'inspection générale de la Ville de Paris",
           "source": {
-            "media": "Le Parisien",
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://www.sudouest.fr/ile-de-france/paris/scandale-du-periscolaire-a-paris-trois-informations-judiciaires-cinq-proces-et-un-delibere-attendus-ou-en-est-on-dans-l-enquete-29177629.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-05-22"
+            }
+          ]
+        },
+        {
+          "date": "2023-10-04",
+          "type": "garde_a_vue",
+          "texte": "Selon Le Parisien (article du 12 octobre 2023), un agent de l'école élémentaire Émeriau a été interpellé sur son lieu de travail le 4 octobre 2023, puis placé en garde à vue.",
+          "acteur": null,
+          "source": {
             "url": "https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php",
-            "publie_le": "2023-10-12",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2023-10-12"
+          },
+          "date_nature": "evenement"
         },
         {
           "date": "2023-10",
-          "date_nature": "approximative",
           "type": "mise_en_examen",
-          "acteur": null,
           "texte": "Selon Le Parisien (article du 12 octobre 2023), l'agent a été mis en examen pour agression sexuelle sur mineur et placé sous contrôle judiciaire à l'issue de sa garde à vue ; le jour de ces décisions n'est pas précisé.",
+          "acteur": null,
           "source": {
-            "media": "Le Parisien",
             "url": "https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php",
-            "publie_le": "2023-10-12",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2023-10-12"
           },
+          "date_nature": "approximative",
           "sources_complementaires": [
             {
-              "media": "20 Minutes",
               "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-              "publie_le": "2026-02-23",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "20 Minutes",
+              "publie_le": "2026-02-23"
+            },
+            {
+              "url": "https://www.sudouest.fr/ile-de-france/paris/scandale-du-periscolaire-a-paris-trois-informations-judiciaires-cinq-proces-et-un-delibere-attendus-ou-en-est-on-dans-l-enquete-29177629.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-05-22"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "plainte",
-          "acteur": null,
           "texte": "Selon Le Parisien (article du 12 octobre 2023), au moins cinq signalements et plaintes avaient depuis été déposés par différents parents.",
+          "acteur": null,
           "source": {
-            "media": "Le Parisien",
             "url": "https://www.leparisien.fr/paris-75/suspicion-dagression-sexuelle-dans-une-ecole-de-paris-au-moins-5-signalements-et-plaintes-deposes-12-10-2023-DNPHMP25IFB4TCIEOFVCZF5VLE.php",
-            "publie_le": "2023-10-12",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2023-10-12"
+          },
+          "date_nature": "article"
         },
         {
           "date": "2023-10",
-          "date_nature": "approximative",
           "type": "mesure_collectivite",
-          "acteur": "inspection générale de la Ville de Paris",
           "texte": "Selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024.",
+          "acteur": "inspection générale de la Ville de Paris",
           "source": {
-            "media": "20 Minutes",
             "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "approximative"
         },
         {
           "date": "2026-01-20",
-          "date_nature": "evenement",
           "type": "mesure_collectivite",
-          "acteur": "Ville de Paris",
           "texte": "Selon 20 Minutes, une restitution des conclusions de l'enquête administrative aux parents a eu lieu le 20 janvier 2026, en présence du secrétaire général adjoint de la Mairie de Paris et de la personne qui a mené l'enquête.",
+          "acteur": "Ville de Paris",
           "source": {
-            "media": "20 Minutes",
             "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "evenement"
         },
         {
-          "date": null,
-          "date_nature": "article",
-          "type": "signalement",
-          "acteur": "parent d’élève",
-          "texte": "Selon une mère d'élève citée par 20 Minutes, elle a signalé à la direction de l'école des comportements problématiques de l'agent environ deux semaines avant son interpellation, signalement non mentionné dans l'enquête.",
-          "source": {
-            "media": "20 Minutes",
-            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "plainte",
-          "acteur": null,
-          "texte": "Selon 20 Minutes, au moins cinq plaintes ont été déposées dans cette affaire, portant le total à au moins six.",
-          "source": {
-            "media": "20 Minutes",
-            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "enquete",
-          "acteur": null,
-          "texte": "Selon 20 Minutes, l'enquête judiciaire concernant les autres plaintes en est toujours au stade préliminaire.",
-          "source": {
-            "media": "20 Minutes",
-            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
-        },
-        {
-          "date": null,
-          "date_nature": "article",
+          "date": "2026-01-20",
           "type": "mesure_collectivite",
-          "acteur": "inspection générale de la Ville de Paris",
-          "texte": "Selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire ; leur mise en œuvre n'est pas rapportée par les sources lues.",
+          "texte": "La Ville de Paris a convoqué les parents pour une restitution des conclusions de l'enquête administrative le 20 janvier 2026.",
+          "acteur": "la Ville de Paris",
           "source": {
-            "media": "20 Minutes",
             "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "evenement"
         },
         {
           "date": null,
-          "date_nature": "article",
-          "type": "contexte",
-          "acteur": null,
-          "texte": "Selon 20 Minutes, l'agent est présumé innocent et nie les faits.",
+          "type": "signalement",
+          "texte": "Selon 20 Minutes, une mère rapporte avoir signalé à la direction de l'école des comportements problématiques de l'agent environ deux semaines avant son arrestation, un signalement non mentionné dans l'enquête administrative.",
+          "acteur": "parent d’élève",
           "source": {
-            "media": "20 Minutes",
             "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon 20 Minutes, au moins cinq plaintes ont été déposées dans cette affaire, portant le total à au moins six.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2023-10",
+          "type": "enquete",
+          "texte": "Selon 20 Minutes, l'enquête judiciaire concernant les autres plaintes en est toujours au stade préliminaire.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://www.sudouest.fr/ile-de-france/paris/scandale-du-periscolaire-a-paris-trois-informations-judiciaires-cinq-proces-et-un-delibere-attendus-ou-en-est-on-dans-l-enquete-29177629.php",
+              "acces": "libre",
+              "media": "Sud Ouest",
+              "publie_le": "2026-05-22"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon 20 Minutes, l'enquête administrative restituée formule neuf recommandations portant sur la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire ; leur mise en œuvre n'est pas rapportée par les sources lues.",
+          "acteur": "inspection générale de la Ville de Paris",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon 20 Minutes, Neuf recommandations ont été formulées, autour de la communication vers les familles, l'encadrement et le contrôle de certains moments du périscolaire et le fonctionnement de la bibliothèque.",
+          "acteur": "l'inspection générale de la Ville de Paris",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "contexte",
+          "texte": "Selon 20 Minutes, l'agent est présumé innocent et nie les faits.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mise_en_examen",
+          "texte": "Selon Sud Ouest, un animateur de l'école Emeriau a été déféré et mis en examen pour agression sexuelle sur mineur de moins de 15 ans, puis placé sous contrôle judiciaire avec interdiction d'exercer une activité impliquant un contact habituel avec des mineurs.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.sudouest.fr/ile-de-france/paris/scandale-du-periscolaire-a-paris-trois-informations-judiciaires-cinq-proces-et-un-delibere-attendus-ou-en-est-on-dans-l-enquete-29177629.php",
+            "acces": "libre",
+            "media": "Sud Ouest",
+            "publie_le": "2026-05-22"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+              "acces": "libre",
+              "media": "20 Minutes",
+              "publie_le": "2026-02-23"
+            }
+          ]
         }
-      ],
-      "inconnues": [
-        "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
-        "Le dossier repose sur 2 articles lus (20 Minutes, Le Parisien 2023)."
       ],
       "synthese": {
         "decision": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
       },
+      "inconnues": [
+        "Aucun jugement sur le fond n'est rapporté par les sources lues : la suite de la procédure est inconnue.",
+        "Le dossier repose sur 2 articles lus (20 Minutes, Le Parisien 2023)."
+      ],
       "reactions": [
         {
-          "acteur": "Kathleen Taïeb, avocate",
-          "qualite": "propos rapportés par 20 Minutes",
           "date": "2026-02-23",
-          "date_nature": "article",
+          "acteur": "Kathleen Taïeb, avocate",
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "qualite": "propos rapportés par 20 Minutes",
           "a_propos": "la manière dont les enquêtes administratives sont menées et restituées aux parents",
           "citations": [
             {
-              "texte": "Ils mènent ces enquêtes comme s’ils ne devaient pas en rendre compte aux parents",
-              "pour": "la manière dont les enquêtes administratives sont menées et restituées aux parents"
+              "pour": "la manière dont les enquêtes administratives sont menées et restituées aux parents",
+              "texte": "Ils mènent ces enquêtes comme s’ils ne devaient pas en rendre compte aux parents"
             }
           ],
-          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "20 Minutes",
-            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "paraphrase": "Contexte dans l’article (20 Minutes) : à la question de la journaliste de l'émission « Cash investigation » demandant s'il s'engageait à communiquer ces conclusions aux parents, il a répondu « évidemment », avant d’affirmer qu’il pensait « que ces conclusions leur avaient été communiquées ».",
-          "acteur": "Patrick Bloche, premier adjoint chargé de l’Éducation",
-          "qualite": "propos rapportés par 20 Minutes",
           "date": "2026-02-23",
-          "date_nature": "article",
+          "acteur": "Patrick Bloche, premier adjoint chargé de l’Éducation",
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "qualite": "propos rapportés par 20 Minutes",
           "a_propos": "la communication des conclusions de l'enquête administrative aux parents",
           "citations": [
             {
-              "texte": "que ces conclusions leur avaient été communiquées",
-              "pour": "la communication des conclusions de l'enquête administrative aux parents"
+              "pour": "la communication des conclusions de l'enquête administrative aux parents",
+              "texte": "que ces conclusions leur avaient été communiquées"
             }
           ],
-          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "20 Minutes",
-            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "paraphrase": "Contexte dans l’article (20 Minutes) : à la question de la journaliste de l'émission « Cash investigation » demandant s'il s'engageait à communiquer ces conclusions aux parents, il a répondu « évidemment », avant d’affirmer qu’il pensait « que ces conclusions leur avaient été communiquées ».",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "paraphrase": "Contexte dans l’article (20 Minutes) : Sollicitée par 20 Minutes , la Mairie de Paris n’a pas répondu à notre demande consistant à nous procurer l’enquête, mais a indiqué « travailler à l’élaboration d’une réponse au plus vite en lien avec les services » au courrier des parents.",
-          "acteur": "Mairie de Paris",
-          "qualite": "propos rapportés par 20 Minutes",
           "date": "2026-02-23",
-          "date_nature": "article",
+          "acteur": "Mairie de Paris",
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "qualite": "propos rapportés par 20 Minutes",
           "a_propos": "la réponse à apporter au courrier des parents délégués réclamant la réouverture de l'enquête",
           "citations": [
             {
-              "texte": "travailler à l’élaboration d’une réponse au plus vite en lien avec les services",
-              "pour": "la réponse à apporter au courrier des parents délégués réclamant la réouverture de l'enquête"
+              "pour": "la réponse à apporter au courrier des parents délégués réclamant la réouverture de l'enquête",
+              "texte": "travailler à l’élaboration d’une réponse au plus vite en lien avec les services"
             }
           ],
+          "paraphrase": "Contexte dans l’article (20 Minutes) : Sollicitée par 20 Minutes , la Mairie de Paris n’a pas répondu à notre demande consistant à nous procurer l’enquête, mais a indiqué « travailler à l’élaboration d’une réponse au plus vite en lien avec les services » au courrier des parents.",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-02-23",
+          "acteur": "Une mère d’enfant concerné",
           "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
           "source": {
-            "media": "20 Minutes",
             "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
-            "publie_le": "2026-02-23",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
           },
-          "validation": "POSITION_ATTRIBUEE"
+          "qualite": "propos rapportés par 20 Minutes",
+          "a_propos": "le calendrier de la restitution par la Ville de Paris",
+          "citations": [
+            {
+              "pour": "le calendrier de la restitution par la Ville de Paris",
+              "texte": "Je suis en colère parce qu’on est reçus juste avant les élections, ce qui veut dire qu’il n’y a plus vraiment de temps pour faire quelque chose, alors qu’ils auraient pu nous recevoir il y a un an et demi !"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-02-23",
+          "acteur": "Un parent d’enfant concerné",
+          "etabli": "Établi : propos rapportés par 20 Minutes. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.20minutes.fr/societe/4202824-20260223-violences-periscolaire-paris-parents-revoltes-enquete-mairie-ecole-emeriau",
+            "acces": "libre",
+            "media": "20 Minutes",
+            "publie_le": "2026-02-23"
+          },
+          "qualite": "propos rapportés par 20 Minutes",
+          "a_propos": "la méthodologie de l'enquête administrative",
+          "citations": [
+            {
+              "pour": "la méthodologie de l'enquête administrative",
+              "texte": "L’enquête semble reposer uniquement sur les récits d’animateurs et d’agents, sans vérification, sans contradiction, sans expertise indépendante"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
-      "statut_affiche": "mise en examen",
       "situation": {
-        "decision": {
-          "label": "Situation judiciaire",
-          "titre": "Mise en examen",
-          "meta": "vers octobre 2023",
-          "cat": "blue",
-          "texte": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
-        },
         "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
           "label": "Suite",
           "titre": "Jugement sur le fond non documenté",
-          "meta": "dans les sources consultées",
-          "cat": "blue",
           "lignes": [
             "La personne mise en cause est présumée innocente.",
             "Mesure institutionnelle (distincte de la décision judiciaire) : selon 20 Minutes, une enquête administrative a été lancée en octobre 2023 par l'inspection générale de la Ville de Paris, première du genre sur ce type de cas, et son travail a été rendu en juin 2024."
           ]
+        },
+        "decision": {
+          "cat": "blue",
+          "meta": "vers octobre 2023",
+          "label": "Situation judiciaire",
+          "texte": "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours.",
+          "titre": "Mise en examen"
         }
-      }
+      },
+      "etat_actuel": [
+        "Selon 20 Minutes, un agent de la Ville de l'école Emeriau a été mis en examen pour agression sexuelle en octobre 2023, une instruction étant en cours."
+      ],
+      "statut_affiche": "mise en examen"
     },
     "POC-10": {
       "etat_actuel": [

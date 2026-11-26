@@ -510,13 +510,13 @@
       "hash": "1976c0794b7740b0"
     },
     "FR-2026-0133": {
-      "hash": "7cac2fd25147c815"
+      "hash": "2fc47004d697a96c"
     },
     "FR-2026-0041": {
       "hash": "47a158705b78aa24"
     },
     "POC-04": {
-      "hash": "ed20ddf58faf654a"
+      "hash": "aa9a1e41cef309b3"
     },
     "POC-10": {
       "hash": "99673d401ef0fb4e"
@@ -1075,6 +1075,33 @@
       }
     },
     {
+      "id": "9ede007911ce",
+      "nature": "mesure",
+      "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
+      "realisation": "annoncée",
+      "portee": "territoire",
+      "acteur": "Mairie de Paris",
+      "territoire": "Paris",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/premier-proces-d-une-serie-noire-a-paris-un-animateur-periscolaire-juge-pour-agressions-sexuelles-et-harcelement-sur-neuf-eleves_AN-202605050013.html",
+        "publie_le": "2026-05-04"
+      },
+      "case_id": "POC-09",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-09",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
+    },
+    {
       "id": "9f260d306f1d",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
@@ -1149,6 +1176,45 @@
       "destinations": {
         "fiche": "FR-2026-0139",
         "hubs": []
+      }
+    },
+    {
+      "id": "b4c2b7e0d860",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la municipalité qui affirme : « coopérer pleinement avec les autorités afin que toute la lumière soit faite sur cette affaire »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la municipalité qui affirme",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/des-faits-visiblement-graves-un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-vise-par-une-enquete-et-suspendu-1723035",
+        "publie_le": "2026-11-10"
+      },
+      "parole": {
+        "acteur": "la municipalité qui affirme",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "coopérer pleinement avec les autorités afin que toute la lumière soit faite sur cette affaire"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
       }
     },
     {
