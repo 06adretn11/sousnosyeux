@@ -117,8 +117,18 @@ Objet : lecture de publications publiques de comptes suivis, classement, notific
 ## 9 bis. Mise en service (26/11/2026) et retour arrière
 
 - **Ce qui est en service** : le cycle quotidien existant (`sny-cycle`, étape « B. maintenance ») passe `--instagram-pilote` ; le secret `META_GRAPH_TOKEN` n'est injecté qu'au niveau de cette étape. Les sources web des acteurs (blogs, pétition, sites de communes) étaient déjà lues par `--sources-suivies` dès la fusion de la veille des acteurs (PR 162). **Aucun nouveau cron.**
-- **Chemins éprouvés** : lecture Instagram (essais manuels en CI, 18 appels sur 18, 6 comptes) ; lecture des pages web des acteurs (essais en CI) ; écriture des pistes (migration 028 appliquée et vérifiée le 24/11) ; **non éprouvé en réel** : l'envoi Telegram des pistes (testé avec une base et un envoi simulés ; le canal Telegram lui-même est celui des propositions, déjà en service).
+- **Chemins éprouvés** : lecture Instagram (essais manuels en CI, 18 appels sur 18, 6 comptes) ; lecture des pages web des acteurs (essais en CI) ; écriture des pistes (migration 028 appliquée et vérifiée le 24/11) ; l’envoi Telegram des pistes a été éprouvé en réel le 26/11 (voir §9 ter).
 - **Ce qui n'est PAS en service** : aucune prise de contact, aucune publication, aucun abonnement ; X et Facebook (voir §4) ; la lecture des 3 comptes non lisibles ; la rotation de comptes.
 - **Observation à faire sur les premiers passages** : (1) le message groupé de pistes (8 au plus par passage ; 21 attendues au premier cycle) ; (2) l'état de chaque compte dans l'inventaire des acteurs (journal du cycle : « Instagram (pilote) : n/18 appels … ») ; (3) le jeton : un jeton expiré ou révoqué se voit comme une panne d'accès sur chaque compte (« ACCES:erreur_auth »), jamais comme « rien de nouveau » ; (4) les mises à jour du registre pour tout nouvel acteur.
 - **Retour arrière** : retirer `--instagram-pilote` (et le bloc `env`) de l'étape B de `sny-cycle.yml`. Les pistes déjà écrites restent dans `pistes_a_qualifier` (aucune suppression d'historique).
 - **Jeton** : jeton système Meta, durée de vie et procédure de renouvellement **non documentées à ce jour** ; à relever dans le compte développeur Meta avant son expiration.
+
+## 9 ter. Premiers passages réels observés (26/11/2026)
+
+| Heure (UTC) | Déclencheur | Instagram | Pistes | Remarque |
+|---|---|---|---|---|
+| 11:19 | manuel (`workflow_dispatch`) | **1/18 appel, arrêt quota**, 6 comptes en panne **visible** (avertissement « ce n'est pas aucune nouveauté ») | 1 (billet des parents du 11ᵉ), message Telegram réel | quota atteint par mes propres essais (≈ 140 appels dans l'heure) ; aucune donnée perdue |
+| 12:13 | planifié (relais `workflow_run`) | **18/18 appels, 6 comptes lus, 0 en panne**, 456 documents nouveaux, 24 témoignages écartés ; historique non couvert sur les 6 | 6 notifiées en UN message, 14 en attente | premier passage complet |
+| 15:09 | manuel | **6/18 appels, 6 comptes lus, 0 en panne**, lecture incrémentale (première page connue ⇒ pas de page d'historique) ; 21 écartés | 6 notifiées, 8 en attente | quota rétabli (un appel isolé : 0 % d'usage annoncé) |
+
+Constats : le chemin Telegram des pistes est éprouvé en réel ; la lecture incrémentale réduit le coût de 18 à 6 appels dès le deuxième passage ; la file de pistes (21 au premier cycle) se vide par 8 à 6 par passage ; une rafale d'essais manuels peut atteindre le quota Meta (code non relevé) : l'incident est visible, il ne se confond jamais avec « sans nouveauté ».
