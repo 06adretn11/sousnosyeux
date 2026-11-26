@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-24"
+    "generated_at": "2026-11-26"
   },
   "cases": [
     {
@@ -2562,13 +2562,6 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-dans-le-periscolaire-en-anjou-un-agent-ecarte-un-elu-demissionne-fb5b92ea-d60c-11f1-84f3-5611f158a658",
-          "media": "Ouest-France",
-          "publication_date": "2026-11-01",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
           "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/en-images-a-noyant-villages-une-centaine-de-personnes-dans-les-rues-contre-les-violences-sexuelles-faites-aux-enfants-b4b6590e-e437-11f1-9a72-32f9104dab1b",
           "media": "Ouest-France",
           "publication_date": "2026-11-19",
@@ -2579,6 +2572,13 @@
           "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
           "media": "Ouest-France",
           "publication_date": "2026-11-10",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-dans-le-periscolaire-en-anjou-un-agent-ecarte-un-elu-demissionne-fb5b92ea-d60c-11f1-84f3-5611f158a658",
+          "media": "Ouest-France",
+          "publication_date": "2026-11-01",
           "source_type": "presse",
           "is_primary": false
         },
@@ -3031,9 +3031,23 @@
           "is_primary": true
         },
         {
+          "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+          "media": "franceinfo",
+          "publication_date": "2025-11-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
           "media": "franceinfo",
           "publication_date": "2026-07-07",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
+          "media": "franceinfo",
+          "publication_date": "2026-05-27",
           "source_type": "presse",
           "is_primary": false
         },
@@ -3048,20 +3062,6 @@
           "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
           "media": "franceinfo",
           "publication_date": "2026-07-09",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
-          "media": "franceinfo",
-          "publication_date": "2026-05-27",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
-          "media": "franceinfo",
-          "publication_date": "2025-11-14",
           "source_type": "presse",
           "is_primary": false
         }
