@@ -1218,6 +1218,40 @@
       }
     },
     {
+      "id": "ba6b6846288b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le procureur de la République d'Angoulême : « Le mis en cause [conteste] l’ensemble des faits qui lui [sont] reprochés »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le procureur de la République d'Angoulême",
+      "territoire": null,
+      "date": "2026-10-12",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/un-instituteur-interpelle-a-soyaux-apres-des-accusations-d-agressions-sexuelles-sur-cinq-enfants-de-maternelle-5048456",
+        "publie_le": "2026-10-14"
+      },
+      "parole": {
+        "acteur": "le procureur de la République d'Angoulême",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le mis en cause [conteste] l’ensemble des faits qui lui [sont] reprochés"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école maternelle Julie-Victoire Daubié",
+      "case_id": "FR-2026-0137",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0137",
+        "hubs": []
+      }
+    },
+    {
       "id": "bd3aa2b9e72a",
       "nature": "parole",
       "libelle": "Parole attribuée — Philippe*, père d'une enfant ayant porté plainte : « On est heureux qu'il y ait un appel, mais à ce stade, l'appel ne concerne pas notre enfant »",
@@ -1310,6 +1344,40 @@
       "event_id": "ac1fa42f-f810-4b77-aaec-5650861cbde1",
       "destinations": {
         "fiche": "FR-2026-0133",
+        "hubs": []
+      }
+    },
+    {
+      "id": "d5c5f12b4e93",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le communiqué : « Durant cette période, la Ville a effectué à plusieurs reprises des signalements à l’Éducation nationale sur les difficultés relationnelles de cet enseignant avec les adultes. Ces signalements ne portaient pas sur des faits visant les enfants et aucun élément de cette nature n’a été porté à la connaissance de la Ville à ce jour »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le communiqué",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/un-instituteur-interpelle-a-soyaux-apres-des-accusations-d-agressions-sexuelles-sur-cinq-enfants-de-maternelle-5048456",
+        "publie_le": "2026-10-14"
+      },
+      "parole": {
+        "acteur": "le communiqué",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Durant cette période, la Ville a effectué à plusieurs reprises des signalements à l’Éducation nationale sur les difficultés relationnelles de cet enseignant avec les adultes. Ces signalements ne portaient pas sur des faits visant les enfants et aucun élément de cette nature n’a été porté à la connaissance de la Ville à ce jour"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école maternelle Julie-Victoire Daubié",
+      "case_id": "FR-2026-0137",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0137",
         "hubs": []
       }
     },
