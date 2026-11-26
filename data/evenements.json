@@ -729,6 +729,45 @@
       }
     },
     {
+      "id": "10961fd11dc6",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la Ville, sans préciser la nature de ces faits : « L'ensemble des mesures d’alerte auprès des autorités compétentes a également été entrepris »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la Ville",
+      "territoire": null,
+      "date": "2026-11-05",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/des-faits-visiblement-graves-un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-vise-par-une-enquete-et-suspendu-1723035",
+        "publie_le": "2026-11-10"
+      },
+      "parole": {
+        "acteur": "la Ville",
+        "qualite": "sans préciser la nature de ces faits",
+        "citations": [
+          {
+            "texte": "L'ensemble des mesures d’alerte auprès des autorités compétentes a également été entrepris"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "18ef6a395255",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents et des enseignants ont tenu un rassemblement.",
@@ -749,6 +788,45 @@
       "destinations": {
         "fiche": "FR-2026-0137",
         "hubs": []
+      }
+    },
+    {
+      "id": "2316620d6688",
+      "nature": "parole",
+      "libelle": "Parole attribuée — à France Inter la maman qui a porté plainte : « Ça a été une vraie bombe dans notre vie »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "à France Inter la maman qui a porté plainte",
+      "territoire": null,
+      "date": null,
+      "periode": "2025-07",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/une-plainte-pour-viol-aggrave-deposee-a-paris-contre-un-animateur-dans-une-ecole-maternelle-la-deuxieme-en-quelques-jours_7623686.html",
+        "publie_le": "2025-11-18"
+      },
+      "parole": {
+        "acteur": "à France Inter la maman qui a porté plainte",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Ça a été une vraie bombe dans notre vie"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Parmentier",
+      "case_id": "PARIS-006",
+      "event_id": null,
+      "destinations": {
+        "fiche": "PARIS-006",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
@@ -861,6 +939,40 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "3778e89d1b10",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le rectorat : « Lundi 9 novembre, les représentants des parents d'élèves de l'école ont été reçus par l'adjointe au directeur académique des services de l'Éducation nationale en charge du premier degré ainsi que par l'inspectrice de l'Éducation nationale de circonscription afin de les tenir informés de la situation »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le rectorat",
+      "territoire": null,
+      "date": "2026-11-09",
+      "periode": null,
+      "source": {
+        "media": "Midi Libre",
+        "url": "https://www.midilibre.fr/2026/11/11/suspicions-dagressions-sexuelles-a-lecole-maternelle-goethe-a-montpellier-plusieurs-enfants-entendus-par-les-services-de-police-13647130.php",
+        "publie_le": "2026-11-11"
+      },
+      "parole": {
+        "acteur": "le rectorat",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Lundi 9 novembre, les représentants des parents d'élèves de l'école ont été reçus par l'adjointe au directeur académique des services de l'Éducation nationale en charge du premier degré ainsi que par l'inspectrice de l'Éducation nationale de circonscription afin de les tenir informés de la situation"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école maternelle Johann-Wolfgang-Von-Goethe",
+      "case_id": "FR-2026-0146",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0146",
+        "hubs": []
       }
     },
     {
@@ -1082,6 +1194,45 @@
       "destinations": {
         "fiche": "FR-2026-0133",
         "hubs": []
+      }
+    },
+    {
+      "id": "76c108656639",
+      "nature": "parole",
+      "libelle": "Parole attribuée — à France Inter la maman qui a porté plainte : « Le nombre de cas dans notre quartier et dans Paris nous montre qu'il y a vrai problème systémique. On se sent seuls, incompris, parfois même pas crus. On veut que les choses bougent. »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "à France Inter la maman qui a porté plainte",
+      "territoire": null,
+      "date": null,
+      "periode": "2025-07",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/harcelement-sexuel/une-plainte-pour-viol-aggrave-deposee-a-paris-contre-un-animateur-dans-une-ecole-maternelle-la-deuxieme-en-quelques-jours_7623686.html",
+        "publie_le": "2025-11-18"
+      },
+      "parole": {
+        "acteur": "à France Inter la maman qui a porté plainte",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le nombre de cas dans notre quartier et dans Paris nous montre qu'il y a vrai problème systémique. On se sent seuls, incompris, parfois même pas crus. On veut que les choses bougent."
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Parmentier",
+      "case_id": "PARIS-006",
+      "event_id": null,
+      "destinations": {
+        "fiche": "PARIS-006",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
@@ -1374,6 +1525,45 @@
       }
     },
     {
+      "id": "bfc8a144a510",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la municipalité qui affirme : « À cette heure, l'agent concerné bénéficie, comme tout citoyen, de la présomption d'innocence tant que les faits n'ont pas été établis et jugés par la justice »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la municipalité qui affirme",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/des-faits-visiblement-graves-un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-vise-par-une-enquete-et-suspendu-1723035",
+        "publie_le": "2026-11-10"
+      },
+      "parole": {
+        "acteur": "la municipalité qui affirme",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "À cette heure, l'agent concerné bénéficie, comme tout citoyen, de la présomption d'innocence tant que les faits n'ont pas été établis et jugés par la justice"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "c559b2e77398",
       "nature": "parole",
       "libelle": "Parole attribuée — Me Cailliez qui réclame l’ouverture d’une information judiciaire : « Plus le temps passe et plus le risque d’enfouissement traumatique est grand »",
@@ -1431,6 +1621,40 @@
       }
     },
     {
+      "id": "d2a9b479ab6e",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Rachida Dati qui, la semaine dernière, a claqué la porte du dernier Conseil de Paris de la maire PS Anne Hidalgo pour dénoncer le : « Aucune action majeure n'a été mise en place pour connaître l'ampleur des faits commis »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Rachida Dati qui",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Sud Ouest",
+        "url": "https://www.sudouest.fr/politique/education/paris-neuf-animateurs-d-une-ecole-maternelle-suspendus-pour-violences-physiques-et-sexuelles-apres-un-reportage-de-cash-investigation-27905599.php",
+        "publie_le": "2026-02-16"
+      },
+      "parole": {
+        "acteur": "Rachida Dati qui",
+        "qualite": "la semaine dernière, a claqué la porte du dernier Conseil de Paris de la maire PS Anne Hidalgo pour dénoncer le",
+        "citations": [
+          {
+            "texte": "Aucune action majeure n'a été mise en place pour connaître l'ampleur des faits commis"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École Volontaires",
+      "case_id": "POC-10",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-10",
+        "hubs": []
+      }
+    },
+    {
       "id": "d5c5f12b4e93",
       "nature": "parole",
       "libelle": "Parole attribuée — le communiqué : « Durant cette période, la Ville a effectué à plusieurs reprises des signalements à l’Éducation nationale sur les difficultés relationnelles de cet enseignant avec les adultes. Ces signalements ne portaient pas sur des faits visant les enfants et aucun élément de cette nature n’a été porté à la connaissance de la Ville à ce jour »",
@@ -1462,6 +1686,45 @@
       "destinations": {
         "fiche": "FR-2026-0137",
         "hubs": []
+      }
+    },
+    {
+      "id": "debc460e47e1",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la ville dans un communiqué : « Dès la première alerte donnée par la police nationale, cet agent a été suspendu »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la ville dans un communiqué",
+      "territoire": null,
+      "date": "2026-11-05",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/des-faits-visiblement-graves-un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-vise-par-une-enquete-et-suspendu-1723035",
+        "publie_le": "2026-11-10"
+      },
+      "parole": {
+        "acteur": "la ville dans un communiqué",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Dès la première alerte donnée par la police nationale, cet agent a été suspendu"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
       }
     },
     {
