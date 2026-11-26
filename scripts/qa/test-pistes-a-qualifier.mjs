@@ -9,7 +9,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { detecterSignal, pisteDuTexte, construireContexteTerritoire, territoireDuPropos, corpsSansSignature, messagePistes, composerPistes, pisteId, ecrirePiste, envoyerPistes, MOTIFS, LONGUEUR_MESSAGE_MAX } from '../lib/pistes-a-qualifier.mjs';
-import { classer, chargerRegistre } from '../lib/sources-suivies.mjs';
+import { classer, chargerRegistre, parcourirSources, memoireFichier } from '../lib/sources-suivies.mjs';
 import { chargerAlias, enrichirFiches } from '../lib/alias-etablissements.mjs';
 import { postVersDocument } from '../lib/veille-instagram.mjs';
 
@@ -97,6 +97,27 @@ verifie('signature seule (avec le territoire du compte) ⇒ jamais PISTE_A_QUALI
 verifie('même texte hors compte Instagram (document HTML) ⇒ jamais PISTE_A_QUALIFIER', classe(plainte, orga, avecAlias, false).destination !== 'PISTE_A_QUALIFIER');
 verifie('lettre ouverte à la Ville de Paris ⇒ jamais rattachée à une affaire de Paris 11e (ni AFFAIRE, ni suspendu) ; piste HUB « Paris » sans hub', (() => { const r = classe(lettreParis, { ...orga, id: 'sos', nom: 'SOS fictif', alias: ['SOS fictif'] }); return r.destination === 'PISTE_A_QUALIFIER' && r.piste.hub_id === null && r.case_ids.length === 0 && r.suspendus.length === 0; })());
 
+// ---- publications PROPRES d'un acteur suivi (blog, communiqué, pétition) : déclaration d'ensemble de plusieurs écoles, exposants, presse référencée ----
+const declEnsemble = 'Nous, parents d\'élèves de plusieurs écoles du 11ᵉ arrondissement de Paris, avons saisi le Défenseur des droits le 22 décembre 2025 au sujet des violences sexuelles dans le périscolaire. Signataires : parents des écoles maternelles Alphonse Baudin, Bullourde et Faidherbe.';
+const classeDoc = (corps, { propre = true, o = { ...orga, pistes_propres: true }, fiches = avecAlias } = {}) => classer({ doc: { ok: true, url: 'https://blog.example.invalid/billet', url_finale: 'https://blog.example.invalid/billet', publie_le: '2026-01-28', titre: 'Billet', corps, extraction: 'html' }, page: { url: 'https://blog.example.invalid/', type: 'document' }, organisme: o, fiches, pisteOuverte: propre });
+const rEns = classeDoc(declEnsemble);
+verifie('DÉCLARATION D\'ENSEMBLE d\'un acteur suivi (plusieurs écoles nommées, « 11ᵉ » en exposant) ⇒ piste HUB paris-11e, AUCUN case_id, AUCUN rattachement suspendu à plusieurs affaires', rEns.destination === 'PISTE_A_QUALIFIER' && rEns.piste.motif_code === 'MOBILISATION_OU_DEMARCHE' && rEns.piste.destination === 'HUB' && rEns.piste.hub_id === 'paris-11e' && rEns.case_ids.length === 0 && rEns.suspendus.length === 0 && rEns.structures_nommees >= 2, JSON.stringify(rEns));
+verifie('le MÊME texte reste un rattachement SUSPENDU (jamais une piste) quand le document n\'est pas une publication propre de l\'acteur (article de presse référencé)', classeDoc(declEnsemble, { propre: false }).destination === 'RATTACHEMENT_SUSPENDU', classeDoc(declEnsemble, { propre: false }).destination);
+const declRoles = 'Un animateur périscolaire de l\'école maternelle Alphonse-Baudin (Paris 11e) et un animateur périscolaire de l\'école maternelle Bullourde (Paris 11e) ont été suspendus pour des violences sexuelles. Nous, parents, avons saisi le Défenseur des droits.';
+const rRoles = classeDoc(declRoles);
+verifie('DEUX écoles nommées AVEC leur rôle (rattachements pleins possibles, base de production qui contient plus de fiches) ⇒ toujours une déclaration d\'ensemble : piste HUB, aucun case_id ; hors publication propre ⇒ jamais une piste', rRoles.destination === 'PISTE_A_QUALIFIER' && rRoles.case_ids.length === 0 && rRoles.piste.hub_id === 'paris-11e' && classeDoc(declRoles, { propre: false }).destination !== 'PISTE_A_QUALIFIER', JSON.stringify(rRoles));
+// Chemin RÉEL d'une page « document » du registre (constat du dry-run CI du 26/11 : la porte pisteOuverte n'était pas passée à ce chemin-là)
+{
+  const page = { url: 'https://blog.example.invalid/billet', type: 'document', cadence: 'hebdomadaire', emetteur: 'Parents fictifs (blog)', organismes: ['parents-fictifs'] };
+  const registre = { organismes: [{ id: 'parents-fictifs', nom: 'Parents fictifs', alias: ['Parents fictifs'], role: 'organisme', portee: 'inconnue', pistes_propres: true, suivi: { domaines: ['blog.example.invalid'], pages: [page] } }], pages: [page] };
+  const lire = async (url) => ({ ok: true, url, url_finale: url, publie_le: '2026-01-28', titre: 'Billet', corps: declEnsemble, extraction: 'html', statut_http: 200 });
+  const r = await parcourirSources({ registre, memoire: memoireFichier('/inexistant/m.json', { lectureSeule: true }), fiches: avecAlias, lire, lireRss: async () => ({ ok: false, items: [] }), maintenant: '2026-11-26T10:00:00Z' });
+  const l = r.pages.find((p) => p.url === page.url);
+  verifie('PAGE « document » du registre (chemin réel de parcourirSources) : déclaration d’ensemble d’un acteur suivi ⇒ PISTE_A_QUALIFIER (hub paris-11e), jamais un rattachement suspendu', l?.destination === 'PISTE_A_QUALIFIER' && l.piste?.hub_id === 'paris-11e' && l.case_ids.length === 0, JSON.stringify({ d: l?.destination, p: l?.piste?.hub_id }));
+}
+verifie('plusieurs écoles nommées SANS signal public concret ni thème ⇒ jamais une piste', classeDoc('Les écoles maternelles Alphonse Baudin, Bullourde et Faidherbe organisent leur kermesse commune.').destination !== 'PISTE_A_QUALIFIER');
+verifie('exposants et caractères de compatibilité : « 11ᵉ » = 11e, « 1ᵉʳ » = 1er', territoireDuPropos('école du 11ᵉ arrondissement de Paris', ctx)?.hub_id === 'paris-11e');
+
 verifie('GARDE THÉMATIQUE : une publication hors sujet (vide-grenier, fête de l\'école, cantine fermée, doudou perdu) ne devient JAMAIS une piste, même avec « rassemblement », « communiqué » ou « appel à témoins »', ['Merci à tout le monde pour le vide-grenier. Rassemblement samedi !', 'Rassemblement des familles pour la fête de l\'école.', 'Communiqué : la cantine sera fermée lundi.', 'Appel à témoins : doudou perdu.'].every((l) => classe(l, orga).destination !== 'PISTE_A_QUALIFIER'));
 
 // ---- 2e relecture du 24/11 : garde thématique avec le REGISTRE RÉEL, polarité, élision, casse des médias ----
@@ -181,6 +202,44 @@ const apercu = { compteurs: { instagram: { appels: 3, budget: 4, arret: null, co
 const sortie = resumerApercu(apercu).join('\n');
 verifie('RÉSUMÉ pour journaux PUBLICS : compteurs sans identité ; AUCUN pseudo, AUCUNE adresse (ni du compte ni de la publication), AUCUN titre ; dates, issues et destinations seulement', !/leursvoix|sosperiscolaire|instagram\.com|AbCdE|TITRE SECRET|2026-04-22/.test(sortie) && /"comptes":2/.test(sortie) && /"en_panne":0/.test(sortie) && /"historique_non_couvert":1/.test(sortie) && /"publications_lues":30/.test(sortie) && /2026-11-17 · NOUVEAU · PISTE_A_QUALIFIER · PLAINTE_ACCUEIL → THEMATIQUE/.test(sortie), sortie);
 verifie('le script ne fait appel qu\'à ces pièces (aucune requête de vérification écrite à la main) et le workflow l\'appelle pour chaque action', (() => { const s = readFileSync(join(ROOT, 'scripts', 'pilote-instagram-neon.mjs'), 'utf8'); const y = readFileSync(join(ROOT, '.github', 'workflows', 'sny-pilote-instagram.yml'), 'utf8'); return /from '\.\/lib\/pilote-instagram-neon\.mjs'/.test(s) && ['verifier-migration', 'appliquer-migration', 'empreinte', 'comparer', 'resume-apercu'].every((m) => y.includes(m) && s.includes(m)); })());
+
+// ---- journal public, inventaire, sources de commune (2e relecture du 26/11) ----
+{
+  const apercuWeb = { genere_le: '2026-11-26T10:00:00Z', maintenant: '2026-11-26T10:00:00Z', compteurs: {}, documents: [
+    { url: 'https://blogs.mediapart.fr/acteur-fictif/blog/x', organismes: ['acteur-fictif-un'], type: 'document', issue: 'NOUVEAU', destination: 'PISTE_A_QUALIFIER', publie_le: '2026-01-28', piste: { motif_code: 'MOBILISATION_OU_DEMARCHE', destination: 'HUB', hub_id: 'paris-11e' } },
+    { url: 'https://www.exemple-asso.invalid/page', organismes: ['acteur-fictif-deux'], type: 'service', issue: 'ECHEC', incident: 'BLOCAGE_ANTI_ROBOT (HTTP 403)', publie_le: null },
+    { url: 'https://www.exemple-asso.invalid/doc', organismes: ['acteur-fictif-deux'], type: 'document', issue: 'ECHEC', incident: 'RESEAU:ENOTFOUND' }] };
+  const lignesWeb = resumerApercu(apercuWeb).join('\n');
+  verifie('RÉSUMÉ public des sources WEB : compteurs par destination et pannes par domaine seulement ; AUCUN identifiant d’acteur, AUCUNE adresse complète, AUCUNE piste détaillée', !/acteur-fictif|blog\/x|MOBILISATION|paris-11e/.test(lignesWeb) && /PISTE_A_QUALIFIER":1/.test(lignesWeb) && /www\.exemple-asso\.invalid · RESEAU:ENOTFOUND ×1/.test(lignesWeb), lignesWeb);
+  const inv = await import('../inventaire-acteurs.mjs');
+  const regInv = { organismes: [{ id: 'acteur-fictif-un', nom: 'Acteur fictif', role: 'organisme', implication_verifiee: true, suivi: { pages: [{ url: 'https://www.instagram.com/compte_fictif/', type: 'instagram', compte: 'compte_fictif' }, { url: 'https://www.exemple-asso.invalid/page', type: 'service' }] } }, { id: 'acteur-sans-source', nom: 'Sans source', role: 'identite_a_confirmer' }] };
+  const apercuInv = { maintenant: '2026-11-26T10:00:00Z', documents: [{ url: 'https://www.instagram.com/compte_fictif/', type: 'instagram', organismes: ['acteur-fictif-un'], issue: 'NOUVEAU', couverture: { publications_lues: 50, plus_ancien_lu: '2026-06-01', historique_non_couvert: true } }, { url: 'https://www.exemple-asso.invalid/page', type: 'service', organismes: ['acteur-fictif-un'], issue: 'ECHEC', incident: 'BLOCAGE_ANTI_ROBOT (HTTP 403)' }, { url: 'https://www.instagram.com/p/AbC/', type: 'document', organismes: ['acteur-fictif-un'], issue: 'NOUVEAU', publie_le: '2026-11-25' }] };
+  const l = inv.inventaire(regInv, apercuInv); const md = inv.enMarkdown(l);
+  verifie('INVENTAIRE : le script se charge ; une ligne par source ; état, dernière publication couverte, historique non couvert, panne ; « sans source » dit sans inventer ; page web : historique non applicable', l.length === 3 && l[0].mesure === 'NOUVEAU' && l[0].historique_non_couvert === true && l[0].derniere_publication_couverte === '2026-11-25' && l[1].mesure === 'ECHEC' && l[1].incident.startsWith('BLOCAGE') && l[1].historique_non_couvert === null && l[2].mesure === 'AUCUNE_SOURCE_SUIVIE' && /NON couvert avant 2026-06-01/.test(md) && /\| — \|/.test(md), md);
+  verifie('INVENTAIRE sans aperçu : « NON_MESURE », jamais un état inventé', inv.inventaire(regInv).every((x) => ['NON_MESURE', 'AUCUNE_SOURCE_SUIVIE'].includes(x.mesure)));
+
+  // Source de commune : aucune offre d'emploi rattachée à l'affaire, aucune « fête » érigée en piste (registre RÉEL)
+  const orgMairie = reg0.organismes.find((o) => o.id === 'ville-de-tarnos');
+  const igMairie = (legende) => classer({ doc: postVersDocument({ id_post: 'm1', url: 'https://www.instagram.com/p/m1/', publie_le: '2026-11-20T10:00:00+0000', legende }), page: { url: 'https://www.instagram.com/ville_de_tarnos/', type: 'document' }, organisme: orgMairie, fiches: avecAlias });
+  const rEmploi = igMairie('Le centre de loisirs de Tarnos recrute des animateurs périscolaires pour les vacances. Candidatures ouvertes.');
+  verifie('MAIRIE (registre réel) : une offre d’emploi du centre de loisirs, nommé par son alias, n’est ni une AFFAIRE ni une piste (aucun « Commune de Tarnos » ajouté à une légende)', !['AFFAIRE', 'PISTE_A_QUALIFIER'].includes(rEmploi.destination) && rEmploi.case_ids.length === 0, JSON.stringify(rEmploi));
+  verifie('MAIRIE : « manifestation de fin d’année » ou « conférence de presse du maire sur le périscolaire » sans fait de violence ⇒ jamais une piste (thème des FAITS exigé pour une source documentaire)', ['Manifestation de fin d’année au centre de loisirs samedi, venez nombreux.', 'Conférence de presse du maire sur le périscolaire jeudi.'].every((t) => igMairie(t).destination !== 'PISTE_A_QUALIFIER'));
+  verifie('MAIRIE : une déclaration sur les violences faites aux enfants reste une piste possible (le thème des FAITS est présent)', igMairie('Conférence de presse du maire jeudi sur la protection des enfants et les signalements de violences sexuelles.').destination === 'PISTE_A_QUALIFIER');
+
+  // Porte par acteur : sans pistes_propres, une publication propre n'est JAMAIS une piste ; le même texte avec le drapeau, si
+  const sansDrapeau = { ...orga, pistes_propres: false };
+  verifie('PORTE par acteur (pistes_propres) : le même texte propre est une piste pour un acteur qui l’a demandé, jamais pour les autres', classeDoc(declEnsemble, { o: sansDrapeau }).destination !== 'PISTE_A_QUALIFIER' && classeDoc(declEnsemble).destination === 'PISTE_A_QUALIFIER');
+  verifie('PRESSE CITÉE hors Instagram : jamais une piste (norme sur le site d’une association) ; sur un compte Instagram elle reste une piste', classeDoc('Nous avons été interrogés par Le Parisien sur les violences dans les centres de loisirs.').destination !== 'PISTE_A_QUALIFIER' && classe('Nous avons été interrogés par Le Parisien sur les violences dans les centres de loisirs.').destination === 'PISTE_A_QUALIFIER');
+
+  // Une MÊME structure à deux dossiers (deux rôles) n'est pas « plusieurs structures » ; un rattachement plein à UNE affaire n'est pas détourné
+  const poc06 = avecAlias.find((f) => f.case_id === 'POC-06');
+  const deuxDossiers = [...avecAlias, { ...poc06, case_id: 'FR-TEST-0300', role_mis_en_cause: 'enseignant' }];
+  const rMeme = classeDoc('Nous, parents de l’école maternelle Bullourde (Paris 11e), avons saisi le Défenseur des droits au sujet des violences sexuelles.', { fiches: deuxDossiers });
+  verifie('MÊME structure, deux dossiers ⇒ jamais une déclaration d’ensemble (arbitrage humain)', rMeme.destination !== 'PISTE_A_QUALIFIER', JSON.stringify(rMeme));
+  const rPlein = classeDoc('Un animateur périscolaire de l’école maternelle Alphonse-Baudin (Paris 11e) a été jugé ; nous avons saisi le Défenseur des droits.');
+  verifie('un rattachement plein à UNE affaire n’est jamais détourné en piste', rPlein.destination === 'AFFAIRE' && rPlein.case_ids.length === 1, JSON.stringify(rPlein));
+  verifie('« 11ᵉ » (exposant) et « 11e » donnent le même résultat de classement (NFKC à l’entrée de classer)', classeDoc('Un animateur périscolaire de l’école maternelle Bullourde (Paris 11ᵉ) a été suspendu pour violences sexuelles ; nous avons saisi le Défenseur des droits.').destination === classeDoc('Un animateur périscolaire de l’école maternelle Bullourde (Paris 11e) a été suspendu pour violences sexuelles ; nous avons saisi le Défenseur des droits.').destination);
+}
 
 console.log(ko ? `\n${ko} échec(s)` : '\nTous les contrôles passent (légendes FICTIVES, sql SIMULÉ).');
 process.exit(ko ? 1 : 0);

@@ -79,5 +79,14 @@ export function resumerApercu(a) {
   const par = {}; for (const d of posts) par[d.destination || d.issue] = (par[d.destination || d.issue] || 0) + 1;
   lignes.push(`publications Instagram par destination : ${JSON.stringify(par)}`);
   for (const d of posts) lignes.push(`  ${String(d.publie_le || '?').slice(0, 10)} · ${d.issue} · ${d.destination}${d.piste ? ` · ${d.piste.motif_code} → ${d.piste.destination}${d.piste.hub_id ? ` ${d.piste.hub_id}` : ''}` : ''}${(d.propositions || []).length ? ` · propositions : ${d.propositions.map((p) => p.issue).join(',')}` : ''}`);
+  // Autres sources suivies (blogs, pétitions, sites de communes) : journal PUBLIC ⇒ compteurs seulement (qui a publié quoi, avec quelle piste, n'est pas public) ;
+  // les pannes sont dites par domaine et par classe d'incident, jamais par acteur ni par adresse complète.
+  const hote = (u) => { try { return new URL(u).host; } catch { return '?'; } };
+  const autres = (a?.documents || []).filter((d) => (d.type || 'document') === 'document' && !/^https:\/\/www\.instagram\.com\//.test(d.url || '') && (d.organismes || []).some(Boolean) && ['NOUVEAU', 'MODIFIE', 'ECHEC'].includes(d.issue));
+  const parDest = {}; for (const d of autres.filter((x) => x.issue !== 'ECHEC')) parDest[d.destination || '—'] = (parDest[d.destination || '—'] || 0) + 1;
+  lignes.push(`documents hors Instagram nouveaux ou modifiés, par destination : ${JSON.stringify(parDest)}`);
+  const pannes = {}; for (const d of autres.filter((x) => x.issue === 'ECHEC')) { const k = `${hote(d.url)} · ${String(d.incident || '?').slice(0, 40)}`; pannes[k] = (pannes[k] || 0) + 1; }
+  lignes.push(`documents hors Instagram en échec : ${autres.filter((x) => x.issue === 'ECHEC').length}`);
+  for (const [k, n] of Object.entries(pannes)) lignes.push(`  ${k} ×${n}`);
   return lignes;
 }

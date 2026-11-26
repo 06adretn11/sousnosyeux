@@ -293,7 +293,8 @@ export function zonePertinente(doc, organisme) {
     z = gardees.join('\n\n');
   }
   const communal = /^communale:(.+)$/.exec(organisme?.portee || '')?.[1];
-  return communal ? `Commune de ${communal}.\n\n${z}` : z;
+  // jamais pour une légende Instagram : « Commune de Tarnos » rattacherait une offre d'emploi du centre de loisirs à l'affaire
+  return communal && doc.extraction !== 'instagram-business-discovery' ? `Commune de ${communal}.\n\n${z}` : z;
 }
 
 // Gazetteer de SNY (communes et départements des fiches, couverture des hubs de data/hub-matiere), construit une fois par jeu de fiches.
@@ -303,9 +304,23 @@ function contexteTerritoire(fiches) {
   return CONTEXTES_TERRITOIRE.get(fiches);
 }
 
-export function classer({ doc, page, organisme, fiches }) {
-  const titre = String(doc.titre || '');
-  const corps = zonePertinente(doc, organisme);
+export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) {
+  const titre = String(doc.titre || '').normalize('NFKC');
+  const corps = zonePertinente(doc, organisme).normalize('NFKC'); // « 11ᵉ » = « 11e » pour le résolveur aussi
+  // Une piste à qualifier ne naît que d'une publication d'un acteur SUIVI : un compte Instagram, ou une publication PROPRE (blog, communiqué, mise à jour de pétition) — jamais d'un article de presse référencé.
+  const pistePossible = () => {
+    const ig = doc.extraction === 'instagram-business-discovery';
+    // Hors Instagram : seulement les acteurs qui l'ont explicitement demandé (pistes_propres) ; « article de presse cité » est la norme sur le site d'une association, jamais une piste.
+    if (!ig && !(pisteOuverte && organisme?.pistes_propres === true)) return null;
+    const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
+    if (piste && !ig && piste.motif_code === 'ARTICLE_PRESSE_CITE') return null;
+    const lu = aplatir(`${titre} ${corpsSansSignature(doc.corps, organisme)}`);
+    // Une commune (source_institutionnelle) publie sur tout : le thème des FAITS (violences, plainte, signalement…) est exigé, pas « centre de loisirs » ou « périscolaire » seuls.
+    if (piste && organisme?.source_institutionnelle === true && !(THEME_FAITS.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL')) return null;
+    const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
+      || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
+    return thematique ? piste : null;
+  };
   const tete = aplatir(`${titre} ${doc.url_finale || doc.url}`);
   const f = organisme?.suivi?.filtre || {};
   for (const p of f.exclure || []) if (new RegExp(p, 'i').test(tete)) return { destination: 'HORS_PERIMETRE', motif: `filtre de l'organisme (${p})`, case_ids: [], suspendus: [] };
@@ -319,8 +334,27 @@ export function classer({ doc, page, organisme, fiches }) {
   const r = resoudre({ candidate: { title: titre }, index: fiches, corps });
   const ok = (r.detail || []).filter((d) => d.rattachement === 'OK').map((d) => d.case_id);
   const douteux = (r.detail || []).filter((d) => d.rattachement === 'DOUTEUX').map((d) => d.case_id);
+  // Source INSTITUTIONNELLE (commune) : un texte qui nomme le centre de loisirs sans aucun fait (offre d'emploi, inscriptions) n'est rattaché à aucune affaire ; le fait doit figurer dans le texte.
+  if (organisme?.source_institutionnelle === true && (ok.length || douteux.length) && !(THEME_FAITS.test(aplatir(`${titre} ${corps}`)) || JUDICIAIRE.test(aplatir(`${titre} ${corps}`)))) {
+    return { ...classerSansAffaire({ titre, corps, page }), motif: 'source institutionnelle : structure nommée sans aucun fait dans le texte (aucun rattachement)' };
+  }
+  // Plusieurs STRUCTURES distinctes nommées dans une publication d'un acteur suivi (ex. les parents de six écoles d'un arrondissement) : une déclaration D'ENSEMBLE, jamais le fait d'une seule affaire.
+  // Elle ne rattache aucune affaire (aucun case_id) ; si le texte porte un signal public concret, c'est une piste (hub si un territoire est nommé), sinon le rattachement reste suspendu.
+  // Appliqué seulement quand aucun rattachement plein à UNE affaire n'est établi (ok vide, ou plusieurs, ou départage chronologique), jamais contre un rattachement plein.
+  const nonPlein = ok.length ? (ok.length > 1 || r.resolution_status !== 'MATCH') : douteux.length >= 2;
+  const nommees = [...new Set([...ok, ...douteux])];
+  const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(`${x?.etablissement_alias || x?.etablissement || id}|${x?.commune || ''}`); })); // commune incluse : deux « École Jean-Jaurès » de communes différentes sont deux structures // alias déclaré = la structure (deux dossiers, une structure)
+  // Pas de plafond : la base de production compte bien plus de fiches que le site (les structures « rapprochées » par la commune dépassent vite dix) ; la piste ne rattache AUCUNE affaire,
+  // elle n'est donc pas affectée par la dispersion des indices.
+  const pEnsemble = nonPlein ? pistePossible() : null;
+  // Diagnostic lisible dans le motif d'un rattachement suspendu d'un document éligible à une piste : combien de structures, y a-t-il un signal public retenu.
+  const diag = nonPlein && (pisteOuverte || doc.extraction === 'instagram-business-discovery') ? `[structures=${structures.size} ; signal public=${pEnsemble ? 'oui' : 'non'}] ` : '';
+  if (nonPlein && structures.size >= 2) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
+    const p = pEnsemble;
+    if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures rapprochées par le texte : déclaration d’ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
+  }
   // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
-  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
+  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: `${diag}plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé`, case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
@@ -330,7 +364,7 @@ export function classer({ doc, page, organisme, fiches }) {
   if (doc.extraction === 'instagram-business-discovery' && douteux.length === 1 && (THEME_FAITS.test(aplatir(`${titre} ${corps.slice(0, 3000)}`)) || JUDICIAIRE.test(aplatir(`${titre} ${corps.slice(0, 3000)}`))) && (r.evidence || []).some((e) => e.startsWith(`${douteux[0]} — `) && e.includes('alias d\'établissement'))) {
     return { destination: 'AFFAIRE_A_CONFIRMER', motif: 'la publication nomme la structure de cette affaire par son alias propre ; le rôle de la personne mise en cause n\'est pas précisé : rattachement À CONFIRMER, aucun lien établi', case_ids: [], suspendus: douteux, zone: corps };
   }
-  if (douteux.length) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'établissement nommé mais identification incomplète (commune ou rôle) : aucun lien sans arbitrage', case_ids: [], suspendus: douteux };
+  if (douteux.length) return { destination: 'RATTACHEMENT_SUSPENDU', motif: `${diag}établissement nommé mais identification incomplète (commune ou rôle) : aucun lien sans arbitrage`, case_ids: [], suspendus: douteux };
   const vois = voisins(corps, fiches);
   if (vois.length && vois.length <= 10) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'commune, rôle et fait concordent, établissement non nommé : aucun lien sans autre preuve', case_ids: [], suspendus: vois };
   // PISTE À QUALIFIER (jamais un rattachement) : une action ou déclaration PUBLIQUE CONCRÈTE du compte (motif fermé), lue dans le TEXTE (hashtags et signature retirés).
@@ -338,16 +372,12 @@ export function classer({ doc, page, organisme, fiches }) {
   // sinon piste thématique sans territoire. Aucun case_id, aucune proposition : une notification groupée, revue humaine. Le lien à une AFFAIRE est décidé plus haut.
   // Garde thématique minimale (le THEME existant : violences, protection de l'enfance, plainte, signalement, centre de loisirs, périscolaire…) : une publication hors sujet (vide-grenier,
   // cantine fermée) ne devient jamais une piste, même si elle contient « rassemblement » ou « communiqué ».
-  // La garde porte sur le texte SANS hashtags ni signature (le nom du compte, « SOS Périscolaire », ne vaut pas thème). Sont thématiques par construction : une déclaration sur
-  // l'accueil des plaintes, une lettre ouverte ou pétition d'un compte suivi, un appel à témoins qui parle d'enfants ; un rassemblement ou une démarche exigent le thème dans le texte.
-  if (doc.extraction === 'instagram-business-discovery') {
-    const piste = pisteDuTexte({ doc, organisme, ctx: contexteTerritoire(fiches) });
-    const lu = aplatir(`${titre} ${corpsSansSignature(corps, organisme)}`);
-    const thematique = piste && (THEME_PISTES.test(lu) || piste.motif_code === 'PLAINTE_ACCUEIL' || piste.motif_code === 'LETTRE_OU_DEMANDE_PUBLIQUE'
-      || (piste.motif_code === 'APPEL_A_TEMOINS' && /\b(?:enfants?|mineurs?|animateurs?|eleves?)\b/.test(lu)));
-    if (thematique) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
-  }
-  return { ...classerSansAffaire({ titre, corps, page }), ...(vois.length ? { indices_disperses: vois.length } : {}) };
+  // Garde thématique : voir pistePossible (texte SANS hashtags ni signature ; le nom du compte, « SOS Périscolaire », ne vaut pas thème).
+  const piste = pistePossible();
+  const sans = classerSansAffaire({ titre, corps, page });
+  // Hors Instagram, un signal d'affaire possible (structure × fait localisé, sans affaire connue) reste plus spécifique qu'une piste : il garde sa destination.
+  if (piste && !(doc.extraction !== 'instagram-business-discovery' && sans.destination === 'SIGNAL_AFFAIRE_POSSIBLE')) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[piste.motif_code]} ; ${piste.classement} ; aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste };
+  return { ...sans, ...(vois.length ? { indices_disperses: vois.length } : {}) };
 }
 
 /** Destination d'un document qui ne se rattache à aucune affaire connue. */
@@ -721,7 +751,7 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     doc.empreinte = empreinteSubstance(doc.corps);
     const issue = comparer(doc, memo);
     const nat = natureDocument(doc, page, org);
-    const cls = page.type === 'index' ? { destination: 'INDEX', case_ids: [], suspendus: [] } : classer({ doc, page, organisme: org, fiches });
+    const cls = page.type === 'index' ? { destination: 'INDEX', case_ids: [], suspendus: [] } : classer({ doc, page, organisme: org, fiches, pisteOuverte: page.type === 'document' && !page.repli && ['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nat.nature) });
     pagesEtat.push({ ...etat, issue, extraction: doc.extraction, caracteres: doc.corps.length, empreinte: doc.empreinte, empreinte_precedente: memo?.content_fingerprint || null,
       liens: doc.liens?.length || 0, rss: page.rss ? (viaRss?.ok ? `valide (${viaRss.items.length} entrées)` : `non retenu (${viaRss?.motif})`) : null,
       contacts: page.type === 'service' ? contacts(doc.corps) : undefined, repli_utilise: doc.repli_utilise || null, ...nat, ...cls, doc: page.type === 'index' ? undefined : doc,
@@ -786,7 +816,7 @@ export async function parcourirSources({ registre, memoire, fiches, lire = lireD
     const nat = natureDocument(doc, d.externe ? null : d.page, d.organisme);
     // Témoignage anonyme sensible : écarté AVANT tout classement ; aucun texte conservé (corps vide), seul le marqueur de mémoire.
     const cls = doc.ecarte ? { destination: 'ECARTE_TEMOIGNAGE', motif: 'témoignage anonyme sensible : écarté sans classement ni conservation du texte', case_ids: [], suspendus: [] }
-      : classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches });
+      : classer({ doc, page: { ...d.page, type: 'document' }, organisme: d.organisme, fiches, pisteOuverte: !d.externe && ['PUBLICATION_PROPRE', 'COMMUNIQUE'].includes(nat.nature) });
     sortie.push({ ...d, issue, empreinte: doc.empreinte, empreinte_precedente: memo?.content_fingerprint || null, ...nat, ...cls, doc,
       publie_le: doc.publie_le || d.publie_index || doc.date_entete || null });
   }

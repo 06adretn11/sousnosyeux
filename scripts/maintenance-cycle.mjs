@@ -791,7 +791,7 @@ async function etapeSourcesSuivies() {
     else if (!jeton) lireInstagram = panne('JETON_ABSENT');
     else if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') lireInstagram = panne('TLS_NON_VALIDE');
     else {
-      try { const appeler = V.appelerReel({ igUserId: cfg.ig_user_id, jeton, version: cfg.version }); lireInstagram = ({ comptes, connu, maintenant: m }) => V.lireComptes({ comptes, connu, appeler, budget: cfg.budget, collecteLe: m }); }
+      try { const appeler = V.appelerReel({ igUserId: cfg.ig_user_id, jeton, version: cfg.version, limite: cfg.taille_page }); lireInstagram = ({ comptes, connu, maintenant: m }) => V.lireComptes({ comptes, connu, appeler, budget: cfg.budget, collecteLe: m }); }
       catch { lireInstagram = panne('JETON_INVALIDE'); }
     }
   }

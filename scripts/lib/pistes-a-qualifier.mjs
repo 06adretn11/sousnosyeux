@@ -32,7 +32,7 @@ export const MOTIFS = Object.freeze({
 // Texte lu
 // ---------------------------------------------------------------------
 const MOTS_SIGNATURE = new Set(['de', 'du', 'la', 'le', 'les', 'des', 'et', 'collectif', 'famille', 'familles', 'notre', 'nos', 'combat', 'voix', 'leurs', 'leur']);
-const normaliser = (s) => aplatir(String(s || '')).replace(/[^a-z0-9']+/g, ' ').replace(/\s+/g, ' ').trim();
+const normaliser = (s) => aplatir(String(s || '').normalize('NFKC')).replace(/[^a-z0-9']+/g, ' ').replace(/\s+/g, ' ').trim();
 const aliasDe = (organisme) => [organisme?.nom, ...(organisme?.alias || [])].filter(Boolean).map((a) => normaliser(String(a).replace(/\s[–—-]\s.*$/, ''))).filter((a) => a.length >= 5);
 
 /**
@@ -67,7 +67,7 @@ export function corpsPourTerritoire(corps, organisme) {
 }
 
 const phrasesDe = (para) => String(para || '').replace(/\n+/g, ' ').split(/(?<=[.!?»])\s+(?=[A-ZÀ-Ý«"“])/).map((p) => p.trim()).filter(Boolean);
-const aplati = (s) => aplatir(s);
+const aplati = (s) => aplatir(String(s || '').normalize('NFKC'));
 
 // ---------------------------------------------------------------------
 // Motifs (une condition porte sur UNE PHRASE ; « ancrage » : sur la phrase et les quelques précédentes)
@@ -189,7 +189,7 @@ function contientNom(mots, normaux, nom) {
 export function territoireDuPropos(texte, ctx) {
   // les noms de médias portent un territoire (« Le Parisien », « Nice-Matin ») qui n'est pas celui du propos
   // (insensible à la casse : « selon LE PARISIEN » ; apostrophe typographique normalisée ; élision retirée : « l'Essonne », « d'Annonay »)
-  const brut = String(texte || '').replace(/[’‘]/g, "'").replace(new RegExp(MEDIAS.source.replace(/\['’\]/g, "'"), 'gi'), ' ');
+  const brut = String(texte || '').normalize('NFKC').replace(/[’‘]/g, "'").replace(new RegExp(MEDIAS.source.replace(/\['’\]/g, "'"), 'gi'), ' ');
   const mots = brut.split(/[^\p{L}\p{N}']+/u).map((m) => m.replace(/^[dDlL]'(?=\p{L})/u, '')).filter(Boolean);
   const normaux = mots.map((m) => normaliser(m));
   const n = ` ${normaux.join(' ')} `;
