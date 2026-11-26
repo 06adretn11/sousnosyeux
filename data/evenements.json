@@ -157,6 +157,21 @@
         }
       }
     ],
+    "FR-2026-0046": [
+      {
+        "event_id": "9dd67081-ebac-4ef3-bc2d-5017c5a27cfc",
+        "date": null,
+        "type": "voie_de_recours",
+        "statut": null,
+        "libelle": "Selon la presse, un appel a été formé contre la décision.",
+        "realisation": "réalisée",
+        "source": {
+          "media": "infos-media-nantes.fr",
+          "url": "https://infos-media-nantes.fr/reze-proces-appel-animateur-periscolaire-rennes-novembre-2026/",
+          "publie_le": "2026-11-18"
+        }
+      }
+    ],
     "FR-2026-0047": [
       {
         "event_id": "1efe381e-7c89-42f4-818c-5b516615d76e",
@@ -657,6 +672,40 @@
       }
     },
     {
+      "id": "0ed91024c3d3",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Mathilde : « J'ai trois filles, j'y pense tout le temps, Ça ne nous quitte pas. On est anxieux, en pleine interrogation de savoir si nos enfants sont concernés aussi, de savoir comment ça a pu se passer. C'est très violent, on ne s'y attend pas, on en entend beaucoup parler, on en parle à nos enfants, mais on ne s'attend pas à ce que ça nous arrive »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Mathilde",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-armorique/j-y-pense-tout-le-temps-les-parents-d-eleves-de-saint-aubin-d-aubigne-demunis-apres-la-mise-en-examen-d-un-animateur-5869620",
+        "publie_le": "2026-09-28"
+      },
+      "parole": {
+        "acteur": "Mathilde",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "J'ai trois filles, j'y pense tout le temps, Ça ne nous quitte pas. On est anxieux, en pleine interrogation de savoir si nos enfants sont concernés aussi, de savoir comment ça a pu se passer. C'est très violent, on ne s'y attend pas, on en entend beaucoup parler, on en parle à nos enfants, mais on ne s'attend pas à ce que ça nous arrive"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École Paul-Gauguin (périscolaire)",
+      "case_id": "FR-2026-0117",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0117",
+        "hubs": []
+      }
+    },
+    {
       "id": "108115613bf9",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont tenu un rassemblement.",
@@ -1072,6 +1121,40 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "9285dcf68ca9",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la maman : « On les a quand même pas mal sensibilisés depuis qu'ils sont tout petits. On se dit qu'on a fait tout ce qu'on pouvait et que ça n'a pas suffi à les préserver. C'est compliqué. Il y a de la culpabilité et il y a le choc »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la maman",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-armorique/j-y-pense-tout-le-temps-les-parents-d-eleves-de-saint-aubin-d-aubigne-demunis-apres-la-mise-en-examen-d-un-animateur-5869620",
+        "publie_le": "2026-09-28"
+      },
+      "parole": {
+        "acteur": "la maman",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "On les a quand même pas mal sensibilisés depuis qu'ils sont tout petits. On se dit qu'on a fait tout ce qu'on pouvait et que ça n'a pas suffi à les préserver. C'est compliqué. Il y a de la culpabilité et il y a le choc"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École Paul-Gauguin (périscolaire)",
+      "case_id": "FR-2026-0117",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0117",
+        "hubs": []
       }
     },
     {
