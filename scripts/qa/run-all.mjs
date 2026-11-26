@@ -199,6 +199,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Audit du 26/11 — rattachement douteux dit dans le message (adresse ≠ phrase citée)',
+    script: 'scripts/qa/test-audit-26-11.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Alerte de clic — une erreur secondaire après une application réussie n’est pas l’échec de la décision',
     script: 'scripts/qa/test-alerte-clic.mjs',
     bloquant: true,

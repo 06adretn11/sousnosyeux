@@ -15,14 +15,50 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: sny-telegram
-  cancel-in-progress: false
+# PERTE DE CLICS (audit du 26/11/2026) : avec un groupe de concurrence sur le workflow, GitHub ne conserve qu'UN run en attente ; chaque clic suivant remplaçait (annulait) le précédent.
+# Mesuré : 9 clics reçus (« Clic reçu ») jamais enregistrés sur 3 rafales ; seuls le premier et le dernier de chaque rafale étaient traités. Désormais :
+#   · job « enregistrer » : UN groupe PAR CLIC (update_id) → jamais fusionné ni annulé par un autre clic ; il n'écrit que la décision (idempotent) ;
+#   · job « appliquer » : groupe partagé « sny-telegram » (une seule projection / publication à la fois). Si un run en attente y est remplacé, aucune décision n'est perdue :
+#     elles sont DÉJÀ enregistrées, et le run suivant (ou le filet sny-clics) applique toutes les décisions présentes en base.
 
 jobs:
-  clic:
+  enregistrer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: sny-clic-${{ fromJSON(inputs.update).update_id }}
+      cancel-in-progress: false
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_ALLOWED_USER_ID: ${{ secrets.TELEGRAM_ALLOWED_USER_ID }}
+      SNY_WEBHOOK: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: 1. Enregistrer le clic (idempotent)
+        id: enregistrer
+        env:
+          UPDATE_JSON: ${{ inputs.update }}
+        run: node scripts/telegram-v0.mjs traiter
+      - name: Alerter si l'enregistrement a échoué
+        if: ${{ failure() }}
+        env:
+          OUTCOME_enregistrer: ${{ steps.enregistrer.outcome }}
+          UPDATE_JSON: ${{ inputs.update }}
+        run: node scripts/alerte-clic.mjs
+
+  appliquer:
+    needs: enregistrer
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    concurrency:
+      group: sny-telegram
+      cancel-in-progress: false
     env:
       NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -45,11 +81,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci --ignore-scripts
-      - name: 1. Enregistrer le clic (idempotent)
-        id: enregistrer
-        env:
-          UPDATE_JSON: ${{ inputs.update }}
-        run: node scripts/telegram-v0.mjs traiter
       - name: 2. Appliquer les ACCEPT simples (AUTO_APPLICABLE uniquement)
         id: simples
         run: node scripts/appliquer-decisions.mjs --generique
@@ -174,7 +205,8 @@ jobs:
       - name: Alerter si le traitement a échoué
         if: ${{ failure() }}
         env:
-          OUTCOME_enregistrer: ${{ steps.enregistrer.outcome }}
+          OUTCOME_enregistrer: ${{ needs.enregistrer.result }}
+          UPDATE_JSON: ${{ inputs.update }}
           OUTCOME_simples: ${{ steps.simples.outcome }}
           OUTCOME_discovery: ${{ steps.discovery.outcome }}
           OUTCOME_projection: ${{ steps.projection.outcome }}

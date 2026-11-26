@@ -165,6 +165,30 @@ t('publier-projection · push accepté : abandon=false, commit présent sur l’
     assert.equal(git(origine, 'show', 'main:data/hub-matiere/isoles.json'), 'v1');
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+t('publier-projection · erreur DISTANTE transitoire (GitHub 5xx, 24/11 21:30) : nouvel essai, publication aboutie — jamais prise pour « main a avancé »', () => {
+  const { dir, origine, a } = monter();
+  try {
+    // hook de l'origine : refuse le PREMIER push (comme « remote rejected … Internal Server Error »), accepte ensuite
+    const hook = join(origine, 'hooks/pre-receive');
+    writeFileSync(hook, `#!/bin/sh\nif [ ! -f "${dir.replace(/\\/g, '/')}/deja" ]; then : > "${dir.replace(/\\/g, '/')}/deja"; echo "Internal Server Error" >&2; exit 1; fi\nexit 0\n`, { mode: 0o755 });
+    writeFileSync(join(a, 'data/hub-matiere/isoles.json'), 'v1\n');
+    const out = sh(a, `sh "${SH}" 2>&1`, env(dir, { SNY_PUSH_ATTENTE: '0' }));
+    assert.match(out, /erreur distante transitoire \(essai 1\/3\)/); assert.doesNotMatch(out, /a avancé pendant le passage/);
+    assert.match(sortieDe(dir), /abandon=false/);
+    assert.equal(git(origine, 'show', 'main:data/hub-matiere/isoles.json'), 'v1', 'la publication a abouti au 2e essai');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+t('publier-projection · erreur distante PERSISTANTE : échec franc après 3 essais, rien d’inventé sur main, message exact', () => {
+  const { dir, origine, a } = monter();
+  try {
+    writeFileSync(join(origine, 'hooks/pre-receive'), '#!/bin/sh\necho "Internal Server Error" >&2\nexit 1\n', { mode: 0o755 });
+    writeFileSync(join(a, 'data/hub-matiere/isoles.json'), 'v1\n');
+    let code = 0, out = '';
+    try { out = sh(a, `sh "${SH}" 2>&1`, env(dir, { SNY_PUSH_ATTENTE: '0' })); } catch (e) { code = e.status; out = String(e.stdout || '') + String(e.stderr || ''); }
+    assert.equal(code, 1); assert.match(out, /erreur distante persistante \(3 essais\)/); assert.doesNotMatch(out, /a avancé pendant le passage/);
+    assert.equal(git(origine, 'show', 'main:data/hub-matiere/isoles.json'), 'v0', 'main inchangé');
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
 t('publier-projection · push refusé, main n’a touché que docs/ : rebase puis push (rien de sensible n’a bougé)', () => {
   const { dir, origine, a, b } = monter();
   try {

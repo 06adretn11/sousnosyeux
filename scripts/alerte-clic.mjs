@@ -13,21 +13,23 @@ const nettoie = (s) => s.replace(/\u001b\[[0-9;]*m/g, '').replace(/^\s*(?:[❌�
 const ctx = { objets: [], controles: [], ecartsSite: [], enregistreA: null };
 
 if (process.env.QA_LOG) ctx.controles = lignes(process.env.QA_LOG).filter((l) => /❌|✗/u.test(l)).map(nettoie).slice(0, 3);
-if (process.env.CONTROLE_LOG) ctx.ecartsSite = lignes(process.env.CONTROLE_LOG).filter((l) => /FICHE_PENDING_DEPLOYMENT\s{2,}|^· fiche \S+\s+HTTP|MISMATCH|NOT_SERVED/.test(l)).map(nettoie).slice(0, 3);
+if (process.env.CONTROLE_LOG) { ctx.ecartsSiteTous = lignes(process.env.CONTROLE_LOG).filter((l) => /FICHE_PENDING_DEPLOYMENT\s{2,}|^· fiche \S+\s+HTTP|MISMATCH|NOT_SERVED/.test(l)).map(nettoie); ctx.ecartsSite = ctx.ecartsSiteTous.slice(0, 3); }
 
 try {
   if (process.env.NEON_DATABASE_URL) {
     const { connecter } = await import('./lib/neon.mjs');
     const { sql } = connecter();
-    // Clics enregistrés pendant les 30 dernières minutes (un run dure < 20 min) : l'objet de l'alerte est ce que CE clic a décidé.
-    const clics = await sql`select cle, action, at from telegram_journal where kind = 'clic' and resultat = 'enregistree' and at > now() - interval '30 minutes' order by at desc limit 3`;
+    // L'objet de l'alerte est ce que le clic de CE run a décidé (update_id du déclencheur) — jamais les derniers clics de la demi-heure (clics d'autres runs, REJECT / REVIEW sans publication) : audit du 26/11/2026.
+    let updateId = null;
+    try { updateId = JSON.parse(process.env.UPDATE_JSON || '{}').update_id ?? null; } catch { /* entrée illisible : aucun objet nommé */ }
+    const clics = Number.isInteger(updateId) ? await sql`select cle, action, at from telegram_journal where kind = 'clic' and update_id = ${updateId} limit 1` : [];
     for (const c of clics) {
       const [p] = await sql`select payload, decision::text decision from new_case_proposals where proposal_id::text like ${c.cle + '%'} limit 1`;
       let o = null;
-      if (p?.payload?.page) o = { id: p.payload.page.case_id, nature: p.payload.page.mise_a_jour ? 'approbation de la mise à jour de la page' : 'approbation de la page', cle: c.cle, decision: p.decision };
+      if (p?.payload?.page) o = { id: p.payload.page.case_id, caseId: p.payload.page.case_id, nature: p.payload.page.mise_a_jour ? 'approbation de la mise à jour de la page' : 'approbation de la page', cle: c.cle, decision: p.decision };
       else if (p?.payload?.hub_publication) o = { id: `Hub ${p.payload.hub_publication.titre}`, nature: 'publication du Hub', cle: c.cle, decision: p.decision };
       else if (p?.payload) o = { id: p.payload.etablissement ? `${p.payload.etablissement} (${p.payload.commune})` : String(p.payload.commune || c.cle), nature: 'proposition', cle: c.cle, decision: p.decision };
-      else { const [s] = await sql`select case_id, decision::text decision from state_proposals where proposal_id::text like ${c.cle + '%'} limit 1`; if (s) o = { id: s.case_id, nature: 'proposition d’état', cle: c.cle, decision: s.decision }; }
+      else { const [s] = await sql`select case_id, decision::text decision from state_proposals where proposal_id::text like ${c.cle + '%'} limit 1`; if (s) o = { id: s.case_id, caseId: s.case_id, nature: 'proposition d’état', cle: c.cle, decision: s.decision }; }
       if (o) ctx.objets.push(o);
     }
     if (clics[0]) ctx.enregistreA = `enregistrée à ${new Date(clics[0].at).toLocaleTimeString('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' })}`;

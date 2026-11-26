@@ -98,9 +98,20 @@ t('deux publications simultanées → aucune perte de fiche (push refusé ⇒ re
     else assert.ok(!final.includes('FR-2026-0133'), 'échec franc : rien d’inventé ; l’affaire reste `publiée` en base → NEEDS_PROJECTION au passage suivant');
   } finally { rmSync(tmp, { recursive: true, force: true }); }
 });
-t('les deux workflows partagent UN groupe de concurrence (jamais deux publications en même temps)', () => {
-  const g = (f) => /concurrency:\s*\n\s*group:\s*(\S+)\s*\n\s*cancel-in-progress:\s*false/.exec(src(`.github/workflows/${f}`));
-  assert.ok(g('sny-telegram.yml') && g('sny-clics.yml') && g('sny-telegram.yml')[1] === g('sny-clics.yml')[1]);
+t('les deux workflows partagent UN groupe de concurrence pour la publication (jamais deux publications en même temps)', () => {
+  const groupes = (f) => [...src(`.github/workflows/${f}`).matchAll(/group:\s*(\S+)\s*\n\s*cancel-in-progress:\s*false/g)].map((m) => m[1]);
+  assert.ok(groupes('sny-clics.yml').includes('sny-telegram') && groupes('sny-telegram.yml').includes('sny-telegram'));
+});
+t('PERTE DE CLICS en rafale (audit du 26/11/2026) : l’enregistrement d’un clic n’est JAMAIS dans un groupe partagé (GitHub ne garde qu’UN run en attente par groupe : les clics intermédiaires étaient annulés)', () => {
+  const y = src('.github/workflows/sny-telegram.yml');
+  assert.ok(!/^concurrency:/m.test(y), 'aucun groupe de concurrence au niveau du workflow');
+  const iEnr = y.indexOf('\n  enregistrer:'), iApp = y.indexOf('\n  appliquer:');
+  assert.ok(iEnr > 0 && iApp > iEnr, 'deux jobs : enregistrer puis appliquer');
+  const enr = y.slice(iEnr, iApp), app = y.slice(iApp);
+  assert.ok(/group:\s*sny-clic-\$\{\{\s*fromJSON\(inputs\.update\)\.update_id\s*\}\}/.test(enr) && /cancel-in-progress:\s*false/.test(enr), 'un groupe PAR CLIC (update_id), jamais annulé');
+  assert.ok(enr.includes('scripts/telegram-v0.mjs traiter') && !app.includes('telegram-v0.mjs traiter'), 'l’enregistrement est dans le job par clic, pas dans le job partagé');
+  assert.ok(/needs:\s*enregistrer/.test(app) && /group:\s*sny-telegram\s*\n\s*cancel-in-progress:\s*false/.test(app), 'l’application attend l’enregistrement et sérialise la publication');
+  assert.ok(app.includes('OUTCOME_enregistrer: ${{ needs.enregistrer.result }}') && app.includes('UPDATE_JSON: ${{ inputs.update }}'), 'l’alerte connaît le résultat d’enregistrement et le clic de CE run');
 });
 t('les deux workflows : suite autorisée → QA → push ; seuil d’activation ; alerte informée de l’étape', () => {
   for (const f of ['sny-telegram.yml', 'sny-clics.yml']) {

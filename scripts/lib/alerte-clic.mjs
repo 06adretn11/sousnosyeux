@@ -28,6 +28,12 @@ const SECONDAIRES = {
 };
 const REPRISE = 'le prochain passage planifié de sny-clics (toutes les 30 min ; GitHub peut le retarder) rejoue ces étapes sans nouveau clic ; il échouera de nouveau tant que la cause n’est pas corrigée.';
 
+// Audit du 26/11/2026 : une alerte doit décrire UNIQUEMENT l'action et le résultat de CE clic. Deux défauts constatés :
+//  - un REJECT ou un REVIEW (aucune publication attendue) était présenté comme une « publication » bloquée ou non vérifiée ;
+//  - un contrôle GLOBAL du site servi (toutes les fiches) en échec sur AUTRE chose était attribué à l'objet du clic, juste après un « Publié et vérifié » de cet objet.
+const NON_PUBLIANT = new Set(['REJECT', 'REVIEW_REQUIRED']);
+const POST_PUBLICATION = new Set(['controle', 'verifier']);
+
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
 const court = (s, n) => (String(s).length > n ? String(s).slice(0, n - 1) + '…' : String(s));
 
@@ -54,15 +60,38 @@ export function classerEchecClic(o = {}, ctx = {}) {
   }
   const ko = Object.entries(SECONDAIRES).filter(([k]) => r(k) === 'failure');
   const bloque = ko.some(([, v]) => v[2]);
+  const objets = ctx.objets || [];
+  const detailKo = ko.map(([, [nom, suite]]) => `« ${nom} » — conséquence : ${suite}`).join(' ; ');
+  const ecarts = ctx.ecartsSite?.length ? [`Écart constaté sur le site servi : ${ctx.ecartsSite.slice(0, 3).map((x) => esc(court(x, 160))).join(' ; ')}`] : [];
+  const enregistre = '✅ Ta décision a bien été enregistrée' + (ctx.enregistreA ? ` (${esc(ctx.enregistreA)})` : '');
+  // (a) REJECT / REVIEW seuls : aucune publication n'était attendue ; un échec d'étape ne la concerne pas.
+  if (ko.length && objets.length && objets.every((o) => NON_PUBLIANT.has(o.decision))) {
+    return { decisionAppliquee: true, texte: [
+      `ℹ️ <b>Décision enregistrée — aucune publication attendue</b> — ${esc(quoi)}`,
+      `${enregistre} : ne re-clique pas ; un rejet ou une revue ne publie rien.`,
+      `⚠️ À part : un contrôle automatique GLOBAL a échoué (${esc(detailKo)}). Cela n’a aucun lien avec ta décision.`,
+      ...(ctx.controles?.length ? [`Contrôle en cause : ${ctx.controles.slice(0, 3).map((x) => esc(court(x, 200))).join(' ; ')}`] : []), ...ecarts, `Reprise : ${REPRISE}`,
+    ].filter(Boolean).join('\n') };
+  }
+  // (b) objet publié, seul un contrôle POST-publication a échoué et l'écart concerne d'AUTRES fiches : l'objet du clic n'est pas « non vérifié ».
+  const tous = ctx.ecartsSiteTous || ctx.ecartsSite || [];
+  const concerne = (o) => { const id = o.caseId || o.id; return !id || tous.some((l) => String(l).includes(id)); };
+  if (ko.length && ko.every(([k]) => POST_PUBLICATION.has(k)) && tous.length && objets.length && objets.some((o) => !NON_PUBLIANT.has(o.decision)) && objets.filter((o) => !NON_PUBLIANT.has(o.decision)).every((o) => !concerne(o)) && r('publier') === 'success') {
+    return { decisionAppliquee: true, texte: [
+      `✅ <b>Publié</b> — ${esc(quoi)} : l’écart signalé ne concerne pas cet objet.`,
+      `${enregistre} et appliquée : ne re-clique pas.`,
+      `⚠️ Contrôle GLOBAL du site : écart sur d’AUTRES fiches (${esc(detailKo)}).`, ...ecarts, `Reprise : ${REPRISE}`,
+    ].filter(Boolean).join('\n') };
+  }
   const detail = ko.length
-    ? ko.map(([, [nom, suite]]) => `« ${nom} » — conséquence : ${suite}`).join(' ; ')
+    ? detailKo
     : 'étape secondaire non identifiée (voir le run GitHub sny-telegram)';
   const lignes = [
     ko.length ? `${bloque ? '⛔ <b>Publication BLOQUÉE</b>' : '⚠️ <b>Publication NON VÉRIFIÉE</b>'}${quoi ? ` — ${esc(quoi)}` : ''}` : '',
     '✅ Ta décision a bien été enregistrée et appliquée' + (ctx.enregistreA ? ` (${esc(ctx.enregistreA)})` : '') + ' : ne re-clique pas, il n’y a rien à refaire.',
     `⚠️ Seule une étape secondaire a échoué : ${esc(detail)}. Cela n’affecte pas ta décision.`,
     ...(ctx.controles?.length ? [`Contrôle en cause : ${ctx.controles.slice(0, 3).map((x) => esc(court(x, 200))).join(' ; ')}`] : []),
-    ...(ctx.ecartsSite?.length ? [`Écart constaté sur le site servi : ${ctx.ecartsSite.slice(0, 3).map((x) => esc(court(x, 160))).join(' ; ')}`] : []),
+    ...ecarts,
     ...(ko.length ? [`Reprise : ${REPRISE}`] : []),
   ].filter(Boolean);
   return { decisionAppliquee: true, texte: lignes.join('\n') };
