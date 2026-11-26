@@ -19,7 +19,7 @@
 -- → project-public), qui exige un GO explicite d'Adrien en base (ci-dessous) ET la levée du HOLD (data/publication-holds.json, même PR).
 --
 -- Toutes les instructions sont GARDÉES (valeur actuelle, absence de la ligne) : une seconde exécution ne modifie rien.
--- Appliquer : coller ce fichier dans l'éditeur SQL de la console Neon. Dernière vérification en bas (lecture seule).
+-- Appliquer : workflow sny-correction-donnees (plan puis écriture avec GO-029), depuis la CI ; jamais à la main. Contrôle en bas (lecture seule).
 -- =====================================================================
 
 update cases
@@ -70,7 +70,7 @@ update sources
 -- GO de publication d'Adrien, consigné tel qu'il l'a donné (format attendu par lib/publication-gates.mjs : REVUE_GO_PUBLICATION).
 insert into reviews (case_id, reviewed_by, decision, comment)
 select 'FR-2026-0048', 'Adrien (GO publication)', 'validé'::review_decision,
-       $go$[Publication 2026-11-26] GO d'Adrien : « produis la fiche sur cette base et publie, je validerai en production » · rôle et qualification corrigés, sources actu.fr (17/03, 10/04) et Mediacités (06/07) ajoutées$go$
+       '[Publication 2026-11-26] GO d''Adrien : « produis la fiche sur cette base et publie, je validerai en production » · rôle et qualification corrigés, sources actu.fr (17/03, 10/04) et Mediacités (06/07) ajoutées'
  where exists (select 1 from cases where case_id = 'FR-2026-0048' and publication_status = 'publiée'::publication_status)
    and not exists (select 1 from reviews where case_id = 'FR-2026-0048'
                     and comment like '[Publication 2026-11-26] GO d''Adrien : %');

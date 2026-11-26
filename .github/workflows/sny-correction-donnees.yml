@@ -1,0 +1,59 @@
+# SNY — applique à Neon une CORRECTION DE DONNÉES versionnée (supabase/migrations/NNN_xxx.sql), depuis la CI (TLS vérifié, jamais depuis un poste).
+# Déclenchement MANUEL uniquement (workflow_dispatch) : plan par défaut (aucune écriture), puis `ecrire` avec la confirmation « GO-NNN ».
+# Garde-fous dans scripts/lib/correction-donnees.mjs : INSERT/UPDATE gardés sur cases, sources, reviews ; jamais de DELETE, DROP, ALTER ; jamais publication_status.
+# Ne publie RIEN : l'exposition publique reste la projection (sny-clics / sny-telegram → reconcilier-publication), qui exige un GO consigné et l'absence de HOLD.
+# Dépôt public ⇒ journaux publics : compteurs et champs publics de l'affaire seulement.
+name: sny-correction-donnees
+
+on:
+  workflow_dispatch:
+    inputs:
+      fichier:
+        description: 'Nom du fichier de supabase/migrations (NNN_description.sql), sans chemin'
+        required: true
+        type: string
+      affaire:
+        description: "Affaire dont l'état est relevé avant/après (FR-AAAA-NNNN) — facultatif"
+        required: false
+        type: string
+      confirmation:
+        description: 'Pour écrire : GO-NNN (numéro du fichier)'
+        required: false
+        type: string
+      ecrire:
+        description: 'Écrire (sinon : plan, lecture seule)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Un seul job SNY à la fois (la base est partagée avec le cycle et les clics).
+concurrency:
+  group: sny-telegram
+  cancel-in-progress: false
+
+jobs:
+  corriger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+      FICHIER: ${{ inputs.fichier }}
+      AFFAIRE: ${{ inputs.affaire }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      ECRIRE: ${{ inputs.ecrire }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      # Les saisies ne sont JAMAIS interpolées dans une commande : variables d'environnement et liste d'arguments seulement ; le script revalide chaque valeur.
+      - name: Corriger (plan, ou écriture si demandé)
+        run: |
+          set -- "$FICHIER"
+          if [ -n "$AFFAIRE" ]; then set -- "$@" --affaire "$AFFAIRE"; fi
+          if [ "$ECRIRE" = "true" ]; then set -- "$@" --ecrire --confirmation "$CONFIRMATION"; fi
+          node scripts/appliquer-correction.mjs "$@"
