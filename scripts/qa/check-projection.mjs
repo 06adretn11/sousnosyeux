@@ -120,8 +120,8 @@ try {
 // décisions humaines validées le 25/09/2026 (LOT_VALIDATION_1, appliquées à Neon
 // par `appliquer-decisions.mjs`), plus POC-09 (mission précédente). Toute autre
 // mutation reste un échec. FR-2026-0004 est gelée (HOLD) : elle ne doit PAS changer.
-// FR-2026-0048 / 0049 sont sous HOLD (publication à décider séparément) et ne
-// doivent PAS apparaître.
+// FR-2026-0049 est sous HOLD (publication à décider séparément) et ne
+// doit PAS apparaître.
 const ATTENDUS = {
   // Lot de synchronisation du 07/10/2026 (FR-2026-0005 exclue : voir EXPLOITATION_QUOTIDIENNE).
   modifies: ['FR-2026-0001', 'FR-2026-0027', 'FR-2026-0029', 'FR-2026-0032', 'FR-2026-0045', 'POC-08', 'POC-09'],
