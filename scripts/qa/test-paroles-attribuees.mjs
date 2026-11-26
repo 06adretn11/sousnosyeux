@@ -123,5 +123,50 @@ test('12. une parole déjà dans la fiche publiée (même extrait) n’est pas u
   vrai(dejaPublie({ reactions: [] }, f, 'https://exemple.invalid/b') === null, 'absente de la fiche : à décider');
 });
 
+// ---- audit du 26/11/2026 : blocs de titres de la page et extraits inclus ----
+const TITRES = ['Agressions sexuelles dans le périscolaire : la colère monte à Noyant-Villages', 'audio Enseigner les œuvres classiques nuit-elle à l’attrait de la littérature chez les jeunes ?',
+  'Luis Enrique après l’hécatombe de blessures au PSG : "On va se mettre à pleurer ? Non"', '"Cela fait 20 ans qu’on nous ponctionne et la dette s’aggrave !", s’indigne une maire', 'Google accusé d’avoir coupé 250 000 arbres sans autorisation en Finlande',
+  'Le pape François raconte avoir vu le diable 3 fois dans sa vie', 'Ni solide, ni liquide : voici le supersolide, un nouvel état de la matière'];
+const PAGE_AVEC_TITRES = `"Colère à Ville-Exemple"
+
+Un animateur de l'école maternelle Tournesol, à Ville-Exemple, a été suspendu. La mairie a réagi.
+
+"Nous avons été alertés et nous avons agi aussitôt", explique la maire de Ville-Exemple.
+
+${TITRES.join('\n\n')}`;
+test('page franceinfo : une citation dans un BLOC DE TITRES (à lire aussi) n’est jamais une parole de l’article (Luis Enrique, 24/11/2026)', () => {
+  const r = extraireParoles(PAGE_AVEC_TITRES, { ...TOURNESOL });
+  vrai(!acteurs(r).some((a) => /Luis Enrique|maire\b.*ponctionne|Finlande/i.test(a)) && !r.faits.some((x) => /On va se mettre à pleurer|ponctionne/.test(x.parole.citations[0].texte)), 'aucune parole issue du bloc de titres : ' + JSON.stringify(acteurs(r)));
+  vrai(r.faits.some((x) => /Nous avons été alertés/.test(x.parole.citations[0].texte)), 'la parole de l’article reste extraite');
+});
+test('… une liste de témoignages (phrases terminées par un point) n’est JAMAIS prise pour un bloc de titres', () => {
+  const liste = `"Témoignages"
+
+Ville-Exemple, école maternelle Tournesol : les parents s'expriment.
+
+"Je suis inquiète pour mon enfant et je veux des réponses à Tournesol.", déplore Léa*, maman d'une élève.
+
+"Nous voulons que la mairie agisse vite pour l'école Tournesol.", déplore Marc*, papa d'un élève.
+
+"On ne dort plus depuis la suspension à l'école Tournesol.", déplore Inès*, maman.
+
+"Les enfants posent des questions sur l'école Tournesol.", déplore Paul*, papa.
+
+"Nous attendons un point d'étape de la mairie sur Tournesol.", déplore Sam*, papa.`;
+  const r = extraireParoles(liste, { ...TOURNESOL });
+  vrai(r.faits.length >= 3, 'les témoignages de la liste sont conservés : ' + r.faits.length);
+});
+test('même déclaration coupée autrement dans le même article : on garde la plus complète (Parmentier, « vraie bombe », 24/11/2026)', () => {
+  const art = `"Plainte à l'école Tournesol"
+
+Une plainte vise un animateur de l'école maternelle Tournesol à Ville-Exemple.
+
+"Ça a été une vraie bombe dans notre vie", confie la maman qui a porté plainte, à France Inter.
+
+"Une vraie bombe dans notre vie", répète la mère sur France Inter.`;
+  const r = extraireParoles(art, { ...TOURNESOL });
+  vrai(r.faits.length === 1 && /Ça a été une vraie bombe/.test(r.faits[0].parole.citations[0].texte), 'une seule proposition, la plus complète : ' + r.faits.map((x) => x.parole.citations[0].texte).join(' / '));
+});
+
 console.log(`\n  ${ok} réussis · ${ko} en échec\n`);
 process.exit(ko ? 1 : 0);

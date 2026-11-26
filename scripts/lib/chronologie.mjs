@@ -102,6 +102,25 @@ export function repere(e, opt = {}) {
 // ---------------------------------------------------------------------------------------------------------------------------------
 const cleTexte = (e) => String(e?.texte ?? '');
 export const correspondEtape = (e, r) => cleTexte(e).startsWith(r.texte);
+
+/**
+ * Défauts d'une relecture d'ÉTAPE face à l'étape du dossier servi qui lui correspond (liste vide = conforme). Règle de cohérence, jamais de refus d'un contenu autorisé :
+ *  - une date explicite IDENTIQUE à celle que le dossier porte désormais est REDONDANTE (la rédaction a repris la date que la relecture documentait), pas fautive ;
+ *  - seule une date DIFFÉRENTE est un défaut : la relecture l'écraserait en silence à l'affichage.
+ * Cas réel (24/11/2026, Rots) : la nouvelle version approuvée datait elle-même « début octobre » → 2026-10, comme la relecture ; le contrôle bloquait la publication entière.
+ */
+export function defautsRelectureEtape(r, e) {
+  const d = [];
+  if (r.repere_source) {
+    if (!(e.sources_complementaires ?? []).some((s) => s.url === r.repere_source.url)) d.push('source de repère absente des références de l’étape');
+    if (!(cleDate(r.repere_source.publie_le) < cleDate(e.source?.publie_le))) d.push('la source de repère n’est pas antérieure à la source citée');
+  } else {
+    if (!analyserDate(r.date) || r.date_nature !== 'evenement') d.push(`date explicite invalide (${r.date})`);
+    if (analyserDate(e.date) && !['article', 'inconnue'].includes(e.date_nature) && e.date !== r.date) d.push(`l’étape porte déjà une date d’événement DIFFÉRENTE (${e.date} ≠ ${r.date})`);
+  }
+  if (!r.motif) d.push('motif manquant');
+  return d;
+}
 export const correspondParole = (p, r) => p?.acteur === r.acteur && String(p?.a_propos ?? p?.paraphrase ?? p?.contexte ?? '').startsWith(r.cle);
 
 /** Date de parution corrigée d'une source (par adresse) ; sans correction : la date conservée. */

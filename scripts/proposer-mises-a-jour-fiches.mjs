@@ -39,7 +39,7 @@ const lignes = await sql`
   from state_proposals p join articles a using (article_id)
   where p.analysis_action = 'ENRICHMENT' and p.created_at > now() - interval '21 days'
   order by p.created_at`;
-const dejaTraitees = new Set((await sql`select cle from telegram_journal where kind = 'application' and cle like 'maj-fiche:%'`).map((r) => r.cle.slice('maj-fiche:'.length)));
+const dejaTraitees = new Set((await sql`select cle from telegram_journal where kind = 'application' and cle like 'maj-fiche:%' and resultat <> 'delai'`).map((r) => r.cle.slice('maj-fiche:'.length)));
 const ids = [...new Set(lignes.map((l) => l.case_id))].filter((id) => !SEUL || id === SEUL);
 const revues = ids.length ? await sql`select case_id, reviewed_by, decision::text decision, comment from reviews where case_id = any(${ids}) and comment like '[Fiche approuvée %' order by reviewed_at` : [];
 const publie = new Map(ids.map((id) => [id, dossierFiche(id)]).filter(([, d]) => d));
@@ -56,7 +56,10 @@ if (!ECRIRE || !groupes.length) process.exit(0);
 const node = process.execPath;
 const script = (f) => fileURLToPath(new URL(`./${f}`, import.meta.url));
 // Dépôt public => logs publics : la sortie des scripts (titres, URL d'articles) n'est jamais réaffichée.
-const exec = (f, args) => { try { return { ok: true, out: execFileSync(node, [script(f), ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 600000 }) }; } catch (e) { return { ok: false, out: String(e.stdout || '') + String(e.stderr || '') }; } };
+// Génération d'une fiche = une lecture par source (jusqu'à ~25 appels au modèle) : FR-2026-0005 a demandé 17 minutes en reproduction locale (audit du 26/11/2026) alors que la limite était de 10 :
+// « ERREUR DE GÉNÉRATION » à chaque passage (23/11 et 25/11), sans aucune erreur du modèle. Limite portée à 25 minutes ; un dépassement est dit comme tel et sera RETENTÉ (jamais marqué « traité »).
+const DELAI_GENERATION_MS = 25 * 60 * 1000;
+const exec = (f, args) => { try { return { ok: true, out: execFileSync(node, [script(f), ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: DELAI_GENERATION_MS }) }; } catch (e) { return { ok: false, delai: e.code === 'ETIMEDOUT', out: String(e.stdout || '') + String(e.stderr || '') }; } };
 const note = async (g, resultat, details) => { for (const k of g.ks) await journaliser(sql, { kind: 'application', cle: `maj-fiche:${k}`, resultat, details }); };
 let ecrites = 0;
 for (const g of groupes.slice(0, LIMITE)) {
@@ -70,10 +73,10 @@ for (const g of groupes.slice(0, LIMITE)) {
   // illisible, absente de la sélection) n'est pas une décision à demander à l'éditeur.
   if (cand?.generation?.acquis?.inchange) { console.log(`  · ${g.case_id} : la relecture n’apporte rien d’éditorial (version approuvée inchangée) — rien à proposer`); await note(g, 'sans_apport', {}); continue; }
   if (!cand?.proposable) {
-    const q = cand?.generation?.qualification ?? (gen.ok ? 'ABSENTE' : 'ERREUR DE GÉNÉRATION');
+    const q = cand?.generation?.qualification ?? (gen.ok ? 'ABSENTE' : gen.delai ? 'GÉNÉRATION TROP LONGUE (délai de 25 min dépassé) — nouvel essai au prochain passage' : 'ERREUR DE GÉNÉRATION');
     console.log(`  ⚠ ${g.case_id} : candidate non proposable (${q}) — version publique conservée`);
     await prevenirUneFois(sql, { cle: `maj-fiche-bloquee:${g.ks[0]}`, resultat: 'bloquee', texte: `⚠️ <b>Mise à jour de fiche non proposée</b> — ${g.case_id}\nUne source nouvelle a été trouvée, mais la version candidate n’est pas publiable (${q}). La version publique reste en ligne ; rien n’a été modifié.` });
-    await note(g, 'bloquee', { qualification: q });
+    await note(g, gen.delai ? 'delai' : 'bloquee', { qualification: q });
     continue;
   }
   const ch = changementsFiche(publie.get(g.case_id).d, cand.d);

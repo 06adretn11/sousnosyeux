@@ -19,7 +19,7 @@ import { readFileSync } from 'node:fs';
 import { connecter } from './lib/neon.mjs';
 import { hashMatiere, CHEMIN_MATIERE } from './lib/hub-publication.mjs';
 import { dossierFiche, hashDossier } from './lib/fiche-page.mjs';
-import { messageDecision, boutons, modeCreation, messageEnrichissement } from './lib/discovery-messages.mjs';
+import { messageDecision, boutons, modeCreation, messageEnrichissement, avertissementSource } from './lib/discovery-messages.mjs';
 import { VERS_DB, NC_VERS_DB, ACTION_NC, ESSAIS_MAX, decoderCallback, boutonValable, schemaBoucle, journaliser, essaisDe, dernierAConfirmer, suiteClicNouvelle, accuseVersion } from './lib/telegram-clics.mjs';
 import { evenementDejaValide } from './lib/routage-veille.mjs';
 import { detecterInstitutionnel, planReactions, moisFr, faitsStructures } from './lib/evenement-institutionnel.mjs';
@@ -127,7 +127,8 @@ async function info(cle) {
   const corps = p.analysis_action === 'STATE_CHANGE'
     ? `Évolution évoquée, mais la source ne l’établit pas assez : aucun changement proposé (état : ${esc(p.avant)}).`
     : `Nouvel article traité.\nAucun changement de la fiche (état : ${esc(p.avant)}).`;
-  return envoyer(`🔄 <b>MAINTENANCE</b> · 📰 ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : '') + (p.limite ? `\n\nLimite : ${esc(p.limite)}` : ''));
+  const doute = avertissementSource(p.rat);
+  return envoyer(`🔄 <b>MAINTENANCE</b> · 📰 ${entete(p)}\n\n${corps}` + (q ? `\n\n« ${esc(q)} »` : '') + (doute ? `\n\n${doute}` : '') + (p.limite ? `\n\nLimite : ${esc(p.limite)}` : ''));
 }
 
 const boutonsEtat = (k) => ({

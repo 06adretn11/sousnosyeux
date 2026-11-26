@@ -61,11 +61,27 @@ function extrait(quote) {
  * @param {{ etablissement?:string, autres?:string[], commune?:string, caseId?:string, anneeRef?:string|null, registre?:{alias:string[], affaires_rattachees?:string[]}[] }} o
  * @returns {{ faits:object[], bloques:{motif:string, locuteur?:string}[] }}
  */
+/**
+ * BLOCS DE TITRES de la page (« à lire aussi », vidéos associées, fil d'actualité) : au moins 5 paragraphes CONSÉCUTIFS qui sont chacun un titre (court, sans point final).
+ * Une citation qu'ils contiennent est le titre d'un AUTRE article, jamais un propos de celui-ci (constaté le 24/11/2026 : « Luis Enrique après l'hécatombe de blessures au PSG »,
+ * « François Ruffin », « Jérémie Patrier-Leitus » proposés comme paroles d'affaires périscolaires). Un paragraphe de l'article, une liste de témoignages (phrases terminées par un point) ne sont jamais retirés.
+ */
+export function sansBlocsDeTitres(paras, { minParagraphes = 5, longueurMax = 170 } = {}) {
+  const titre = (p) => { const t = String(p).trim(); return t.length >= 20 && t.length < longueurMax && !/[.:;]\s*$/.test(t); };
+  const sortie = []; let i = 0;
+  while (i < paras.length) {
+    let j = i; while (j < paras.length && titre(paras[j])) j++;
+    if (j - i >= minParagraphes) { i = j; continue; }
+    sortie.push(paras[i]); i++;
+  }
+  return sortie;
+}
+
 export function extraireParoles(corps, { etablissement = '', autres = [], commune = '', caseId = null, anneeRef = null, registre = [] } = {}) {
   const propres = jetonsEtab(etablissement);
   const jetonsAutres = autres.flatMap((e) => jetonsEtab(e)).filter((t) => !propres.includes(t));
   const nomme = (txt, jetons) => { const n = ` ${aplat(txt).replace(/[^a-z0-9]+/g, ' ')} `; return jetons.some((t) => n.includes(` ${t} `)); };
-  const paras = String(corps || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const paras = sansBlocsDeTitres(String(corps || '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean));
   const faits = [], bloques = [];
   // « sujet courant » : le dernier paragraphe qui nomme UN SEUL côté (cette école / l'autre) ; un paragraphe qui nomme les deux, ou aucun, le laisse tel quel.
   let courant = null, dernierLocuteurNomme = null;
@@ -128,5 +144,8 @@ export function extraireParoles(corps, { etablissement = '', autres = [], commun
   });
   // UN fait par (locuteur, extrait) dans l'article.
   const vus = new Set();
-  return { faits: faits.filter((f) => { const k = `${aplat(f.acteur)}|${aplat(f.parole.citations[0].texte)}`; if (vus.has(k)) return false; vus.add(k); return true; }), bloques };
+  // Un extrait contenu DANS un extrait plus long du même article est la même déclaration coupée autrement (Parmentier, 24/11/2026 : « Une vraie bombe dans notre vie » ⊂ « Ça a été une vraie bombe dans notre vie ») : on garde le plus complet.
+  const texteDe = (f) => aplat(f.parole.citations[0].texte);
+  const uniques = faits.filter((f, i) => !faits.some((g, j) => j !== i && texteDe(g).length > texteDe(f).length && texteDe(f).length >= 12 && texteDe(g).includes(texteDe(f))));
+  return { faits: uniques.filter((f) => { const k = `${aplat(f.acteur)}|${aplat(f.parole.citations[0].texte)}`; if (vus.has(k)) return false; vus.add(k); return true; }), bloques };
 }

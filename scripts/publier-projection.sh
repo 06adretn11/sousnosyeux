@@ -16,6 +16,22 @@ REMOTE="${SNY_REMOTE:-origin}"
 BRANCHE="${SNY_BRANCH:-main}"
 SENSIBLES="${SNY_CHEMINS_SENSIBLES:-data/ scripts/ web/ .github/workflows/}"
 sortie() { if [ -n "${GITHUB_OUTPUT:-}" ]; then echo "abandon=$1" >> "$GITHUB_OUTPUT"; fi; }
+# PANNE DISTANTE ≠ MAIN QUI A AVANCÉ (audit du 26/11/2026 : « remote rejected … Internal Server Error » de GitHub, 24/11 à 21:30, présentée comme « main a avancé » puis publication bloquée).
+# 3 essais (0 s, 5 s, 10 s ; SNY_PUSH_ATTENTE pour les tests) sur une erreur DISTANTE ; un refus « fetch first / non-fast-forward » n'est PAS retenté ici : il suit la règle ci-dessous.
+PANNE=0
+pousser() {
+  essai=1; PANNE=0
+  while :; do
+    if SORTIE_PUSH="$(git push "$REMOTE" "HEAD:$BRANCHE" 2>&1)"; then echo "$SORTIE_PUSH"; return 0; fi
+    echo "$SORTIE_PUSH"
+    case "$SORTIE_PUSH" in *"fetch first"*|*"non-fast-forward"*) return 1 ;; esac
+    PANNE=1
+    if [ "$essai" -ge 3 ]; then return 1; fi
+    echo "erreur distante transitoire (essai $essai/3) : nouvel essai"
+    sleep $((essai * ${SNY_PUSH_ATTENTE:-5}))
+    essai=$((essai + 1))
+  done
+}
 
 git config user.name "sny-bot"
 git config user.email "sny-bot@users.noreply.github.com"
@@ -25,7 +41,9 @@ if ! git diff --cached --quiet; then
   git commit -m "publication: mise à jour validée par l'éditeur (${RECON_IDS:-} ${FICHES:-})"
 fi
 
-if git push "$REMOTE" "HEAD:$BRANCHE"; then sortie false; exit 0; fi
+if pousser; then sortie false; exit 0; fi
+# Erreur distante persistante après 3 essais : rien n'est publié, rien n'est supposé sur main ; le passage suivant (sny-clics) rejoue sans nouveau clic.
+if [ "$PANNE" = 1 ]; then echo "push impossible : erreur distante persistante (3 essais) — publication NON effectuée"; exit 1; fi
 
 echo "push refusé : $BRANCHE a avancé pendant le passage"
 git fetch "$REMOTE" "$BRANCHE"
@@ -47,5 +65,5 @@ if [ -n "$TOUCHES" ]; then
 fi
 
 if ! git rebase FETCH_HEAD; then git rebase --abort || true; echo "rebase impossible"; exit 1; fi
-git push "$REMOTE" "HEAD:$BRANCHE"
+pousser || exit 1
 sortie false

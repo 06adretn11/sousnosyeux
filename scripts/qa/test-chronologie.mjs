@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle, appliquerRelectures, publicationCorrigee, correspondEtape, correspondParole } from '../lib/chronologie.mjs';
+import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle, appliquerRelectures, publicationCorrigee, correspondEtape, correspondParole, defautsRelectureEtape } from '../lib/chronologie.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 let ko = 0, ok = 0;
@@ -107,6 +107,14 @@ t('appliquerRelectures : étape (repère ou date explicite), parole, parution co
   assert.equal(appliquerRelectures('Y', d, { reperes: table.reperes }).deroule[0].repere_source, undefined, 'autre affaire : rien');
 });
 
+t('relecture d’étape : une date explicite IDENTIQUE à celle du dossier est redondante (pas un défaut) ; une date DIFFÉRENTE reste un défaut (écrasement silencieux)', () => {
+  const r = { texte: 'Selon X, début octobre', date: '2026-10', date_nature: 'evenement', motif: 'relue' };
+  assert.deepEqual(defautsRelectureEtape(r, { texte: 'Selon X, début octobre', date: '2026-10', date_nature: 'evenement', source: { publie_le: '2026-11-20' } }), [], 'même date : conforme');
+  assert.deepEqual(defautsRelectureEtape(r, { texte: 'Selon X, début octobre', date: null, date_nature: 'article', source: { publie_le: '2026-11-20' } }), [], 'étape sans date d’événement : conforme');
+  assert.equal(defautsRelectureEtape(r, { texte: 'Selon X, début octobre', date: '2026-09', date_nature: 'evenement', source: { publie_le: '2026-11-20' } }).length, 1, 'date différente : défaut');
+  assert.equal(defautsRelectureEtape({ ...r, motif: '' }, { texte: 'x', date: null, date_nature: 'article', source: { publie_le: '2026-11-20' } }).length, 1, 'motif manquant : défaut');
+});
+
 console.log('2. Couverture sur le corpus écrit (hubs + dossiers de fiches)');
 const lire = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const TABLE = lire('data/chronologie-reperes.json');
@@ -126,15 +134,7 @@ const relecturesKo = [];
 for (const r of TABLE.reperes) {
   const d = rendus[r.case_id]; const m = (d?.deroule ?? []).filter((e) => correspondEtape(e, r));
   if (m.length !== 1) { relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : ${m.length} correspondance(s)`); continue; }
-  const e = m[0];
-  if (r.repere_source) {
-    if (!(e.sources_complementaires ?? []).some((s) => s.url === r.repere_source.url)) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : source de repère absente des références de l'étape`);
-    if (!(cleDate(r.repere_source.publie_le) < cleDate(e.source.publie_le))) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : la source de repère n'est pas antérieure à la source citée`);
-  } else {
-    if (!analyserDate(r.date) || r.date_nature !== 'evenement') relecturesKo.push(`${r.case_id} : date explicite invalide (${r.date})`);
-    if (analyserDate(e.date) && !['article', 'inconnue'].includes(e.date_nature)) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : l'étape a déjà une date d'événement`);
-  }
-  if (!r.motif) relecturesKo.push(`${r.case_id} : motif manquant`);
+  for (const x of defautsRelectureEtape(r, m[0])) relecturesKo.push(`${r.case_id} « ${r.texte.slice(0, 40)}… » : ${x}`);
 }
 for (const r of TABLE.paroles) { const d = rendus[r.case_id]; const m = [...(d?.reactions ?? []), ...(d?.paroles ?? [])].filter((p) => correspondParole(p, r)); if (m.length !== 1) relecturesKo.push(`${r.case_id} parole ${r.acteur} : ${m.length} correspondance(s)`); }
 for (const r of TABLE.publications) { if (!Object.values(rendus).some((d) => JSON.stringify(d).includes(r.url))) relecturesKo.push(`publication ${r.url.slice(0, 50)} : aucune source concernée`); if (!(r.publie_le && r.stockee && r.motif)) relecturesKo.push(`publication ${r.url.slice(0, 50)} : champ manquant`); }

@@ -86,6 +86,13 @@ const ligneSources = (p) => {
  * BLOC QUALITÉ — ce qui sépare un doute de FOND (véracité : recoupement, statut, source, ancienneté) d'un doute d'IDENTIFICATION (établissement non nommé :
  * le point sera au centre de la commune, la véracité n'est pas touchée). Montré à CHAQUE proposition de création : l'éditeur clique en connaissance de cause.
  */
+/**
+ * Rattachement DOUTEUX : l'analyse n'a pas pu établir que la phrase citée vient de la page dont l'adresse est affichée (cas Rots, 23/11/2026 : adresse d'un article sur un cabaret, titre « Soupçons de violences
+ * sexuelles… », rattachement DOUTEUX, aucune citation vérifiée dans la page). Le message le DIT au lieu de présenter l'adresse comme la source de la phrase.
+ */
+export const avertissementSource = (rattachement) => (rattachement === 'DOUTEUX'
+  ? '⚠️ Rattachement DOUTEUX : l’adresse ouverte et la phrase citée peuvent ne pas venir du même article (aucune citation vérifiée dans la page). Ne pas lire ce lien comme la source de cette phrase.' : '');
+
 export function blocQualite(p) {
   const f = p?.fiche;
   if (!f || f.crit_recoupement === undefined) return [];
