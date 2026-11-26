@@ -336,12 +336,15 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   const structures = new Set(nommees.map((id) => { const x = fiches.find((y) => y.case_id === id); return aplatir(String(x?.etablissement_alias || x?.etablissement || id)); })); // alias déclaré = la structure (deux dossiers, une structure)
   // Pas de plafond : la base de production compte bien plus de fiches que le site (les structures « rapprochées » par la commune dépassent vite dix) ; la piste ne rattache AUCUNE affaire,
   // elle n'est donc pas affectée par la dispersion des indices.
+  const pEnsemble = nonPlein ? pistePossible() : null;
+  // Diagnostic lisible dans le motif d'un rattachement suspendu d'un document éligible à une piste : combien de structures, y a-t-il un signal public retenu.
+  const diag = nonPlein && (pisteOuverte || doc.extraction === 'instagram-business-discovery') ? `[structures=${structures.size} ; signal public=${pEnsemble ? 'oui' : 'non'}] ` : '';
   if (nonPlein && structures.size >= 2) { // STRUCTURES distinctes : une même structure à deux affaires (deux rôles) reste un arbitrage humain
-    const p = pistePossible();
+    const p = pEnsemble;
     if (p) return { destination: 'PISTE_A_QUALIFIER', motif: `${MOTIFS_PISTES[p.motif_code]} ; ${p.classement} ; ${structures.size} structures rapprochées par le texte : déclaration d’ensemble, aucun rattachement à une affaire`, case_ids: [], suspendus: [], piste: p, structures_nommees: structures.size };
   }
   // Même établissement, plusieurs affaires (procédure indéterminée) ou rattachement par départage chronologique seulement : jamais un ajout forcé, un humain tranche.
-  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé', case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
+  if (ok.length && (ok.length > 1 || r.resolution_status !== 'MATCH')) return { destination: 'RATTACHEMENT_SUSPENDU', motif: `${diag}plusieurs affaires, ou rattachement non plein, pour ce texte : procédure indéterminée, aucun ajout forcé`, case_ids: [], suspendus: [...new Set([...ok, ...douteux])] };
   if (ok.length) return { destination: 'AFFAIRE', motif: r.reason, case_ids: ok, suspendus: douteux, resolution: r.resolution_status, zone: corps };
   // Indices dispersés (plus de 10 affaires « douteuses ») : ce n'est pas une piste d'identification mais un texte général qui cite des lieux
   // (mesuré : un communiqué sur une affaire hors SNY en « suspendait » 27). Le document est classé comme s'il ne rattachait rien, motif consigné.
@@ -351,7 +354,7 @@ export function classer({ doc, page, organisme, fiches, pisteOuverte = false }) 
   if (doc.extraction === 'instagram-business-discovery' && douteux.length === 1 && (THEME_FAITS.test(aplatir(`${titre} ${corps.slice(0, 3000)}`)) || JUDICIAIRE.test(aplatir(`${titre} ${corps.slice(0, 3000)}`))) && (r.evidence || []).some((e) => e.startsWith(`${douteux[0]} — `) && e.includes('alias d\'établissement'))) {
     return { destination: 'AFFAIRE_A_CONFIRMER', motif: 'la publication nomme la structure de cette affaire par son alias propre ; le rôle de la personne mise en cause n\'est pas précisé : rattachement À CONFIRMER, aucun lien établi', case_ids: [], suspendus: douteux, zone: corps };
   }
-  if (douteux.length) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'établissement nommé mais identification incomplète (commune ou rôle) : aucun lien sans arbitrage', case_ids: [], suspendus: douteux };
+  if (douteux.length) return { destination: 'RATTACHEMENT_SUSPENDU', motif: `${diag}établissement nommé mais identification incomplète (commune ou rôle) : aucun lien sans arbitrage`, case_ids: [], suspendus: douteux };
   const vois = voisins(corps, fiches);
   if (vois.length && vois.length <= 10) return { destination: 'RATTACHEMENT_SUSPENDU', motif: 'commune, rôle et fait concordent, établissement non nommé : aucun lien sans autre preuve', case_ids: [], suspendus: vois };
   // PISTE À QUALIFIER (jamais un rattachement) : une action ou déclaration PUBLIQUE CONCRÈTE du compte (motif fermé), lue dans le TEXTE (hashtags et signature retirés).

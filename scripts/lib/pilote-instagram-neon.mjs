@@ -83,6 +83,6 @@ export function resumerApercu(a) {
   const hote = (u) => { try { return new URL(u).host; } catch { return '?'; } };
   const autres = (a?.documents || []).filter((d) => (d.type || 'document') === 'document' && !/^https:\/\/www\.instagram\.com\/p\//.test(d.url || '') && (d.organismes || []).some(Boolean) && ['NOUVEAU', 'MODIFIE', 'ECHEC'].includes(d.issue));
   lignes.push(`documents hors Instagram (nouveaux, modifiés ou en échec) : ${autres.length}`);
-  for (const d of autres) lignes.push(`  ${(d.organismes || []).join('+')} · ${hote(d.url)} · ${String(d.publie_le || '?').slice(0, 10)} · ${d.issue}${d.incident ? ` (${String(d.incident).slice(0, 40)})` : ''} · ${d.destination || '—'}${d.motif && !d.piste ? ` (${String(d.motif).slice(0, 70)})` : ''}${(d.suspendus || []).length ? ` [${d.suspendus.length} suspendue(s)]` : ''}${d.piste ? ` · ${d.piste.motif_code} → ${d.piste.destination}${d.piste.hub_id ? ` ${d.piste.hub_id}` : ''}` : ''}`);
+  for (const d of autres) lignes.push(`  ${(d.organismes || []).join('+')} · ${hote(d.url)} · ${String(d.publie_le || '?').slice(0, 10)} · ${d.issue}${d.incident ? ` (${String(d.incident).slice(0, 40)})` : ''} · ${d.destination || '—'}${d.motif && !d.piste ? ` (${String(d.motif).slice(0, 60)})` : ''}${(d.suspendus || []).length ? ` [${d.suspendus.length} suspendue(s)]` : ''}${d.piste ? ` · ${d.piste.motif_code} → ${d.piste.destination}${d.piste.hub_id ? ` ${d.piste.hub_id}` : ''}` : ''}`);
   return lignes;
 }
