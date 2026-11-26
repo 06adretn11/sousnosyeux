@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Non-régression de l'audit du 26/11/2026 sur la chaîne clic → publication : fonctions pures, aucun réseau, aucune base.
 //   (les règles de relecture chronologique, de concurrence des clics, d'alertes et de poussée distante ont leurs tests dans test-chronologie, test-publication-autonome, test-alerte-clic, test-fiche-priorite)
+import { ecartsHubPur } from '../lib/ecarts-site.mjs';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { avertissementSource } from '../lib/discovery-messages.mjs';
@@ -19,5 +20,13 @@ t('génération de fiche trop longue (FR-2026-0005 : 17 min pour 10 de limite, �
   assert.match(m, /gen\.delai \? 'delai' : 'bloquee'/);
   const w = src('.github/workflows/sny-maj-fiches.yml'); const minutes = Number(/timeout-minutes:\s*(\d+)/.exec(w)[1]);
   assert.ok(minutes >= 2 * 25, 'le job couvre deux générations de 25 min : ' + minutes);
+});
+t('Hub : une parole projetée est reconnue par sa citation affichée (run sny-clics du 26/11 : 13 « informations absentes » à tort, toutes servies), une absente réelle reste signalée', () => {
+  const x = { id: 'aaaa11112222', nature: 'parole', libelle: 'Parole attribuée — la municipalité qui affirme : « coopérer pleinement »', parole: { citations: [{ texte: 'Nous allons coopérer pleinement avec la justice' }] } };
+  const y = { id: 'bbbb33334444', nature: 'fait', libelle: 'Une audience est fixée au 3 décembre' };
+  const html = '<div data-hub="h" data-matiere="2"><blockquote>Nous allons coopérer pleinement avec la justice</blockquote><p>Une audience est fixée au 3 décembre</p></div>';
+  assert.deepEqual(ecartsHubPur(html, 'h', [x, y]), [], 'servi ⇒ conforme');
+  assert.ok(ecartsHubPur(html.replace('coopérer pleinement', 'autre chose'), 'h', [x, y]).some((m) => /aaaa11112222 absente/.test(m)), 'parole réellement absente ⇒ signalée');
+  assert.ok(ecartsHubPur(html.replace('data-matiere="2"', 'data-matiere="1"'), 'h', [x, y]).some((m) => /différentes de la projection/.test(m)), 'compte différent ⇒ signalé');
 });
 console.log(`\n${n} contrôles audit 26/11 : OK`);

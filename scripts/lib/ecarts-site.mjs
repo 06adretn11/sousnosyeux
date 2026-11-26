@@ -53,6 +53,18 @@ export function texteAffiche(x) {
 }
 
 /**
+ * Écarts d'un Hub servi : nombre d'informations validées (data-matiere) ET texte de chacune TEL QU'AFFICHÉ (même règle que pour une fiche : une parole
+ * attribuée est repérée par sa première citation, son libellé « Parole attribuée — … » n'est jamais rendu). [] = conforme.
+ */
+export function ecartsHubPur(html, hub, items) {
+  const out = [];
+  if (!html.includes(`data-matiere="${items.length}"`)) out.push(`hub ${hub} : informations validées différentes de la projection (${items.length} attendues)`);
+  const page = plat(html);
+  for (const x of items) if (!page.includes(plat(texteAffiche(x)).slice(0, 40))) out.push(`hub ${hub} : information ${x.id} absente de la page servie`);
+  return out;
+}
+
+/**
  * Écarts d'une fiche servie par rapport à la VERSION AUTORISÉE actuelle : [] = conforme.
  * `dossier` = le dossier approuvé présent dans data/hub-matiere (celui dont l'empreinte est approuvée) ; `evenements` = data/evenements.json.
  *  · `data-dossier` doit porter l'empreinte (hashDossier, neuf champs) de CE dossier : une version précédente encore servie n'est jamais confirmée ;

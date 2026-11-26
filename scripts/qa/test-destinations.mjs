@@ -121,7 +121,8 @@ t('une fiche déjà approuvée ne demande AUCUNE nouvelle approbation : l’empr
 });
 t('vérification du site : fiches ET Hubs (data-matiere + libellé présent) ; Telegram nomme les pages ; mêmes workflows (aucun scheduler)', () => {
   const v = src('scripts/verifier-site.mjs');
-  assert.ok(v.includes('--hubs') && v.includes('data-matiere') && v.includes('absente de la page servie') && v.includes('Hub ${h}'));
+  const lib = src('scripts/lib/ecarts-site.mjs'); // le contrôle des Hubs vit dans ecartsHubPur (testé dans test-audit-26-11)
+  assert.ok(v.includes('--hubs') && v.includes('ecartsHubPur') && lib.includes('data-matiere') && lib.includes('absente de la page servie') && v.includes('Hub ${h}'));
   for (const w of ['sny-clics', 'sny-telegram']) { const y = src(`.github/workflows/${w}.yml`); assert.ok(y.includes('--hubs $HUBS') && y.includes('steps.evenements.outputs.hubs')); }
 });
 t('Telegram : le blocage est signalé précisément (« NON intégré aux pages », motif exact), la validation est conservée, aucun nouveau GO ; un fait de territoire est présenté par sa portée', async () => {

@@ -14,7 +14,7 @@
 // =====================================================================
 import { readFileSync } from 'node:fs';
 import { prevenir, texteVerifie } from './lib/prevenir.mjs';
-import { ecartsSite, ecartsFiche as ecartsFichePure, analyserArguments } from './lib/ecarts-site.mjs';
+import { ecartsSite, ecartsFiche as ecartsFichePure, ecartsHubPur, analyserArguments } from './lib/ecarts-site.mjs';
 import { dossierFiche } from './lib/fiche-page.mjs';
 
 // Le premier identifiant positionnel est un identifiant comme les autres (voir analyserArguments).
@@ -45,10 +45,7 @@ async function ecartsHub(hub) {
   if (!r.ok) return [`hub ${hub} : HTTP ${r.status}`];
   const html = await r.text();
   const items = (evenements.matiere || []).filter((x) => (x.destinations?.hubs || []).some((h) => h.hub === hub));
-  const out = [];
-  if (!html.includes(`data-matiere="${items.length}"`)) out.push(`hub ${hub} : informations validées différentes de la projection (${items.length} attendues)`);
-  for (const x of items) if (!html.includes(String(x.libelle).replace(/&/g, '&amp;').slice(0, 40))) out.push(`hub ${hub} : information ${x.id} absente de la page servie`);
-  return out;
+  return ecartsHubPur(html, hub, items);
 }
 
 let dernier = ['non tenté'];
