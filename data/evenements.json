@@ -791,6 +791,40 @@
       }
     },
     {
+      "id": "18efdfc34c0b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — une enseignante au milieu de la foule d'instituteurs et de parents d'élèves venus témoigner de leur soutien à l'équipe et aux familles de l'école Julie-Victoire Daubié à Soyaux (Charente) : « C'est la honte sur notre institution »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "une enseignante au milieu de la foule d'instituteurs et de parents d'élèves venus témoigner de leur soutien à l'équipe et aux familles de l'école Julie-Victoire Daubié à Soyaux (Charente)",
+      "territoire": null,
+      "date": "2026-10-12",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/nouvelle-aquitaine/charente-16/soyaux/instituteur-interpelle-a-soyaux-nous-exigeons-de-la-transparence-parents-et-enseignants-rassembles-a-l-ecole-3444426",
+        "publie_le": "2026-10-15"
+      },
+      "parole": {
+        "acteur": "une enseignante au milieu de la foule d'instituteurs et de parents d'élèves venus témoigner de leur soutien à l'équipe et aux familles de l'école Julie-Victoire Daubié à Soyaux (Charente)",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "C'est la honte sur notre institution"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école maternelle Julie-Victoire Daubié",
+      "case_id": "FR-2026-0137",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0137",
+        "hubs": []
+      }
+    },
+    {
       "id": "2316620d6688",
       "nature": "parole",
       "libelle": "Parole attribuée — à France Inter la maman qui a porté plainte : « Ça a été une vraie bombe dans notre vie »",
@@ -866,6 +900,39 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "2ae5b9750a68",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Jean-Baptiste Miot, procureur de la République de Laon : « aménagement des six mois sous la forme d'un bracelet électronique »",
+      "realisation": "inconnue",
+      "portee": "territoire",
+      "acteur": "Jean-Baptiste Miot",
+      "territoire": "Chauny",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/hauts-de-france/aisne/un-enseignant-d-un-college-prive-condamne-a-24-mois-de-prison-pour-agressions-sexuelles-sur-une-eleve-de-14-ans-3309333.html",
+        "publie_le": "2026-03-03"
+      },
+      "parole": {
+        "acteur": "Jean-Baptiste Miot",
+        "qualite": "procureur de la République de Laon",
+        "citations": [
+          {
+            "texte": "aménagement des six mois sous la forme d'un bracelet électronique"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "case_id": "FR-2026-0029",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0029",
+        "hubs": []
       }
     },
     {
@@ -1031,6 +1098,108 @@
       }
     },
     {
+      "id": "4e566d04435e",
+      "nature": "parole",
+      "libelle": "Parole attribuée — les inspectrices : « La répétition d'alertes similaires aurait dû conduire à une prise en compte plus approfondie »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "les inspectrices",
+      "territoire": null,
+      "date": null,
+      "periode": "2026-07",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "les inspectrices",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "La répétition d'alertes similaires aurait dû conduire à une prise en compte plus approfondie"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
+      "id": "50caedffb2d0",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le père qui souhaite rester anonyme : « à sa poupée, face à sa maman, en disant qu'elle ne voulait déjà plus aller au centre de loisirs parce qu'elle avait très peur du noir et très peur d'un monsieur au gros ventre »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le père qui souhaite rester anonyme",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+        "publie_le": "2026-11-15"
+      },
+      "parole": {
+        "acteur": "le père qui souhaite rester anonyme",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "à sa poupée, face à sa maman, en disant qu'elle ne voulait déjà plus aller au centre de loisirs parce qu'elle avait très peur du noir et très peur d'un monsieur au gros ventre"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "centre de loisirs de Rots",
+      "case_id": "FR-2026-0133",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0133",
+        "hubs": []
+      }
+    },
+    {
+      "id": "61e8eec3a291",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Aurélie Gagnier, porte-parole de la FSU-SNUipp, le syndicat des enseignants du primaire : « Le travail se fait en silo. L'Education nationale reste dans l'Education nationale et ce qui se passe dans le périscolaire reste dans le périscolaire »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Aurélie Gagnier",
+      "territoire": null,
+      "date": null,
+      "periode": "2026-07",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "Aurélie Gagnier",
+        "qualite": "porte-parole de la FSU-SNUipp, le syndicat des enseignants du primaire",
+        "citations": [
+          {
+            "texte": "Le travail se fait en silo. L'Education nationale reste dans l'Education nationale et ce qui se passe dans le périscolaire reste dans le périscolaire"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
       "id": "621b584cb8e2",
       "nature": "mesure",
       "libelle": "Selon la presse, la collectivité a annoncé un renforcement de l’encadrement des enfants.",
@@ -1174,6 +1343,40 @@
       }
     },
     {
+      "id": "72cb0bee848b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — aujourd'hui le maire de Paris, Emmanuel Grégoire : « Il faudrait avoir accès au traitement des antécédents judiciaires »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "aujourd'hui le maire de Paris",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "aujourd'hui le maire de Paris",
+        "qualite": "Emmanuel Grégoire",
+        "citations": [
+          {
+            "texte": "Il faudrait avoir accès au traitement des antécédents judiciaires"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
       "id": "74a7bfd3b196",
       "nature": "mobilisation",
       "libelle": "Selon la presse, des parents ont annoncé un rassemblement.",
@@ -1272,6 +1475,74 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "7d7b2e54aa24",
+      "nature": "parole",
+      "libelle": "Parole attribuée — l'un d'entre eux, : « j'apprends aux enfants à jouer aux échecs, je ne les accompagne pas aux toilettes »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "l'un d'entre eux,",
+      "territoire": null,
+      "date": "2026-06-15",
+      "periode": null,
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "l'un d'entre eux,",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "j'apprends aux enfants à jouer aux échecs, je ne les accompagne pas aux toilettes"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
+      "id": "83b629631b97",
+      "nature": "parole",
+      "libelle": "Parole attribuée — ra cet ancien enquêteur de la Brigade de protection des mineurs à la juge : « Une famille avait été très insistante... J'avais le sentiment que l'enfant avait répondu ce que le parent avait envie d'entendre. Il y avait des copier-coller dans les propos rapportés des enfants »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "ra cet ancien enquêteur de la Brigade de protection des mineurs à la juge",
+      "territoire": null,
+      "date": null,
+      "periode": "2019-02",
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "ra cet ancien enquêteur de la Brigade de protection des mineurs à la juge",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Une famille avait été très insistante... J'avais le sentiment que l'enfant avait répondu ce que le parent avait envie d'entendre. Il y avait des copier-coller dans les propos rapportés des enfants"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
       }
     },
     {
@@ -1402,6 +1673,40 @@
       }
     },
     {
+      "id": "a12dac160d0b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — l'un d'entre eux, : « J'ai été suspendu parce qu'un parent a écrit un mail pour dire que j'ai touché son enfant aux toilettes »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "l'un d'entre eux,",
+      "territoire": null,
+      "date": "2026-06-15",
+      "periode": null,
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/enquetes-franceinfo/enquete-ecole-saint-dominique-a-paris-un-concentre-des-dysfonctionnements-du-periscolaire_8175923.html",
+        "publie_le": "2026-06-17"
+      },
+      "parole": {
+        "acteur": "l'un d'entre eux,",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "J'ai été suspendu parce qu'un parent a écrit un mail pour dire que j'ai touché son enfant aux toilettes"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Saint-Dominique",
+      "case_id": "FR-2026-0005",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
       "id": "aa9d4eb1d5fd",
       "nature": "mesure",
       "libelle": "Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.",
@@ -1472,6 +1777,45 @@
         "citations": [
           {
             "texte": "coopérer pleinement avec les autorités afin que toute la lumière soit faite sur cette affaire"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ba588e0c9d97",
+      "nature": "parole",
+      "libelle": "Parole attribuée — la mairie de Saint-Aubin-lès-Elbeuf : « Notre priorité absolue est la protection des enfants qui nous sont confiés. Nous avons reçu les familles concernées afin de les écouter, d'échanger avec elles et de leur témoigner notre soutien »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "la mairie de Saint-Aubin-lès-Elbeuf",
+      "territoire": null,
+      "date": "2026-11-05",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+        "publie_le": "2026-11-12"
+      },
+      "parole": {
+        "acteur": "la mairie de Saint-Aubin-lès-Elbeuf",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Notre priorité absolue est la protection des enfants qui nous sont confiés. Nous avons reçu les familles concernées afin de les écouter, d'échanger avec elles et de leur témoigner notre soutien"
           }
         ],
         "extrait_partiel": false,
