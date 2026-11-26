@@ -229,6 +229,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Correction de données (CI) — fermé par défaut : fichier de migration nommé, GO-NNN, insert/update gardés, jamais delete/drop/publication_status ; 029 acceptée',
+    script: 'scripts/qa/test-correction-donnees.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Telegram PUBLIER — GO explicite via publier-affaire, REJECT conserve, REVIEW ne publie rien, localisation jamais inventée',
     script: 'scripts/qa/test-proposition-publication.mjs',
     bloquant: true,
