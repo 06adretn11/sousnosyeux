@@ -580,7 +580,7 @@
       "hash": "8f444a54dfd5d746"
     },
     "FR-2026-0045": {
-      "hash": "8f7278c2bc1dcf8a"
+      "hash": "9f819ba3ec47978a"
     },
     "FR-2026-0011": {
       "hash": "1c56bcb0cff3c19c"
@@ -646,7 +646,7 @@
       "hash": "f4c8088a21494702"
     },
     "FR-2026-0047": {
-      "hash": "96cec49e8226b6ce"
+      "hash": "0ace6409ea155c94"
     },
     "FR-2026-0113": {
       "hash": "fa7a412f94bd5b04"
@@ -691,13 +691,13 @@
       "hash": "30f7d4f0f4369ae3"
     },
     "FR-2026-0144": {
-      "hash": "e47dda459e3b6ea2"
+      "hash": "411b737c7b39913d"
     },
     "FR-2026-0149": {
       "hash": "6a87daf2ada71558"
     },
     "FR-2026-0048": {
-      "hash": "4c85990a7f6f0960"
+      "hash": "3f9487cddf754e3f"
     }
   },
   "matiere": [
@@ -726,6 +726,79 @@
             "groupe": "Ville de Paris et mairie du 11e"
           }
         ]
+      }
+    },
+    {
+      "id": "0d05a28a6d70",
+      "nature": "parole",
+      "libelle": "Parole attribuée — -t-on : « A l'issue, le mis en cause a été déféré et jugé en comparution immédiate pour acquisition, détention d'images pédopornographiques, consultation habituelle d'un service de communication au public en ligne mettant à disposition l'image ou la représentation pornographique de mineurs, voyeurisme commis sur un mineur, utilisation d'un moyen pour apercevoir à son insu et sans son consentement ses parties intimes »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "-t-on",
+      "territoire": null,
+      "date": "2026-12-07",
+      "periode": null,
+      "source": {
+        "media": "sweetfm",
+        "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+        "publie_le": "2026-11-12"
+      },
+      "parole": {
+        "acteur": "-t-on",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "A l'issue, le mis en cause a été déféré et jugé en comparution immédiate pour acquisition, détention d'images pédopornographiques, consultation habituelle d'un service de communication au public en ligne mettant à disposition l'image ou la représentation pornographique de mineurs, voyeurisme commis sur un mineur, utilisation d'un moyen pour apercevoir à son insu et sans son consentement ses parties intimes"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "école Marcel-Touchard",
+      "case_id": "FR-2026-0144",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0144",
+        "hubs": [
+          {
+            "hub": "seine-maritime",
+            "groupe": "Familles et associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "0dc2694ac7a5",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le courriel : « pour lequel un signalement, sans dépôt de plainte, avait déjà été effectué, ayant donné lieu à des mesures de prévention sans suspension »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le courriel",
+      "territoire": null,
+      "date": "2026-03-16",
+      "periode": null,
+      "source": {
+        "media": "Mediacités",
+        "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+        "publie_le": "2026-07-06"
+      },
+      "parole": {
+        "acteur": "le courriel",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "pour lequel un signalement, sans dépôt de plainte, avait déjà été effectué, ayant donné lieu à des mesures de prévention sans suspension"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Ecole maternelle Benezet",
+      "case_id": "FR-2026-0048",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0048",
+        "hubs": []
       }
     },
     {
@@ -2784,6 +2857,40 @@
       }
     },
     {
+      "id": "c67f7b7f5ea1",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le procureur : « Le magistrat a considéré qu'il n'y avait pas suffisamment d'éléments pour le mettre en examen »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le procureur",
+      "territoire": null,
+      "date": "2026-11-17",
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+        "publie_le": "2026-11-20"
+      },
+      "parole": {
+        "acteur": "le procureur",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le magistrat a considéré qu'il n'y avait pas suffisamment d'éléments pour le mettre en examen"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "centre de loisirs de Rots",
+      "case_id": "FR-2026-0133",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0133",
+        "hubs": []
+      }
+    },
+    {
       "id": "c6bc080640fe",
       "nature": "parole",
       "libelle": "Parole attribuée — cette élève de terminale : « Ils nous ont dit de ne pas parler à la presse parce que les médias allaient utiliser nos paroles contre nous »",
@@ -3084,6 +3191,40 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "fbc4bbb414b3",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le procureur : « Le recueil de leur parole se fait selon le protocole international NICHD »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le procureur",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "ici",
+        "url": "https://www.ici.fr/normandie/calvados-14/rots/soupcons-de-violences-sexuelles-a-rots-pres-de-caen-l-animateur-n-a-pas-ete-mis-en-examen-le-procureur-fait-appel-1773345",
+        "publie_le": "2026-11-20"
+      },
+      "parole": {
+        "acteur": "le procureur",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le recueil de leur parole se fait selon le protocole international NICHD"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "centre de loisirs de Rots",
+      "case_id": "FR-2026-0133",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0133",
+        "hubs": []
       }
     }
   ],

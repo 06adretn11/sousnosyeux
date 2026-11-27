@@ -16500,6 +16500,27 @@
       "faits": "Selon Actu.fr, l'animateur, en poste depuis 2023, avait déjà fait l'objet de plusieurs signalements. Selon Actu.fr, un premier signalement, sans dépôt de plainte, avait déjà été effectué et avait donné lieu à des mesures de prévention sans suspension.",
       "deroule": [
         {
+          "date": "2026-03",
+          "type": "mesure_collectivite",
+          "texte": "la mairie de Toulouse a informé les parents d'élèves de l'école Bénézet le 17 mars 2026.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        },
+        {
           "date": "2026-03-16",
           "type": "mesure_etablissement",
           "texte": "La mairie de Toulouse a adressé un courrier aux parents d'élèves de l'école maternelle Bénézet pour les informer des suspicions visant un animateur du centre de loisirs.",
@@ -16510,12 +16531,20 @@
             "media": "Actu.fr",
             "publie_le": "2026-03-17"
           },
-          "date_nature": "evenement"
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
         },
         {
           "date": null,
           "type": "signalement",
-          "texte": "Selon la municipalité, la mairie de Toulouse a fait un signalement auprès du procureur de la République.",
+          "texte": "La mairie de Toulouse indique avoir fait un signalement auprès du procureur de la République, qui a décidé de l'ouverture d'une enquête par les services de police.",
           "acteur": "mairie de Toulouse",
           "source": {
             "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
@@ -16523,7 +16552,48 @@
             "media": "Actu.fr",
             "publie_le": "2026-03-17"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon la mairie de Toulouse, le parquet a décidé l'ouverture d'une enquête, confiée aux services de police, après le signalement de la collectivité.",
+          "acteur": "parquet de Toulouse",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/toulouse-poursuivi-pour-viol-et-atteintes-sexuelles-sur-des-enfants-l-animateur-d-un-centre-de-loisirs-mis-en-examen_64128097.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-04-10"
+            },
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            },
+            {
+              "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+              "acces": "libre",
+              "media": "Mediacités",
+              "publie_le": "2026-07-06"
+            }
+          ]
         },
         {
           "date": null,
@@ -16549,6 +16619,54 @@
             "media": "Actu.fr",
             "publie_le": "2026-03-17"
           },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon le procureur de la République, la mesure de suspension a été prise par la collectivité employeur.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+              "acces": "libre",
+              "media": "Mediacités",
+              "publie_le": "2026-07-06"
+            },
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon la mairie de Toulouse, des conseils rédigés par des professionnels du recueil de la parole de l'enfant ont été transmis aux familles.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
           "date_nature": "article"
         },
         {
@@ -16562,7 +16680,15 @@
             "media": "Actu.fr",
             "publie_le": "2026-03-17"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
         },
         {
           "date": "2026-04-09",
@@ -16609,6 +16735,12 @@
               "acces": "libre",
               "media": "Mediacités",
               "publie_le": "2026-07-06"
+            },
+            {
+              "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2026-03-17"
             }
           ]
         },
@@ -16616,6 +16748,32 @@
           "date": null,
           "type": "fait_rapporte",
           "texte": "Selon Le Nouveau Détective, un animateur du CLAE de la maternelle Bénézet à Toulouse est suspecté d'abus sexuels sur plusieurs enfants et a été écroué.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
+            "acces": "libre",
+            "media": "Le nouveau detective",
+            "publie_le": "2026-04-14"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Le nouveau detective, un animateur de l'établissement a été écroué après avoir été dénoncé pour viol.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
+            "acces": "libre",
+            "media": "Le nouveau detective",
+            "publie_le": "2026-04-14"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Le nouveau detective, les faits caractériseraient un viol.",
           "acteur": null,
           "source": {
             "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
@@ -16677,6 +16835,19 @@
           "type": "plainte",
           "texte": "Selon Mediacités, après le dépôt de plainte des parents pour viol, l'animateur a été suspendu par la mairie de Toulouse.",
           "acteur": "les parents",
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon Mediacités, après le témoignage de leur fille, les parents ont déposé plainte pour viol.",
+          "acteur": "les parents d'une élève",
           "source": {
             "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
             "acces": "libre",
@@ -16852,6 +17023,75 @@
             {
               "pour": "sa réaction à l'annonce de l'affaire",
               "texte": "Quand j’ai su ce qu’il s’était passé, ça a été la douche froide"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "la ville de Toulouse",
+          "etabli": "Établi : propos rapportés par Ladepeche.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Ladepeche.fr",
+          "a_propos": "suspension de l'agent mis en cause et priorité à la sécurité des enfants",
+          "citations": [
+            {
+              "pour": "suspension de l'agent mis en cause et priorité à la sécurité des enfants",
+              "texte": "L'ensemble des faits ont été portés la semaine dernière à la connaissance de l'administration centrale et des élus, qui ont immédiatement décidé la suspension de l'agent mis en cause, avec pour priorité absolue la sécurité des enfants"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "David Charmatz, procureur de la République",
+          "etabli": "Établi : propos rapportés par Ladepeche.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Ladepeche.fr",
+          "a_propos": "suspension, signalement et enquête confiée à la DIPN",
+          "citations": [
+            {
+              "pour": "suspension, signalement et enquête confiée à la DIPN",
+              "texte": "La mesure de suspension a été prise par la collectivité employeur, le signalement article 40 reçu et le parquet a transmis pour enquête à la DIPN"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "la ville de Toulouse",
+          "etabli": "Établi : propos rapportés par Ladepeche.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Ladepeche.fr",
+          "a_propos": "information des familles et engagement d'information régulière",
+          "citations": [
+            {
+              "pour": "information des familles et engagement d'information régulière",
+              "texte": "désormais de suffisamment d'éléments consolidés pour pouvoir vous informer. Conscients des interrogations que peut susciter cette situation, nous nous engageons à assurer une information régulière, dans le respect de l'enquête judiciaire en cours."
             }
           ],
           "validation": "POSITION_ATTRIBUEE",
