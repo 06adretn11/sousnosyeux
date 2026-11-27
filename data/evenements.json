@@ -129,6 +129,21 @@
         }
       }
     ],
+    "FR-2026-0030": [
+      {
+        "event_id": "c4b544d3-6eef-48b1-9411-4d9c81763bb8",
+        "date": "2026-03-17",
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, un contrôle ou une inspection a été annoncé.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "Ladepeche.fr",
+          "url": "https://www.ladepeche.fr/2026/06/23/apres-six-mois-denquete-le-rectorat-rend-son-verdict-sur-le-lycee-bagatelle-a-saint-gaudens-et-la-mise-en-examen-pour-viols-sur-mineurs-de-lex-13433020.php",
+          "publie_le": "2026-06-23"
+        }
+      }
+    ],
     "FR-2026-0032": [
       {
         "event_id": "ac09f217-bd7c-4602-82b4-9eef1f0d087f",
@@ -1463,6 +1478,40 @@
       }
     },
     {
+      "id": "74d8f994afde",
+      "nature": "parole",
+      "libelle": "Parole attribuée — une autre élève : « Une professeure nous avait un peu parlé et on s'était d'ailleurs fait interroger sur le sujet. Ça nous était présenté comme des rumeurs. Il n'y avait pas eu de cellule d'écoute à l'époque. Et depuis, plus rien »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "une autre élève",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2026/01/21/ex-proviseur-adjoint-a-saint-gaudens-mis-en-examen-avant-personne-nen-parlait-aujourdhui-cest-dans-toutes-les-conversations-13175697.php",
+        "publie_le": "2026-01-21"
+      },
+      "parole": {
+        "acteur": "une autre élève",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Une professeure nous avait un peu parlé et on s'était d'ailleurs fait interroger sur le sujet. Ça nous était présenté comme des rumeurs. Il n'y avait pas eu de cellule d'écoute à l'époque. Et depuis, plus rien"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Lycée Bagatelle",
+      "case_id": "FR-2026-0030",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0030",
+        "hubs": []
+      }
+    },
+    {
       "id": "76c108656639",
       "nature": "parole",
       "libelle": "Parole attribuée — à France Inter la maman qui a porté plainte : « Le nombre de cas dans notre quartier et dans Paris nous montre qu'il y a vrai problème systémique. On se sent seuls, incompris, parfois même pas crus. On veut que les choses bougent. »",
@@ -1644,6 +1693,29 @@
       "event_id": null,
       "destinations": {
         "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
+      "id": "88927cb9a5fc",
+      "nature": "mesure",
+      "libelle": "Selon la presse, un contrôle ou une inspection a été annoncé.",
+      "realisation": "annoncée",
+      "portee": "établissement",
+      "acteur": "academie",
+      "territoire": null,
+      "date": "2026-03-17",
+      "periode": null,
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2026/06/23/apres-six-mois-denquete-le-rectorat-rend-son-verdict-sur-le-lycee-bagatelle-a-saint-gaudens-et-la-mise-en-examen-pour-viols-sur-mineurs-de-lex-13433020.php",
+        "publie_le": "2026-06-23"
+      },
+      "etablissement": "Lycée Bagatelle",
+      "case_id": "FR-2026-0030",
+      "event_id": "c4b544d3-6eef-48b1-9411-4d9c81763bb8",
+      "destinations": {
+        "fiche": "FR-2026-0030",
         "hubs": []
       }
     },
@@ -1883,6 +1955,40 @@
       "event_id": null,
       "destinations": {
         "fiche": "FR-2026-0005",
+        "hubs": []
+      }
+    },
+    {
+      "id": "a1a9662e36c3",
+      "nature": "parole",
+      "libelle": "Parole attribuée — une mère d’élève : « Quand tu les mets dans le privé, tu te dis que ça va être mieux pour tes enfants, et puis il y a le prestige de Saint-Jo, soit disant le meilleur établissement des Hautes-Alpes »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "une mère d’élève",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Provence-Alpes",
+        "url": "https://france3-regions.franceinfo.fr/provence-alpes-cote-d-azur/hautes-alpes/gap/il-y-avait-beaucoup-de-rumeurs-sur-ce-professeur-le-college-lycee-prive-de-saint-joseph-sous-le-choc-apres-la-denonciation-d-agressions-sexuelles-3155648.html",
+        "publie_le": "2025-05-17"
+      },
+      "parole": {
+        "acteur": "une mère d’élève",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Quand tu les mets dans le privé, tu te dis que ça va être mieux pour tes enfants, et puis il y a le prestige de Saint-Jo, soit disant le meilleur établissement des Hautes-Alpes"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Collège-lycée Saint-Joseph",
+      "case_id": "FR-2026-0032",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0032",
         "hubs": []
       }
     },
@@ -2235,6 +2341,40 @@
       "event_id": null,
       "destinations": {
         "fiche": "POC-10",
+        "hubs": []
+      }
+    },
+    {
+      "id": "c6bc080640fe",
+      "nature": "parole",
+      "libelle": "Parole attribuée — cette élève de terminale : « Ils nous ont dit de ne pas parler à la presse parce que les médias allaient utiliser nos paroles contre nous »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "cette élève de terminale",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2026/01/21/ex-proviseur-adjoint-a-saint-gaudens-mis-en-examen-avant-personne-nen-parlait-aujourdhui-cest-dans-toutes-les-conversations-13175697.php",
+        "publie_le": "2026-01-21"
+      },
+      "parole": {
+        "acteur": "cette élève de terminale",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Ils nous ont dit de ne pas parler à la presse parce que les médias allaient utiliser nos paroles contre nous"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "Lycée Bagatelle",
+      "case_id": "FR-2026-0030",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0030",
         "hubs": []
       }
     },
