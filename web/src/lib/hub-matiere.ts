@@ -134,4 +134,5 @@ export const TYPE_LABELS: Record<string, string> = {
   mesure_collectivite: 'Mesure de la collectivité', mesure_etat: 'Mesure de l’État',
   communication_parquet: 'Parquet', prise_de_parole: 'Prise de parole', mobilisation: 'Mobilisation',
   contexte: 'Contexte', contradiction: 'Contradiction',
+  rencontre: 'Rencontre', courrier: 'Courrier',
 };

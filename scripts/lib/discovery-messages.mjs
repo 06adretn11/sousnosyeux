@@ -302,6 +302,7 @@ function messageFicheMiseAJour(p) {
     ...ajoutees.slice(0, na).map((e) => `➕ ${esc(cut(e.texte, ca))}\n   (${esc(quand(e))}${e.media ? ' · ' + esc(e.media) : ''})`),
     ...(total ? plus({ length: total }, na) : ['Aucune étape nouvelle.']),
     ...(m.reactions_ajoutees ? [`💬 ${m.reactions_ajoutees} position(s) attribuée(s) ajoutée(s)`] : []),
+    ...(m.acteurs_changes ? [`🧑‍🤝‍🧑 Bloc « Acteur de terrain » : ${m.acteurs_points > 0 ? `${m.acteurs_points} point(s) ajouté(s)` : m.acteurs_points < 0 ? `${-m.acteurs_points} point(s) retiré(s)` : 'reformulé'} — propos du collectif attribués à ses documents, jamais présentés comme des faits`] : []),
     ...(m.sources_nouvelles || []).slice(0, 2).map((s) => `📰 Nouvelle source : ${esc(s.media || '')} → ${esc(s.url)}`),
     ...(refs.length ? [`🔗 ${refs.length} référence(s) ajoutée(s) à des étapes existantes : ${refs.slice(0, 3).map((r) => esc(r.media || '')).join(', ')}`] : []),
     '',
