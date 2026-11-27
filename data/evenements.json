@@ -1195,6 +1195,40 @@
       }
     },
     {
+      "id": "561a4f899ff1",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le rectorat : « Le recteur de l’académie de Versailles ainsi que la Dasen (directeur académique des services de l’Education nationale, NDLR) des Yvelines resteront extrêmement vigilants quant au suivi et à l’accompagnement qui sera mis en place »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le rectorat",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "La Croix",
+        "url": "https://www.la-croix.com/yvelines-un-professeur-suspendu-apres-des-soupcons-d-attouchements-sur-eleve-20240329",
+        "publie_le": "2024-03-29"
+      },
+      "parole": {
+        "acteur": "le rectorat",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le recteur de l’académie de Versailles ainsi que la Dasen (directeur académique des services de l’Education nationale, NDLR) des Yvelines resteront extrêmement vigilants quant au suivi et à l’accompagnement qui sera mis en place"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École élémentaire Jules-Vallès",
+      "case_id": "POC-03",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-03",
+        "hubs": []
+      }
+    },
+    {
       "id": "61e8eec3a291",
       "nature": "parole",
       "libelle": "Parole attribuée — Aurélie Gagnier, porte-parole de la FSU-SNUipp, le syndicat des enseignants du primaire : « Le travail se fait en silo. L'Education nationale reste dans l'Education nationale et ce qui se passe dans le périscolaire reste dans le périscolaire »",
