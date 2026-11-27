@@ -2174,6 +2174,45 @@
       }
     },
     {
+      "id": "e87d8796e77b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Brigitte : « Je voudrais que cet animateur soit écarté définitivement du monde de l’enfance, et qu’il y ait des actions conjointes entre l’Education nationale et le périscolaire pour que ceci ne puisse plus se reproduire »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Brigitte",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/societe/4221920-20260505-violences-periscolaire-paris-premier-animateur-juge-apres-alertes-prises-serieux",
+        "publie_le": "2026-05-05"
+      },
+      "parole": {
+        "acteur": "Brigitte",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Je voudrais que cet animateur soit écarté définitivement du monde de l’enfance, et qu’il y ait des actions conjointes entre l’Education nationale et le périscolaire pour que ceci ne puisse plus se reproduire"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École Titon",
+      "case_id": "POC-09",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-09",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "f8cc8968e26b",
       "nature": "mobilisation",
       "libelle": "Selon la presse, un collectif ou une association a tenu un rassemblement.",
