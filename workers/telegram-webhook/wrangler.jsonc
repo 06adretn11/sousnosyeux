@@ -6,5 +6,7 @@
   "main": "worker.mjs",
   "compatibility_date": "2026-05-27",
   "workers_dev": true,
-  "vars": { "GITHUB_REPO": "06adretn11/sousnosyeux" }
+  "vars": { "GITHUB_REPO": "06adretn11/sousnosyeux" },
+  // Cœur de rythme : relance le passage de sécurité sny-clics toutes les 30 min (le cron `schedule` de GitHub est très irrégulier).
+  "triggers": { "crons": ["*/30 * * * *"] }
 }

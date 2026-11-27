@@ -23,6 +23,8 @@ import { execFileSync } from 'node:child_process';
 import { connecter } from './lib/neon.mjs';
 import { dossierGeneree, hashDossier } from './lib/fiche-page.mjs';
 import { decider, inscrire, evaluerPromotions, confirmerPlan } from './lib/promouvoir-fiche.mjs';
+import { defautsChronologie, appliquerRelectures } from './lib/chronologie.mjs';
+import { prevenirUneFois, esc } from './lib/prevenir.mjs';
 
 const A = process.argv.slice(2);
 let ids = A.filter((a) => /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+|PARIS-\d+)$/.test(a));
@@ -37,6 +39,9 @@ const cases = lire('data/cases.json').cases;
 const holds = new Set(lire('data/publication-holds.json').holds.map((h) => h.case_id));
 const hubs = readdirSync(racine('data/hub-matiere/')).filter((f) => f.endsWith('.json') && f !== 'isoles.json').map((f) => lire(`data/hub-matiere/${f}`));
 let isoles = lire('data/hub-matiere/isoles.json');
+const TABLE_REPERES = lire('data/chronologie-reperes.json');
+// Garde propre à chaque dossier : un défaut de chronologie refuse SA promotion (la version en ligne reste servie), il ne fait plus échouer la QA de toutes les affaires.
+const controle = (id, d) => defautsChronologie(appliquerRelectures(id, d, TABLE_REPERES));
 const { sql } = connecter();
 const sortie = (k, v) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${k}=${v}\n`); };
 
@@ -61,7 +66,7 @@ if (CONTROLE_FINAL) {
   const avant = JSON.parse(execFileSync('git', ['show', 'HEAD:data/hub-matiere/isoles.json'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 }));
   const modifies = Object.keys(isoles.dossiers).filter((id) => !avant.dossiers[id] || hashDossier(avant.dossiers[id]) !== hashDossier(isoles.dossiers[id]));
   if (!modifies.length) { console.log('contrôle final : aucun dossier de fiche modifié dans ce passage'); process.exit(0); }
-  const { plan } = evaluerPromotions({ ...(await lireEtat()), isoles: avant, hubs, cases, holds });
+  const { plan } = evaluerPromotions({ ...(await lireEtat()), isoles: avant, hubs, cases, holds, controle });
   const { abandonnes } = confirmerPlan(modifies.map((id) => ({ id, hash: hashDossier(isoles.dossiers[id]) })), plan);
   if (abandonnes.length) {
     // Retour à l'état déjà validé (dernier commit) pour les deux fichiers que la promotion a fait évoluer ; le reste du passage (événements, autres fiches) est recalculé
@@ -74,11 +79,13 @@ if (CONTROLE_FINAL) {
 }
 
 if (DEPUIS_PROPOSITIONS) {
-  const { lignes, plan } = evaluerPromotions({ ...(await lireEtat()), isoles, hubs, cases, holds });
+  const { lignes, plan, bloques } = evaluerPromotions({ ...(await lireEtat()), isoles, hubs, cases, holds, controle });
   for (const l of lignes) console.log(l);          // refus des anciens candidats inclus : consignés AVANT toute exclusion, même si la sélection est vide
+  // Une fiche validée dont la version présente un défaut de chronologie n'est pas promue : dit UNE fois (par version), jamais en boucle à chaque passage.
+  if (ECRIRE) for (const b of bloques) await prevenirUneFois(sql, { cle: `fiche-bloquee:${b.id}:${b.hash}`, resultat: 'bloquee', texte: `⚠️ <b>Fiche validée mais NON publiée</b> — ${esc(b.id)}\nLa version approuvée (empreinte ${esc(String(b.hash).slice(0, 16))}) présente un défaut de chronologie : ${esc(b.detail)}.\nLa version actuellement en ligne reste servie ; les autres publications ne sont pas retenues. Rien à décider : la version est à corriger.` });
   if (ECRIRE && plan.length) {
     // Dernière relecture avant l'écriture : même décision recalculée sur l'état courant de Neon.
-    const relu = evaluerPromotions({ ...(await lireEtat()), isoles, hubs, cases, holds }).plan;
+    const relu = evaluerPromotions({ ...(await lireEtat()), isoles, hubs, cases, holds, controle }).plan;
     const { gardes, abandonnes } = confirmerPlan(plan, relu);
     for (const id of abandonnes) console.log(`· ${id} : écriture abandonnée — ETAT_MODIFIE_PENDANT_TRAITEMENT (autorisation différente à la relecture ; recalcul au prochain passage)`);
     for (const p of gardes) { isoles = inscrire(isoles, p.id, p.dossier, p.hash); ecrit++; }

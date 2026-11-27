@@ -199,6 +199,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Fiabilité de la chaîne (27/11) — cœur de rythme, reprise automatique bornée, alertes non répétées, demandes inapplicables retirées sans perte',
+    script: 'scripts/qa/test-fiabilite-27-11.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Avant envoi — ce qui ne peut pas aboutir n’est jamais soumis à décision (contrat d’application, parole sans date, création périmée, mises à jour concurrentes)',
     script: 'scripts/qa/test-preflight-envoi.mjs',
     bloquant: true,

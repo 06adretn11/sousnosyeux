@@ -245,4 +245,11 @@ t('workflows · relecture finale avant publication, script partagé, aucune vér
     assert.ok(/steps\.publier\.outputs\.abandon != 'true'/.test(y) && /ABANDONNEES: \$\{\{ steps\.finale\.outputs\.abandonnes \}\}/.test(y), `${f} : vérification conditionnée`);
   }
 });
+t('garde de chronologie · une version dont la chronologie est refusée n’est pas promue (QA_CHRONOLOGIE, motif dit), l’autre affaire reste promouvable', () => {
+  const r = decider({ id: ID, generee: { d: B, proposable: true }, revues: [rev(B, T2)], toutesRevues: [rev(B, T2)], ...base(), controle: () => ['tri non croissant'] });
+  assert.equal(r.ok, false); assert.equal(r.motif, 'QA_CHRONOLOGIE'); assert.match(r.detail, /tri non croissant/);
+  assert.equal(decider({ id: ID, generee: { d: B, proposable: true }, revues: [rev(B, T2)], toutesRevues: [rev(B, T2)], ...base(), controle: () => [] }).ok, true, 'sans défaut : promue');
+  const e = evaluerPromotions({ propositions: [prop(B, 'b1', T2)], revuesParAffaire: new Map([[ID, [rev(B, T2)]]]), ...base(), controle: () => ['x'] });
+  assert.deepEqual(e.plan, []); assert.equal(e.bloques.length, 1); assert.equal(e.bloques[0].id, ID); assert.match(e.lignes.join(' '), /refusée — QA_CHRONOLOGIE/);
+});
 console.log(`\n${n} contrôles priorité des approbations : OK`);

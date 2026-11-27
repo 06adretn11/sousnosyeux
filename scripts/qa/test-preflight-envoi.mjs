@@ -34,8 +34,8 @@ t('câblage : décision d’état, création périmée, mises à jour concurrent
   const s = src('scripts/telegram-v0.mjs');
   assert.match(s, /defautsStructurels\(\{ aa: 'STATE_CHANGE'/); assert.match(s, /non applicable automatiquement/);
   assert.match(s, /proposition de création périmée \(la fiche individuelle existe déjà\)/);
-  assert.match(s, /mise à jour concurrente déjà soumise/);
-  assert.match(s, /périmée\|concurrente/, 'refus définitif : marqueur, pas de réévaluation à chaque passage');
+  assert.match(s, /mise à jour concurrente déjà soumise/); assert.match(s, /defautsChronologie\(appliquerRelectures\(r\[0\]/);
+  assert.match(s, /périmée\|concurrente\|chronologie incohérente/, 'refus définitif : marqueur, pas de réévaluation à chaque passage');
   assert.match(s, /r\.aa === 'ENRICHMENT' \|\| r\.aa === 'STATE_CHANGE'/, 'trace du motif aussi pour un changement d’état écarté');
 });
 console.log(`\n${n} contrôles avant envoi : OK`);

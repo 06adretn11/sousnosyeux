@@ -46,7 +46,7 @@ export function derniereApprobation(revues, id) {
  *   (pour le retrait) ; `generee.declare` : empreinte déclarée par la proposition (`payload.page.hash`).
  * @returns {{ok:boolean, motif?:string, hash?:string, dossier?:object, reference?:string, instant?:string}}
  */
-export function decider({ id, generee, revues, toutesRevues = null, isoles, hubs = [], cases, holds }) {
+export function decider({ id, generee, revues, toutesRevues = null, isoles, hubs = [], cases, holds, controle = null }) {
   if (!generee?.proposable) return { ok: false, motif: 'FICHE_GENEREE_ABSENTE_OU_NON_PROPOSABLE' };
   if (!cases.some((c) => c.case_id === id)) return { ok: false, motif: 'AFFAIRE_NON_PUBLIQUE' };
   if (holds.has(id)) return { ok: false, motif: 'HOLD' };
@@ -62,6 +62,10 @@ export function decider({ id, generee, revues, toutesRevues = null, isoles, hubs
   const der = derniereApprobation(revues, id);
   if (der.ambigu) return { ok: false, motif: 'CHRONOLOGIE_INDETERMINEE', hash, reference: der.hashes.join('|'), instant: der.instant };
   if (der.hash !== hash) return { ok: false, motif: 'SUPPLANTEE_PAR_AUTORISATION_PLUS_RECENTE', hash, reference: der.hash, instant: der.instant };
+  // Garde propre à CE dossier (QA de chronologie) : un défaut de la version autorisée ne doit pas faire échouer la publication de toutes les autres affaires — la promotion est refusée,
+  // la version déjà en ligne reste servie, le motif est dit une fois.
+  const defauts = controle ? controle(id, generee.d) : [];
+  if (defauts.length) return { ok: false, motif: 'QA_CHRONOLOGIE', hash, detail: defauts.join(' ; ') };
   const present = isoles?.dossiers?.[id];
   if (present) {
     const h0 = hashDossier(present);
@@ -84,8 +88,8 @@ export function decider({ id, generee, revues, toutesRevues = null, isoles, hubs
  *          revuesParAffaire: Map<string, object[]>, statuts?: Map<string,string>|null, isoles:{dossiers:object}, hubs?:object[], cases:{case_id:string}[], holds:Set<string>}} o
  * @returns {{lignes: string[], plan: {id:string, hash:string, dossier:object, remplace?:string}[]}}
  */
-export function evaluerPromotions({ propositions, revuesParAffaire, statuts = null, isoles, hubs = [], cases, holds }) {
-  const lignes = [], plan = [];
+export function evaluerPromotions({ propositions, revuesParAffaire, statuts = null, isoles, hubs = [], cases, holds, controle = null }) {
+  const lignes = [], plan = [], bloques = [];
   const parAffaire = new Map();
   for (const p of propositions) parAffaire.set(p.id, [...(parAffaire.get(p.id) || []), p]);
   const court = (h) => String(h ?? '').slice(0, 16);
@@ -107,10 +111,11 @@ export function evaluerPromotions({ propositions, revuesParAffaire, statuts = nu
     }
     const choisi = [...retenus].sort((a, b) => String(b.decided_at).localeCompare(String(a.decided_at)))[0];
     if (choisi) {
-      const r = decider({ id, generee: { d: choisi.dossier, proposable: true, precedent_hash: choisi.precedent ?? null, declare: choisi.declare ?? null }, revues: toutes, toutesRevues: toutes, isoles, hubs, cases, holds });
+      const r = decider({ id, generee: { d: choisi.dossier, proposable: true, precedent_hash: choisi.precedent ?? null, declare: choisi.declare ?? null }, revues: toutes, toutesRevues: toutes, isoles, hubs, cases, holds, controle });
       if (!r.ok && r.motif === 'DEJA_PROMUE') { if (ecartes.length) lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(r.hash)} — conservé, aucun ancien candidat promu (retrait ${derniereDecision(toutes) === 'retirer' ? 'NON LEVÉ' : 'aucun'} · HOLD ${holds.has(id) ? 'OUI' : 'non'})`); continue; }
       lignes.push(`· ${id} : ${r.ok ? `promotion PERMISE (empreinte ${r.hash}${r.remplace ? `, remplace la version approuvée ${r.remplace}` : ''})` : `refusée — ${r.motif}${r.hash ? ` (empreinte ${r.hash})` : ''}`}`);
       if (r.ok) plan.push({ id, hash: r.hash, dossier: r.dossier, ...(r.remplace ? { remplace: r.remplace } : {}) });
+      if (!r.ok && r.motif === 'QA_CHRONOLOGIE') bloques.push({ id, hash: r.hash, detail: r.detail });
       continue;
     }
     // Aucune proposition ne porte l'empreinte attendue (ou plus aucune approbation).
@@ -121,7 +126,7 @@ export function evaluerPromotions({ propositions, revuesParAffaire, statuts = nu
     if (present && hashDossier(present) === der.hash) { lignes.push(`· ${id} : dossier présent conforme à la dernière approbation ${court(der.hash)} — conservé, aucun ancien candidat promu (${etat})`); continue; }
     lignes.push(`· ${id} : refusée — CONTENU_AUTORISE_ABSENT (dernière approbation ${court(der.hash)} enregistrée le ${String(der.instant ?? 'instant inconnu').slice(0, 19)} UTC ; dossier présent ${present ? court(hashDossier(present)) : 'absent'} ; ${etat} ; restauration depuis le dépôt requise, aucun ancien ACCEPT promu)`);
   }
-  return { lignes, plan };
+  return { lignes, plan, bloques };
 }
 
 /**
