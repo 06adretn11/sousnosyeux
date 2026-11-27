@@ -7,7 +7,7 @@
     "source": "neon",
     "note": "Artefact COMPILÉ depuis Neon par scripts/project-public.mjs. Ne pas éditer à la main.",
     "projection": "public-whitelist-v0",
-    "generated_at": "2026-11-26"
+    "generated_at": "2026-11-27"
   },
   "cases": [
     {
@@ -1015,8 +1015,36 @@
           "is_primary": false
         },
         {
+          "url": "https://www.bfmtv.com/police-justice/sms-insistants-videos-a-caractere-sexuel-un-proviseur-adjoint-d-un-lycee-de-haute-garonne-mis-en-examen-pour-viols-aggraves_AN-202601190836.html",
+          "media": "BFMTV",
+          "publication_date": "2026-01-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://www.lavoixdunord.fr/1667188/article/2026-01-21/mis-en-examen-pour-viol-sur-une-lyceenne-un-ex-proviseur-adjoint-place-sous",
           "media": "La Voix du Nord",
+          "publication_date": "2026-01-21",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ladepeche.fr/2026/06/23/apres-six-mois-denquete-le-rectorat-rend-son-verdict-sur-le-lycee-bagatelle-a-saint-gaudens-et-la-mise-en-examen-pour-viols-sur-mineurs-de-lex-13433020.php",
+          "media": "Ladepeche.fr",
+          "publication_date": "2026-06-23",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ladepeche.fr/2026/01/19/exclusif-lex-proviseur-adjoint-du-lycee-bagatelle-de-saint-gaudens-mis-en-examen-pour-viols-sur-des-lyceennes-13165935.php",
+          "media": "Ladepeche.fr",
+          "publication_date": "2026-01-19",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.ladepeche.fr/2026/01/21/ex-proviseur-adjoint-a-saint-gaudens-mis-en-examen-avant-personne-nen-parlait-aujourdhui-cest-dans-toutes-les-conversations-13175697.php",
+          "media": "Ladepeche.fr",
           "publication_date": "2026-01-21",
           "source_type": "presse",
           "is_primary": false
