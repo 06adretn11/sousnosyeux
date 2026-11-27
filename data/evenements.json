@@ -653,7 +653,7 @@
       "hash": "6a87daf2ada71558"
     },
     "FR-2026-0048": {
-      "hash": "024a0223e47da712"
+      "hash": "4c85990a7f6f0960"
     }
   },
   "matiere": [
@@ -1541,6 +1541,45 @@
       }
     },
     {
+      "id": "81755c5a041d",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le conseil : « Un enfant peut se tromper sur des détails, jamais sur la nature des faits »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le conseil",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Paris Match",
+        "url": "https://www.parismatch.com/actu/societe/scandale-du-periscolaire-a-paris-trois-ans-de-prison-dont-un-ferme-sous-bracelet-requis-contre-un-animateur-269730",
+        "publie_le": "2026-05-27"
+      },
+      "parole": {
+        "acteur": "le conseil",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Un enfant peut se tromper sur des détails, jamais sur la nature des faits"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "83b629631b97",
       "nature": "parole",
       "libelle": "Parole attribuée — ra cet ancien enquêteur de la Brigade de protection des mineurs à la juge : « Une famille avait été très insistante... J'avais le sentiment que l'enfant avait répondu ce que le parent avait envie d'entendre. Il y avait des copier-coller dans les propos rapportés des enfants »",
@@ -1572,6 +1611,84 @@
       "destinations": {
         "fiche": "FR-2026-0005",
         "hubs": []
+      }
+    },
+    {
+      "id": "8c85e9f2b50c",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Barka Zerouali, cofondatrice du collectif #MeTooEcole : « Des parents ont dû rentrer chez eux et regarder leurs enfants dans les yeux, des enfants à qui on avait dit : 'Parle, on te protégera' »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Barka Zerouali",
+      "territoire": null,
+      "date": "2026-07-07",
+      "periode": null,
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+        "publie_le": "2026-07-09"
+      },
+      "parole": {
+        "acteur": "Barka Zerouali",
+        "qualite": "cofondatrice du collectif #MeTooEcole",
+        "citations": [
+          {
+            "texte": "Des parents ont dû rentrer chez eux et regarder leurs enfants dans les yeux, des enfants à qui on avait dit : 'Parle, on te protégera'"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "8fa2dbb40488",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Me Rebecca Royer : « La responsable du périscolaire était informée, le directeur de l'établissement scolaire était informé. Malheureusement, ces deux responsables n'ont pas fait de signalement au parquet alors qu'ils auraient dû. »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Me Rebecca Royer",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/le-proces-d-un-animateur-du-periscolaire-pour-agressions-sexuelles-a-l-ecole-alphonse-baudin-s-ouvre-a-paris_AN-202605260018.html",
+        "publie_le": "2026-05-26"
+      },
+      "parole": {
+        "acteur": "Me Rebecca Royer",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "La responsable du périscolaire était informée, le directeur de l'établissement scolaire était informé. Malheureusement, ces deux responsables n'ont pas fait de signalement au parquet alors qu'ils auraient dû."
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits ; rattachement du locuteur (registre des acteurs) : avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
@@ -1736,6 +1853,45 @@
       }
     },
     {
+      "id": "a1da1321b955",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Me Rebecca Royer : « Le souci, c'est que cette alerte n'a pas été remontée »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Me Rebecca Royer",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/le-proces-d-un-animateur-du-periscolaire-pour-agressions-sexuelles-a-l-ecole-alphonse-baudin-s-ouvre-a-paris_AN-202605260018.html",
+        "publie_le": "2026-05-26"
+      },
+      "parole": {
+        "acteur": "Me Rebecca Royer",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Le souci, c'est que cette alerte n'a pas été remontée"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits ; rattachement du locuteur (registre des acteurs) : avocates de familles de l’école Alphonse-Baudin (franceinfo ; Le Média)."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "aa9d4eb1d5fd",
       "nature": "mesure",
       "libelle": "Selon la presse, la collectivité a mis en œuvre des mesures de renforcement de l’encadrement des enfants.",
@@ -1783,6 +1939,45 @@
       "destinations": {
         "fiche": "FR-2026-0139",
         "hubs": []
+      }
+    },
+    {
+      "id": "b220170fd37f",
+      "nature": "parole",
+      "libelle": "Parole attribuée — l'avocate : « La responsable du périscolaire a transféré cet animateur des petites sections pour qu'il s'occupe des enfants de quatre ans »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "l'avocate",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "BFMTV",
+        "url": "https://www.bfmtv.com/police-justice/le-proces-d-un-animateur-du-periscolaire-pour-agressions-sexuelles-a-l-ecole-alphonse-baudin-s-ouvre-a-paris_AN-202605260018.html",
+        "publie_le": "2026-05-26"
+      },
+      "parole": {
+        "acteur": "l'avocate",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "La responsable du périscolaire a transféré cet animateur des petites sections pour qu'il s'occupe des enfants de quatre ans"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Alphonse-Baudin",
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
@@ -2204,6 +2399,44 @@
       "event_id": null,
       "destinations": {
         "fiche": "POC-09",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ef55e47fd67a",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Pénélope, une mère d'élève : « Nous sommes confrontés à la même incapacité des lois (…) à protéger les enfants. Ces décisions traduisent une lâcheté »",
+      "realisation": "inconnue",
+      "portee": "territoire",
+      "acteur": "Pénélope",
+      "territoire": "Paris 11e",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "franceinfo",
+        "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/reportage-violences-sexuelles-dans-le-periscolaire-a-paris-apres-la-relaxe-d-un-animateur-des-familles-denoncent-la-lachete-de-la-justice_8100767.html",
+        "publie_le": "2026-07-09"
+      },
+      "parole": {
+        "acteur": "Pénélope",
+        "qualite": "une mère d'élève",
+        "citations": [
+          {
+            "texte": "Nous sommes confrontés à la même incapacité des lois (…) à protéger les enfants. Ces décisions traduisent une lâcheté"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "case_id": "POC-05",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-05",
         "hubs": [
           {
             "hub": "paris-11e",
