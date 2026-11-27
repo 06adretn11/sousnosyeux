@@ -1,0 +1,109 @@
+{
+  "case_id": "FR-2026-0048",
+  "base_hash": "024a0223e47da712",
+  "redige_le": "2026-11-27",
+  "motif": "Décision de l'éditeur (27/11/2026) : documenter l'action d'un acteur de terrain et sa relation avec les pouvoirs publics à partir de deux documents du collectif Stop Tabou Pédo. Version volontairement conservatrice ; à enrichir avec l'association (présentation, adresse publique stable des documents, annexe 2).",
+  "deroule_ajouts": [
+    {
+      "date": "2026-07-03",
+      "date_nature": "evenement",
+      "type": "rencontre",
+      "acteur": "Collectif Stop Tabou Pédo",
+      "texte": "Selon le compte rendu publié par le collectif Stop Tabou Pédo, une réunion s’est tenue le 3 juillet 2026 entre le collectif et la mairie de Toulouse. Elle a porté sur les engagements de la Ville, la chaîne de signalement, les mesures conservatoires, les moyens et l’organisation, la formation des agents, le contrôle d’honorabilité, les protocoles de protection, le contrôle de l’application des directives et la communication avec les familles.",
+      "source": {
+        "media": "Collectif Stop Tabou Pédo",
+        "url": "https://drive.google.com/file/d/1jtTIsoTcY8uRdtoMCCzF2cM0NPTMCy4r/view",
+        "publie_le": null,
+        "acces": "libre",
+        "categorie": "document_acteur"
+      }
+    },
+    {
+      "date": "2026-07-17",
+      "date_nature": "evenement",
+      "type": "courrier",
+      "acteur": "Collectif Stop Tabou Pédo",
+      "texte": "Le collectif Stop Tabou Pédo a adressé à la mairie de Toulouse un document de compléments, composé de questions et de demandes de pièces sur les points non abordés ou non éclaircis lors de la réunion du 3 juillet.",
+      "source": {
+        "media": "Collectif Stop Tabou Pédo",
+        "url": "https://drive.google.com/file/d/1gDfwZmkWQ3u6N8Xi_LmnTFd2AQVV6ec4/view",
+        "publie_le": "2026-07-17",
+        "acces": "libre",
+        "categorie": "document_acteur"
+      }
+    }
+  ],
+  "acteurs_de_terrain": [
+    {
+      "acteur": "Collectif Stop Tabou Pédo",
+      "nature": "collectif",
+      "presentation": "Collectif actif à Toulouse sur la protection des enfants dans le périscolaire. Il a rencontré la mairie de Toulouse le 3 juillet 2026 et lui a adressé le 17 juillet un courrier de compléments.",
+      "sources": {
+        "cr": {
+          "media": "Collectif Stop Tabou Pédo",
+          "libelle": "compte rendu de la réunion du 3 juillet 2026",
+          "url": "https://drive.google.com/file/d/1jtTIsoTcY8uRdtoMCCzF2cM0NPTMCy4r/view",
+          "publie_le": null,
+          "categorie": "document_acteur"
+        },
+        "courrier": {
+          "media": "Collectif Stop Tabou Pédo",
+          "libelle": "courrier de compléments du 17 juillet 2026",
+          "url": "https://drive.google.com/file/d/1gDfwZmkWQ3u6N8Xi_LmnTFd2AQVV6ec4/view",
+          "publie_le": "2026-07-17",
+          "categorie": "document_acteur"
+        }
+      },
+      "limites": [
+        "Ces propos sont tirés de documents rédigés par le collectif : la mairie n’en est pas l’auteure et SousNosYeux n’a pas pu en vérifier le contenu auprès d’elle."
+      ],
+      "groupes": [
+        {
+          "genre": "demande",
+          "titre": "Ce que le collectif demande",
+          "points": [
+            { "src": "cr", "texte": "Que la mairie signe la charte Mouv’Enfants et intègre au projet éducatif de territoire de 2027 les préconisations de la CIIVISE sur le périscolaire." },
+            { "src": "courrier", "texte": "Un engagement écrit de la mairie sur cette intégration, avec la reprise intégrale des recommandations et un calendrier de mise en œuvre." },
+            { "src": "cr", "texte": "Une cellule spécifique aux violences faites aux mineurs à l’administration centrale, et un circuit de signalement dont le collectif demande le fonctionnement, la traçabilité et le retour aux parents et aux lanceurs d’alerte." },
+            { "src": "courrier", "texte": "Que tous les parents d’une école soient prévenus dès qu’une information sensible remonte à l’administration centrale." },
+            { "src": "cr", "texte": "Une révision des taux d’encadrement, des binômes d’adultes lors des moments sensibles (toilettes, changes, siestes, infirmerie), un directeur adjoint par école et davantage de postes d’animateurs titulaires à temps plein." },
+            { "src": "courrier", "texte": "Le calendrier, les organismes, le contenu et la durée de la formation des agents, ainsi que le montant du budget de formation avant et après la réunion." },
+            { "src": "courrier", "texte": "L’accès aux protocoles (toilettes, changes, siestes, infirmerie), à la fiche de poste du directeur de CLAE, au livret remis aux saisonniers et aux documents du projet « Mon corps, c’est à moi »." },
+            { "src": "courrier", "texte": "Un audit de l’application des directives municipales, avec des contrôles inopinés et des indicateurs, et un bilan annuel des violences faites aux mineurs dans le périscolaire, l’accueil de loisirs, les crèches et les associations sportives." },
+            { "src": "courrier", "texte": "Un protocole d’accompagnement des familles en cas de crise, avec mobilisation immédiate d’associations spécialisées et une cellule d’écoute opérationnelle dès les premiers jours, et l’application de la préconisation n° 10 de la CIIVISE (vade-mecum pour les familles)." }
+          ]
+        },
+        {
+          "genre": "constat",
+          "titre": "Ce que le collectif constate",
+          "precision": "Constats du collectif, tels qu’il les formule dans ses documents ; SousNosYeux ne les reprend pas à son compte.",
+          "points": [
+            { "src": "cr", "texte": "La mairie estime que la chaîne actuelle de signalement fonctionne correctement et refuse la création d’une cellule spécifique. Le collectif relève un écart avec ce qui avait été indiqué aux parents élus de Bénézet, à qui une cellule spécialisée avait été présentée comme devant être mise en place." },
+            { "src": "cr", "texte": "Le collectif considère qu’il n’existe pas de référent dédié aux violences sexuelles faites aux mineurs au sein de la mairie, ce qu’il juge incohérent avec les engagements de la Ville sur les préconisations de la CIIVISE." },
+            { "src": "cr", "texte": "Le collectif estime qu’une formation de moins de trois heures paraît insuffisante et s’interroge sur la différence entre formation et sensibilisation ; il compare 250 agents formés en deux ans à près de 3 000 agents à former en moins d’un an." },
+            { "src": "cr", "texte": "Le collectif relève que la majorité des contrats d’animateurs sont établis sur 28 heures par semaine, ce qu’il décrit comme une précarité structurelle du secteur." },
+            { "src": "cr", "texte": "Le collectif estime que l’interdiction du téléphone portable, en vigueur depuis fin août 2023, ne semble pas appliquée aussi effectivement qu’annoncé, notamment dans les écoles Lakanal et Bénézet." },
+            { "src": "cr", "texte": "Le collectif juge la cellule d’écoute mise en place à Bénézet « perfectible » et le livret destiné aux familles à retravailler ; il estime que les associations spécialisées doivent intervenir dès le début d’une crise." },
+            { "src": "cr", "texte": "Le collectif relève que la mairie n’a pas communiqué le budget initial de formation et n’a pas donné de réponse claire sur les binômes d’adultes lors des moments sensibles." }
+          ]
+        },
+        {
+          "genre": "annonce_rapportee",
+          "titre": "Ce que la mairie aurait indiqué lors de la réunion",
+          "precision": "Annonces et positions rapportées par le collectif d’après sa réunion, non confirmées par ailleurs : ce ne sont pas des réalisations.",
+          "points": [
+            { "src": "cr", "texte": "Elle ne signera pas la charte Mouv’Enfants, qu’elle ne juge pas pertinente, mais s’engage à intégrer au projet éducatif de territoire de 2027 les recommandations de la CIIVISE propres au périscolaire." },
+            { "src": "cr", "texte": "Elle travaillerait dès septembre 2026 à un canal dédié (probablement une adresse électronique) pour faire remonter les informations sensibles à l’administration centrale ; son fonctionnement reste à préciser." },
+            { "src": "cr", "texte": "Elle annonce un référent sur les violences sexuelles faites aux mineurs dans chaque école, jusqu’à trois agents à terme (à confirmer pour les petites écoles), des trombinoscopes et des badges pour les agents du périscolaire à la rentrée, un guide « journée type » du CLAE et, à partir de septembre 2026, le chantier d’une charte de l’animateur." },
+            { "src": "cr", "texte": "Elle vise la formation de tous les agents d’ici 2027, sur des temps organisés dans les écoles (de 8 h 30 à 11 h 30), et indique avoir multiplié par deux le budget de formation." },
+            { "src": "cr", "texte": "Elle refuse de revenir aux taux d’encadrement d’avant 2013, de nommer un directeur adjoint dans chaque école et d’augmenter le nombre de postes d’animateurs titulaires à temps plein." },
+            { "src": "cr", "texte": "Elle affirme qu’un agent est suspendu dès le moindre doute et indique que 14 suspensions ont eu lieu depuis l’affaire de l’école Lakanal." },
+            { "src": "cr", "texte": "Elle indique avoir recruté environ 1 400 saisonniers cet été, avec contrôle d’honorabilité avant la prise de poste, une journée de sensibilisation et un livret remis à chaque agent." },
+            { "src": "cr", "texte": "Elle reconnaîtrait que laisser un animateur avec un groupe d’enfants n’est pas une garantie suffisante, et annonce une réflexion sur l’aménagement des locaux, sans école ni calendrier précisés." },
+            { "src": "cr", "texte": "Elle annonce une remise à niveau sur l’application des procédures pour les directeurs de CLAE à la rentrée, une réunion de suivi fin novembre et une conférence de presse à la rentrée pour présenter ses mesures." }
+          ]
+        }
+      ]
+    }
+  ]
+}

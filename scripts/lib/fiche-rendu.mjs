@@ -4,10 +4,11 @@
 // =====================================================================
 import { hashDossier } from './fiche-page.mjs';
 import { libelleIndices } from './fiche-acquis.mjs';
+import { AVERTISSEMENT, GENRES } from './acteurs-terrain.mjs';
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const dateFr = (iso) => { const m = /^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(iso || ''); return m ? `${m[3] ? `${Number(m[3])} ` : ''}${MOIS[Number(m[2]) - 1]} ${m[1]}` : null; };
 const TYPE = { fait_rapporte: 'Faits rapportés', signalement: 'Signalement', plainte: 'Plainte', enquete: 'Enquête', garde_a_vue: 'Garde à vue', mise_en_examen: 'Mise en examen', renvoi: 'Renvoi', audience: 'Audience', decision: 'Décision', appel: 'Appel',
-  mesure_etablissement: 'Mesure de l’établissement', mesure_collectivite: 'Mesure de la collectivité', mesure_etat: 'Mesure de l’État', communication_parquet: 'Parquet', contexte: 'Contexte' };
+  mesure_etablissement: 'Mesure de l’établissement', mesure_collectivite: 'Mesure de la collectivité', mesure_etat: 'Mesure de l’État', communication_parquet: 'Parquet', contexte: 'Contexte', rencontre: 'Rencontre', courrier: 'Courrier' };
 const BADGE = { READY: '🟢 READY', A_REVOIR: '🟠 À REVOIR', BLOQUE: '🔴 BLOQUÉ', PAS_D_ENRICHISSEMENT: '⚪ PAS D’ENRICHISSEMENT' };
 
 // `complet:false` (rendu destiné au dépôt public) n'inclut NI les extraits littéraux NI le détail des éléments écartés : ils peuvent contenir un nom
@@ -39,6 +40,16 @@ export function rendreMarkdown({ c, dossier: d, generation: g }, { complet = tru
   if (!d.reactions?.length) L.push('*Aucune déclaration d’une personne ou institution nommée dans les sources lues.*');
   for (const r of d.reactions || []) L.push(`- **${r.acteur}** — ${r.qualite}${r.a_propos ? ` · à propos de : ${r.a_propos}` : ''}${(r.citations || []).slice(0, 2).map((c) => `  \n  > « ${c.texte} »`).join('')}${r.paraphrase ? `  \n  ${r.paraphrase}` : ''}  \n  Source : [${r.source.media}](${r.source.url})`);
   L.push('');
+  // Bloc « Acteur de terrain » (champ optionnel `acteurs_de_terrain`) : propos d'un collectif attribués à ses documents, jamais présentés comme des faits.
+  if (d.acteurs_de_terrain?.length) {
+    L.push('## Acteur de terrain', '', `> ${AVERTISSEMENT}`, '');
+    for (const a of d.acteurs_de_terrain) {
+      L.push(`### ${a.acteur} — ${a.nature}`, '', a.presentation, '');
+      for (const g of a.groupes || []) L.push(`**${g.titre}** · *${GENRES[g.genre] ?? g.genre}*`, ...(g.precision ? [`*${g.precision}*`] : []), ...(g.points || []).map((p) => `- ${p.texte} ([${a.sources?.[p.src]?.libelle ?? p.src}](${a.sources?.[p.src]?.url ?? '#'}))`), '');
+      for (const l of a.limites || []) L.push(`*Limite : ${l}*`, '');
+      L.push('Documents de l’acteur : ' + Object.values(a.sources || {}).map((s) => `[${s.libelle}](${s.url})${s.publie_le ? ` (${dateFr(s.publie_le)})` : ''}`).join(' · '), '');
+    }
+  }
   // Une source listée n'est pas une source utilisée : seule « établi » alimente la fiche.
   // Trois niveaux distincts : listée · qualifiée « utilisée » · citée par une étape ou une réaction. Seule la source CITÉE alimente la fiche.
   const citees = new Set();

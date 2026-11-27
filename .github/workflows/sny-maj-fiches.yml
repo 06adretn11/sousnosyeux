@@ -21,6 +21,11 @@ on:
         required: false
         type: boolean
         default: false
+      enrichir:
+        description: "Avec « case » : applique la matière RÉDIGÉE de data/fiches-enrichissements/<case>.json à la fiche APPROUVÉE (étapes + bloc « Acteur de terrain »), sans modèle — une MISE À JOUR est proposée sur Telegram, jamais publiée"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -53,6 +58,7 @@ jobs:
       # Inerte si le relais n'est pas en mode REVIEW. Aucune publication : la proposition « APPROUVER LA FICHE » attend le clic de l'éditeur.
       - name: Proposer les premières fiches des nouveautés du relais (aucune publication)
         id: premieres
+        if: ${{ inputs.enrichir != true }}
         env:
           CAS: ${{ inputs.case }}
           DESIGNEE: ${{ inputs.designee }}
@@ -64,11 +70,24 @@ jobs:
           else
             node scripts/proposer-premieres-fiches.mjs --ecrire
           fi
+      # ENRICHISSEMENT RÉDIGÉ d'une fiche approuvée (éditeur → « case » + « enrichir ») : la matière versionnée s'applique à UNE version approuvée précise (empreinte de base) ;
+      # aucun modèle, aucune publication — la MISE À JOUR est proposée sur Telegram et attend le clic. Aperçu déposé sur main, comme les autres.
+      - name: Enrichir une fiche approuvée avec une matière rédigée (mise à jour proposée, aucune publication)
+        id: enrichir
+        if: ${{ inputs.enrichir == true }}
+        env:
+          CAS: ${{ inputs.case }}
+        run: |
+          case "$CAS" in FR-2026-[0-9][0-9][0-9][0-9]|POC-[0-9][0-9]) ;; *) echo "identifiant refusé : « case » est exigé avec « enrichir »"; exit 2 ;; esac
+          node scripts/enrichir-fiche.mjs "$CAS" --ecrire
+          node scripts/proposer-fiche.mjs "$CAS" --generee --ecrire | tee "$RUNNER_TEMP/proposition.log"
+          if grep -q "proposition créée" "$RUNNER_TEMP/proposition.log"; then echo "change=true" >> "$GITHUB_OUTPUT"; fi
       - name: Proposer les mises à jour de fiches (événement judiciaire nouveau, aucune publication)
         id: maj
+        if: ${{ inputs.enrichir != true }}
         run: node scripts/proposer-mises-a-jour-fiches.mjs --ecrire
       - name: Déposer l'aperçu sur main (docs seulement ; AVANT l'envoi de la proposition)
-        if: ${{ steps.maj.outputs.change == 'true' || steps.premieres.outputs.change == 'true' }}
+        if: ${{ steps.maj.outputs.change == 'true' || steps.premieres.outputs.change == 'true' || steps.enrichir.outputs.change == 'true' }}
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
@@ -78,5 +97,5 @@ jobs:
             git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)
           fi
       - name: Envoyer la proposition (une seule fois ; l'aperçu est sur main)
-        if: ${{ steps.maj.outputs.change == 'true' || steps.premieres.outputs.change == 'true' }}
+        if: ${{ steps.maj.outputs.change == 'true' || steps.premieres.outputs.change == 'true' || steps.enrichir.outputs.change == 'true' }}
         run: node scripts/telegram-v0.mjs notifier-nouvelles 3

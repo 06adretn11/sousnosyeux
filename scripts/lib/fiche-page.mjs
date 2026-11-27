@@ -10,6 +10,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { comparerEtapes, comparerReactions, refsEtape } from './fiche-acquis.mjs';
+import { CATEGORIE_DOCUMENT, compterPoints } from './acteurs-terrain.mjs';
 
 const DATA = new URL('../../data/', import.meta.url);
 const lire = (f) => JSON.parse(readFileSync(new URL(f, DATA), 'utf8'));
@@ -45,7 +46,8 @@ export function empreintesApprouvees(revues, id) {
 
 export const urlsDe = (d) => {
   const vus = new Map();
-  const ajoute = (s) => { if (s?.url && !MEDIAS_PAYANTS.includes(s.media) && !vus.has(s.url)) vus.set(s.url, { url: s.url, media: s.media, d: s.publie_le ?? null }); };
+  // Un DOCUMENT D'ACTEUR (compte rendu d'un collectif…) n'est pas une source de l'affaire : jamais rattaché à la mémoire ni à la carte (sources_a_rattacher).
+  const ajoute = (s) => { if (s?.url && s.categorie !== CATEGORIE_DOCUMENT && !MEDIAS_PAYANTS.includes(s.media) && !vus.has(s.url)) vus.set(s.url, { url: s.url, media: s.media, d: s.publie_le ?? null }); };
   // Les références COMPLÉMENTAIRES d'une étape sont des sources de la fiche au même titre que la principale : une source devenue secondaire n'est pas une source retirée.
   for (const e of d.deroule || []) { ajoute(e.source); for (const s of e.sources_complementaires || []) ajoute(s); }
   for (const r of [...(d.reactions || []), ...(d.paroles || [])]) ajoute(r.source);
@@ -79,14 +81,18 @@ export function changementsFiche(precedent, nouveau) {
   const up = new Set(urlsDe(precedent || {}).map((s) => s.url)), un = new Set(urlsDe(nouveau || {}).map((s) => s.url));
   const sources_nouvelles = urlsDe(nouveau || {}).filter((s) => !up.has(s.url)), sources_retirees = urlsDe(precedent || {}).filter((s) => !un.has(s.url));
   const rx = comparerReactions(precedent?.reactions || [], nouveau?.reactions || []);
+  // Bloc « Acteur de terrain » : un acteur ou des points de plus (ou de moins) est une MATIÈRE nouvelle, donc substantielle.
+  const pointsAvant = compterPoints(precedent?.acteurs_de_terrain), pointsApres = compterPoints(nouveau?.acteurs_de_terrain);
+  const acteurs_changes = JSON.stringify(precedent?.acteurs_de_terrain ?? null) !== JSON.stringify(nouveau?.acteurs_de_terrain ?? null);
   const etat_change = JSON.stringify(precedent?.situation ?? null) !== JSON.stringify(nouveau?.situation ?? null) || JSON.stringify(precedent?.etat_actuel ?? null) !== JSON.stringify(nouveau?.etat_actuel ?? null);
   return { ajoutees, retirees, reformulees, devenues_secondaires, sources_nouvelles, sources_retirees,
     ambigus: cmp.ambigus.map((x) => ({ avant: vue(A[x.i]), apres: vue(C[x.j]) })),
     reactions_ajoutees: rx.ajoutees.length, reactions_retirees: rx.retirees.length, etat_change,
+    acteurs_changes, acteurs_points_avant: pointsAvant, acteurs_points_apres: pointsApres,
     inconnues_changees: JSON.stringify(precedent?.inconnues || []) !== JSON.stringify(nouveau?.inconnues || []),
     inconnues_modifiees: { avant: (precedent?.inconnues || []).filter((x) => !(nouveau?.inconnues || []).includes(x)), apres: (nouveau?.inconnues || []).filter((x) => !(precedent?.inconnues || []).includes(x)) },
     // Seule une MATIÈRE nouvelle ou perdue justifie une décision : un changement de disponibilité technique (source relue ou non, reformulation équivalente) n'en est pas un.
-    substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length || rx.ajoutees.length || rx.retirees.length || etat_change || cmp.ambigus.length) };
+    substantiel: !!(ajoutees.length || retirees.length || sources_nouvelles.length || sources_retirees.length || rx.ajoutees.length || rx.retirees.length || etat_change || acteurs_changes || cmp.ambigus.length) };
 }
 
 /**
@@ -104,6 +110,7 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
     d.faits ? 'faits tels que rapportés (sans nom, sans nombre d’enfants)' : null,
     `déroulé de ${(d.deroule || []).length} étape(s) daté(s) et sourcé(s)${dossier.hub ? ' (même rédaction que le Hub)' : ''}`,
     reactions.length ? `${reactions.length} réaction(s) directement liée(s), attribuée(s)` : null,
+    compterPoints(d.acteurs_de_terrain) ? `bloc « Acteur de terrain » : ${compterPoints(d.acteurs_de_terrain)} point(s) attribué(s) à l’acteur, jamais présentés comme des faits` : null,
     (d.inconnues || []).length ? `${d.inconnues.length} inconnue(s)` : null,
   ].filter(Boolean);
   const diff = ch
@@ -138,6 +145,7 @@ export function payloadFiche({ c, dossier, sourcesNeon, nbEvenements, previewBas
           ...(generation?.acquis?.retirees || []).filter((r) => !ch.retirees.some((e) => String(e.texte).slice(0, 120) === String(r.texte).slice(0, 120))).map((r) => ({ texte: r.texte, media: r.media ?? null, url: null, date: null, publie_le: null, motif: r.motif }))].slice(0, 6),
         reformulees: ch.reformulees, devenues_secondaires: ch.devenues_secondaires.slice(0, 4), sources_nouvelles: ch.sources_nouvelles.slice(0, 4), sources_retirees: ch.sources_retirees.slice(0, 4),
         reactions_ajoutees: ch.reactions_ajoutees, reactions_retirees: ch.reactions_retirees, etat_change: ch.etat_change,
+        acteurs_changes: ch.acteurs_changes, acteurs_points: ch.acteurs_points_apres - ch.acteurs_points_avant,
         inconnues_modifiees: { avant: ch.inconnues_modifiees.avant.slice(0, 4), apres: ch.inconnues_modifiees.apres.slice(0, 4) },
         references_ajoutees: (generation?.acquis?.references_ajoutees || []).slice(0, 6), conservees: generation?.acquis?.conservees?.length ?? 0, non_relues: (generation?.acquis?.non_relues || []).slice(0, 6),
         // Effet CONCRET d'une approbation : la fiche d'un Hub n'est pas promue automatiquement (le Hub se modifie par `appliquer-hubs`, empreinte exacte) ; une fiche isolée l'est (promouvoir-fiche).

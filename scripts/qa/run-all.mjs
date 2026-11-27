@@ -229,6 +229,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Acteur de terrain — bloc attribué, jamais un fait ni une source de l’affaire ; enrichissement rédigé appliqué à UNE version approuvée (refus si périmée) ; empreinte, message, rendu, workflow',
+    script: 'scripts/qa/test-acteurs-terrain.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Première fiche d’une affaire DÉSIGNÉE — hors périmètre du relais seulement ; HOLD, retrait, fiche approuvée, proposition en attente toujours contrôlés ; aucune publication',
     script: 'scripts/qa/test-premiere-fiche-designee.mjs',
     bloquant: true,
