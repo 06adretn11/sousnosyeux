@@ -15612,6 +15612,367 @@
         "Selon le parquet, un animateur périscolaire de Beauvais a été mis en examen jeudi pour agression sexuelle sur mineur de moins de 15 ans, corruption de mineur de moins de 15 ans et détention d'images à caractère pédopornographique."
       ],
       "statut_affiche": "mise en examen"
+    },
+    "FR-2026-0048": {
+      "appel": false,
+      "faits": "Selon Actu.fr, l'animateur, en poste depuis 2023, avait déjà fait l'objet de plusieurs signalements. Selon Actu.fr, un premier signalement, sans dépôt de plainte, avait déjà été effectué et avait donné lieu à des mesures de prévention sans suspension.",
+      "deroule": [
+        {
+          "date": "2026-03-16",
+          "type": "mesure_etablissement",
+          "texte": "La mairie de Toulouse a adressé un courrier aux parents d'élèves de l'école maternelle Bénézet pour les informer des suspicions visant un animateur du centre de loisirs.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon la municipalité, la mairie de Toulouse a fait un signalement auprès du procureur de la République.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_etablissement",
+          "texte": "La mairie de Toulouse a ouvert une cellule d'écoute pour les familles, en place tous les après-midi.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Le maire de quartier et l'élue en charge de l'éducation étaient présents à la sortie de l'école Bénézet pour exprimer le soutien de la collectivité et échanger avec les familles.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_etat",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Actu.fr, le Service départemental de la jeunesse, de l'engagement et des sports a été informé, dans l'optique de voir l'animateur interdit d'exercer toute fonction d'accueil de mineurs le temps de l'enquête.",
+          "acteur": "Service départemental de la jeunesse, de l'engagement et des sports",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-04-09",
+          "type": "mise_en_examen",
+          "texte": "Selon le parquet, l'animateur du CLAE de l'école maternelle Bénézet à Toulouse a été mis en examen pour « viol sur mineure par personne ayant autorité » et « atteintes sexuelles », puis placé en détention provisoire.",
+          "acteur": "parquet",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/toulouse-poursuivi-pour-viol-et-atteintes-sexuelles-sur-des-enfants-l-animateur-d-un-centre-de-loisirs-mis-en-examen_64128097.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-04-10"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+              "acces": "libre",
+              "media": "Mediacités",
+              "publie_le": "2026-07-06"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "enquete",
+          "texte": "Selon la Dépêche du Midi, une perquisition a été effectuée au domicile du mis en cause et du matériel informatique a été saisi.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/toulouse-poursuivi-pour-viol-et-atteintes-sexuelles-sur-des-enfants-l-animateur-d-un-centre-de-loisirs-mis-en-examen_64128097.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-04-10"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            },
+            {
+              "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+              "acces": "libre",
+              "media": "Mediacités",
+              "publie_le": "2026-07-06"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Le Nouveau Détective, un animateur du CLAE de la maternelle Bénézet à Toulouse est suspecté d'abus sexuels sur plusieurs enfants et a été écroué.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
+            "acces": "libre",
+            "media": "Le nouveau detective",
+            "publie_le": "2026-04-14"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "contexte",
+          "texte": "Selon Le Nouveau Détective, l'animateur du CLAE de la maternelle Bénézet à Toulouse a été écroué.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lenouveaudetective.com/enquetes/animateur-de-lecole-maternelle-benezet-a-toulouse-ecroue-pour-viol-les-langues-vont-devoir-se-delier-et-vite",
+            "acces": "libre",
+            "media": "Le nouveau detective",
+            "publie_le": "2026-04-14"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Mediacités, les parents de l'école maternelle Bénézet ont appris la nouvelle le 16 mars.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon Mediacités, un signalement, sans dépôt de plainte, avait déjà été effectué à l'encontre de l'animateur, ayant donné lieu à des mesures de prévention sans suspension.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon Mediacités, après le dépôt de plainte des parents pour viol, l'animateur a été suspendu par la mairie de Toulouse.",
+          "acteur": "les parents",
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_etablissement",
+          "texte": "Selon Mediacités, l'animateur a été suspendu par la mairie de Toulouse, en charge du périscolaire.",
+          "acteur": "mairie de Toulouse",
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-03-17"
+            }
+          ]
+        }
+      ],
+      "synthese": {
+        "decision": "Selon le parquet, l'animateur du CLAE de l'école maternelle Bénézet à Toulouse a été mis en examen pour « viol sur mineure par personne ayant autorité » et « atteintes sexuelles », puis placé en détention provisoire."
+      },
+      "inconnues": [
+        "Aucun jugement sur le fond n’est rapporté par les sources lues : la suite de la procédure est inconnue.",
+        "Le dossier ne repose que sur 4 articles lus (Actu.fr, Le nouveau detective, Mediacités)."
+      ],
+      "reactions": [
+        {
+          "date": "2026-03-17",
+          "acteur": "le service de la Direction de l'éducation de la mairie de Toulouse",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "le signalement antérieur et les mesures de prévention",
+          "citations": [
+            {
+              "pour": "le signalement antérieur et les mesures de prévention",
+              "texte": "Ces faits concernent un animateur pour lequel un signalement, sans dépôt de plainte, avait déjà été effectué. Celui-ci avait donné lieu à des mesures de prévention sans suspension . Dans le cadre du fonctionnement ordinaire du CLAE, et conformément aux procédures, les animateurs ne sont pas seuls avec un enfant."
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "la municipalité de Toulouse",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "le signalement au procureur et l'enquête de police",
+          "citations": [
+            {
+              "pour": "le signalement au procureur et l'enquête de police",
+              "texte": "Nous avons également fait un signalement auprès du Procureur de la République, qui a décidé de l'ouverture d'une enquête par les services de police avec lesquels la collectivité est en lien quotidien"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "Un parent d’enfant concerné",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "les mesures de la mairie et la présence de l'animateur seul avec les enfants",
+          "citations": [
+            {
+              "pour": "les mesures de la mairie et la présence de l'animateur seul avec les enfants",
+              "texte": "La mairie dit que des mesures ont été prises et qu'il n'était pas seul avec les enfants, mais encore la semaine dernière, il a été vu par le personnel, seul dans le dortoir avec les petits"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-03-17",
+          "acteur": "Un parent d’enfant concerné",
+          "etabli": "Établi : propos rapportés par Actu.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://actu.fr/occitanie/toulouse_31555/suspicions-d-attouchements-sur-des-enfants-dans-un-centre-de-loisirs-a-toulouse-une-enquete-ouverte_64004873.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-03-17"
+          },
+          "qualite": "propos rapportés par Actu.fr",
+          "a_propos": "l'incertitude des familles sur la protection de leurs enfants",
+          "citations": [
+            {
+              "pour": "l'incertitude des familles sur la protection de leurs enfants",
+              "texte": "On est dans le flou, on ne sait pas si notre enfant a été victime , on ne peut pas en être certain."
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-07-06",
+          "acteur": "Une mère d’enfant concerné",
+          "etabli": "Établi : propos rapportés par Mediacités. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.mediacites.fr/enquete/toulouse/2026/07/06/agressions-sexuelles-sur-mineurs-une-dizaine-de-plaintes-contre-un-animateur-dans-une-ecole-de-toulouse/",
+            "acces": "libre",
+            "media": "Mediacités",
+            "publie_le": "2026-07-06"
+          },
+          "qualite": "propos rapportés par Mediacités",
+          "a_propos": "sa réaction à l'annonce de l'affaire",
+          "citations": [
+            {
+              "pour": "sa réaction à l'annonce de l'affaire",
+              "texte": "Quand j’ai su ce qu’il s’était passé, ça a été la douche froide"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        }
+      ],
+      "situation": {
+        "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
+          "label": "Suite",
+          "titre": "Issue de la procédure à documenter",
+          "lignes": [
+            "La personne mise en cause est présumée innocente.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : la mairie de Toulouse a adressé un courrier aux parents d'élèves de l'école maternelle Bénézet pour les informer des suspicions visant un animateur du centre de loisirs.",
+            "Mesure institutionnelle (distincte de la décision judiciaire) : la mairie de Toulouse a ouvert une cellule d'écoute pour les familles, en place tous les après-midi."
+          ]
+        },
+        "decision": {
+          "cat": "blue",
+          "meta": "9 avril 2026 · Parquet",
+          "label": "Situation judiciaire",
+          "texte": "Selon le parquet, l'animateur du CLAE de l'école maternelle Bénézet à Toulouse a été mis en examen pour « viol sur mineure par personne ayant autorité » et « atteintes sexuelles », puis placé en détention provisoire.",
+          "titre": "Mise en examen"
+        }
+      },
+      "etat_actuel": [
+        "Selon le parquet, l'animateur du CLAE de l'école maternelle Bénézet à Toulouse a été mis en examen pour « viol sur mineure par personne ayant autorité » et « atteintes sexuelles », puis placé en détention provisoire."
+      ],
+      "statut_affiche": "mise en examen"
     }
   }
 }
