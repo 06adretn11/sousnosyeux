@@ -6709,324 +6709,396 @@
       "statut_libelle": "Condamnation (appel non documenté)"
     },
     "FR-2026-0045": {
-      "etat_actuel": [
-        "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
-        "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
-      ],
       "appel": false,
       "faits": "Selon Ouest-France, un ancien surveillant d'un collège de Saint-Valéry-en-Caux a été poursuivi pour des agressions sexuelles multiples et de la corruption de mineurs, des faits commis entre 2015 et 2023. Selon Ouest-France, les faits se sont produits à l'internat du collège où il travaillait ainsi qu'au club de football où il était entraîneur.",
       "deroule": [
         {
           "date": "2023-05",
-          "date_nature": "approximative",
           "type": "signalement",
-          "acteur": null,
           "texte": "Selon La Dépêche, l'alerte a été donnée par une collègue du collège Jehan le Povremoyne, à la suite de la projection d'un film avec des élèves, en mai 2023.",
+          "acteur": null,
           "source": {
-            "media": "La Dépêche",
             "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "La Dépêche",
+            "publie_le": "2025-09-17"
           },
+          "date_nature": "approximative",
           "sources_complementaires": [
             {
-              "media": "Ouest-France",
               "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2025-09-17"
             },
             {
-              "media": "Le Parisien",
               "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Le Parisien",
+              "publie_le": "2025-09-17"
             },
             {
-              "media": "lamontagne.fr",
               "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "lamontagne.fr",
+              "publie_le": "2025-09-17"
             }
           ]
         },
         {
-          "date": null,
-          "date_nature": "article",
+          "date": "2023-06-12",
           "type": "fait_rapporte",
+          "texte": "Selon Paris Normandie, le 12 juin 2023, des parents rassemblés devant la grille évoquaient une vidéo filmée par une employée du collège.",
           "acteur": null,
-          "texte": "Selon La Dépêche, l'assistant d'éducation à l'internat a démissionné le lendemain et a contacté plusieurs victimes ou collègues pour les dissuader de témoigner.",
           "source": {
-            "media": "La Dépêche",
-            "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
+            "url": "https://www.paris-normandie.fr/id659137/article/2025-09-15/un-surveillant-de-college-juge-pour-27-agressions-sexuelles-nos-enfants-vont",
+            "acces": "libre",
+            "media": "paris-normandie",
+            "publie_le": "2025-09-15"
           },
+          "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Paris Normandie, un surveillant chargé de la surveillance de la section foot de l’internat a eu un comportement anormalement proche de l’un des élèves, assis sur ses genoux.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.paris-normandie.fr/id659137/article/2025-09-15/un-surveillant-de-college-juge-pour-27-agressions-sexuelles-nos-enfants-vont",
+            "acces": "libre",
+            "media": "paris-normandie",
+            "publie_le": "2025-09-15"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon le média, l'assistant d'éducation avait démissionné le lendemain de l'alerte, avant de contacter plusieurs de ses victimes ou collègues pour les dissuader de témoigner.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+            "acces": "libre",
+            "media": "lamontagne.fr",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "Ouest-France",
+              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+              "acces": "libre",
+              "media": "La Dépêche",
+              "publie_le": "2025-09-17"
+            },
+            {
               "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2025-09-17"
             },
             {
-              "media": "lamontagne.fr",
-              "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
-            },
-            {
-              "media": "Le Parisien",
               "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Le Parisien",
+              "publie_le": "2025-09-17"
             }
           ]
         },
         {
           "date": "2023-07",
-          "date_nature": "approximative",
           "type": "fait_rapporte",
-          "acteur": null,
           "texte": "Selon lamontagne.fr, l'ancien surveillant était en détention provisoire depuis juillet 2023.",
-          "source": {
-            "media": "lamontagne.fr",
-            "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          },
-          "sources_complementaires": [
-            {
-              "media": "La Dépêche",
-              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
-            },
-            {
-              "media": "Ouest-France",
-              "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
-            },
-            {
-              "media": "Le Parisien",
-              "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
-            }
-          ]
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "audience",
-          "acteur": "tribunal correctionnel de Rouen",
-          "texte": "Selon Le Parisien, l'ancien surveillant d'un collège de Saint-Valery-en-Caux est jugé devant le tribunal correctionnel de Rouen pour agressions sexuelles et corruption de mineurs.",
-          "source": {
-            "media": "Le Parisien",
-            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          },
-          "sources_complementaires": [
-            {
-              "media": "La Dépêche",
-              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
-            }
-          ]
-        },
-        {
-          "date": null,
-          "date_nature": "article",
-          "type": "fait_rapporte",
           "acteur": null,
-          "texte": "Selon Le Parisien, le prévenu a reconnu une partie des faits durant l'enquête et au premier jour de son procès.",
           "source": {
-            "media": "Le Parisien",
-            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          }
+            "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+            "acces": "libre",
+            "media": "lamontagne.fr",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "approximative",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+              "acces": "libre",
+              "media": "La Dépêche",
+              "publie_le": "2025-09-17"
+            },
+            {
+              "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2025-09-17"
+            },
+            {
+              "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+              "acces": "libre",
+              "media": "Le Parisien",
+              "publie_le": "2025-09-17"
+            }
+          ]
         },
         {
           "date": null,
-          "date_nature": "article",
-          "type": "audience",
-          "acteur": "parquet (substitut du procureur)",
-          "texte": "Le ministère public a requis contre l'ancien surveillant six ans de prison ferme, un suivi socio-judiciaire de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif.",
+          "type": "signalement",
+          "texte": "Selon La Dépêche, l'alerte a été donnée par une collègue du collège Jehan le Povremoyne après qu'elle a filmé le surveillant embrassant un élève lors d'une projection en mai 2023.",
+          "acteur": "collège Jehan le Povremoyne",
           "source": {
-            "media": "La Dépêche",
             "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          }
-        },
-        {
-          "date": "2025-09-17",
-          "date_nature": "evenement",
-          "type": "audience",
-          "acteur": "tribunal correctionnel de Rouen",
-          "texte": "Selon Ouest-France, le procès de l'ancien surveillant s'est tenu devant le tribunal correctionnel de Rouen, le 17 septembre 2025 étant le deuxième jour d'audience, au cours duquel il a reconnu les faits.",
-          "source": {
-            "media": "Ouest-France",
-            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "La Dépêche",
+            "publie_le": "2025-09-17"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "lamontagne.fr",
+              "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+              "acces": "libre",
+              "media": "Ouest-France",
+              "publie_le": "2025-09-17"
+            },
+            {
               "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "lamontagne.fr",
+              "publie_le": "2025-09-17"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "audience",
+          "texte": "Selon Le Parisien, l'ancien surveillant d'un collège de Saint-Valery-en-Caux est jugé devant le tribunal correctionnel de Rouen pour agressions sexuelles et corruption de mineurs.",
           "acteur": "tribunal correctionnel de Rouen",
-          "texte": "Selon Ouest-France, le procès ne s'est pas tenu à huis clos, à la demande des familles qui ont souhaité médiatiser l'affaire.",
           "source": {
-            "media": "Ouest-France",
-            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
+            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2025-09-17"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "lamontagne.fr",
-              "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+              "acces": "libre",
+              "media": "La Dépêche",
+              "publie_le": "2025-09-17"
             }
           ]
         },
         {
-          "date": "2025-09-17",
-          "date_nature": "evenement",
-          "type": "decision",
-          "acteur": "tribunal correctionnel de Rouen",
-          "texte": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Le Parisien, le prévenu a reconnu une partie des faits durant l'enquête et au premier jour de son procès.",
+          "acteur": null,
           "source": {
-            "media": "Ouest-France",
-            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
+            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2025-09-17"
           },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Le ministère public a requis contre l'ancien surveillant six ans de prison ferme, un suivi socio-judiciaire de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif.",
+          "acteur": "parquet (substitut du procureur)",
+          "source": {
+            "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+            "acces": "libre",
+            "media": "La Dépêche",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09-17",
+          "type": "audience",
+          "texte": "Selon Ouest-France, le procès de l'ancien surveillant s'est tenu devant le tribunal correctionnel de Rouen, le 17 septembre 2025 étant le deuxième jour d'audience, au cours duquel il a reconnu les faits.",
+          "acteur": "tribunal correctionnel de Rouen",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "evenement",
           "sources_complementaires": [
             {
-              "media": "lamontagne.fr",
               "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
-              "publie_le": "2025-09-17",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "lamontagne.fr",
+              "publie_le": "2025-09-17"
+            },
+            {
+              "url": "https://www.ladepeche.fr/2025/09/17/on-repere-les-plus-fragiles-et-on-peut-passer-a-lacte-6-ans-de-prison-ferme-requis-contre-un-surveillant-de-college-accuse-dagressions-sexuelles-12935778.php",
+              "acces": "libre",
+              "media": "La Dépêche",
+              "publie_le": "2025-09-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Selon Ouest-France, le procès ne s'est pas tenu à huis clos, à la demande des familles qui ont souhaité médiatiser l'affaire.",
+          "acteur": "tribunal correctionnel de Rouen",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+              "acces": "libre",
+              "media": "lamontagne.fr",
+              "publie_le": "2025-09-17"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Le tribunal a suivi les réquisitions du parquet.",
+          "acteur": "parquet",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09-17",
+          "type": "decision",
+          "texte": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
+          "acteur": "tribunal correctionnel de Rouen",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2025-09-17"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lamontagne.fr/paris-75000/actualites/il-avait-denude-caresse-et-masturbe-des-ados-a-l-internat-un-surveillant-de-college-condamne_14750246/",
+              "acces": "libre",
+              "media": "lamontagne.fr",
+              "publie_le": "2025-09-17"
             }
           ]
         }
       ],
+      "synthese": {
+        "ouvert": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive.",
+        "decision": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet."
+      },
       "inconnues": [
         "Appel et caractère définitif : aucun article consulté ne dit si la décision a été contestée ni si elle est définitive.",
         "Mesures prises par l’établissement ou les autorités (suspension, procédure disciplinaire, accompagnement des familles) : non documentées dans les sources lues.",
         "Le dossier ne repose que sur 4 articles lus (Le Parisien, La Dépêche, Ouest-France, lamontagne.fr)."
       ],
-      "synthese": {
-        "decision": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
-        "ouvert": "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
-      },
       "reactions": [
         {
-          "paraphrase": "Contexte dans l’article (Le Parisien) : « On apprivoise la confiance des enfants » en leur offrant des sucreries « pour devenir leur confident », puis « on repère qui sont les plus fragiles et on peut passer à l’acte », analyse-t-elle.",
-          "acteur": "Marine Uguen, substitut du procureur",
-          "qualite": "propos rapportés par Le Parisien",
           "date": "2025-09-17",
-          "date_nature": "article",
+          "acteur": "Marine Uguen, substitut du procureur",
+          "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2025-09-17"
+          },
+          "qualite": "propos rapportés par Le Parisien",
           "a_propos": "le mode opératoire du prévenu",
           "citations": [
             {
-              "texte": "on repère qui sont les plus fragiles et on peut passer à l’acte",
-              "pour": "le mode opératoire du prévenu"
+              "pour": "le mode opératoire du prévenu",
+              "texte": "on repère qui sont les plus fragiles et on peut passer à l’acte"
             }
           ],
-          "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Parisien",
-            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "paraphrase": "Contexte dans l’article (Le Parisien) : « On apprivoise la confiance des enfants » en leur offrant des sucreries « pour devenir leur confident », puis « on repère qui sont les plus fragiles et on peut passer à l’acte », analyse-t-elle.",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "paraphrase": "Contexte dans l’article (Le Parisien) : Pointant « un risque de récidive notable », elle a requis à son encontre une peine de 6 ans de prison ferme avec un suivi sociojudiciaire d’une durée de 7 ans, une injonction de soins et l’interdiction d’exercer des activités auprès des mineurs à titre définitif.",
-          "acteur": "Marine Uguen, substitut du procureur",
-          "qualite": "propos rapportés par Le Parisien",
           "date": "2025-09-17",
-          "date_nature": "article",
+          "acteur": "Marine Uguen, substitut du procureur",
+          "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
+            "acces": "libre",
+            "media": "Le Parisien",
+            "publie_le": "2025-09-17"
+          },
+          "qualite": "propos rapportés par Le Parisien",
           "a_propos": "le risque de récidive",
           "citations": [
             {
-              "texte": "un risque de récidive notable",
-              "pour": "le risque de récidive"
+              "pour": "le risque de récidive",
+              "texte": "un risque de récidive notable"
             }
           ],
-          "etabli": "Établi : propos rapportés par Le Parisien. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Le Parisien",
-            "url": "https://www.leparisien.fr/faits-divers/six-ans-de-prison-requis-contre-un-ex-surveillant-de-college-accuse-dagressions-sexuelles-et-de-corruption-de-mineurs-17-09-2025-HQMFWOWX6FFZXJ4ECB44XUT6ZE.php",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "paraphrase": "Contexte dans l’article (Le Parisien) : Pointant « un risque de récidive notable », elle a requis à son encontre une peine de 6 ans de prison ferme avec un suivi sociojudiciaire d’une durée de 7 ans, une injonction de soins et l’interdiction d’exercer des activités auprès des mineurs à titre définitif.",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
         {
-          "acteur": "ministère public",
-          "qualite": "propos rapportés par Ouest-France",
           "date": "2025-09-17",
-          "date_nature": "article",
+          "acteur": "ministère public",
+          "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
           "portee": "affaire",
-          "attribution": "POSITION_ATTRIBUEE",
+          "source": {
+            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
+            "acces": "libre",
+            "media": "Ouest-France",
+            "publie_le": "2025-09-17"
+          },
+          "qualite": "propos rapportés par Ouest-France",
           "a_propos": "la méthode de l'auteur des faits",
           "citations": [
             {
-              "texte": "On apprivoise la confiance des enfants pour devenir leur confident",
-              "pour": "la méthode de l'auteur des faits"
+              "pour": "la méthode de l'auteur des faits",
+              "texte": "On apprivoise la confiance des enfants pour devenir leur confident"
             }
           ],
-          "etabli": "Établi : propos rapportés par Ouest-France. Une prise de parole n’établit pas son contenu.",
-          "source": {
-            "media": "Ouest-France",
-            "url": "https://www.ouest-france.fr/societe/faits-divers/veritable-predateur-un-surveillant-de-college-condamne-a-6-ans-de-prison-pour-agressions-sexuelles-ed6b8b40-93e1-11f0-ba23-92c6f4a2bc09",
-            "publie_le": "2025-09-17",
-            "acces": "libre"
-          },
-          "validation": "POSITION_ATTRIBUEE"
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         }
       ],
-      "statut_affiche": "condamnation non définitive",
       "situation": {
-        "decision": {
-          "label": "Décision",
-          "titre": "Condamnation",
-          "meta": "Tribunal correctionnel de Rouen",
-          "cat": "red",
-          "texte": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet."
-        },
         "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
           "label": "Suite · recours",
           "titre": "Appel et caractère définitif non documentés",
-          "meta": "dans les sources consultées",
-          "cat": "blue",
           "lignes": [
             "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
           ]
+        },
+        "decision": {
+          "cat": "red",
+          "meta": "Tribunal correctionnel de Rouen",
+          "label": "Décision",
+          "texte": "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
+          "titre": "Condamnation"
         }
       },
+      "etat_actuel": [
+        "Le tribunal correctionnel de Rouen a condamné l'ancien surveillant à six ans de prison ferme, avec un suivi socio-judiciaire d'une durée de sept ans, une injonction de soins et l'interdiction d'exercer des activités auprès des mineurs à titre définitif, en suivant les réquisitions du parquet.",
+        "Appel et caractère définitif non documentés : aucun des articles consultés ne dit si la décision a été contestée ni si elle est définitive."
+      ],
+      "statut_affiche": "condamnation non définitive",
       "statut_libelle": "Condamnation (appel non documenté)"
     },
     "FR-2026-0011": {
@@ -12163,237 +12235,609 @@
       }
     },
     "FR-2026-0047": {
-      "etat_actuel": [
-        "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles.",
-        "Selon Innocence en Danger, l’homme disposait de dix jours à compter de cette décision pour former appel ; ce délai est écoulé et aucun appel n’est rapporté dans les sources lues. Le caractère définitif de la condamnation n’est pas documenté."
-      ],
       "appel": false,
       "faits": "Selon Le Figaro et L’indépendant, une enfant de l’école maternelle Alexandre-Copello, à Marseille (5e), a raconté à sa mère des faits d’agression sexuelle qui auraient été commis dans l’établissement le 8 septembre 2025 ; un intervenant extérieur venu ce jour-là pour des travaux a été mis en cause.",
       "deroule": [
         {
-          "date": "2025-09-08",
-          "date_nature": "evenement",
+          "date": null,
           "type": "fait_rapporte",
+          "texte": "Selon Innocence en Danger, le mis en cause dispose de dix jours pour former appel de cette décision ; le document ne rapporte pas qu'un appel a été interjeté.",
           "acteur": null,
-          "texte": "Selon L’indépendant, les faits dénoncés par la mère d’une enfant de l’école maternelle Alexandre-Copello (Marseille 5e) remontent au 8 septembre 2025 ; selon Le Figaro, l’enfant lui a raconté les faits à son retour.",
           "source": {
-            "media": "L’indépendant",
-            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
-            "publie_le": "2025-09-30",
-            "acces": "libre"
+            "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+            "acces": "libre",
+            "media": "Innocence en Danger",
+            "publie_le": null
           },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "contexte",
+          "texte": "Selon Innocence en Danger, Innocence en Danger s'est constituée partie civile dans cette affaire.",
+          "acteur": "Innocence en Danger",
+          "source": {
+            "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+            "acces": "libre",
+            "media": "Innocence en Danger",
+            "publie_le": null
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09",
+          "type": "fait_rapporte",
+          "texte": "Selon La Provence, une enfant scolarisée à l'école Alexandre Copello, dans le 5e arrondissement de Marseille, aurait subi une agression sexuelle le 8 septembre au sein de son établissement scolaire.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2025-09-29"
+          },
+          "date_nature": "approximative",
           "sources_complementaires": [
             {
-              "media": "Le Figaro",
-              "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
-              "publie_le": "2025-09-29",
-              "acces": "libre"
+              "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+              "acces": "libre",
+              "media": "Innocence en Danger",
+              "publie_le": null
             },
             {
-              "media": "Ladepeche.fr",
+              "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
+              "acces": "libre",
+              "media": "Radio France",
+              "publie_le": "2026-03-09"
+            },
+            {
+              "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+              "acces": "libre",
+              "media": "La Provence",
+              "publie_le": "2026-03-30"
+            }
+          ]
+        },
+        {
+          "date": "2025-09-08",
+          "type": "fait_rapporte",
+          "texte": "Selon L’indépendant, les faits dénoncés par la mère d’une enfant de l’école maternelle Alexandre-Copello (Marseille 5e) remontent au 8 septembre 2025 ; selon Le Figaro, l’enfant lui a raconté les faits à son retour.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+            "acces": "libre",
+            "media": "L’indépendant",
+            "publie_le": "2025-09-30"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2025-09-29"
+            },
+            {
               "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
-              "publie_le": "2025-09-29",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
+            },
+            {
+              "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+              "acces": "libre",
+              "media": "Innocence en Danger",
+              "publie_le": null
+            },
+            {
+              "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
+              "acces": "libre",
+              "media": "Radio France",
+              "publie_le": "2026-03-09"
+            },
+            {
+              "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+              "acces": "libre",
+              "media": "La Provence",
+              "publie_le": "2026-03-30"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
-          "type": "plainte",
-          "acteur": "mère de l’enfant",
-          "texte": "Selon L’indépendant, la mère de l’enfant a déposé plainte.",
+          "type": "enquete",
+          "texte": "Selon Ladepeche.fr, l'enquête menée par la Division de la criminalité territoriale (DCT) a permis d'identifier un suspect correspondant au portrait dressé par la fillette.",
+          "acteur": "Division de la criminalité territoriale (DCT)",
           "source": {
-            "media": "L’indépendant",
-            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
-            "publie_le": "2025-09-30",
-            "acces": "libre"
+            "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2025-09-29"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "Ladepeche.fr",
+              "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
+            },
+            {
+              "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+              "acces": "libre",
+              "media": "Innocence en Danger",
+              "publie_le": null
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : la mairie de Marseille annonce qu'une nouvelle réunion est prévue dans la semaine avec les parents d'élèves.",
+          "acteur": "mairie de Marseille",
+          "source": {
+            "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "audience",
+          "texte": "Selon Le Figaro, un homme sera jugé en mars prochain pour l'agression sexuelle d'une enfant au sein d'un établissement scolaire à Marseille.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
               "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
-              "publie_le": "2025-09-29",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon L’indépendant, la mère de l’enfant a déposé plainte.",
+          "acteur": "mère de l’enfant",
+          "source": {
+            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+            "acces": "libre",
+            "media": "L’indépendant",
+            "publie_le": "2025-09-30"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
+            },
+            {
+              "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+              "acces": "libre",
+              "media": "La Provence",
+              "publie_le": "2026-03-30"
             }
           ]
         },
         {
           "date": "2025-09-16",
-          "date_nature": "evenement",
           "type": "garde_a_vue",
-          "acteur": null,
           "texte": "Selon Innocence en Danger, l’enquête, menée par la Division de la criminalité territoriale, a permis d’identifier un intervenant extérieur venu ce jour-là dans l’école pour des travaux ; il a été arrêté et placé en garde à vue le mardi 16 septembre 2025.",
+          "acteur": null,
           "source": {
-            "media": "Innocence en Danger",
             "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Innocence en Danger"
           },
+          "date_nature": "evenement",
           "sources_complementaires": [
             {
-              "media": "L’indépendant",
               "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
-              "publie_le": "2025-09-30",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
             },
             {
-              "media": "Ladepeche.fr",
               "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
-              "publie_le": "2025-09-29",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
             }
           ]
         },
         {
           "date": "2025-09-18",
-          "date_nature": "evenement",
           "type": "decision",
-          "acteur": "magistrat",
           "texte": "Selon Innocence en Danger, présenté à un magistrat deux jours après son placement en garde à vue du 16 septembre 2025, l’homme mis en cause a été placé sous contrôle judiciaire ; il conteste les faits.",
+          "acteur": "magistrat",
           "source": {
-            "media": "Innocence en Danger",
             "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Innocence en Danger"
           },
+          "date_nature": "evenement",
           "sources_complementaires": [
             {
-              "media": "L’indépendant",
               "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
-              "publie_le": "2025-09-30",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
             },
             {
-              "media": "Le Figaro",
               "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
-              "publie_le": "2025-09-29",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2025-09-29"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "mesure_collectivite",
-          "acteur": "Éducation nationale ; mairie de Marseille",
           "texte": "Selon Le Figaro, l’Éducation nationale et la mairie de Marseille indiquent avoir ouvert une cellule psychologique.",
+          "acteur": "Éducation nationale ; mairie de Marseille",
           "source": {
-            "media": "Le Figaro",
             "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
-            "publie_le": "2025-09-29",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "L’indépendant",
               "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
-              "publie_le": "2025-09-30",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "mesure_collectivite",
+          "texte": "La mairie de Marseille précise qu'une première réunion s'est tenue avec les parents, avec la présentation de la procédure judiciaire en cours.",
           "acteur": "mairie de Marseille",
-          "texte": "Selon la municipalité, une première réunion s’est tenue avec les parents, avec la présentation de la procédure judiciaire en cours.",
           "source": {
-            "media": "Le Figaro",
             "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
-            "publie_le": "2025-09-29",
-            "acces": "libre"
-          }
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon L’indépendant, une plainte a été déposée, selon La Provence.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+            "acces": "libre",
+            "media": "L’indépendant",
+            "publie_le": "2025-09-30"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "mesure_etablissement",
+          "texte": "Selon L’indépendant, une cellule d'écoute et de soutien a été mise en place au sein de l'établissement scolaire.",
+          "acteur": "École Alexandre-Copello",
+          "source": {
+            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+            "acces": "libre",
+            "media": "L’indépendant",
+            "publie_le": "2025-09-30"
+          },
+          "date_nature": "article"
         },
         {
           "date": "2026-03-10",
-          "date_nature": "evenement",
           "type": "renvoi",
-          "acteur": "tribunal correctionnel de Marseille",
           "texte": "Selon Radio France, l’homme mis en cause a été renvoyé le mardi 10 mars 2026 devant le tribunal correctionnel de Marseille pour agression sexuelle sur mineure ; son procès s’ouvre ce jour-là.",
+          "acteur": "tribunal correctionnel de Marseille",
           "source": {
-            "media": "Radio France",
             "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
-            "publie_le": "2026-03-09",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Radio France",
+            "publie_le": "2026-03-09"
           },
+          "date_nature": "evenement",
           "sources_complementaires": [
             {
-              "media": "Innocence en Danger",
               "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Innocence en Danger"
+            },
+            {
+              "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+              "acces": "libre",
+              "media": "Le Figaro",
+              "publie_le": "2025-09-29"
+            },
+            {
+              "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
+            },
+            {
+              "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
+            },
+            {
+              "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+              "acces": "libre",
+              "media": "La Provence",
+              "publie_le": "2026-03-30"
             }
           ]
         },
         {
           "date": null,
-          "date_nature": "article",
           "type": "contexte",
-          "acteur": "Innocence en Danger",
           "texte": "L’association Innocence en Danger s’est constituée partie civile dans ce dossier, représentée par Maître Nathalie Bucquet (Radio France ; Innocence en Danger).",
+          "acteur": "Innocence en Danger",
           "source": {
-            "media": "Radio France",
             "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
-            "publie_le": "2026-03-09",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "Radio France",
+            "publie_le": "2026-03-09"
           },
+          "date_nature": "article",
           "sources_complementaires": [
             {
-              "media": "Innocence en Danger",
               "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Innocence en Danger"
+            }
+          ]
+        },
+        {
+          "date": "2026-03-10",
+          "type": "audience",
+          "texte": "Le procureur Alain Berthomieu a requis une condamnation à quatre ans de prison dont deux assortis d'un sursis probatoire.",
+          "acteur": "procureur Alain Berthomieu",
+          "source": {
+            "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+            "acces": "libre",
+            "media": "La Provence",
+            "publie_le": "2026-03-30"
+          },
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.radiofrance.fr/francebleu/podcasts/l-info-d-ici-ici-provence/marseille-un-homme-juge-mardi-pour-l-agression-sexuelle-d-une-fillette-de-quatre-ans-a-l-ecole-copello-2538604",
+              "acces": "libre",
+              "media": "Radio France",
+              "publie_le": "2026-03-09"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "Selon La Provence, la police s'est saisie de la plainte de la mère de l'enfant.",
+          "acteur": "police",
+          "source": {
+            "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+            "acces": "libre",
+            "media": "La Provence",
+            "publie_le": "2026-03-30"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+              "acces": "libre",
+              "media": "L’indépendant",
+              "publie_le": "2025-09-30"
+            },
+            {
+              "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+              "acces": "libre",
+              "media": "Ladepeche.fr",
+              "publie_le": "2025-09-29"
             }
           ]
         },
         {
           "date": "2026-03-31",
-          "date_nature": "evenement",
           "type": "decision",
-          "acteur": "tribunal correctionnel de Marseille",
           "texte": "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles.",
+          "acteur": "tribunal correctionnel de Marseille",
           "source": {
-            "media": "La Provence",
             "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
-            "publie_le": "2026-03-31",
-            "acces": "libre"
+            "acces": "libre",
+            "media": "La Provence",
+            "publie_le": "2026-03-31"
           },
+          "date_nature": "evenement",
           "sources_complementaires": [
             {
-              "media": "Innocence en Danger",
               "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
-              "acces": "libre"
+              "acces": "libre",
+              "media": "Innocence en Danger"
             }
           ]
+        },
+        {
+          "date": "2026-03-31",
+          "type": "decision",
+          "texte": "Le tribunal correctionnel de Marseille a condamné le technicien pour agression sexuelle sur mineure à la peine de 3 ans de détention dont 2 ans assortis d'un sursis probatoire, la partie ferme d'un an étant à purger à domicile sous bracelet électronique, et a prononcé une interdiction d'exercer une activité professionnelle ou associative en contact de mineurs pour une durée de 10 ans ainsi qu'une inscription au Fichier des auteurs d'infractions sexuelles (Fijais).",
+          "acteur": "tribunal correctionnel de Marseille",
+          "source": {
+            "url": "https://www.laprovence.com/article/faits-divers-justice/1673246679031614/le-technicien-soupconne-dagression-sexuelle-sur-une-ecoliere-marseillaise-condamne",
+            "acces": "libre",
+            "media": "La Provence",
+            "publie_le": "2026-03-30"
+          },
+          "date_nature": "evenement"
         }
       ],
+      "synthese": {
+        "ouvert": "Selon Innocence en Danger, l’homme disposait de dix jours à compter de cette décision pour former appel ; ce délai est écoulé et aucun appel n’est rapporté dans les sources lues. Le caractère définitif de la condamnation n’est pas documenté.",
+        "decision": "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles."
+      },
       "inconnues": [
         "Appel et caractère définitif : aucun appel n’est rapporté dans les sources lues ; le délai de dix jours évoqué par Innocence en Danger est écoulé, mais l’absence d’article de suivi ne prouve ni l’absence d’appel ni le caractère définitif.",
         "Le jugement du mardi 31 mars 2026 est daté par La Provence (« Ce mardi 31 mars 2026 […] a été condamné ») ; la page d’Innocence en Danger ne porte aucune date de décision.",
         "Le dossier ne repose que sur 5 articles lus (La Provence, Innocence en Danger, Radio France, Le Figaro, L’indépendant ; Ladepeche.fr en complément)."
       ],
-      "synthese": {
-        "decision": "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles.",
-        "ouvert": "Selon Innocence en Danger, l’homme disposait de dix jours à compter de cette décision pour former appel ; ce délai est écoulé et aucun appel n’est rapporté dans les sources lues. Le caractère définitif de la condamnation n’est pas documenté."
-      },
-      "reactions": [],
-      "statut_affiche": "condamnation non définitive",
-      "situation": {
-        "decision": {
-          "label": "Décision",
-          "titre": "Condamnation",
-          "meta": "31 mars 2026 · Tribunal correctionnel de Marseille",
-          "cat": "red",
-          "texte": "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles."
+      "reactions": [
+        {
+          "date": null,
+          "acteur": "Maître Natalie Bucquet, avocate d'Innocence en Danger",
+          "etabli": "Établi : propos rapportés par Innocence en Danger. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.innocenceendanger.org/agression-sexuelle-dans-une-ecole-marseillaise",
+            "acces": "libre",
+            "media": "Innocence en Danger",
+            "publie_le": null
+          },
+          "qualite": "propos rapportés par Innocence en Danger",
+          "a_propos": "risque d'autres victimes et enjeu du procès",
+          "citations": [
+            {
+              "pour": "risque d'autres victimes et enjeu du procès",
+              "texte": "au regard des éléments du dossier, on ne peut pas exclure que cette agression ne soit pas un acte isolé. C'est aussi tout l'enjeu de ce procès : comprendre ce qui s'est passé et vérifier s'il pourrait y avoir d'autres victimes"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
         },
+        {
+          "date": "2025-09-29",
+          "acteur": "la mairie de Marseille",
+          "etabli": "Établi : propos rapportés par Le Figaro. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
+          },
+          "qualite": "propos rapportés par Le Figaro",
+          "a_propos": "mise à disposition des informations nécessaires pour les besoins de l'enquête",
+          "citations": [
+            {
+              "pour": "mise à disposition des informations nécessaires pour les besoins de l'enquête",
+              "texte": "la mairie a expliqué mettre à disposition toutes les informations nécessaires pour les besoins de l’enquête."
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09-29",
+          "acteur": "la mairie de Marseille",
+          "etabli": "Établi : propos rapportés par Le Figaro. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.lefigaro.fr/marseille/marseille-un-homme-accuse-d-agression-sexuelle-dans-une-ecole-sur-une-petite-fille-de-4-ans-20250929",
+            "acces": "libre",
+            "media": "Le Figaro",
+            "publie_le": "2025-09-29"
+          },
+          "qualite": "propos rapportés par Le Figaro",
+          "a_propos": "nouvelle réunion prévue avec les parents d'élèves",
+          "citations": [
+            {
+              "pour": "nouvelle réunion prévue avec les parents d'élèves",
+              "texte": "nouvelle réunion est prévue dans la semaine avec les parents d’élèves."
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (Le Figaro) : La mairie ajoute qu’une «nouvelle réunion est prévue dans la semaine avec les parents d’élèves.»",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09-30",
+          "acteur": "rectorat d'Aix-Marseille",
+          "etabli": "Établi : propos rapportés par L’indépendant. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.lindependant.fr/2025/09/30/une-rougeur-suspecte-sur-les-parties-intimes-de-sa-fille-une-enfant-de-4-ans-victime-dune-agression-sexuelle-a-lecole-le-technicien-intervenu-pour-des-12962785.php",
+            "acces": "libre",
+            "media": "L’indépendant",
+            "publie_le": "2025-09-30"
+          },
+          "qualite": "propos rapportés par L’indépendant",
+          "a_propos": "enquête en cours après le signalement de la mère auprès des services de police",
+          "citations": [
+            {
+              "pour": "enquête en cours après le signalement de la mère auprès des services de police",
+              "texte": "À la suite du signalement effectué par la mère de la fillette auprès des services de police, une enquête est en cours"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2025-09-29",
+          "acteur": "Nicolas Bessone, procureur de Marseille",
+          "etabli": "Établi : propos rapportés par Ladepeche.fr. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ladepeche.fr/2025/09/29/une-petite-fille-de-4-ans-victime-dune-agression-sexuelle-un-technicien-enedis-qui-intervenait-dans-lecole-soupconne-12960473.php",
+            "acces": "libre",
+            "media": "Ladepeche.fr",
+            "publie_le": "2025-09-29"
+          },
+          "qualite": "propos rapportés par Ladepeche.fr",
+          "a_propos": "prudence et crédibilité de la version de l'enfant",
+          "citations": [
+            {
+              "pour": "prudence et crédibilité de la version de l'enfant",
+              "texte": "Il faut rester prudent. Mais on ne voit pas pourquoi une enfant inventerait une telle histoire. D'autant qu'elle a donné des détails qui crédibilisent sa version"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        }
+      ],
+      "situation": {
         "suite": {
+          "cat": "blue",
+          "meta": "dans les sources consultées",
           "label": "Suite · recours",
           "titre": "Appel et caractère définitif non documentés",
-          "meta": "dans les sources consultées",
-          "cat": "blue",
           "lignes": [
             "Selon Innocence en Danger, l’homme disposait de dix jours à compter de cette décision pour former appel ; ce délai est écoulé et aucun appel n’est rapporté dans les sources lues. Le caractère définitif de la condamnation n’est pas documenté."
           ]
+        },
+        "decision": {
+          "cat": "red",
+          "meta": "31 mars 2026 · Tribunal correctionnel de Marseille",
+          "label": "Décision",
+          "texte": "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles.",
+          "titre": "Condamnation"
         }
-      }
+      },
+      "etat_actuel": [
+        "Selon La Provence, le tribunal correctionnel de Marseille a condamné l’homme mis en cause le mardi 31 mars 2026 pour agression sexuelle sur mineure à trois ans de prison, dont deux ans avec sursis probatoire, la partie ferme d’un an étant purgée à domicile sous bracelet électronique ; selon Innocence en Danger, avec obligation de soins, interdiction de dix ans d’exercer une activité en contact avec des mineurs, inscription au fichier des auteurs d’infractions sexuelles et interdiction de contact avec les parties civiles.",
+        "Selon Innocence en Danger, l’homme disposait de dix jours à compter de cette décision pour former appel ; ce délai est écoulé et aucun appel n’est rapporté dans les sources lues. Le caractère définitif de la condamnation n’est pas documenté."
+      ],
+      "statut_affiche": "condamnation non définitive"
     },
     "FR-2026-0122": {
       "etat_actuel": [
@@ -15139,9 +15583,22 @@
           "date_nature": "approximative"
         },
         {
+          "date": "2026-09",
+          "type": "fait_rapporte",
+          "texte": "Selon Actu.fr, les faits reprochés à l'animateur remontent au mois de septembre 2026 et se seraient déroulés sur le temps périscolaire à l'école primaire Marcel-Touchard.",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-06"
+          },
+          "date_nature": "approximative"
+        },
+        {
           "date": "2026-10-21",
           "type": "garde_a_vue",
-          "texte": "Selon sweetfm, l'animateur périscolaire de l'école Marcel-Touchard a été placé en garde à vue le 21 octobre.",
+          "texte": "Selon sweetfm, l'animateur périscolaire de l'école Marcel-Touchard, à Saint-Aubin-lès-Elbeuf, a été placé en garde à vue le 21 octobre dernier.",
           "acteur": null,
           "source": {
             "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
@@ -15149,7 +15606,15 @@
             "media": "sweetfm",
             "publie_le": "2026-11-12"
           },
-          "date_nature": "evenement"
+          "date_nature": "evenement",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
+            }
+          ]
         },
         {
           "date": "2026-11-05",
@@ -15161,6 +15626,19 @@
             "acces": "libre",
             "media": "Actu.fr",
             "publie_le": "2026-11-06"
+          },
+          "date_nature": "evenement"
+        },
+        {
+          "date": "2026-11-05",
+          "type": "mesure_collectivite",
+          "texte": "Selon ici, les familles avaient été prévenues le 5 novembre 2026 par la mairie.",
+          "acteur": "mairie de Saint-Aubin-lès-Elbeuf",
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
           },
           "date_nature": "evenement"
         },
@@ -15182,6 +15660,12 @@
               "acces": "libre",
               "media": "Tendance Ouest",
               "publie_le": "2026-11-10"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
             }
           ]
         },
@@ -15229,6 +15713,71 @@
               "acces": "libre",
               "media": "sweetfm",
               "publie_le": "2026-11-12"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
+            },
+            {
+              "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-06"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_etat",
+          "texte": "Selon Actu.fr, une cellule psychologique a été ouverte auprès de l'Association d'aide aux victimes, d'accès aux droits et de mesures sociojudiciaires (Avede ACJE).",
+          "acteur": null,
+          "source": {
+            "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+            "acces": "libre",
+            "media": "Actu.fr",
+            "publie_le": "2026-11-06"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "fait_rapporte",
+          "texte": "Selon Tendance Ouest, l'agent municipal du périscolaire aurait filmé des jeunes filles à leur insu dans les toilettes.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "plainte",
+          "texte": "La Ville de Saint-Aubin-lès-Elbeuf a déposé plainte auprès des autorités judiciaires et s'est constituée partie civile dans ce dossier.",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/comportements-inappropries-envers-des-eleves-un-animateur-vise-par-une-enquete-dans-une-ecole-pres-de-rouen_65023991.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-06"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
             }
           ]
         },
@@ -15256,6 +15805,12 @@
               "acces": "libre",
               "media": "Actu.fr",
               "publie_le": "2026-11-06"
+            },
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
             }
           ]
         },
@@ -15270,7 +15825,15 @@
             "media": "Tendance Ouest",
             "publie_le": "2026-11-10"
           },
-          "date_nature": "article"
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
+            }
+          ]
         },
         {
           "date": null,
@@ -15295,6 +15858,61 @@
         },
         {
           "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Mesure annoncée, sans confirmation de sa réalisation dans les sources lues : selon Tendance Ouest, une écoute psychologique est possible pour les familles concernées qui le souhaitent, via l'Association d'aide aux victimes, d'accès aux droits et de mesures socio-judiciaires (Avede Acje) ou un psychologue de la police nationale.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "La Ville indique avoir reçu les familles concernées afin de les écouter et de leur témoigner son soutien.",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://actu.fr/normandie/saint-aubin-les-elbeuf_76561/tout-le-monde-est-sur-les-nerfs-des-parents-sexpriment-sur-lenquete-visant-un-animateur-dune-ecole-pres-de-rouen_65026144.html",
+              "acces": "libre",
+              "media": "Actu.fr",
+              "publie_le": "2026-11-06"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "mesure_collectivite",
+          "texte": "Selon Tendance Ouest, la municipalité a envoyé un mail aux parents dont les élèves sont scolarisés à l'école Marcel Touchard.",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
           "type": "signalement",
           "texte": "Selon sweetfm, un signalement de l'Ofmin pour détention d'images pédopornographiques est à l'origine de la garde à vue de l'animateur.",
           "acteur": "Ofmin",
@@ -15307,9 +15925,30 @@
           "date_nature": "article"
         },
         {
+          "date": null,
+          "type": "signalement",
+          "texte": "Selon ici, l'agent a été placé en garde à vue suite à un signalement de l'OFMIN, l'office mineurs chargé de lutter contre les violences faites aux mineurs.",
+          "acteur": "OFMIN",
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
+          },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+              "acces": "libre",
+              "media": "sweetfm",
+              "publie_le": "2026-11-12"
+            }
+          ]
+        },
+        {
           "date": "2026-11-12",
           "type": "mise_en_examen",
-          "texte": "Selon sweetfm, le mis en cause a été mis en examen le 12 novembre à l'issue de sa garde à vue.",
+          "texte": "Selon sweetfm, l'animateur périscolaire a été mis en examen le jeudi 12 novembre, à l'issue de sa garde à vue.",
           "acteur": null,
           "source": {
             "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
@@ -15318,6 +15957,32 @@
             "publie_le": "2026-11-12"
           },
           "date_nature": "evenement"
+        },
+        {
+          "date": null,
+          "type": "mesure_etat",
+          "texte": "Selon ici, l'animateur a été placé en détention provisoire en attendant son procès.",
+          "acteur": null,
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
+          },
+          "date_nature": "article"
+        },
+        {
+          "date": null,
+          "type": "renvoi",
+          "texte": "Selon sweetfm, un délai ayant été demandé par les avocats du mis en cause pour préparer sa défense, celui-ci a été placé en détention provisoire et sera finalement jugé le lundi 7 décembre.",
+          "acteur": "tribunal",
+          "source": {
+            "url": "https://www.sweetfm.fr/saint-aubin-les-elbeuf-l-animateur-soupconne-d-avoir-filme-des-fillettes-va-etre-juge",
+            "acces": "libre",
+            "media": "sweetfm",
+            "publie_le": "2026-11-12"
+          },
+          "date_nature": "article"
         },
         {
           "date": null,
@@ -15343,7 +16008,41 @@
             "media": "sweetfm",
             "publie_le": "2026-11-12"
           },
+          "date_nature": "article",
+          "sources_complementaires": [
+            {
+              "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+              "acces": "libre",
+              "media": "ici",
+              "publie_le": "2026-11-12"
+            }
+          ]
+        },
+        {
+          "date": null,
+          "type": "decision",
+          "texte": "Selon ici, en attendant son procès, l'agent a été placé en détention provisoire.",
+          "acteur": "justice",
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
+          },
           "date_nature": "article"
+        },
+        {
+          "date": "2026-12-07",
+          "type": "audience",
+          "texte": "À venir : selon ici, l'animateur du périscolaire de l'école Marcel-Touchard de Saint-Aubin-lès-Elbeuf sera jugé le 7 décembre 2026 pour \"détention d'images pédopornographiques\".",
+          "acteur": "tribunal",
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
+          },
+          "date_nature": "evenement"
         }
       ],
       "synthese": {
@@ -15441,6 +16140,99 @@
             {
               "pour": "les vidéos trouvées, tournées dans les toilettes de l'école",
               "texte": "Ces vidéos ont été tournées dans les toilettes à leur insu"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-10",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf (municipalité)",
+          "etabli": "Établi : propos rapportés par Tendance Ouest. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "qualite": "propos rapportés par Tendance Ouest",
+          "a_propos": "présomption d'innocence de l'agent concerné",
+          "citations": [
+            {
+              "pour": "présomption d'innocence de l'agent concerné",
+              "texte": "bénéficie, comme tout citoyen, de la présomption d'innocence tant que les faits n'ont pas été établis et jugés par la justice"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-10",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+          "etabli": "Établi : propos rapportés par Tendance Ouest. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "qualite": "propos rapportés par Tendance Ouest",
+          "a_propos": "coopération de la Ville à l'enquête",
+          "citations": [
+            {
+              "pour": "coopération de la Ville à l'enquête",
+              "texte": "en apportant tous les éléments en sa possession avec un devoir de discrétion"
+            }
+          ],
+          "paraphrase": "Contexte dans l’article (Tendance Ouest) : La Ville assure contribuer à l'enquête en toute transparence, \"en apportant tous les éléments en sa possession avec un devoir de discrétion\" .",
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-10",
+          "acteur": "Ville de Saint-Aubin-lès-Elbeuf",
+          "etabli": "Établi : propos rapportés par Tendance Ouest. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.tendanceouest.com/actualite-444090-pres-de-rouen-un-agent-du-periscolaire-suspendu-pour-des-faits-visiblement-graves-une-enquete-est-en-cours",
+            "acces": "libre",
+            "media": "Tendance Ouest",
+            "publie_le": "2026-11-10"
+          },
+          "qualite": "propos rapportés par Tendance Ouest",
+          "a_propos": "qualification des faits reprochés à l'agent",
+          "citations": [
+            {
+              "pour": "qualification des faits reprochés à l'agent",
+              "texte": "pour des faits visiblement graves survenus sur le temps périscolaire de l'école primaire Marcel Touchard au cours du mois de septembre"
+            }
+          ],
+          "validation": "POSITION_ATTRIBUEE",
+          "attribution": "POSITION_ATTRIBUEE",
+          "date_nature": "article"
+        },
+        {
+          "date": "2026-11-12",
+          "acteur": "Sébastien Gallois, procureur de Rouen",
+          "etabli": "Établi : propos rapportés par ici. Une prise de parole n’établit pas son contenu.",
+          "portee": "affaire",
+          "source": {
+            "url": "https://www.ici.fr/normandie/seine-maritime-76/saint-aubin-les-elbeuf/un-animateur-du-periscolaire-a-saint-aubin-les-elbeuf-sera-juge-pour-detention-d-images-pedopornographiques-3490947",
+            "acces": "libre",
+            "media": "ici",
+            "publie_le": "2026-11-12"
+          },
+          "qualite": "propos rapportés par ici",
+          "a_propos": "qualifications retenues contre l'animateur",
+          "citations": [
+            {
+              "pour": "qualifications retenues contre l'animateur",
+              "texte": "détention d’images pédopornographiques , consultation habituelle d'un service de communication au public en ligne mettant à disposition l'image ou la représentation pornographique de mineur, voyeurisme commis sur un mineur"
             }
           ],
           "validation": "POSITION_ATTRIBUEE",
