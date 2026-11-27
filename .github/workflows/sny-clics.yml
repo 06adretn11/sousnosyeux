@@ -8,10 +8,16 @@ on:
   schedule:
     - cron: '7,37 * * * *'
   workflow_dispatch:
+    inputs:
+      reprise:
+        description: "Rang de la reprise automatique (publication abandonnée : main a avancé) — borné à 3"
+        required: false
+        default: "0"
 
 # contents: write — seulement pour la projection publique d'une affaire DÉJÀ publiée, après QA (étapes finales ; sans effet si rien à projeter).
 permissions:
   contents: write
+  actions: write   # reprise automatique : relancer sny-clics (workflow_dispatch) quand une publication est abandonnée
 
 concurrency:
   group: sny-telegram
@@ -101,6 +107,14 @@ jobs:
           RECON_CHANGE: ${{ steps.reconcile.outputs.change }}
           RECON_IDS: ${{ steps.reconcile.outputs.ids }}
           FICHES: ${{ steps.evenements.outputs.fiches }}
+      - name: 7b. Reprise automatique (publication abandonnée parce que main a avancé) — sans attendre un passage planifié
+        if: ${{ steps.publier.outputs.abandon == 'true' && fromJSON(github.event.inputs.reprise || '0') < 3 }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPRISE: ${{ github.event.inputs.reprise || '0' }}
+        # Une reprise bornée (3 au plus, compteur transmis) : le prochain passage relit Neon et recalcule ; GitHub ne conserve qu'une exécution en attente par groupe (jamais d'empilement).
+        run: gh workflow run sny-clics.yml --ref main -f reprise=$((REPRISE + 1))
       - name: Vérifier le site public et confirmer sur Telegram
         if: ${{ (steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true') && steps.publier.outputs.abandon != 'true' }}
         run: |

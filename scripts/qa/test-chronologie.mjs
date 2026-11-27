@@ -15,7 +15,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle, appliquerRelectures, publicationCorrigee, correspondEtape, correspondParole, defautsRelectureEtape } from '../lib/chronologie.mjs';
+import { analyserDate, dateFr, cleDate, repere, trierChrono, trierSources, trierParCle, appliquerRelectures, defautsChronologie, publicationCorrigee, correspondEtape, correspondParole, defautsRelectureEtape } from '../lib/chronologie.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 let ko = 0, ok = 0;
@@ -141,9 +141,6 @@ for (const r of TABLE.publications) { if (!Object.values(rendus).some((d) => JSO
 t(`relectures documentées (${TABLE.reperes.length} étapes, ${TABLE.paroles.length} paroles, ${TABLE.publications.length} parution) : chacune correspond à un élément du dossier servi et reste étayée`, () => assert.deepEqual(relecturesKo, []));
 const stats = { dossiers: dossiers.length, etapes: 0, evenement: 0, information: 0, aucune: 0, paroles: 0, paroles_info: 0, paroles_aucune: 0 };
 const exceptions = [];
-const ECRIT_ARTICLE = new Set(['article', 'inconnue']);
-const sansPerte = (avant, apres) => apres.length === avant.length && avant.every((x) => apres.includes(x));
-const croissant = (items, opt) => { let prec = null, vu_sans = false; for (const e of items) { const k = repere(e, opt).cle; if (k === null) vu_sans = true; else { if (vu_sans) return false; if (prec !== null && k < prec) return false; prec = k; } } return true; };
 const incoherences = [];
 for (const { id, d, fichier } of dossiers) {
   const etapes = d.deroule ?? [];
@@ -153,14 +150,9 @@ for (const { id, d, fichier } of dossiers) {
     if (r.nature === 'evenement' || r.nature === 'approximative') stats.evenement++;
     else if (r.nature === 'information') stats.information++;
     else { stats.aucune++; exceptions.push(`${id} (${fichier.split('/').pop()}) — « ${String(e.texte).slice(0, 70)} » : ni date d'événement ni date de publication de la source citée`); }
-    if (ECRIT_ARTICLE.has(e.date_nature) && (r.nature === 'evenement' || r.nature === 'approximative')) incoherences.push(`${id} : date « ${e.date_nature} » lue comme date d'événement`);
-    if (r.nature === 'aucune' && analyserDate(e.source?.publie_le)) incoherences.push(`${id} : « Date non établie » alors que la source porte une publication`);
-    if (r.nature === 'information' && !/^Information datée d[eu] /.test(r.libelle)) incoherences.push(`${id} : libellé de repli non explicite (${r.libelle})`);
   }
   for (const p of paroles) { const r = repere(p, { parole: true }); stats.paroles++; if (r.nature === 'information') stats.paroles_info++; if (r.nature === 'aucune') { stats.paroles_aucune++; exceptions.push(`${id} — parole « ${p.acteur} » : aucune date exploitable`); } }
-  const te = trierChrono(etapes), tp = trierChrono(paroles, { parole: true });
-  if (!sansPerte(etapes, te) || !sansPerte(paroles, tp)) incoherences.push(`${id} : le tri a perdu ou dupliqué un élément`);
-  if (!croissant(te) || !croissant(tp, { parole: true })) incoherences.push(`${id} : tri non croissant`);
+  for (const x of defautsChronologie(d)) incoherences.push(`${id} : ${x}`);
 }
 t(`${stats.dossiers} dossiers, ${stats.etapes} étapes : repère établi pour ${stats.evenement + stats.information} (événement ${stats.evenement}, information ${stats.information}), ${stats.aucune} sans date exploitable`, () => assert.ok(stats.etapes > 0));
 t('aucune incohérence (date de parution lue comme événement, repli manquant, libellé non explicite, perte d’élément, ordre)', () => assert.deepEqual(incoherences, []));

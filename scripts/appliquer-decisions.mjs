@@ -122,13 +122,13 @@ if (process.argv.includes('--generique')) {
   const { libellePublic } = await import('./lib/etat-affaire.mjs');
   const { readFileSync } = await import('node:fs');
   const holds = new Set(JSON.parse(readFileSync(new URL('../data/publication-holds.json', import.meta.url), 'utf8')).holds.map((h) => h.case_id));
-  const { classer } = await import('./lib/appliquer-contrat.mjs');
+  const { classer, defautsStructurels } = await import('./lib/appliquer-contrat.mjs');
   const { evenementDejaValide } = await import('./lib/routage-veille.mjs');
   const { detecterInstitutionnel, faitsStructures } = await import('./lib/evenement-institutionnel.mjs');
   const { detecterActesProcéduraux, MESURES_PROCEDURALES } = await import('./lib/acte-procedural.mjs');
   const { dejaConnu } = await import('./lib/nouveaute.mjs');
   const { schemaBoucle } = await import('./lib/telegram-clics.mjs');
-  const { prevenir, prevenirUneFois, phrasePublication, phraseEnrichissement, esc } = await import('./lib/prevenir.mjs');
+  const { prevenir, prevenirUneFois, phrasePublication, phraseEnrichissement, esc, retirerBoutons } = await import('./lib/prevenir.mjs');
   const S = await schemaBoucle(sql);
   const rows = await sql`
     select p.proposal_id, left(p.proposal_id::text, 8) k, p.case_id, p.analysis_action aa,
@@ -169,6 +169,31 @@ if (process.argv.includes('--generique')) {
                          applied_event_id = ${deja.event_id}
                    where proposal_id = ${o.proposal_id} and decision is null`;
       }
+    }
+  }
+
+  // --- (0b) DEMANDES INAPPLICABLES -------------------------------------------------------------------------------------------
+  // Une demande d'ÉTAT encore ouverte que le contrat d'application refuse structurellement (type d'événement non admis pour l'état : audience annoncée, voie de recours, suspension…)
+  // ne peut aboutir par aucun clic. Elle est RETIRÉE de la demande (trace `payload.ecartee`, motif et raisons conservés, relisible par rejeu-ecartees ; aucune décision humaine inventée),
+  // ses boutons sont retirés, et les demandes sœurs que sa présence avait écartées (« même fait déjà soumis ») redeviennent examinables — l'information judiciaire n'est pas perdue :
+  // elle passe par le circuit des actes procéduraux (enrichissement) quand il la porte.
+  if (!REPLAY) {
+    const inap = await sql`
+      select p.proposal_id::text pid, left(p.proposal_id::text, 8) k, p.case_id, p.statut_avant::text av, p.statut_propose::text ap, p.event_date::text ed, p.facts,
+             (select max(t.message_id) from telegram_envois t where t.kind = 'decision' and t.cle = p.proposal_id::text and t.message_id is not null) mid
+        from state_proposals p
+       where p.decision is null and p.analysis_action = 'STATE_CHANGE' and p.statut_propose is not null and p.payload->'ecartee' is null
+         and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = p.proposal_id::text)`;
+    for (const o of inap) {
+      const raisons = defautsStructurels({ aa: 'STATE_CHANGE', ap: o.ap, av: o.av, facts: o.facts, ed: o.ed, case_id: o.case_id });
+      if (!raisons.length) continue;
+      dire(`  ${o.k} | ${o.case_id} | DEMANDE INAPPLICABLE (${raisons.join(' ; ')}) → retirée de la demande, boutons retirés, demandes sœurs rouvertes`);
+      if (DRY) continue;
+      const trace = { nature: 'demande inapplicable par le contrat d’application', code: 'NON_PORTE_PAR_LE_CONTRAT', humain: false, raisons, motif: 'type d’événement non porté par le contrat d’application : aucun clic ne pourrait l’appliquer', le: new Date().toISOString().slice(0, 10) };
+      await sql`update state_proposals set payload = coalesce(payload, '{}'::jsonb) || ${JSON.stringify({ ecartee: trace })}::jsonb where proposal_id = ${o.pid}::uuid and decision is null`;
+      if (o.mid) await retirerBoutons(o.mid);
+      const soeurs = await sql`select proposal_id::text pid from state_proposals where case_id = ${o.case_id} and decision is null and proposal_id::text <> ${o.pid} and payload->'ecartee'->>'motif' like 'même fait déjà soumis%'`;
+      for (const q of soeurs) { await sql`update state_proposals set payload = payload - 'ecartee' where proposal_id = ${q.pid}::uuid and decision is null`; await sql`delete from telegram_envois where cle = ${q.pid} and message_id is null`; }
     }
   }
 
@@ -282,6 +307,18 @@ if (process.argv.includes('--generique')) {
       const ev = await evenement({ case_id: p.case_id, event_type: f.event_type, event_date: p.ed, statut_apres: p.ap, libelle_public: libellePublic(p.ap), article_id: p.article_id });
       await sql`update state_proposals set applied_event_id = ${ev} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
       await prevenir(`📌 <b>Appliqué en base</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nÉtat judiciaire : ${esc(p.courant)} → <b>${esc(p.ap)}</b> (événement consigné).\n${phrasePublication(p.pub)}`);
+    }
+    // Un acte (appel, audience…) que le contrat ne porte pas mais DÉJÀ consigné (même type d'événement, à ±3 jours du fait ou de la parution) : la source est rattachée, rien n'est « bloqué ».
+    if (non.length && !DRY && !REPLAY && f?.event_type && !p.applied_event_id) {
+      const evs2 = await sql`select event_id, event_type::text event_type, event_date::text event_date from case_events where case_id = ${p.case_id}`;
+      const ref = Date.parse(p.ed ?? p.pd ?? '');
+      const meme = Number.isFinite(ref) ? evs2.find((e) => e.event_type === f.event_type && e.event_date && Math.abs(Date.parse(e.event_date) - ref) <= 3 * 86400000) : null;
+      if (meme) {
+        await sql`update state_proposals set applied_event_id = ${meme.event_id} where proposal_id = ${p.proposal_id} and decision = 'ACCEPT' and applied_event_id is null`;
+        dire(`      = acte déjà consigné (${meme.event_type} du ${String(meme.event_date).slice(0, 10)}) : source rattachée, aucun doublon`);
+        await prevenirUneFois(sql, { cle: p.k, resultat: 'conservee', texte: `📌 <b>Décision enregistrée</b> — ${esc(p.etablissement)} — ${esc(p.commune)}\nCet acte (${esc(meme.event_type.replace('_', ' '))} du ${esc(String(meme.event_date).slice(0, 10))}) était déjà consigné : la source lui est rattachée, sans doublon. Rien à faire.` });
+        continue;
+      }
     }
     // Un ACCEPT que l'automate ne peut PAS appliquer ne doit pas rester muet : on le dit UNE fois, avec la raison.
     if (non.length && !DRY && !REPLAY) {

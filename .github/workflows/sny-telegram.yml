@@ -14,6 +14,7 @@ on:
 # contents: write — seulement pour la projection publique d'une affaire DÉJÀ publiée (étape finale, après QA).
 permissions:
   contents: write
+  actions: write   # reprise automatique : relancer sny-clics (workflow_dispatch) quand une publication est abandonnée
 
 # PERTE DE CLICS (audit du 26/11/2026) : avec un groupe de concurrence sur le workflow, GitHub ne conserve qu'UN run en attente ; chaque clic suivant remplaçait (annulait) le précédent.
 # Mesuré : 9 clics reçus (« Clic reçu ») jamais enregistrés sur 3 rafales ; seuls le premier et le dernier de chaque rafale étaient traités. Désormais :
@@ -136,6 +137,14 @@ jobs:
           RECON_CHANGE: ${{ steps.reconcile.outputs.change }}
           RECON_IDS: ${{ steps.reconcile.outputs.ids }}
           FICHES: ${{ steps.evenements.outputs.fiches }}
+      - name: 7b. Reprise automatique (publication abandonnée parce que main a avancé) — sans attendre un passage planifié
+        if: ${{ steps.publier.outputs.abandon == 'true' && fromJSON(github.event.inputs.reprise || '0') < 3 }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPRISE: ${{ github.event.inputs.reprise || '0' }}
+        # Une reprise bornée (3 au plus, compteur transmis) : le prochain passage relit Neon et recalcule ; GitHub ne conserve qu'une exécution en attente par groupe (jamais d'empilement).
+        run: gh workflow run sny-clics.yml --ref main -f reprise=$((REPRISE + 1))
       - name: 8. Vérifier le site public et confirmer sur Telegram
         id: verifier
         if: ${{ (steps.projection.outputs.change == 'true' || steps.reconcile.outputs.change == 'true' || steps.evenements.outputs.change == 'true') && steps.publier.outputs.abandon != 'true' }}

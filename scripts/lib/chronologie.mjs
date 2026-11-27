@@ -161,3 +161,23 @@ export const trierChrono = (items, opt = {}) => trierParCle(items, (e) => repere
 
 /** Références (articles) : ordre de publication ascendant ; sans date de publication exploitable en dernier. `dateDe(s)` → publie_le / publication_date. */
 export const trierSources = (liste, dateDe) => trierParCle(liste, (s) => cleDate(dateDe(s)));
+
+// Défauts de chronologie d'UN dossier tel que rendu (relectures appliquées) : une seule définition, lue par la QA du corpus ET par la garde de promotion/d'envoi.
+// Une prise de parole ou une étape SANS date établie n'est pas un défaut (« Date non établie », en dernier) ; une date mal lue, un repli non explicite, un tri qui perd ou désordonne en sont.
+export function defautsChronologie(d) {
+  const out = [];
+  const etapes = d?.deroule ?? [];
+  const paroles = [...(d?.reactions ?? []), ...(d?.paroles ?? [])];
+  for (const e of etapes) {
+    const r = repere(e);
+    if (ARTICLES_SANS_DATE.has(e.date_nature) && (r.nature === 'evenement' || r.nature === 'approximative')) out.push(`date « ${e.date_nature} » lue comme date d'événement`);
+    if (r.nature === 'aucune' && analyserDate(e.source?.publie_le)) out.push('« Date non établie » alors que la source porte une publication');
+    if (r.nature === 'information' && !/^Information datée d[eu] /.test(r.libelle)) out.push(`libellé de repli non explicite (${r.libelle})`);
+  }
+  const sansPerte = (avant, apres) => apres.length === avant.length && avant.every((x) => apres.includes(x));
+  const croissant = (items, opt) => { let prec = null, vuSans = false; for (const e of items) { const k = repere(e, opt).cle; if (k === null) vuSans = true; else { if (vuSans) return false; if (prec !== null && k < prec) return false; prec = k; } } return true; };
+  const te = trierChrono(etapes), tp = trierChrono(paroles, { parole: true });
+  if (!sansPerte(etapes, te) || !sansPerte(paroles, tp)) out.push('le tri a perdu ou dupliqué un élément');
+  if (!croissant(te) || !croissant(tp, { parole: true })) out.push('tri non croissant');
+  return out;
+}

@@ -34,6 +34,21 @@ export function egal(a, b) {
 }
 
 export default {
+  /**
+   * CŒUR DE RYTHME : GitHub ne tient pas la cadence de `schedule` (3 passages de sny-clics en 12 h le 27/11 pour un cron toutes les 30 min) — un passage abandonné, un run annulé ou
+   * une décision enregistrée mais non publiée attendaient des heures. Le Worker relance le passage de sécurité sny-clics à intervalle fixe (wrangler.jsonc · triggers.crons).
+   * Idempotent : sny-clics relit l’état des décisions, n'applique que ce qui est décidé et non appliqué, et GitHub ne garde qu'une exécution en attente par groupe.
+   */
+  async scheduled(_event, env, ctx, fetchImpl = fetch) {
+    const requete = fetchImpl(`https://api.github.com/repos/${env.GITHUB_REPO}/actions/workflows/sny-clics.yml/dispatches`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${env.GITHUB_TOKEN}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'sny-telegram-webhook', 'content-type': 'application/json' },
+      body: JSON.stringify({ ref: 'main', inputs: { reprise: '0' } }),
+    }).then((r) => r.status === 204).catch(() => false);
+    ctx?.waitUntil?.(requete);
+    return requete;
+  },
+
   /** `fetchImpl` : injectable pour les tests ; en production, le `fetch` du runtime. */
   async fetch(request, env, ctx, fetchImpl = fetch) {
     if (request.method !== 'POST') return new Response('SNY telegram webhook', { status: 200 });

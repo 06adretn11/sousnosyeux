@@ -47,6 +47,16 @@ export function texteVerifie({ ids = [], fiches = [], hubs = [], site, infos = [
   return `🌐 <b>Publié et vérifié sur le site</b> — ${ids.length} carte(s), ${fiches.length} fiche(s), ${hubs.length} Hub(s)\nLe site public affiche l’état validé (${site}).${hubs.length ? `\nHubs actualisés :\n${hubs.map((h) => `${site}/territoires/${h}/`).join('\n')}` : ''}${fiches.length ? `\nFiches : ${site}/affaires/{identifiant}/ (${fiches.length} pages lues sur le site servi).` : ''}`;
 }
 
+/** Retire le clavier d'un message déjà envoyé (une demande retirée n'a plus de bouton). Best-effort. @returns {Promise<boolean>} */
+export async function retirerBoutons(messageId) {
+  const token = process.env.TELEGRAM_BOT_TOKEN; const chat = Number(process.env.TELEGRAM_ALLOWED_USER_ID);
+  if (!token || !Number.isInteger(chat) || !messageId || process.env.SNY_DRY) return false;
+  try {
+    const r = await fetch(`https://api.telegram.org/bot${token}/editMessageReplyMarkup`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ chat_id: chat, message_id: messageId, reply_markup: { inline_keyboard: [] } }) });
+    return (await r.json()).ok === true;
+  } catch { return false; }
+}
+
 /** @returns {Promise<boolean>} true si le message est parti */
 export async function prevenir(texte) {
   const token = process.env.TELEGRAM_BOT_TOKEN;

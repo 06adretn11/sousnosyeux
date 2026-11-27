@@ -3,6 +3,7 @@
 // (journaux des étapes, fichiers QA_LOG / CONTROLE_LOG). Aucune donnée personnelle : identifiants d'affaire et empreintes seulement.
 import { readFileSync } from 'node:fs';
 import { classerEchecClic } from './lib/alerte-clic.mjs';
+import { createHash } from 'node:crypto';
 import { prevenir } from './lib/prevenir.mjs';
 
 const cles = ['enregistrer', 'simples', 'discovery', 'projection', 'qa', 'publier', 'verifier', 'reconcile', 'controle'];
@@ -36,4 +37,16 @@ try {
   }
 } catch { /* le contexte est une aide : sans lui, l'alerte garde sa classification */ }
 
-await prevenir(classerEchecClic(outcomes, ctx).texte);
+const { texte } = classerEchecClic(outcomes, ctx);
+// Un MÊME échec (mêmes étapes en échec, mêmes contrôles QA, mêmes écarts du site) n'est dit qu'une fois par fenêtre de 6 h : les passages suivants échouent de la même façon sans nouveau message
+// (27/11 : quatre messages quasi identiques pour une seule cause). Une cause différente, ou la même après la fenêtre, est dite.
+const signature = createHash('sha256').update(JSON.stringify({ o: outcomes, c: ctx.controles, e: ctx.ecartsSiteTous ?? ctx.ecartsSite })).digest('hex').slice(0, 16);
+let sqlAlerte = null, doublon = false;
+try {
+  if (process.env.NEON_DATABASE_URL) {
+    const { connecter } = await import('./lib/neon.mjs'); sqlAlerte = connecter().sql;
+    doublon = (await sqlAlerte`select 1 from telegram_journal where kind = 'alerte' and cle = ${'alerte:' + signature} and at > now() - interval '6 hours' limit 1`).length > 0;
+  }
+} catch { /* sans journal : on prévient (jamais de silence par défaut) */ }
+if (doublon) console.log('même échec déjà signalé dans les 6 dernières heures : aucun nouveau message');
+else if (await prevenir(texte) && sqlAlerte) { try { const { journaliser } = await import('./lib/telegram-clics.mjs'); await journaliser(sqlAlerte, { kind: 'alerte', cle: 'alerte:' + signature, resultat: 'envoyee' }); } catch { /* journal absent : tant pis */ } }

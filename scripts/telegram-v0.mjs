@@ -34,6 +34,10 @@ import { enregistrerDecision, verifierActivation, ACTIONS_SOCIALES } from './lib
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 import { envoyerPistes } from './lib/pistes-a-qualifier.mjs';
 import { defautsStructurels } from './lib/appliquer-contrat.mjs';
+import { defautsChronologie, appliquerRelectures } from './lib/chronologie.mjs';
+
+// Relectures documentées de datation (data/chronologie-reperes.json) : même table que la QA et la promotion, pour juger AVANT envoi si une version serait refusée.
+const TABLE_REPERES = JSON.parse(readFileSync(new URL('../data/chronologie-reperes.json', import.meta.url), 'utf8'));
 
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
@@ -165,7 +169,7 @@ async function verifierFaitInedit(p) {
     select left(q.proposal_id::text, 8) k, q.event_date::text ed, a.publication_date::text pd
       from state_proposals q left join articles a on a.article_id = q.article_id
      where q.case_id = ${p.case_id} and q.statut_propose = ${p.apres}::statut_judiciaire and q.proposal_id <> ${p.proposal_id}
-       and q.decision is null
+       and q.decision is null and q.payload->'ecartee' is null
        and exists (select 1 from telegram_envois t where t.kind = 'decision' and t.cle = q.proposal_id::text)`;
   const meme = soeurs.find((q) => memeFaitSoumis(p, q));
   if (meme) throw new Error(`même fait déjà soumis à décision (${meme.k}) : une seule demande d’arbitrage`);
@@ -364,6 +368,9 @@ async function nouvelle(cle) {
         and exists (select 1 from telegram_envois t where t.cle = new_case_proposals.proposal_id::text and t.message_id is not null)`;
       if (conc) throw new Error(`mise à jour concurrente déjà soumise (${conc.k}) : une seule demande par version de départ — rien envoyé`);
     }
+    // Version dont la chronologie serait refusée à la promotion (défaut de date mal lue, tri…) : jamais soumise. Une parole SANS date établie n'en est pas un (« Date non établie »).
+    const defCh = r[0].payload.page.dossier ? defautsChronologie(appliquerRelectures(r[0].payload.page.case_id, r[0].payload.page.dossier, TABLE_REPERES)) : [];
+    if (defCh.length) throw new Error(`chronologie incohérente (${defCh.join(' ; ')}) : la promotion serait refusée — rien envoyé`);
     if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de fiche non envoyée');
   } else
   // Proposition de PUBLICATION : jamais envoyée pour une affaire qui n'est plus candidate (déjà publiée, retirée) ; l'enregistrement du choix exige `action`.
@@ -391,7 +398,7 @@ async function notifierNouvelles(max = 5) {
     try { await nouvelle(r.k); envoyes++; } catch (e) {
       console.log(`proposition ${r.k} non envoyée : ${e.message}`);
       // Refus DÉFINITIF d'une garde d'envoi (périmée, concurrente, parole sans date) : marqueur sans message, jamais réévaluée à chaque passage. Les autres erreurs (migration, réseau) restent retentées.
-      if (!process.env.SNY_DRY && /périmée|concurrente/.test(String(e.message))) await sql`insert into telegram_envois (kind, cle) select 'info', proposal_id::text from new_case_proposals where left(proposal_id::text, 8) = ${r.k} on conflict do nothing`;
+      if (!process.env.SNY_DRY && /périmée|concurrente|chronologie incohérente/.test(String(e.message))) await sql`insert into telegram_envois (kind, cle) select 'info', proposal_id::text from new_case_proposals where left(proposal_id::text, 8) = ${r.k} on conflict do nothing`;
     }
   }
   console.log(`notifier-nouvelles : ${envoyes} envoyé(s), ${rows.length - envoyes} en attente (plafond ${max}/run)`);
