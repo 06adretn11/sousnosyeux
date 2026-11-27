@@ -201,6 +201,21 @@
         }
       }
     ],
+    "FR-2026-0048": [
+      {
+        "event_id": "97a66a7b-7944-4b10-b22c-42617452fabf",
+        "date": null,
+        "type": "réponse_institutionnelle",
+        "statut": null,
+        "libelle": "Selon la presse, un contrôle ou une inspection a été annoncé.",
+        "realisation": "annoncée",
+        "source": {
+          "media": "Ladepeche.fr",
+          "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+          "publie_le": "2026-03-17"
+        }
+      }
+    ],
     "FR-2026-0114": [
       {
         "event_id": "7b09ffe8-67e9-40a0-8b72-fdfbd0f1118d",
@@ -346,6 +361,20 @@
           "media": "france3-regions.franceinfo",
           "url": "https://france3-regions.franceinfo.fr/pays-de-la-loire/maine-et-loire/angers/suspicion-de-violences-sexuelles-en-milieu-periscolaire-l-animateur-denonce-par-des-parents-a-ete-place-sous-le-statut-de-temoin-assiste-3447522.html",
           "publie_le": "2026-11-10"
+        }
+      }
+    ],
+    "FR-2026-0146": [
+      {
+        "event_id": "4f1cd4cf-c867-4a37-aa33-b49b7e8550f8",
+        "date": null,
+        "type": "mise_en_examen",
+        "statut": "mise en examen",
+        "libelle": "Une source publique rapporte une mise en examen. La mise en examen ne vaut pas culpabilité.",
+        "source": {
+          "media": "Actu.fr",
+          "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-de-montpellier-le-directeur-mis-en-examen_65082252.html",
+          "publie_le": "2026-11-20"
         }
       }
     ],
@@ -578,7 +607,7 @@
       "hash": "99673d401ef0fb4e"
     },
     "FR-2026-0001": {
-      "hash": "5d9c5ba2fb532698"
+      "hash": "e03fe08b55561ad1"
     },
     "FR-2026-0002": {
       "hash": "ab9ef095d6882e3c"
@@ -2403,6 +2432,33 @@
       }
     },
     {
+      "id": "b15a75d4803f",
+      "nature": "mesure",
+      "libelle": "Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.",
+      "realisation": "annoncée",
+      "portee": "territoire",
+      "acteur": "Ville de Paris",
+      "territoire": "Paris",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Le Parisien",
+        "url": "https://www.leparisien.fr/essonne-91/essonne-lanimateur-periscolaire-mis-en-examen-pour-des-agressions-sexuelles-sur-dix-enfants-evoque-des-pulsions-28-11-2025-QVTUA2JZGRFODFD4DKMZYRJ3EY.php",
+        "publie_le": "2025-11-28"
+      },
+      "case_id": "FR-2026-0011",
+      "event_id": null,
+      "destinations": {
+        "fiche": null,
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
+    },
+    {
       "id": "b220170fd37f",
       "nature": "parole",
       "libelle": "Parole attribuée — l'avocate : « La responsable du périscolaire a transféré cet animateur des petites sections pour qu'il s'occupe des enfants de quatre ans »",
@@ -2629,6 +2685,29 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "bfbf8271695f",
+      "nature": "mesure",
+      "libelle": "Selon la presse, un contrôle ou une inspection a été annoncé.",
+      "realisation": "annoncée",
+      "portee": "établissement",
+      "acteur": "collectivite",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "Ladepeche.fr",
+        "url": "https://www.ladepeche.fr/2026/03/17/un-animateur-de-centre-de-loisirs-soupconne-dattouchement-sur-mineur-a-lecole-maternelle-benezet-a-toulouse-le-parquet-ouvre-une-enquete-13277516.php",
+        "publie_le": "2026-03-17"
+      },
+      "etablissement": "Ecole maternelle Benezet",
+      "case_id": "FR-2026-0048",
+      "event_id": "97a66a7b-7944-4b10-b22c-42617452fabf",
+      "destinations": {
+        "fiche": "FR-2026-0048",
+        "hubs": []
       }
     },
     {
