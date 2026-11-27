@@ -164,7 +164,16 @@ for (const { id, d, fichier } of dossiers) {
 }
 t(`${stats.dossiers} dossiers, ${stats.etapes} étapes : repère établi pour ${stats.evenement + stats.information} (événement ${stats.evenement}, information ${stats.information}), ${stats.aucune} sans date exploitable`, () => assert.ok(stats.etapes > 0));
 t('aucune incohérence (date de parution lue comme événement, repli manquant, libellé non explicite, perte d’élément, ordre)', () => assert.deepEqual(incoherences, []));
-t(`paroles : ${stats.paroles} examinées, ${stats.paroles_info} datées par l’article qui les rapporte, ${stats.paroles_aucune} sans date`, () => assert.equal(stats.paroles_aucune, 0, 'une prise de parole sans date de parole ni de publication'));
+// Une prise de parole dont NI la date des propos NI la parution de la source ne sont établies reste SANS date (jamais datée par défaut : la parution n'est pas la date des propos) :
+// comme une étape du déroulé, elle est listée ci-dessous (exception justifiée), rendue « Date non établie » et placée en dernier — vérifié sur le HTML produit plus bas. Elle ne bloque plus la publication des autres affaires.
+t(`paroles : ${stats.paroles} examinées, ${stats.paroles_info} datées par l’article qui les rapporte, ${stats.paroles_aucune} sans date (listées, « Date non établie », en dernier)`, () => assert.ok(stats.paroles > 0));
+t('une parole sans date établie : repère « aucune », libellé explicite, jamais une date par défaut, triée après les paroles datées', () => {
+  const sans = { acteur: 'A', source: { url: 'https://a.example/1', publie_le: null }, date: null, date_nature: 'article' };
+  const datee = { acteur: 'B', source: { url: 'https://a.example/2', publie_le: '2026-03-10' }, date: null, date_nature: 'article' };
+  const r = repere(sans, { parole: true });
+  assert.equal(r.nature, 'aucune'); assert.equal(r.libelle, 'Date non établie'); assert.equal(r.cle, null); assert.equal(r.date, null);
+  assert.deepEqual(trierChrono([sans, datee], { parole: true }).map((p) => p.acteur), ['B', 'A']);
+});
 if (exceptions.length) { console.log(`  ℹ️  ${exceptions.length} cas non datable(s) (exceptions justifiées) :`); for (const x of exceptions) console.log(`     - ${x}`); }
 
 // 3. HTML réellement produit (build local ou site servi) ----------------------------------------------------------
@@ -196,6 +205,7 @@ if (dist || site) {
       if (m[1] === 'information' && !/Information datée d/.test(m[3])) defauts.push(`${p} : repère « information » sans libellé explicite`);
       if (m[1] !== 'aucune' && /Date non établie/.test(m[3])) defauts.push(`${p} : « Date non établie » alors qu’un repère existe`);
     }
+    for (const m of h.matchAll(/<article class="parole c" data-repere="aucune"[^>]*>([\s\S]*?)<\/article>/g)) if (!/Date non établie/.test(m[1])) defauts.push(`${p} : parole sans date rendue sans « Date non établie »`);
     const pa = [...h.matchAll(/<article class="parole c"[^>]*data-cle="([^"]*)"/g)].map((m) => m[1]);
     verifOrdre(p, 'Paroles et réactions', pa);
     const so = [...h.matchAll(/<li data-cle="([^"]*)"[^>]*><a href/g)].map((m) => m[1]);

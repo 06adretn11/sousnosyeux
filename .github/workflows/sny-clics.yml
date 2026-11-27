@@ -133,7 +133,12 @@ jobs:
         run: |
           git config user.name "sny-bot"
           git config user.email "sny-bot@users.noreply.github.com"
-          git add docs/industrialisation/hub-drafts data/hub-matiere
+          # Aucun commit LOCAL du passage (4b : évolutions validées) ne part avec cet aperçu : seule la publication « Publier la projection » les pousse, après la QA.
+          git fetch origin main && git reset -q origin/main
+          git add docs/industrialisation/hub-drafts
+          # JAMAIS data/hub-matiere en bloc : isoles.json y porte les fiches promues dans CE passage, avant la QA. Elles ne partent que par « Publier la projection » (après la QA) ;
+          # ce dépôt d'aperçu ne prend que la matière composée du Hub préparé (27/11 : un dépôt d'aperçu a envoyé sur main des fiches dont la QA venait d'échouer).
+          for s in $(echo "$HUB_SLUGS" | tr ',' ' '); do git add "data/hub-matiere/$s.json"; done
           if ! git diff --cached --quiet; then
             git commit -m "docs: aperçu de Hub préparé sur clic Telegram ($HUB_SLUGS), aucune publication"
             git push origin HEAD:main || (git pull --rebase origin main && git push origin HEAD:main)

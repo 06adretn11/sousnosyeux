@@ -5,7 +5,6 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { defautsStructurels } from '../lib/appliquer-contrat.mjs';
-import { parolesSansDate } from '../lib/chronologie.mjs';
 
 const src = (f) => readFileSync(new URL(`../../${f}`, import.meta.url), 'utf8');
 let n = 0; const t = (nom, f) => { f(); n++; console.log(`  ✓ ${nom}`); };
@@ -31,22 +30,12 @@ t('plusieurs faits, evidence vide ou état résultant différent : défauts stru
   assert.ok(defautsStructurels(prop('enquête', fait({ resulting_state: 'plainte' }))).some((x) => /resulting_state/.test(x)));
 });
 
-const dossier = (parole) => ({ deroule: [], reactions: [], paroles: [parole] });
-const sansDate = { acteur: 'Maître X, avocate d’une association', source: { url: 'https://a.example/1', publie_le: null }, date: null, date_nature: 'article' };
-t('FR-0047 : une parole sans date de parole ni parution de source est détectée', () => {
-  assert.deepEqual(parolesSansDate('FR-2026-0047', dossier(sansDate), { reperes: [], paroles: [], publications: [] }), ['Maître X, avocate d’une association']);
-});
-t('une parole datée par la parution de sa source, ou par une relecture documentée, passe', () => {
-  assert.deepEqual(parolesSansDate('X', dossier({ ...sansDate, source: { url: 'https://a.example/2', publie_le: '2026-03-10' } }), { reperes: [], paroles: [], publications: [] }), []);
-  const table = { reperes: [], publications: [], paroles: [{ case_id: 'X', acteur: sansDate.acteur, cle: '', date: '2026-03-10', date_nature: 'evenement', motif: 'Page : datePublished 2026-03-10.' }] };
-  assert.deepEqual(parolesSansDate('X', dossier(sansDate), table), []);
-});
 t('câblage : décision d’état, création périmée, mises à jour concurrentes, parole sans date — et refus définitif non réévalué', () => {
   const s = src('scripts/telegram-v0.mjs');
   assert.match(s, /defautsStructurels\(\{ aa: 'STATE_CHANGE'/); assert.match(s, /non applicable automatiquement/);
   assert.match(s, /proposition de création périmée \(la fiche individuelle existe déjà\)/);
-  assert.match(s, /mise à jour concurrente déjà soumise/); assert.match(s, /parolesSansDate\(r\[0\]\.payload\.page\.case_id/);
-  assert.match(s, /périmée\|concurrente\|parole sans date/, 'refus définitif : marqueur, pas de réévaluation à chaque passage');
+  assert.match(s, /mise à jour concurrente déjà soumise/);
+  assert.match(s, /périmée\|concurrente/, 'refus définitif : marqueur, pas de réévaluation à chaque passage');
   assert.match(s, /r\.aa === 'ENRICHMENT' \|\| r\.aa === 'STATE_CHANGE'/, 'trace du motif aussi pour un changement d’état écarté');
 });
 console.log(`\n${n} contrôles avant envoi : OK`);
