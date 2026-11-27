@@ -16,6 +16,11 @@ on:
         description: "Relancer UNE première fiche (ex. FR-2026-0144), sans le délai de retentative — facultatif"
         required: false
         type: string
+      designee:
+        description: "Avec « case » : l'éditeur DÉSIGNE cette affaire — hors périmètre du relais (ni événement récent, ni source de moins de 7 jours exigés) ; les autres garde-fous restent"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -50,9 +55,12 @@ jobs:
         id: premieres
         env:
           CAS: ${{ inputs.case }}
+          DESIGNEE: ${{ inputs.designee }}
         run: |
           if [ -n "$CAS" ]; then
-            case "$CAS" in FR-2026-[0-9][0-9][0-9][0-9]|POC-[0-9][0-9]) node scripts/proposer-premieres-fiches.mjs --ecrire --case "$CAS" --sans-delai ;; *) echo "identifiant refusé"; exit 2 ;; esac
+            options=""
+            if [ "$DESIGNEE" = "true" ]; then options="--designee"; fi
+            case "$CAS" in FR-2026-[0-9][0-9][0-9][0-9]|POC-[0-9][0-9]) node scripts/proposer-premieres-fiches.mjs --ecrire --case "$CAS" --sans-delai $options ;; *) echo "identifiant refusé"; exit 2 ;; esac
           else
             node scripts/proposer-premieres-fiches.mjs --ecrire
           fi

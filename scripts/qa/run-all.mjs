@@ -229,6 +229,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Première fiche d’une affaire DÉSIGNÉE — hors périmètre du relais seulement ; HOLD, retrait, fiche approuvée, proposition en attente toujours contrôlés ; aucune publication',
+    script: 'scripts/qa/test-premiere-fiche-designee.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Correction de données (CI) — fermé par défaut : fichier de migration nommé, GO-NNN, insert/update gardés, jamais delete/drop/publication_status ; 029 acceptée',
     script: 'scripts/qa/test-correction-donnees.mjs',
     bloquant: true,

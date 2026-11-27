@@ -34,6 +34,7 @@ const ECRIRE = A.includes('--ecrire');
 const val = (f) => (A.includes(f) ? A[A.indexOf(f) + 1] : null);
 const SEUL = val('--case');
 const LIMITE = Number(val('--limite') || 2);
+const DESIGNEE = A.includes('--designee'); // affaire DÉSIGNÉE par l'éditeur (exige --case) : hors périmètre du relais (ni événement récent, ni source de moins de 7 jours exigés) ; tous les autres garde-fous restent
 const SANS_DELAI = A.includes('--sans-delai'); // relance explicite d'une affaire (--case) : ignore le délai de retentative
 const RETENTE_H = 24; // une fiche non proposable n'est regénérée qu'une fois par jour (nouvelles sources possibles), jamais en boucle
 const racine = (f) => new URL(`../${f}`, import.meta.url);
@@ -41,17 +42,23 @@ const lire = (f) => JSON.parse(readFileSync(racine(f), 'utf8'));
 const sortie = (k, v) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${k}=${v}\n`); };
 sortie('change', 'false');
 
+if (DESIGNEE && !(SEUL && /^(?:[A-Z]+-\d{4}-\d{4}|POC-\d+)$/.test(SEUL))) { console.error('--designee exige --case <identifiant>'); process.exit(2); }
 const { sql } = connecter();
 const port = portNeon(sql);
 const now = new Date();
-if (!(await port.tablesPresentes())) { console.log('premières fiches : tables du relais absentes — rien'); process.exit(0); }
-const activation = verifierActivation({ env: process.env, t0Row: await port.t0(), now });
-if (!activation.actif) { console.log(`premières fiches : relais inactif (${activation.raisons[0]}) — rien`); process.exit(0); }
+let activation = null;
+if (!DESIGNEE) {
+  if (!(await port.tablesPresentes())) { console.log('premières fiches : tables du relais absentes — rien'); process.exit(0); }
+  activation = verifierActivation({ env: process.env, t0Row: await port.t0(), now });
+  if (!activation.actif) { console.log(`premières fiches : relais inactif (${activation.raisons[0]}) — rien`); process.exit(0); }
+}
 
 const cases = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c]));
 const ev = lire('data/evenements.json');
 const holds = new Set(lire('data/publication-holds.json').holds.map((h) => h.case_id));
-const candidats = (await port.candidats(activation.t0)).filter((c) => !SEUL || c.case_id === SEUL);
+const candidats = DESIGNEE
+  ? (await sql`select c.case_id, c.publication_status::text ps, exists (select 1 from reviews r where r.case_id = c.case_id and r.decision = 'retirer') retire from cases c where c.case_id = ${SEUL}`).map((r) => ({ ...r, type: 'désignée' }))
+  : (await port.candidats(activation.t0)).filter((c) => !SEUL || c.case_id === SEUL);
 
 /** Plus récente date de source connue de l'affaire (carte publique + sources d'événements validés). */
 const fraicheur = (id) => [...(cases.get(id)?.sources || []).map((s) => s.publication_date), ...(ev.affaires?.[id] || []).map((e) => e.source?.publie_le)]
@@ -66,16 +73,16 @@ for (const c of candidats) {
   if (!cases.has(c.case_id)) { ecarte(c.case_id, 'absente de l’artefact public (projection en attente)'); continue; }
   if (ev.fiches_approuvees?.[c.case_id]) { ecarte(c.case_id, 'fiche déjà approuvée'); continue; }
   const age = ageJours(fraicheur(c.case_id), now);
-  if (age === null || age >= FENETRE_SOURCE_JOURS) { ecarte(c.case_id, `source de plus de ${FENETRE_SOURCE_JOURS} jours ou non datée : le relais ne la relaierait plus`); continue; }
+  if (!DESIGNEE && (age === null || age >= FENETRE_SOURCE_JOURS)) { ecarte(c.case_id, `source de plus de ${FENETRE_SOURCE_JOURS} jours ou non datée : le relais ne la relaierait plus`); continue; }
   if ((await sql`select 1 x from reviews where case_id = ${c.case_id} and comment like '[Fiche approuvée %' limit 1`).length) { ecarte(c.case_id, 'fiche approuvée, promotion en cours'); continue; }
   if ((await sql`select 1 x from new_case_proposals where payload->'page'->>'case_id' = ${c.case_id} and decision is null limit 1`).length) { ecarte(c.case_id, 'proposition de fiche déjà en attente de clic'); continue; }
   if (!SANS_DELAI && (await sql`select 1 x from telegram_journal where kind = 'application' and cle = ${'premiere-fiche:' + c.case_id} and resultat in ('bloquee', 'erreur') and at > now() - ${RETENTE_H + ' hours'}::interval limit 1`).length) { ecarte(c.case_id, `déjà tentée il y a moins de ${RETENTE_H} h`); continue; }
-  retenues.push({ case_id: c.case_id, type: c.type, event_id: c.event_id ?? null, restant: FENETRE_SOURCE_JOURS - age });
+  retenues.push({ case_id: c.case_id, type: c.type, event_id: c.event_id ?? null, restant: age === null ? 0 : FENETRE_SOURCE_JOURS - age });
 }
 retenues.sort((a, b) => a.restant - b.restant); // la fenêtre qui se referme le plus tôt d'abord
 const motifs = [...ecartees.values()].reduce((m, x) => m.set(x, (m.get(x) || 0) + 1), new Map());
 console.log(`premières fiches : ${candidats.length} événement(s) candidat(s) du relais · ${retenues.length} affaire(s) sans fiche retenue(s) · écartées : ${[...motifs].map(([m, n]) => `${m} ×${n}`).join(', ') || 'aucune'}`);
-for (const r of retenues) console.log(`  · ${r.case_id} (${r.type}) : fenêtre de source restante ≈ ${r.restant.toFixed(1)} j`);
+for (const r of retenues) console.log(DESIGNEE ? `  · ${r.case_id} : désignée par l’éditeur (hors périmètre du relais)` : `  · ${r.case_id} (${r.type}) : fenêtre de source restante ≈ ${r.restant.toFixed(1)} j`);
 if (!ECRIRE || !retenues.length) process.exit(0);
 
 const node = process.execPath;
@@ -101,7 +108,7 @@ for (const r of retenues.slice(0, LIMITE)) {
     // Codes de blocage (liste fermée, sans texte d'article) : l'éditeur n'a pas à les chercher dans un fichier ignoré par Git.
     const codes = (cand?.generation?.blocages || []).map((b) => b.code).filter((x) => /^[A-Z0-9_]{3,60}$/.test(String(x)));
     console.log(`  ⚠ ${r.case_id} : fiche non proposable (${q}${codes.length ? ` : ${[...new Set(codes)].join(', ')}` : ''})${gen.ok ? '' : ' — erreur du générateur'}`);
-    await prevenirUneFois(sql, { cle: `premiere-fiche-bloquee:${r.case_id}`, resultat: 'bloquee', texte: `⚠️ <b>Première fiche non proposée</b> — ${r.case_id}\nLe relais social attend la fiche de cette nouveauté, mais la génération n’a pas abouti à une fiche publiable (${q}${codes.length ? ` : ${[...new Set(codes)].join(', ')}` : ''}). Aucune publication ; la génération sera retentée dans ${RETENTE_H} h si de nouvelles sources apparaissent.` });
+    await prevenirUneFois(sql, { cle: `premiere-fiche-bloquee:${r.case_id}`, resultat: 'bloquee', texte: `⚠️ <b>Première fiche non proposée</b> — ${r.case_id}\n${DESIGNEE ? 'Vous avez demandé la première fiche de cette affaire' : 'Le relais social attend la fiche de cette nouveauté'}, mais la génération n’a pas abouti à une fiche publiable (${q}${codes.length ? ` : ${[...new Set(codes)].join(', ')}` : ''}). Aucune publication ; la génération sera retentée dans ${RETENTE_H} h si de nouvelles sources apparaissent.` });
     await note(r.case_id, 'bloquee', { qualification: q, codes });
     continue;
   }
