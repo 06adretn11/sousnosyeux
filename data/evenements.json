@@ -869,6 +869,84 @@
       }
     },
     {
+      "id": "1ae52972708b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Johana Duhamel : « Les parents sont très inquiets, choqués, perturbés par tous ces changements, par ce qu'il faut dire aux enfants, ce qu'il faut ne pas leur dire (...) il y a des parents qui ont retiré du temps périscolaire leurs enfants notamment de la cantine et de la période du goûter »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Johana Duhamel",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Paris Île-de-France",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/agression-sexuelle-exhibition-trois-animateurs-d-ecole-maternelle-suspendus-a-paris-apres-des-soupcons-de-faits-a-caractere-sexuel-3234806.html",
+        "publie_le": "2025-10-17"
+      },
+      "parole": {
+        "acteur": "Johana Duhamel",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Les parents sont très inquiets, choqués, perturbés par tous ces changements, par ce qu'il faut dire aux enfants, ce qu'il faut ne pas leur dire (...) il y a des parents qui ont retiré du temps périscolaire leurs enfants notamment de la cantine et de la période du goûter"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Bullourde",
+      "case_id": "POC-06",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-06",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "1fc817f2d0aa",
+      "nature": "parole",
+      "libelle": "Parole attribuée — auprès de l'AFP l'avocat Arié Alimi : « Il y a une opacité complète de la part de la municipalité, mais aussi des services d'enquête. Les parents ne sont pas informés sur la situation de leurs enfants, ni de l'étendue des violences sexuelles »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "auprès de l'AFP l'avocat Arié Alimi",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France info",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14"
+      },
+      "parole": {
+        "acteur": "auprès de l'AFP l'avocat Arié Alimi",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Il y a une opacité complète de la part de la municipalité, mais aussi des services d'enquête. Les parents ne sont pas informés sur la situation de leurs enfants, ni de l'étendue des violences sexuelles"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Bullourde",
+      "case_id": "POC-06",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-06",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
       "id": "2316620d6688",
       "nature": "parole",
       "libelle": "Parole attribuée — à France Inter la maman qui a porté plainte : « Ça a été une vraie bombe dans notre vie »",
@@ -1241,6 +1319,45 @@
       "destinations": {
         "fiche": "POC-03",
         "hubs": []
+      }
+    },
+    {
+      "id": "5e4e609e804f",
+      "nature": "parole",
+      "libelle": "Parole attribuée — Johana Duhamel parente d'élève : « On nous a juste dit que certains faits auraient eu lieu l'année dernière et en ce qui concerne le troisième animateur, les faits qui remontent à septembre de cette année »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "Johana Duhamel parente d'élève",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Paris Île-de-France",
+        "url": "https://france3-regions.franceinfo.fr/paris-ile-de-france/paris/agression-sexuelle-exhibition-trois-animateurs-d-ecole-maternelle-suspendus-a-paris-apres-des-soupcons-de-faits-a-caractere-sexuel-3234806.html",
+        "publie_le": "2025-10-17"
+      },
+      "parole": {
+        "acteur": "Johana Duhamel parente d'élève",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "On nous a juste dit que certains faits auraient eu lieu l'année dernière et en ce qui concerne le troisième animateur, les faits qui remontent à septembre de cette année"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Bullourde",
+      "case_id": "POC-06",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-06",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
@@ -1694,6 +1811,45 @@
       "destinations": {
         "fiche": "FR-2026-0005",
         "hubs": []
+      }
+    },
+    {
+      "id": "84b36ba0fde0",
+      "nature": "parole",
+      "libelle": "Parole attribuée — au site d'investigation une mère d'élève ayant porté plainte : « Ce n'est pas vrai qu'ils préviennent immédiatement les parents »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "au site d'investigation une mère d'élève ayant porté plainte",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France info",
+        "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
+        "publie_le": "2025-11-14"
+      },
+      "parole": {
+        "acteur": "au site d'investigation une mère d'élève ayant porté plainte",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Ce n'est pas vrai qu'ils préviennent immédiatement les parents"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Bullourde",
+      "case_id": "POC-06",
+      "event_id": null,
+      "destinations": {
+        "fiche": "POC-06",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
       }
     },
     {
