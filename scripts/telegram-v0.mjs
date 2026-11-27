@@ -34,10 +34,7 @@ import { enregistrerDecision, verifierActivation, ACTIONS_SOCIALES } from './lib
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 import { envoyerPistes } from './lib/pistes-a-qualifier.mjs';
 import { defautsStructurels } from './lib/appliquer-contrat.mjs';
-import { parolesSansDate } from './lib/chronologie.mjs';
 
-// Relectures documentées de datation (data/chronologie-reperes.json) : même table que la QA, pour juger AVANT envoi si une version passerait.
-const TABLE_REPERES = JSON.parse(readFileSync(new URL('../data/chronologie-reperes.json', import.meta.url), 'utf8'));
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -367,9 +364,6 @@ async function nouvelle(cle) {
         and exists (select 1 from telegram_envois t where t.cle = new_case_proposals.proposal_id::text and t.message_id is not null)`;
       if (conc) throw new Error(`mise à jour concurrente déjà soumise (${conc.k}) : une seule demande par version de départ — rien envoyé`);
     }
-    // Version qui porterait une parole SANS date : la QA de chronologie bloquerait toute publication (27/11, FR-0047) — jamais soumise.
-    const sansDate = r[0].payload.page.dossier ? parolesSansDate(r[0].payload.page.case_id, r[0].payload.page.dossier, TABLE_REPERES) : [];
-    if (sansDate.length) throw new Error(`parole sans date (${sansDate.join(' ; ')}) : la QA de chronologie bloquerait toute publication — rien envoyé`);
     if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de fiche non envoyée');
   } else
   // Proposition de PUBLICATION : jamais envoyée pour une affaire qui n'est plus candidate (déjà publiée, retirée) ; l'enregistrement du choix exige `action`.
@@ -397,7 +391,7 @@ async function notifierNouvelles(max = 5) {
     try { await nouvelle(r.k); envoyes++; } catch (e) {
       console.log(`proposition ${r.k} non envoyée : ${e.message}`);
       // Refus DÉFINITIF d'une garde d'envoi (périmée, concurrente, parole sans date) : marqueur sans message, jamais réévaluée à chaque passage. Les autres erreurs (migration, réseau) restent retentées.
-      if (!process.env.SNY_DRY && /périmée|concurrente|parole sans date/.test(String(e.message))) await sql`insert into telegram_envois (kind, cle) select 'info', proposal_id::text from new_case_proposals where left(proposal_id::text, 8) = ${r.k} on conflict do nothing`;
+      if (!process.env.SNY_DRY && /périmée|concurrente/.test(String(e.message))) await sql`insert into telegram_envois (kind, cle) select 'info', proposal_id::text from new_case_proposals where left(proposal_id::text, 8) = ${r.k} on conflict do nothing`;
     }
   }
   console.log(`notifier-nouvelles : ${envoyes} envoyé(s), ${rows.length - envoyes} en attente (plafond ${max}/run)`);

@@ -161,12 +161,3 @@ export const trierChrono = (items, opt = {}) => trierParCle(items, (e) => repere
 
 /** Références (articles) : ordre de publication ascendant ; sans date de publication exploitable en dernier. `dateDe(s)` → publie_le / publication_date. */
 export const trierSources = (liste, dateDe) => trierParCle(liste, (s) => cleDate(dateDe(s)));
-
-/**
- * Prises de parole d'un dossier SANS date exploitable (ni date de parole, ni parution de la source citée), relectures documentées comprises.
- * La QA de chronologie refuse toute publication qui en porte : un dossier dans ce cas n'est jamais soumis à décision (avant : le GO bloquait TOUTE la publication).
- */
-export function parolesSansDate(caseId, dossier, table) {
-  const d = appliquerRelectures(caseId, dossier, table);
-  return [...(d?.reactions ?? []), ...(d?.paroles ?? [])].filter((p) => repere(p, { parole: true }).nature === 'aucune').map((p) => String(p.acteur));
-}

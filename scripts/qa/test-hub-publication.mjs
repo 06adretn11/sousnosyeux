@@ -132,7 +132,9 @@ t('parcours raccordé dans les workflows : préparer → déposer (matière + do
     const push = y.indexOf('sh scripts/publier-projection.sh', i('scripts/qa/run-all.mjs'));   // la poussée de PUBLICATION (un dépôt d'aperçu docs peut la suivre)
     assert.ok(i('project-evenements.mjs') < i('scripts/qa/run-all.mjs') && i('scripts/qa/run-all.mjs') < push && push > 0);
     assert.ok(i('--hubs $HUBS') > push && y.includes('steps.evenements.outputs.hubs'), 'vérification des Hubs après le push');
-    assert.ok(i('preparer-hub.mjs --ecrire') < i('git add docs/industrialisation/hub-drafts data/hub-matiere') && i('git add docs/industrialisation/hub-drafts data/hub-matiere') < i('preparer-hub.mjs --annoncer'));
+    assert.ok(i('preparer-hub.mjs --ecrire') < i('git add docs/industrialisation/hub-drafts') && i('git add docs/industrialisation/hub-drafts') < i('preparer-hub.mjs --annoncer'));
+    assert.ok(y.includes('git add "data/hub-matiere/$s.json"') && !/git add docs\/industrialisation\/hub-drafts data\/hub-matiere/.test(y), 'le dépôt d’aperçu ne prend que la matière du Hub préparé, jamais isoles.json (fiches promues avant la QA)');
+    assert.ok(y.includes('git fetch origin main && git reset -q origin/main'), 'le dépôt d’aperçu ne pousse aucun commit local du passage (évolutions non encore validées par la QA)');
   }
   const a = src('scripts/appliquer-nouvelles-affaires.mjs'); assert.ok(a.includes('p.hub_publication') && a.indexOf('p.hub_publication') < a.indexOf('if (p.page)'));
   const p = src('scripts/project-evenements.mjs'); assert.ok(p.includes('hubs_approuves') && p.includes('hubsApprouves(') && p.includes('hubsChanges'));
