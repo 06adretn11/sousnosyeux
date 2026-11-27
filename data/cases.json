@@ -1029,9 +1029,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ladepeche.fr/2026/06/23/apres-six-mois-denquete-le-rectorat-rend-son-verdict-sur-le-lycee-bagatelle-a-saint-gaudens-et-la-mise-en-examen-pour-viols-sur-mineurs-de-lex-13433020.php",
+          "url": "https://www.ladepeche.fr/2026/01/21/ex-proviseur-adjoint-a-saint-gaudens-mis-en-examen-avant-personne-nen-parlait-aujourdhui-cest-dans-toutes-les-conversations-13175697.php",
           "media": "Ladepeche.fr",
-          "publication_date": "2026-06-23",
+          "publication_date": "2026-01-21",
           "source_type": "presse",
           "is_primary": false
         },
@@ -1043,9 +1043,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ladepeche.fr/2026/01/21/ex-proviseur-adjoint-a-saint-gaudens-mis-en-examen-avant-personne-nen-parlait-aujourdhui-cest-dans-toutes-les-conversations-13175697.php",
+          "url": "https://www.ladepeche.fr/2026/06/23/apres-six-mois-denquete-le-rectorat-rend-son-verdict-sur-le-lycee-bagatelle-a-saint-gaudens-et-la-mise-en-examen-pour-viols-sur-mineurs-de-lex-13433020.php",
           "media": "Ladepeche.fr",
-          "publication_date": "2026-01-21",
+          "publication_date": "2026-06-23",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2294,6 +2294,13 @@
           "is_primary": true
         },
         {
+          "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
+          "media": "Actu.fr",
+          "publication_date": "2026-11-24",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
           "url": "https://actu.fr/normandie/rots_14543/enfants-agresses-au-centre-de-loisirs-de-rots-les-parents-manifestent-et-demandent-des-comptes-a-la-maire_65064968.html",
           "media": "Actu.fr",
           "publication_date": "2026-11-17",
@@ -2308,9 +2315,9 @@
           "is_primary": false
         },
         {
-          "url": "https://actu.fr/normandie/rots_14543/soupcons-dagressions-sexuelles-sur-des-enfants-pres-de-caen-ou-en-est-lenquete_65094458.html",
-          "media": "Actu.fr",
-          "publication_date": "2026-11-24",
+          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
+          "media": "Ouest-France",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2318,13 +2325,6 @@
           "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/soupcons-de-violences-sexuelles-dans-un-centre-de-loisirs-pres-de-caen-lanimateur-interroge-na-pas-ete-mis-en-examen-ae448dac-e42d-11f1-9a72-32f9104dab1b",
           "media": "Ouest-France",
           "publication_date": "2026-11-20",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.ouest-france.fr/faits-divers/violence-sexuelle/suspicions-datteinte-sexuelle-dans-un-centre-de-loisirs-pres-de-caen-un-animateur-suspendu-une-enquete-ouverte-7b2184f4-c234-11f1-a107-88e926908e5f",
-          "media": "Ouest-France",
-          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2343,16 +2343,16 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
+          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
           "media": "ici",
-          "publication_date": "2026-11-15",
+          "publication_date": "2026-10-07",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.ici.fr/normandie/calvados-14/rots/info-ici-normandie-un-animateur-du-centre-de-loisirs-de-rots-dans-le-calvados-suspendu-pour-agression-sexuelle-8073918",
+          "url": "https://www.ici.fr/emissions/l-info-d-ici-ici-normandie-calvados-orne/qu-est-ce-qu-ils-attendent-ses-filles-de-3-et-5-ans-accusent-un-animateur-de-rots-de-viols-la-revolte-d-un-pere-9757940",
           "media": "ici",
-          "publication_date": "2026-10-07",
+          "publication_date": "2026-11-15",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2648,9 +2648,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-dans-le-periscolaire-en-anjou-un-agent-ecarte-un-elu-demissionne-fb5b92ea-d60c-11f1-84f3-5611f158a658",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
           "media": "Ouest-France",
-          "publication_date": "2026-11-01",
+          "publication_date": "2026-11-10",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2662,9 +2662,9 @@
           "is_primary": false
         },
         {
-          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-sur-mineurs-en-anjou-garde-a-vue-levee-il-est-place-sous-le-statut-de-temoin-assiste-e3b394e4-dce7-11f1-a62b-776e3051b0df",
+          "url": "https://www.ouest-france.fr/faits-divers/agression-sexuelle/soupcons-dagressions-sexuelles-dans-le-periscolaire-en-anjou-un-agent-ecarte-un-elu-demissionne-fb5b92ea-d60c-11f1-84f3-5611f158a658",
           "media": "Ouest-France",
-          "publication_date": "2026-11-10",
+          "publication_date": "2026-11-01",
           "source_type": "presse",
           "is_primary": false
         },
@@ -2685,12 +2685,26 @@
       "type_structure": "maternelle",
       "role_mis_en_cause": "enseignant",
       "type_affaire": "agression sexuelle",
-      "statut_judiciaire": "enquête",
+      "statut_judiciaire": "mise en examen",
       "statut_des_faits": "allégué",
       "enfants_concernes_public": "plusieurs enfants",
       "lat": 43.610476,
       "lng": 3.87048,
       "geocode_source": "ban-commune",
+      "etat": {
+        "statut": "mise en examen",
+        "date": null,
+        "type_evenement": "mise_en_examen",
+        "finalite": "non_definitive",
+        "suites": [],
+        "sources": [
+          {
+            "media": "Actu.fr",
+            "date": "2026-11-20",
+            "url": "https://actu.fr/occitanie/montpellier_34172/soupcons-d-agressions-sexuelles-dans-une-ecole-maternelle-de-montpellier-le-directeur-mis-en-examen_65082252.html"
+          }
+        ]
+      },
       "sources": [
         {
           "url": "https://actu.fr/occitanie/montpellier_34172/agressions-sexuelles-depuis-dix-ans-par-le-directeur-d-une-maternelle-a-montpellier-une-douzaine-de-victimes_65043179.html",
@@ -3117,16 +3131,23 @@
           "is_primary": true
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
           "media": "franceinfo",
-          "publication_date": "2026-07-07",
+          "publication_date": "2026-07-09",
           "source_type": "presse",
           "is_primary": false
         },
         {
-          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-le-parquet-de-paris-fait-appel-de-la-relaxe-d-un-animateur-de-l-ecole-maternelle-alphonse-baudin-pour-agressions-sexuelles_8101406.html",
+          "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
           "media": "franceinfo",
-          "publication_date": "2026-07-09",
+          "publication_date": "2025-11-14",
+          "source_type": "presse",
+          "is_primary": false
+        },
+        {
+          "url": "https://www.franceinfo.fr/societe/education/violences-dans-le-periscolaire/violences-dans-le-periscolaire-a-paris-l-animateur-de-l-ecole-maternelle-alphonse-baudin-accuse-d-agressions-sexuelles-sur-mineurs-relaxe-par-le-tribunal_8095931.html",
+          "media": "franceinfo",
+          "publication_date": "2026-07-07",
           "source_type": "presse",
           "is_primary": false
         },
@@ -3141,13 +3162,6 @@
           "url": "https://www.franceinfo.fr/faits-divers/justice-proces/je-ne-suis-pas-du-tout-concerne-par-ces-faits-a-paris-l-animateur-periscolaire-juge-pour-agressions-sexuelles-sur-mineurs-nie-en-bloc_8028620.html",
           "media": "franceinfo",
           "publication_date": "2026-05-27",
-          "source_type": "presse",
-          "is_primary": false
-        },
-        {
-          "url": "https://www.franceinfo.fr/societe/education/ce-que-l-on-sait-des-accusations-de-viol-aggrave-et-d-agression-sexuelle-visant-des-animateurs-periscolaires-a-paris_7615793.html",
-          "media": "franceinfo",
-          "publication_date": "2025-11-14",
           "source_type": "presse",
           "is_primary": false
         }
