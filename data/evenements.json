@@ -673,6 +673,33 @@
   },
   "matiere": [
     {
+      "id": "0ad349d2135c",
+      "nature": "mesure",
+      "libelle": "Selon la presse, la collectivité a annoncé un plan de formation de ses agents au contact des enfants.",
+      "realisation": "annoncée",
+      "portee": "territoire",
+      "acteur": "Ville de Paris",
+      "territoire": "Paris",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4166303-20250801-paris-mairie-empetree-nouvelle-affaire-animateur-scolaire-soupconne-violences-sexuelles",
+        "publie_le": "2025-08-01"
+      },
+      "case_id": "PARIS-006",
+      "event_id": null,
+      "destinations": {
+        "fiche": "PARIS-006",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Ville de Paris et mairie du 11e"
+          }
+        ]
+      }
+    },
+    {
       "id": "0eca8e5246d4",
       "nature": "mobilisation",
       "libelle": "Dans sa publication du 21 juillet 2026, L’Enfant Bleu revient sur la suspension d’un animateur en avril 2025 à l’école maternelle Alphonse-Baudin (Paris 11e). L’association indique s’être constituée partie civile dans cette affaire, sans préciser la date de cette démarche ni la procédure visée. Cette déclaration n’est pas confirmée par une autre source consultée.",
@@ -1192,6 +1219,39 @@
       }
     },
     {
+      "id": "4ac370be5ff5",
+      "nature": "parole",
+      "libelle": "Parole attribuée — un collégien : « On ne pensait vraiment pas ça de lui, c'est vraiment bizarre »",
+      "realisation": "inconnue",
+      "portee": "territoire",
+      "acteur": "un collégien",
+      "territoire": "Delle",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+        "publie_le": "2024-03-27"
+      },
+      "parole": {
+        "acteur": "un collégien",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "On ne pensait vraiment pas ça de lui, c'est vraiment bizarre"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "case_id": "FR-2026-0042",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0042",
+        "hubs": []
+      }
+    },
+    {
       "id": "4c8a74090faa",
       "nature": "mesure",
       "libelle": "Selon la presse, des mesures d’information et d’accompagnement des familles ont été annoncées.",
@@ -1454,6 +1514,111 @@
             "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
+      }
+    },
+    {
+      "id": "691fa6f1a91b",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le maire du 11e arrondissement, François Vauglin : « Sans attendre, une mesure de suspension, à titre conservatoire et à effet immédiat, a été prise à l’encontre d’un animateur portant le prénom cité par l’enfant. Il ne travaille plus au contact des enfants »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le maire du 11e arrondissement",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/paris/4166303-20250801-paris-mairie-empetree-nouvelle-affaire-animateur-scolaire-soupconne-violences-sexuelles",
+        "publie_le": "2025-08-01"
+      },
+      "parole": {
+        "acteur": "le maire du 11e arrondissement",
+        "qualite": "François Vauglin",
+        "citations": [
+          {
+            "texte": "Sans attendre, une mesure de suspension, à titre conservatoire et à effet immédiat, a été prise à l’encontre d’un animateur portant le prénom cité par l’enfant. Il ne travaille plus au contact des enfants"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle Parmentier",
+      "case_id": "PARIS-006",
+      "event_id": null,
+      "destinations": {
+        "fiche": "PARIS-006",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "69f90aecb283",
+      "nature": "parole",
+      "libelle": "Parole attribuée — un collégien : « Il était vraiment très gentil, super cool, mais assez strict aussi. Jamais on n’aurait pensé ça de lui »",
+      "realisation": "inconnue",
+      "portee": "territoire",
+      "acteur": "un collégien",
+      "territoire": "Delle",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+        "publie_le": "2024-03-27"
+      },
+      "parole": {
+        "acteur": "un collégien",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Il était vraiment très gentil, super cool, mais assez strict aussi. Jamais on n’aurait pensé ça de lui"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "case_id": "FR-2026-0042",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0042",
+        "hubs": []
+      }
+    },
+    {
+      "id": "6b27267b46c9",
+      "nature": "parole",
+      "libelle": "Parole attribuée — une collégienne au micro de nos journalistes Sarah Francesconi et Rémy Poirot : « C'était mon prof principal l'an dernier, un de mes profs préférés. Je suis surprise, un peu déçue. C'était un prof aussi à qui on pouvait parler de notre vie, parler de nos problèmes. C'était pas qu'un prof pour nous »",
+      "realisation": "inconnue",
+      "portee": "territoire",
+      "acteur": "une collégienne au micro de nos journalistes Sarah Francesconi et Rémy Poirot",
+      "territoire": "Delle",
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "France 3 Régions",
+        "url": "https://france3-regions.franceinfo.fr/bourgogne-franche-comte/territoire-de-belfort/belfort/il-aurait-fait-des-propositions-sexuelles-a-une-collegienne-de-3-que-sait-on-de-la-mise-en-examen-d-un-enseignant-pres-de-belfort-2946150.html",
+        "publie_le": "2024-03-27"
+      },
+      "parole": {
+        "acteur": "une collégienne au micro de nos journalistes Sarah Francesconi et Rémy Poirot",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "C'était mon prof principal l'an dernier, un de mes profs préférés. Je suis surprise, un peu déçue. C'était un prof aussi à qui on pouvait parler de notre vie, parler de nos problèmes. C'était pas qu'un prof pour nous"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "case_id": "FR-2026-0042",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0042",
+        "hubs": []
       }
     },
     {
@@ -2311,6 +2476,45 @@
           {
             "hub": "seine-maritime",
             "groupe": "Familles et associations"
+          }
+        ]
+      }
+    },
+    {
+      "id": "b514877763ae",
+      "nature": "parole",
+      "libelle": "Parole attribuée — le parquet de Paris : « Avant cette étape, des mesures conservatoires peuvent être prises par les employeurs afin de mettre un terme au risque de laisser les enfants en proximité avec leur potentiel agresseur »",
+      "realisation": "inconnue",
+      "portee": "établissement",
+      "acteur": "le parquet de Paris",
+      "territoire": null,
+      "date": null,
+      "periode": null,
+      "source": {
+        "media": "20 Minutes",
+        "url": "https://www.20minutes.fr/faits_divers/faits-divers-paris/4190423-20251208-paris-nouvelle-plainte-agression-sexuelle-deposee-contre-animateur-ecole-maternelle",
+        "publie_le": "2025-12-08"
+      },
+      "parole": {
+        "acteur": "le parquet de Paris",
+        "qualite": null,
+        "citations": [
+          {
+            "texte": "Avant cette étape, des mesures conservatoires peuvent être prises par les employeurs afin de mettre un terme au risque de laisser les enfants en proximité avec leur potentiel agresseur"
+          }
+        ],
+        "extrait_partiel": false,
+        "contexte": "propos rapportés par le média, locuteur et qualité tels qu’écrits."
+      },
+      "etablissement": "École maternelle de la rue Faidherbe",
+      "case_id": "FR-2026-0023",
+      "event_id": null,
+      "destinations": {
+        "fiche": "FR-2026-0023",
+        "hubs": [
+          {
+            "hub": "paris-11e",
+            "groupe": "Familles, avocats, syndicats, associations"
           }
         ]
       }
