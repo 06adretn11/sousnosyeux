@@ -199,6 +199,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Avant envoi — ce qui ne peut pas aboutir n’est jamais soumis à décision (contrat d’application, parole sans date, création périmée, mises à jour concurrentes)',
+    script: 'scripts/qa/test-preflight-envoi.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Audit du 26/11 — rattachement douteux dit dans le message (adresse ≠ phrase citée)',
     script: 'scripts/qa/test-audit-26-11.mjs',
     bloquant: true,

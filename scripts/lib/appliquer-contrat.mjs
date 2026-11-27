@@ -42,3 +42,12 @@ export function classer(p, holds, { replay = false } = {}) {
   if (p.applied_event_id && !replay) non.push('déjà appliquée');
   return { auto: non.length === 0, raisons: non };
 }
+
+/**
+ * Défauts STRUCTURELS d'une proposition d'état : ceux qui rendent un VALIDATE inapplicable quoi qu'il arrive (type d'événement non admis pour l'état, plusieurs faits,
+ * evidence vide…). Sert au contrôle AVANT envoi sur Telegram : un bouton qui ne peut rien appliquer n'est jamais proposé. Ni HOLD, ni péremption, ni « déjà appliquée » (gardes propres).
+ * @param p { aa, ap, av, facts, ed, case_id }
+ */
+export function defautsStructurels(p) {
+  return classer({ ...p, courant: p.av, article_id: p.article_id ?? 'présent', applied_event_id: null }, new Set()).raisons;
+}

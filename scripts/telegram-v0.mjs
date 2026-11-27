@@ -33,6 +33,11 @@ import { portNeon } from './lib/relais-social-db.mjs';
 import { enregistrerDecision, verifierActivation, ACTIONS_SOCIALES } from './lib/relais-social.mjs';
 import { apercuInformation, aSolliciter, complementDecision } from './lib/sources-suivies.mjs';
 import { envoyerPistes } from './lib/pistes-a-qualifier.mjs';
+import { defautsStructurels } from './lib/appliquer-contrat.mjs';
+import { parolesSansDate } from './lib/chronologie.mjs';
+
+// Relectures documentées de datation (data/chronologie-reperes.json) : même table que la QA, pour juger AVANT envoi si une version passerait.
+const TABLE_REPERES = JSON.parse(readFileSync(new URL('../data/chronologie-reperes.json', import.meta.url), 'utf8'));
 
 const { sql } = connecter(); // charge aussi .env.local dans process.env
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
@@ -174,6 +179,10 @@ async function decision(cle) {
   if (p.decision) throw new Error(`déjà décidée (${p.decision}) — rien envoyé`);
   if (p.avant !== p.courant) throw new Error(`proposition périmée (fiche : ${p.courant}, proposition partie de : ${p.avant}) — rien envoyé`);
   await verifierFaitInedit(p);
+  // Un VALIDATE doit pouvoir s'APPLIQUER : une proposition d'état que le contrat d'application refuse structurellement (type d'événement non admis pour l'état, plusieurs faits…)
+  // n'est jamais soumise — un bouton qui ne peut rien appliquer fait perdre du temps (constaté le 27/11 : PARIS-006 « suspension » pour « enquête », POC-05 « voie de recours » après relaxe).
+  const structurels = defautsStructurels({ aa: 'STATE_CHANGE', ap: p.apres, av: p.avant, facts: p.facts, ed: p.ed, case_id: p.case_id });
+  if (structurels.length) throw new Error(`non applicable automatiquement (${structurels.join(' ; ')}) — rien envoyé, à traiter hors Telegram`);
   const q = preuveDe(p);
   if (!q) {
     // Preuve insuffisante pour un changement d'état : l'article reste dans le flux, sans bouton.
@@ -349,6 +358,18 @@ async function nouvelle(cle) {
     const base = r[0].payload.page.mise_a_jour?.precedent_hash;
     const courant = dossierFiche(r[0].payload.page.case_id);
     if (base && (!courant || hashDossier(courant.d) !== base)) throw new Error('proposition de mise à jour périmée (la version publique a changé depuis sa génération) — rien envoyé');
+    // Fiche INDIVIDUELLE à créer alors que la page existe déjà (approuvée par ailleurs) : demande périmée.
+    if (!r[0].payload.page.mise_a_jour && dossierFiche(r[0].payload.page.case_id)) throw new Error('proposition de création périmée (la fiche individuelle existe déjà) — rien envoyé');
+    // Plusieurs mises à jour construites sur la MÊME version de départ se concurrencent (valider l'une périme l'autre) : une seule demande à la fois.
+    if (base) {
+      const [conc] = await sql`select left(proposal_id::text, 8) k from new_case_proposals where decision is null and proposal_id::text <> ${r[0].pid}
+        and payload->'page'->>'case_id' = ${r[0].payload.page.case_id} and payload->'page'->'mise_a_jour'->>'precedent_hash' = ${base}
+        and exists (select 1 from telegram_envois t where t.cle = new_case_proposals.proposal_id::text and t.message_id is not null)`;
+      if (conc) throw new Error(`mise à jour concurrente déjà soumise (${conc.k}) : une seule demande par version de départ — rien envoyé`);
+    }
+    // Version qui porterait une parole SANS date : la QA de chronologie bloquerait toute publication (27/11, FR-0047) — jamais soumise.
+    const sansDate = r[0].payload.page.dossier ? parolesSansDate(r[0].payload.page.case_id, r[0].payload.page.dossier, TABLE_REPERES) : [];
+    if (sansDate.length) throw new Error(`parole sans date (${sansDate.join(' ; ')}) : la QA de chronologie bloquerait toute publication — rien envoyé`);
     if (!(await schemaBoucle(sql)).action) throw new Error('migration 019 non appliquée : proposition de fiche non envoyée');
   } else
   // Proposition de PUBLICATION : jamais envoyée pour une affaire qui n'est plus candidate (déjà publiée, retirée) ; l'enregistrement du choix exige `action`.
@@ -373,7 +394,11 @@ async function notifierNouvelles(max = 5) {
   let envoyes = 0;
   for (const r of rows) {
     if (envoyes >= max) break;
-    try { await nouvelle(r.k); envoyes++; } catch (e) { console.log(`proposition ${r.k} non envoyée : ${e.message}`); }
+    try { await nouvelle(r.k); envoyes++; } catch (e) {
+      console.log(`proposition ${r.k} non envoyée : ${e.message}`);
+      // Refus DÉFINITIF d'une garde d'envoi (périmée, concurrente, parole sans date) : marqueur sans message, jamais réévaluée à chaque passage. Les autres erreurs (migration, réseau) restent retentées.
+      if (!process.env.SNY_DRY && /périmée|concurrente|parole sans date/.test(String(e.message))) await sql`insert into telegram_envois (kind, cle) select 'info', proposal_id::text from new_case_proposals where left(proposal_id::text, 8) = ${r.k} on conflict do nothing`;
+    }
   }
   console.log(`notifier-nouvelles : ${envoyes} envoyé(s), ${rows.length - envoyes} en attente (plafond ${max}/run)`);
 }
@@ -655,7 +680,7 @@ async function notifier(max = 10) {
       console.log(`écartée ${r.k} : ${e.message}`);
       // Règle opérationnelle (lib/acte-procedural.mjs) : un acte vu mais non retenu comme fait ne disparaît pas — le MOTIF et le SIGNAL (code d'acte + état, jamais une citation) sont consignés
       // avec la proposition (colonne existante payload), la source et les citations y restent déjà. Relisible par scripts/rejeu-ecartees.mjs.
-      if (!process.env.SNY_DRY && r.aa === 'ENRICHMENT') {
+      if (!process.env.SNY_DRY && (r.aa === 'ENRICHMENT' || r.aa === 'STATE_CHANGE')) {
         const cites = (Array.isArray(r.facts) ? r.facts : []).flatMap((x) => x?.evidence || []);
         const trace = { motif: String(e.message).slice(0, 200), signaux: signauxNonRetenus(cites, detecterActesProcéduraux(cites)), le: new Date().toISOString().slice(0, 10) };
         await sql`update state_proposals set payload = coalesce(payload, '{}'::jsonb) || ${JSON.stringify({ ecartee: trace })}::jsonb where proposal_id::text = ${String(r.pid)} and decision is null`;
