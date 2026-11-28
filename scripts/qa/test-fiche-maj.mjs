@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { changementsFiche, payloadFiche, hashDossier } from '../lib/fiche-page.mjs';
-import { selectionnerMisesAJour } from '../lib/fiche-miseajour.mjs';
+import { selectionnerMisesAJour, selectionnerEcartsEtat } from '../lib/fiche-miseajour.mjs';
 import { messageFiche } from '../lib/discovery-messages.mjs';
 import { decider } from '../lib/promouvoir-fiche.mjs';
 
@@ -272,6 +272,29 @@ t('raccord : le passage planifié revérifie les fiches approuvées courantes (l
   assert.ok(src('scripts/project-evenements.mjs').includes('fichesConcernees({'), 'la projection transmet les fiches dont l’empreinte change');
   for (const w of ['sny-clics', 'sny-telegram']) assert.ok(/reconcilier-publication\.mjs --site/.test(src(`.github/workflows/${w}.yml`)), `${w} : contrôle du site servi à chaque passage`);
   assert.ok(src('web/src/components/FicheUnique.astro').includes('data-dossier={empreinte}'), 'la page expose l’empreinte du dossier servi');
+});
+
+// ÉCART D'ÉTAT (FR-2026-0146, 28/11/2026) : GO appliqué (carte « mise en examen »), fiche approuvée restée « enquête », source déjà listée.
+const EV = { event_id: 'e1', case_id: 'FR-X-0001', statut_apres: 'mise en examen', url: U2, media: 'Média B', pd: '2026-11-20' };
+const ectx = (o = {}) => ({ cartes: new Map([['FR-X-0001', 'mise en examen']]), publie: new Map([['FR-X-0001', { d: { ...V1, statut_affiche: 'enquête' } }]]), evenements: [EV], approuvee: () => true, holds: new Set(), essais: new Map(), now: new Date('2026-11-28T12:00:00Z'), ...o });
+t('écart d’état : changement appliqué non porté par la fiche approuvée → régénération retenue avec l’article de l’événement (même si la source est déjà listée)', () => {
+  const s = selectionnerEcartsEtat(ectx({ publie: new Map([['FR-X-0001', { d: { ...V2, statut_affiche: 'enquête' } }]]) }));
+  assert.equal(s.groupes.length, 1); assert.deepEqual(s.groupes[0].sources.map((x) => x.url), [U2]); assert.deepEqual(s.groupes[0].ks, ['etat:e1']);
+});
+t('écart d’état : rien si fiche = carte, HOLD, version non approuvée, aucun événement appliqué ; une proposition faite n’est jamais refaite, un blocage est retenté après 24 h seulement', () => {
+  assert.equal(selectionnerEcartsEtat(ectx({ cartes: new Map([['FR-X-0001', 'enquête']]) })).groupes.length + selectionnerEcartsEtat(ectx({ cartes: new Map([['FR-X-0001', 'enquête']]) })).ecartees.length, 0);
+  const m = (o) => selectionnerEcartsEtat(ectx(o)).ecartees[0]?.motif;
+  assert.equal(m({ holds: new Set(['FR-X-0001']) }), 'HOLD');
+  assert.equal(m({ approuvee: () => false }), 'VERSION_PUBLIQUE_NON_APPROUVEE');
+  assert.equal(m({ evenements: [] }), 'ECART_ETAT_SANS_EVENEMENT_APPLIQUE');
+  assert.equal(m({ evenements: [{ ...EV, url: null }] }), 'ECART_ETAT_SANS_SOURCE_LISIBLE');
+  assert.equal(m({ essais: new Map([['etat:e1', { resultat: 'proposee', at: '2026-11-01T00:00:00Z' }]]) }), 'DEJA_TRAITEE');
+  assert.equal(m({ essais: new Map([['etat:e1', { resultat: 'bloquee', at: '2026-11-28T06:00:00Z' }]]) }), 'DEJA_TRAITEE');
+  assert.equal(selectionnerEcartsEtat(ectx({ essais: new Map([['etat:e1', { resultat: 'bloquee', at: '2026-11-27T06:00:00Z' }]]) })).groupes.length, 1, 'bloqué il y a plus de 24 h : réévalué');
+});
+t('écart d’état raccordé : proposer-mises-a-jour-fiches le traite avant les enrichissements ; sny-maj-fiches suit le cœur de rythme (sny-clics)', () => {
+  assert.ok(/selectionnerEcartsEtat\(/.test(src('scripts/proposer-mises-a-jour-fiches.mjs')));
+  assert.ok(/workflow_run:\s*\n\s*workflows: \[sny-clics\]/.test(src('.github/workflows/sny-maj-fiches.yml')));
 });
 
 console.log(`\n${n} contrôles : OK`);

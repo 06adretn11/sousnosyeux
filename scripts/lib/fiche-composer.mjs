@@ -234,7 +234,11 @@ export function composer({ c, extractions, aujourdhui = new Date().toISOString()
     // « Procès » = une audience de JUGEMENT tenue (tribunal correctionnel, assises…), pas une audience de remise en liberté ou de chambre de l'instruction.
     const JUGEMENT = /tribunal correctionnel|tribunal pour enfants|cour d['’]assises|cour criminelle|jugé|jugée|comparu|procès|à la barre|audience de jugement/i;
     const DETENTION = /remise en liberté|détention|chambre de l['’]instruction|contrôle judiciaire|libertés et de la détention|demande de mise en liberté/i;
-    const procesTenu = deroule.some((d) => d.type === 'audience' && d.date && d.date <= aujourdhui && JUGEMENT.test(d.texte) && !DETENTION.test(d.texte));
+    // Une audience RENVOYÉE (reportée) n'a pas jugé : FR-2026-0150 (Montauban) — l'audience correctionnelle d'une procédure distincte, renvoyée au 1er décembre, faisait lire
+    // « procès » et refuser la première fiche (ETAT_CARTE_PERIME_OU_CONTREDIT) cinq fois, alors que la carte « mise en examen » est étayée.
+    // (« renvoyé DEVANT le tribunal » est une ordonnance de renvoi, pas un report : non visé.)
+    const RENVOYEE = /renvoy[ée]+s? (?:au|à|à une date)|renvoi (?:au|à|de l['’]audience)|report[ée]+s? (?:au|à)|ajourn[ée]/i;
+    const procesTenu = deroule.some((d) => d.type === 'audience' && d.date && d.date <= aujourdhui && JUGEMENT.test(d.texte) && !DETENTION.test(d.texte) && !RENVOYEE.test(d.texte));
     etatSources = procesTenu ? 'procès' : types.has('mise_en_examen') ? 'mise en examen' : enqueteJudiciaire || types.has('garde_a_vue') ? 'enquête' : types.has('plainte') ? 'plainte' : null;
   }
   const carte = c.statut_judiciaire;

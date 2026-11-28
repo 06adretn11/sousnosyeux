@@ -559,6 +559,14 @@ t('« procès » = audience de JUGEMENT tenue : une audience de remise en libert
   const jug = composer({ c: carte('mise en examen'), aujourdhui: '2026-10-18', extractions: [ext(doc(), { evenements: [...base2, E({ type: 'audience', texte: 'L’animateur a comparu devant le tribunal correctionnel.', date: '2026-09-02', citation: 'a' })] })] });
   assert.equal(jug.dossier.situation.decision.titre, 'Audience tenue');
 });
+t('audience RENVOYÉE (procédure distincte, FR-2026-0150 Montauban) : pas un procès tenu — la carte « mise en examen » étayée n’est plus refusée ETAT_CARTE_PERIME_OU_CONTREDIT', () => {
+  const base2 = [E({ type: 'mise_en_examen', texte: 'Selon l’AFP, l’animateur a été mis en examen pour agressions sexuelles.', date: null, date_nature: 'article', citation: 'm' })];
+  const renv = composer({ c: carte('mise en examen'), aujourdhui: '2026-11-28', extractions: [ext(doc(), { evenements: [...base2, E({ type: 'audience', texte: 'Selon l’AFP, l’audience du tribunal correctionnel dans une procédure distincte a été renvoyée au 1er décembre.', date: '2026-11-20', citation: 'a' })] })] });
+  assert.ok(!renv.blocages.some((b) => b.code === 'ETAT_CARTE_PERIME_OU_CONTREDIT'), JSON.stringify(renv.blocages));
+  // Non-régression : une audience de jugement réellement tenue reste un procès ; « renvoyé devant le tribunal » (ordonnance de renvoi) n'est pas un report.
+  const tenu = composer({ c: carte('mise en examen'), aujourdhui: '2026-11-28', extractions: [ext(doc(), { evenements: [...base2, E({ type: 'audience', texte: 'Renvoyé devant le tribunal correctionnel, l’animateur a comparu le 20 novembre.', date: '2026-11-20', citation: 'a' })] })] });
+  assert.ok(tenu.blocages.some((b) => b.code === 'ETAT_CARTE_PERIME_OU_CONTREDIT'));
+});
 t('carte « enquête » sans aucun acte judiciaire dans les sources (seulement administratif) : réserve majeure, pas de bloc de situation, jamais READY ; un reproche visant une PERSONNE (« n’a pas été déféré ») ne déclenche pas le signal institutionnel', () => {
   const r = composer({ c: carte('enquête'), extractions: [ext(doc(), { evenements: [E({ type: 'enquete', acteur: 'Ville', texte: 'Une enquête administrative a été lancée par la Ville.', date: '2025-08-01', citation: 'e' }), E({ type: 'signalement', texte: 'Un signalement a été fait au service départemental.', date: '2025-08-02', citation: 's' }), E({ type: 'fait_rapporte', texte: 'L’animateur n’a pas été déféré.', date: null, date_nature: 'article', citation: 'd' })] })] });
   assert.equal(r.dossier.situation, undefined); assert.ok(r.attention.some((a) => a.code === 'ETAT_NON_ETAYE_PAR_LES_SOURCES')); assert.equal(r.qualification, 'A_REVOIR');

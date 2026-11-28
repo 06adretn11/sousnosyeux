@@ -43,3 +43,33 @@ export function selectionnerMisesAJour({ lignes, publie, approuvee, holds, deja,
   }
   return { groupes: [...par.values()], ecartees };
 }
+
+/**
+ * ÉCART D'ÉTAT : un changement d'état ACCEPTÉ par l'éditeur et APPLIQUÉ (case_events.statut_apres, donc la carte) sur une affaire dont la fiche APPROUVÉE
+ * affiche encore l'état antérieur. Ni `selectionnerMisesAJour` (analyses ENRICHMENT seulement) ni proposer-premieres-fiches (affaires SANS fiche) ne le voyaient :
+ * FR-2026-0146 (Montpellier) — GO du 27/11 appliqué, carte « mise en examen », fiche « enquête » depuis le 13/11, source déjà listée (SOURCE_DEJA_DANS_LA_FICHE).
+ * La source apportée à la génération est l'article de l'événement appliqué (même mécanisme que les premières fiches) ; aucun état n'est déduit ici.
+ * Un essai bloqué n'est retenté qu'après `retenteH` heures (nouvelles sources, générateur corrigé) ; une proposition faite n'est jamais refaite pour le même événement.
+ * @param {{cartes:Map<string,string>, publie:Map<string,{d:object}>, evenements:{event_id:string, case_id:string, statut_apres:string, url:string|null, media:string|null, pd:string|null}[],
+ *          approuvee:(id:string)=>boolean, holds:Set<string>, essais:Map<string,{resultat:string, at:Date}>, now?:Date, retenteH?:number}} o
+ */
+export function selectionnerEcartsEtat({ cartes, publie, evenements, approuvee, holds, essais, now = new Date(), retenteH = 24 }) {
+  const groupes = [], ecartees = [];
+  for (const [id, pub] of publie) {
+    const carte = cartes.get(id), fiche = pub.d?.statut_affiche;
+    if (!carte || !fiche || carte === fiche) continue;
+    const ecarte = (motif) => ecartees.push({ k: `etat:${id}`, case_id: id, motif });
+    if (holds.has(id)) { ecarte('HOLD'); continue; }
+    if (!approuvee(id)) { ecarte('VERSION_PUBLIQUE_NON_APPROUVEE'); continue; }
+    const evs = evenements.filter((e) => e.case_id === id && e.statut_apres === carte);
+    if (!evs.length) { ecarte('ECART_ETAT_SANS_EVENEMENT_APPLIQUE'); continue; }
+    const k = `etat:${evs.map((e) => e.event_id).sort().join('+')}`;
+    const essai = essais.get(k);
+    if (essai && (!['bloquee', 'erreur', 'delai'].includes(essai.resultat) || now - new Date(essai.at) < retenteH * 3600e3)) { ecarte('DEJA_TRAITEE'); continue; }
+    const sources = [];
+    for (const e of evs) if (e.url && !MEDIAS_PAYANTS.includes(e.media) && !sources.some((s) => s.url === e.url)) sources.push({ url: e.url, media: e.media, publication_date: e.pd });
+    if (!sources.length) { ecarte('ECART_ETAT_SANS_SOURCE_LISIBLE'); continue; }
+    groupes.push({ case_id: id, sources, ks: [k], ecart: { fiche, carte } });
+  }
+  return { groupes, ecartees };
+}

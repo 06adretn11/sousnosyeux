@@ -130,7 +130,8 @@ t('la page : composant unique, avertissement lu dans la constante, bloc placé a
 });
 t('workflow : « enrichir » exige « case », saisies par variable d’environnement, jamais de publication, aperçu déposé AVANT l’envoi', () => {
   const y = lire('.github/workflows/sny-maj-fiches.yml');
-  assert.ok(y.includes('if: ${{ inputs.enrichir == true }}') && y.includes('if: ${{ inputs.enrichir != true }}'));
+  // « enrichir » exclut les autres voies (premières fiches, mises à jour, reprise ciblée « regenerer ») : une seule voie par passage.
+  assert.ok(y.includes('if: ${{ inputs.enrichir == true }}') && y.includes('if: ${{ inputs.enrichir != true && inputs.regenerer != true }}') && y.includes('if: ${{ inputs.regenerer == true && inputs.enrichir != true }}'));
   assert.ok(y.includes('node scripts/enrichir-fiche.mjs "$CAS" --ecrire') && y.includes('node scripts/proposer-fiche.mjs "$CAS" --generee --ecrire'));
   assert.ok(y.includes("steps.enrichir.outputs.change == 'true'"));
   assert.ok(y.indexOf("Déposer l'aperçu sur main") < y.indexOf("Envoyer la proposition"), 'aperçu déposé avant l’envoi');
