@@ -274,6 +274,14 @@ t('raccord : le passage planifié revérifie les fiches approuvées courantes (l
   assert.ok(src('web/src/components/FicheUnique.astro').includes('data-dossier={empreinte}'), 'la page expose l’empreinte du dossier servi');
 });
 
+t('matière ACCEPTÉE par l’éditeur (parole, réaction) sans événement judiciaire → version candidate retenue, même si la source est déjà listée ; acceptée par la MACHINE ou non décidée → toujours écartée', () => {
+  const parole = { facts: [{ event_type: 'déclaration', evidence: ['…'] }] };
+  assert.equal(motif(ligne({ ...parole })), 'AUCUN_EVENEMENT_JUDICIAIRE');
+  assert.equal(selectionnerMisesAJour({ lignes: [ligne({ ...parole, decision: 'ACCEPT', decideur: 'Adrien (Telegram)' })], ...ctx() }).groupes.length, 1);
+  assert.equal(selectionnerMisesAJour({ lignes: [ligne({ ...parole, decision: 'ACCEPT', decideur: 'Adrien (Telegram)', url: U1 })], ...ctx() }).groupes.length, 1, 'source déjà listée : la parole, elle, peut manquer');
+  assert.equal(motif(ligne({ ...parole, decision: 'ACCEPT', decideur: 'système (proposition remplacée)' })), 'AUCUN_EVENEMENT_JUDICIAIRE');
+});
+
 // ÉCART D'ÉTAT (FR-2026-0146, 28/11/2026) : GO appliqué (carte « mise en examen »), fiche approuvée restée « enquête », source déjà listée.
 const EV = { event_id: 'e1', case_id: 'FR-X-0001', statut_apres: 'mise en examen', url: U2, media: 'Média B', pd: '2026-11-20' };
 const ectx = (o = {}) => ({ cartes: new Map([['FR-X-0001', 'mise en examen']]), publie: new Map([['FR-X-0001', { d: { ...V1, statut_affiche: 'enquête' } }]]), evenements: [EV], approuvee: () => true, holds: new Set(), essais: new Map(), now: new Date('2026-11-28T12:00:00Z'), ...o });
