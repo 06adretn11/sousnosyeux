@@ -189,6 +189,11 @@ const ETAPES = [
     bloquant: true,
   },
   {
+    nom: 'Recherche complémentaire — une affaire repérée par un seul article est corroborée par une recherche par établissement et commune (sans fenêtre de dates) ; rejeu Saint-Genès',
+    script: 'scripts/qa/test-recherche-complementaire.mjs',
+    bloquant: true,
+  },
+  {
     nom: 'Fait déjà publié — un fait que la fiche porte déjà n’est pas une information à décider (au plus, une source à rattacher) ; rejeu Rots',
     script: 'scripts/qa/test-fait-deja-publie.mjs',
     bloquant: true,

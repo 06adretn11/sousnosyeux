@@ -13,6 +13,7 @@
 // Aucune écriture ici : la persistance est l'affaire du runner.
 // =====================================================================
 import { rechercherBing, lirePage, admissible, domaine, canonique } from './preuve-claim.mjs';
+import { rechercheComplementaire } from './recherche-complementaire.mjs';
 import { citationPresente } from './discovery-presse.mjs';
 import { aplatir } from './capteurs.mjs';
 import { resoudre } from './resolver.mjs';
@@ -660,16 +661,48 @@ export async function evaluer(o) {
   return r;
 }
 
-async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map(), contexte = null, pagesFn = chercherPages, comprendreFn = comprendre, geocoder = geocoderCommune }, etat) {
-  const { pages, erreurs } = await pagesFn(signal, { cache });
+/** Sommes de coûts de deux appels modèle (le second est la reprise après recherche complémentaire). */
+const sommeCouts = (a, b) => (a && b ? { ...b, cout_usd: (Number(a.cout_usd) || 0) + (Number(b.cout_usd) || 0) } : (b || a));
+
+async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map(), contexte = null, pagesFn = chercherPages, comprendreFn = comprendre, geocoder = geocoderCommune, complementerFn = null }, etat) {
+  let { pages, erreurs } = await pagesFn(signal, { cache });
   if (!pages.length) return { statut: erreurs.length ? null : 'attente', motif: erreurs.length ? 'recherche en erreur' : 'aucune page retrouvée' };
+  // La recherche complémentaire n'est active que sur le chemin de production (pagesFn par défaut) ou si un test l'injecte : jamais de réseau par surprise.
+  const complementer = complementerFn || (pagesFn === chercherPages ? rechercheComplementaire : null);
 
   let ext;
   try {
     ext = await comprendreFn({ fiche: {}, article: { media: signal.media, publication_date: signal.published, body: corpsPourModele(signal, pages) }, modele, contrat: CONTRAT, cle });
   } catch (e) { return { statut: null, motif: 'modèle indisponible : ' + String(e.message).slice(0, 60) }; }
-  const v = verifier(ext.reponse, pages);
+  let v = verifier(ext.reponse, pages);
   if (!v.ok) return { statut: 'ecarte', motif: v.motif, cout: ext.cout };
+
+  // RECHERCHE COMPLÉMENTAIRE. Une affaire repérée par UN SEUL article (ou par des reprises d'une même dépêche) n'est pas proposée en l'état :
+  // l'établissement et la commune étant extraits et vérifiés, on cherche CE lieu — sans fenêtre de dates, sans repartir du titre — puis on refait
+  // l'extraction sur l'ensemble des pages. Le résultat n'est adopté que s'il décrit la même affaire (même commune, établissement concordant) ; sinon
+  // le premier passage est conservé tel quel. La recherche est consignée dans la proposition : l'éditeur voit ce qui a été cherché et trouvé.
+  let complement = null;
+  if (complementer) {
+    const lues1 = pages.filter((p) => v.evidence.some((e) => canonique(e.url) === canonique(p.url)));
+    const indep1 = Math.min(independantes(lues1), new Set(v.evidence.map((e) => domaine(e.url))).size);
+    if (indep1 < 2 && estNommeEtab(v.c.etablissement)) {
+      let r = { pages: [], requetes: [], candidats: 0, erreurs: [] };
+      try { r = await complementer({ c: v.c, dejaLues: pages, cache }); } catch (e) { r.erreurs = [String(e.message).slice(0, 60)]; }
+      complement = { requetes: r.requetes.length, candidats: r.candidats, pages_retenues: r.pages.length, adoptee: false, ...(r.erreurs.length ? { erreurs: r.erreurs.length } : {}) };
+      if (r.pages.length) {
+        const toutes = [...pages, ...r.pages];
+        try {
+          const ext2 = await comprendreFn({ fiche: {}, article: { media: signal.media, publication_date: signal.published, body: corpsPourModele(signal, toutes) }, modele, contrat: CONTRAT, cle });
+          const v2 = verifier(ext2.reponse, toutes);
+          const meme = v2.ok && aplatir(v2.c.commune) === aplatir(v.c.commune)
+            && comparerEtablissements({ nom: v2.c.etablissement, nomme: true }, { nom: v.c.etablissement, nomme: true }).etat !== 'contradiction';
+          ext = { ...ext2, cout: sommeCouts(ext.cout, ext2.cout) };
+          if (meme) { v = v2; pages = toutes; complement.adoptee = true; }
+          else complement.motif = v2.ok ? 'la reprise décrit une autre commune ou un autre établissement : premier passage conservé' : 'la reprise est tombée à la vérification : premier passage conservé';
+        } catch (e) { complement.motif = 'modèle indisponible à la reprise : premier passage conservé'; }
+      }
+    }
+  }
   let { c, evidence } = v;
   let lues = pages.filter((p) => evidence.some((e) => canonique(e.url) === canonique(p.url)));
 
@@ -774,6 +807,7 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     evidence, articles: lues.map((p) => ({ media: p.media, url: p.url, published: p.published })),
     unknowns: c.ambiguite ? [c.ambiguite] : [],
     independantes: indep, medias: domaines.size, ...(reprise?.ok ? { recoupement_reprise: reprise.motif } : {}), personnes: c.personnes ?? null, periode_faits: c.periode_faits ?? null,
+    ...(complement ? { recherche_complementaire: complement } : {}),
     ...(etat.regroupes.length ? { regroupes: etat.cles.length } : {}),
     ...(c.diag_enum ? { diag_extraction: c.diag_enum } : {}),   // forme originale des champs catégoriels (liste récupérée / repli et sa raison)
     ...(c.resume_neutralise?.length ? { resume_neutralise: c.resume_neutralise } : {}),   // actes de procédure contestés : absents du résumé (voir faitsContestes)
@@ -863,9 +897,12 @@ async function evaluerInterne({ sql, index, signal, modele, cle, cache = new Map
     recommendation = 'REVIEW'; avertissement = 'les médias reprennent la même dépêche (une seule source indépendante)' + (c.ambiguite ? ' · ' + c.ambiguite : '');
   } else recommendation = 'NEW_CASE_CANDIDATE';
 
-  const possibles = statutRes === 'NO_MATCH'
+  // Une affaire n'est listée qu'UNE fois (constaté le 28/11/2026 : « FR-2026-0061, FR-2026-0049, FR-2026-0061, FR-2026-0049 » — le résolveur et la liste
+  // des affaires de la commune citaient les mêmes fiches). Les entrées complètes (établissement, rôle, statut) priment sur les entrées d'identifiant seul.
+  const possibles = [...(statutRes === 'NO_MATCH'
     ? voisins
-    : [...(res.detail || []).filter((d) => d.rattachement !== 'NON_RATTACHABLE').map((d) => ({ case_id: d.case_id })), ...voisins];
+    : [...(res.detail || []).filter((d) => d.rattachement !== 'NON_RATTACHABLE').map((d) => ({ case_id: d.case_id })), ...voisins])
+    .reduce((m, x) => m.set(x.case_id, { ...(m.get(x.case_id) || {}), ...x }), new Map()).values()];
 
   // Une SEULE affaire voisine déjà connue (même commune concordante) : l'humain doit pouvoir COMPARER les deux jeux de sources
   // et choisir RAPPROCHER ou CRÉER (cas du 09/10/2026 : « affaire voisine déjà connue » annoncée sans aucune de ses sources).
