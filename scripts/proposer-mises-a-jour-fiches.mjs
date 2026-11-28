@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
 import { connecter } from './lib/neon.mjs';
 import { dossierFiche, dossierGeneree, changementsFiche, empreinteApprouvee } from './lib/fiche-page.mjs';
-import { selectionnerMisesAJour } from './lib/fiche-miseajour.mjs';
+import { selectionnerMisesAJour, selectionnerEcartsEtat } from './lib/fiche-miseajour.mjs';
 import { journaliser } from './lib/telegram-clics.mjs';
 import { prevenirUneFois } from './lib/prevenir.mjs';
 
@@ -45,10 +45,27 @@ const revues = ids.length ? await sql`select case_id, reviewed_by, decision::tex
 const publie = new Map(ids.map((id) => [id, dossierFiche(id)]).filter(([, d]) => d));
 const approuvee = (id) => !!empreinteApprouvee(revues.filter((r) => r.case_id === id), id, publie.get(id));
 
-const { groupes, ecartees } = selectionnerMisesAJour({ lignes: lignes.filter((l) => ids.includes(l.case_id)), publie, approuvee, holds, deja: dejaTraitees });
+const { groupes: groupesEnrichissement, ecartees } = selectionnerMisesAJour({ lignes: lignes.filter((l) => ids.includes(l.case_id)), publie, approuvee, holds, deja: dejaTraitees });
 const motifs = ecartees.reduce((m, e) => m.set(e.motif, (m.get(e.motif) || 0) + 1), new Map());
-console.log(`mises à jour de fiches : ${lignes.length} analyse(s) d'enrichissement récentes · ${groupes.length} affaire(s) retenue(s) · écartées : ${[...motifs].map(([m, n]) => `${m} ×${n}`).join(', ') || 'aucune'}`);
-for (const g of groupes) console.log(`  · ${g.case_id} : ${g.sources.length} source(s) nouvelle(s) à intégrer`);
+console.log(`mises à jour de fiches : ${lignes.length} analyse(s) d'enrichissement récentes · ${groupesEnrichissement.length} affaire(s) retenue(s) · écartées : ${[...motifs].map(([m, n]) => `${m} ×${n}`).join(', ') || 'aucune'}`);
+
+// ÉCARTS D'ÉTAT (lib/fiche-miseajour : selectionnerEcartsEtat) — un changement d'état appliqué que la fiche approuvée ne porte pas encore. Passe AVANT les enrichissements :
+// une fiche qui contredit la carte est un écart public, un enrichissement peut attendre le passage suivant.
+const cartes = new Map(lire('data/cases.json').cases.map((c) => [c.case_id, c.statut_judiciaire]));
+const tousPublies = new Map(cartes.keys().filter((id) => !SEUL || id === SEUL).map((id) => [id, dossierFiche(id)]).filter(([, d]) => d));
+const idsEcart = [...tousPublies].filter(([id, p]) => p.d?.statut_affiche && cartes.get(id) !== p.d.statut_affiche).map(([id]) => id);
+const revuesEcart = idsEcart.length ? await sql`select case_id, reviewed_by, decision::text decision, comment from reviews where case_id = any(${idsEcart}) and comment like '[Fiche approuvée %' order by reviewed_at` : [];
+const evenementsEcart = idsEcart.length ? await sql`
+  select e.event_id::text event_id, e.case_id, e.statut_apres::text statut_apres, a.url, a.media, a.publication_date::text pd
+  from case_events e left join articles a using (article_id) where e.case_id = any(${idsEcart}) and e.statut_apres is not null order by e.recorded_at` : [];
+const essais = new Map((await sql`select cle, resultat, at from telegram_journal where kind = 'application' and cle like 'maj-fiche:etat:%' order by at`).map((r) => [r.cle.slice('maj-fiche:'.length), r]));
+const ecarts = selectionnerEcartsEtat({ cartes, publie: new Map(idsEcart.map((id) => [id, tousPublies.get(id)])), evenements: evenementsEcart,
+  approuvee: (id) => !!empreinteApprouvee(revuesEcart.filter((r) => r.case_id === id), id, tousPublies.get(id)), holds, essais });
+for (const [id, p] of tousPublies) if (!publie.has(id) && ecarts.groupes.some((g) => g.case_id === id)) publie.set(id, p);
+console.log(`écarts d'état fiche/carte : ${idsEcart.length} affaire(s) · ${ecarts.groupes.length} retenue(s)${ecarts.ecartees.length ? ` · écartées : ${ecarts.ecartees.map((e) => `${e.case_id} ${e.motif}`).join(', ')}` : ''}`);
+for (const g of ecarts.groupes) console.log(`  · ${g.case_id} : fiche « ${g.ecart.fiche} » ≠ carte « ${g.ecart.carte} » — régénération avec la source de l'événement appliqué`);
+for (const g of groupesEnrichissement) console.log(`  · ${g.case_id} : ${g.sources.length} source(s) nouvelle(s) à intégrer`);
+const groupes = [...ecarts.groupes, ...groupesEnrichissement.filter((g) => !ecarts.groupes.some((x) => x.case_id === g.case_id))];
 const sortie = (k, v) => { if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `${k}=${v}\n`); };
 sortie('change', 'false');
 if (!ECRIRE || !groupes.length) process.exit(0);
