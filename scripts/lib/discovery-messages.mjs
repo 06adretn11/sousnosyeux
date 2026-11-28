@@ -79,7 +79,14 @@ const ligneSources = (p) => {
   // Autant d'éditeurs n'est pas autant d'origines : un média qui reprend une dépêche ou en relaie un autre n'ajoute pas une origine indépendante.
   const reprises = p.medias != null && p.independantes != null && p.independantes < p.medias;
   const regle = p.recoupement_reprise ? `\n⚖ Recoupement RECONNU par la règle de reprise (ce ne sont pas deux origines indépendantes) : ${esc(p.recoupement_reprise)}.` : '';
-  return `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)${reprises ? ' — les autres éditeurs reprennent ou relaient : ils ne comptent pas comme des origines de plus' : ''}${regle}`;
+  // Recherche complémentaire (par établissement et commune, sans fenêtre de dates) : ce qui a été cherché est dit, trouvé ou non.
+  const rc = p.recherche_complementaire;
+  const complement = !rc ? '' : rc.adoptee
+    ? `\n🔎 Recherche complémentaire (par établissement et commune, sans fenêtre de dates) : ${rc.pages_retenues} page(s) d’éditeurs de plus relue(s) et jointe(s) au dossier.`
+    : rc.pages_retenues
+      ? `\n🔎 Recherche complémentaire : ${rc.pages_retenues} page(s) trouvée(s) mais non jointes — ${esc(cut(rc.motif || 'la reprise ne décrit pas la même affaire', 140))}.`
+      : `\n🔎 Recherche complémentaire effectuée (${rc.requetes} requête(s) par établissement et commune) : aucune autre page ne nomme l’établissement et parle de faits.`;
+  return `📚 ${n} article(s) · ${p.medias ?? '?'} éditeur(s) · ${p.independantes ?? '?'} source(s) indépendante(s)${reprises ? ' — les autres éditeurs reprennent ou relaient : ils ne comptent pas comme des origines de plus' : ''}${regle}${complement}`;
 };
 
 /**
@@ -99,7 +106,7 @@ export function blocQualite(p) {
   const pv = preuvesDe(p);
   const ok = (b) => (b ? '✓' : '✗');
   const fond = [];
-  if (f.crit_recoupement === false) fond.push('recoupement : une seule origine (les éditeurs reprennent la même dépêche)');
+  if (f.crit_recoupement === false) fond.push(p.medias != null && p.medias < 2 ? 'recoupement : un seul éditeur' : 'recoupement : une seule origine (les éditeurs reprennent la même dépêche)');
   if (f.crit_statut_clair === false) fond.push('statut judiciaire à qualifier');
   if (f.crit_source_fiable === false) fond.push('source jugée insuffisamment fiable');
   if (f.crit_article_recent === false) fond.push('article ancien');
@@ -410,7 +417,7 @@ export function messageDecision(p, recommendation) {
   const sny = recommendation === 'NEW_CASE_CANDIDATE'
     ? 'SNY : aucune correspondance dans la base au moment de l’envoi.' + (matches.length ? `\n(${matches.length} affaire(s) SNY dans la commune : ${matches.map((v) => `${v.case_id} — ${etablissementDe(p, v)}`).join(' ; ')}.)` : '')
       + (p.rapprochement_ecarte ? `\nℹ Rapprochement avec ${esc(p.rapprochement_ecarte.case_id)} écarté : ${esc(cut(p.rapprochement_ecarte.raison, 140))}.` : '')
-    : `SNY : correspondance à vérifier${matches.length ? ' — ' + matches.map((v) => v.case_id).join(', ') : ''}.`;
+    : `SNY : correspondance à vérifier${matches.length ? ' — ' + [...new Set(matches.map((v) => v.case_id))].join(', ') : ''}.`;
   // La ligne de recommandation dit EXACTEMENT ce que le bouton proposé fera (modeCreation) : jamais « VALIDATE » sous un bouton « preuves à compléter ».
   const pending = modeCreation(recommendation, p) === 'PENDING';
   const dp = pending ? null : p.publication_directe; // jamais un bouton « publier » sous une création « preuves à compléter »

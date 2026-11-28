@@ -528,7 +528,10 @@ console.log('\n  TENTATIVES D’EXTRACTION — aucune nouvelle, le plafond réel
 await t('evaluer / comprendre ne réessaient pas ; la seule boucle est celle de la reprise (≤ 3 passes, seulement pour les signaux ÉCARTÉS ; les extractions valides ne sont pas rejouées)', () => {
   assert.ok(!/retry|réessa|attempt/i.test(src('scripts/lib/comprendre-source.mjs').replace(/réessayé au prochain run/g, '')), 'comprendre : un seul appel');
   const q = src('scripts/lib/qualifier-signal.mjs');
-  assert.equal((q.match(/await comprendreFn\(/g) || []).length, 1, 'evaluer : une extraction par signal et par passage');
+  // Une extraction par signal et par passage ; UNE seconde, bornée, seulement après la recherche complémentaire (28/11/2026 : établissement nommé ET moins de
+  // deux origines indépendantes). Le plafond de coût reste : jamais plus de deux appels, le second jamais hors de ce bloc.
+  assert.equal((q.match(/await comprendreFn\(/g) || []).length, 2, 'evaluer : une extraction par signal et par passage, plus une reprise après recherche complémentaire');
+  assert.ok(/if \(indep1 < 2 && estNommeEtab\(v\.c\.etablissement\)\) \{[\s\S]*?await comprendreFn\(/.test(q), 'la seconde extraction est dans le bloc de la recherche complémentaire');
   const rp = src('scripts/reprendre-rapprochement.mjs');
   assert.ok(rp.includes('essai <= 3') && rp.includes("!['attente', 'propose'].includes(s.statut)"));
 });
